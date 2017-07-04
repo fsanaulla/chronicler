@@ -3,53 +3,37 @@ package com.fsanaulla
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpMethods._
-import akka.http.scaladsl.model.{HttpEntity, HttpRequest, HttpResponse, MediaTypes}
+import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
 import akka.stream.ActorMaterializer
-import akka.util.ByteString
-import com.fsanaulla.entity.toPoint
-import com.fsanaulla.query.Querys
+import akka.stream.scaladsl.{Sink, Source}
+import com.fsanaulla.query.InfluxClientQuerys
+import com.fsanaulla.utils.TypeAlias._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * Created by fayaz on 26.06.17.
   */
-class InfluxClient(override val host: String,
-                   override val port: Int = 8086,
+class InfluxClient(host: String,
+                   port: Int = 8086,
                    username: String = "influx",
                    password: String = "influx")
-                  (implicit ex: ExecutionContext) extends Querys {
+                  (implicit ex: ExecutionContext) extends InfluxClientQuerys {
 
   implicit val system = ActorSystem("system")
-  implicit val materializer = ActorMaterializer()
+  implicit val materializer: ActorMaterializer = ActorMaterializer()
+
+  private val connection: ConnectionPoint = Http().outgoingConnection(host, port)
 
   def createDatabase(dbName: String): Future[HttpResponse] = {
-    Http().singleRequest(
+    Source.single(
       HttpRequest(
         method = POST,
-        uri = createDBQuery(host, port, dbName)))
-  }
-
-  def write[T <: toPoint[T]](dbName: String, entity: T): Future[HttpResponse] = {
-    Http().singleRequest(
-      HttpRequest(
-        method = POST,
-        uri = writeToDB(dbName),
-        entity = HttpEntity(MediaTypes.`application/octet-stream`, ByteString(implicitly[toPoint[T]].write(entity)))
-      )
+        uri = createDBQuery(dbName))
     )
+      .via(connection)
+      .runWith(Sink.head)
   }
 
-  def bulkWrite[T <: toPoint[T]](dbName: String, entitys: Seq[T]): Future[HttpResponse] = {
-
-    val influxEntitys = entitys.map(implicitly[toPoint[T]].write).mkString("\n")
-
-    Http().singleRequest(
-      HttpRequest(
-        method = POST,
-        uri = writeToDB(dbName),
-        entity = HttpEntity(MediaTypes.`application/octet-stream`, ByteString(influxEntitys))
-      )
-    )
-  }
+  def selectDataBase(dbName: String): Database = new Database(dbName, connection)
 }
