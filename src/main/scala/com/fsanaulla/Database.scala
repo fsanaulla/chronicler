@@ -1,6 +1,6 @@
 package com.fsanaulla
 
-import akka.http.scaladsl.model.HttpMethods.POST
+import akka.http.scaladsl.model.HttpMethods.{GET, POST}
 import akka.http.scaladsl.model.{HttpEntity, HttpRequest, HttpResponse, MediaTypes}
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Sink, Source}
@@ -16,7 +16,7 @@ import scala.concurrent.Future
   */
 class Database(dbName: String, connection: ConnectionPoint)(implicit mat: ActorMaterializer) extends DatabaseQuerys {
 
-  def write[T](dbName: String, entity: T)(implicit writer: Writable[T]): Future[HttpResponse] = {
+  def write[T](entity: T)(implicit writer: Writable[T]): Future[HttpResponse] = {
     Source.single(
       HttpRequest(
         method = POST,
@@ -28,7 +28,7 @@ class Database(dbName: String, connection: ConnectionPoint)(implicit mat: ActorM
       .runWith(Sink.head)
   }
 
-  def bulkWrite[T](dbName: String, entitys: Seq[T])(implicit writer: Writable[T]): Future[HttpResponse] = {
+  def bulkWrite[T](entitys: Seq[T])(implicit writer: Writable[T]): Future[HttpResponse] = {
 
     val influxEntitys = entitys.map(writer.write).mkString("\n")
 
@@ -37,6 +37,17 @@ class Database(dbName: String, connection: ConnectionPoint)(implicit mat: ActorM
         method = POST,
         uri = writeToDB(dbName),
         entity = HttpEntity(MediaTypes.`application/octet-stream`, ByteString(influxEntitys))
+      )
+    )
+      .via(connection)
+      .runWith(Sink.head)
+  }
+
+  def read(query: String): Future[HttpResponse] = {
+    Source.single(
+      HttpRequest(
+        method = GET,
+        uri = readFromDB(dbName)
       )
     )
       .via(connection)

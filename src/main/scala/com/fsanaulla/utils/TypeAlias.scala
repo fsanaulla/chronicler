@@ -12,5 +12,4 @@ import scala.concurrent.Future
 object TypeAlias {
 
   type ConnectionPoint = Flow[HttpRequest, HttpResponse, Future[Http.OutgoingConnection]]
-
 }

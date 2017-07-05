@@ -35,5 +35,7 @@ class InfluxClient(host: String,
       .runWith(Sink.head)
   }
 
+  def dropDatabase(dbName: String): Unit = ???
+
   def selectDataBase(dbName: String): Database = new Database(dbName, connection)
 }
