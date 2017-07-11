@@ -20,8 +20,8 @@ class InfluxDBClient(host: String,
                      password: Option[String] = None)
                     (implicit ex: ExecutionContext) extends InfluxClientQuerys {
 
-  implicit val system = ActorSystem("system")
-  implicit val materializer: ActorMaterializer = ActorMaterializer()
+  private[this] implicit val system = ActorSystem("system")
+  private[this] implicit val materializer: ActorMaterializer = ActorMaterializer()
 
   private val connection: ConnectionPoint = Http().outgoingConnection(host, port)
 
@@ -35,7 +35,7 @@ class InfluxDBClient(host: String,
       .runWith(Sink.head)
   }
 
-  def dropDatabase(dbName: String): Unit = {
+  def dropDatabase(dbName: String): Future[HttpResponse] = {
     Source.single(
       HttpRequest(
         method = POST,

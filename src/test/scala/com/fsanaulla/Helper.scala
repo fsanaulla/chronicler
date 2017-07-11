@@ -1,4 +1,4 @@
-package com.fsanaulla.utils
+package com.fsanaulla
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
