@@ -15,10 +15,10 @@ trait DatabaseQuerys {
   }
 
   def writeToDB(dbName: String,
-                consistency: String = Consistency.ONE,
-                precision: String = Precision.NANOSECONDS,
                 username: Option[String] = None,
                 password: Option[String] = None,
+                consistency: String = Consistency.ONE,
+                precision: String = Precision.NANOSECONDS,
                 retentionPolicy: Option[String] = None
                ): Uri = {
 
@@ -42,11 +42,11 @@ trait DatabaseQuerys {
   }
 
   def readFromDB(dbName: String,
+                 username: Option[String] = None,
+                 password: Option[String] = None,
                  query: String,
                  epoch: String = Epoch.NANOSECONDS,
-                 pretty: Boolean = false,
-                 username: Option[String] = None,
-                 password: Option[String] = None
+                 pretty: Boolean = false
                 ): Uri = {
 
     val queryParams = scala.collection.mutable.Map[String, String](

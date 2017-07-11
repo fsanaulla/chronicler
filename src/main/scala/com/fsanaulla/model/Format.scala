@@ -1,4 +1,4 @@
-package com.fsanaulla.entity
+package com.fsanaulla.model
 
 import scala.annotation.implicitNotFound
 

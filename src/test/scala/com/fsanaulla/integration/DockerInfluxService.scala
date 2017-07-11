@@ -16,7 +16,6 @@ trait DockerInfluxService extends DockerKit {
 
   val influxdbContainer: DockerContainer = DockerContainer(dockerImage)
     .withPorts(defaultInfluxdbPort -> None)
-//    .withReadyChecker(DockerReadyChecker.LogLineContains(s"Waiting for connections on port:$defaultInfluxdbPort"))
 
   abstract override def dockerContainers: List[DockerContainer] =
     influxdbContainer :: super.dockerContainers
