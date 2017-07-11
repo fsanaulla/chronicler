@@ -14,13 +14,28 @@ import scala.concurrent.Future
 /**
   * Created by fayaz on 04.07.17.
   */
-class Database(dbName: String, connection: ConnectionPoint)(implicit mat: ActorMaterializer) extends DatabaseQuerys {
+class Database(dbName: String,
+               connection: ConnectionPoint,
+               username: Option[String] = None,
+               password: Option[String] = None
+               )(implicit mat: ActorMaterializer) extends DatabaseQuerys {
+
+  def deleteSeries(measurementName: String): Future[HttpResponse] = {
+    Source.single(
+      HttpRequest(
+        method = POST,
+        uri = dropMeasurement(dbName, measurementName)
+      )
+    )
+      .via(connection)
+      .runWith(Sink.head)
+  }
 
   def write[T](entity: T)(implicit writer: Writable[T]): Future[HttpResponse] = {
     Source.single(
       HttpRequest(
         method = POST,
-        uri = writeToDB(dbName),
+        uri = writeToDB(dbName = dbName, username = username, password = password),
         entity = HttpEntity(MediaTypes.`application/octet-stream`, ByteString(writer.write(entity)))
       )
     )
@@ -35,7 +50,7 @@ class Database(dbName: String, connection: ConnectionPoint)(implicit mat: ActorM
     Source.single(
       HttpRequest(
         method = POST,
-        uri = writeToDB(dbName),
+        uri = writeToDB(dbName, username = username, password = password),
         entity = HttpEntity(MediaTypes.`application/octet-stream`, ByteString(influxEntitys))
       )
     )
@@ -47,7 +62,7 @@ class Database(dbName: String, connection: ConnectionPoint)(implicit mat: ActorM
     Source.single(
       HttpRequest(
         method = GET,
-        uri = readFromDB(dbName)
+        uri = readFromDB(dbName = dbName, query = query, username = username, password = password)
       )
     )
       .via(connection)

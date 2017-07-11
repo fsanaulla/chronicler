@@ -14,11 +14,11 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
   * Created by fayaz on 26.06.17.
   */
-class InfluxClient(host: String,
-                   port: Int = 8086,
-                   username: String = "influx",
-                   password: String = "influx")
-                  (implicit ex: ExecutionContext) extends InfluxClientQuerys {
+class InfluxDBClient(host: String,
+                     port: Int = 8086,
+                     username: Option[String] = None,
+                     password: Option[String] = None)
+                    (implicit ex: ExecutionContext) extends InfluxClientQuerys {
 
   implicit val system = ActorSystem("system")
   implicit val materializer: ActorMaterializer = ActorMaterializer()
@@ -35,7 +35,15 @@ class InfluxClient(host: String,
       .runWith(Sink.head)
   }
 
-  def dropDatabase(dbName: String): Unit = ???
+  def dropDatabase(dbName: String): Unit = {
+    Source.single(
+      HttpRequest(
+        method = POST,
+        uri = dropDBQuery(dbName))
+    )
+      .via(connection)
+      .runWith(Sink.head)
+  }
 
-  def selectDataBase(dbName: String): Database = new Database(dbName, connection)
+  def use(dbName: String): Database = new Database(dbName, connection)
 }

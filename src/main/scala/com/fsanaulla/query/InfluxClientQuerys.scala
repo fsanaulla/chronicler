@@ -10,4 +10,8 @@ trait InfluxClientQuerys {
   def createDBQuery(dbName: String): Uri = {
     Uri("/query").withQuery(Uri.Query(Map("q" -> s"CREATE DATABASE $dbName")))
   }
+
+  def dropDBQuery(dbName: String): Uri = {
+    Uri("/query").withQuery(Uri.Query(Map("q" -> s"DROP DATABASE $dbName")))
+  }
 }

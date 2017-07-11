@@ -1,20 +1,23 @@
 package com.fsanaulla.query
 
 import akka.http.scaladsl.model.Uri
-import com.fsanaulla.utils.Constants.Consistency.Consistency
-import com.fsanaulla.utils.Constants.Epoch.Epoch
-import com.fsanaulla.utils.Constants.Precision.Precision
-import com.fsanaulla.utils.Constants.{Consistency, Epoch, Precision}
+import com.fsanaulla.utils.constants.{Consistency, Epoch, Precision}
 
 /**
   * Created by fayaz on 04.07.17.
   */
 trait DatabaseQuerys {
 
+  def dropMeasurement(dbName: String,
+                      measurementName: String): Uri = {
+    val query = s"DROP SERIES FROM $measurementName"
+    Uri("/query").withQuery(Uri.Query("db" -> dbName, "q" -> query))
+  }
+
   def writeToDB(dbName: String,
-                consistency: Consistency = Consistency.ONE,
-                precision: Precision = Precision.NANOS,
-                userName: Option[String] = None,
+                consistency: String = Consistency.ONE,
+                precision: String = Precision.NANOSECONDS,
+                username: Option[String] = None,
                 password: Option[String] = None,
                 retentionPolicy: Option[String] = None
                ): Uri = {
@@ -30,7 +33,7 @@ trait DatabaseQuerys {
     }
 
     for  {
-      u <- userName
+      u <- username
       p <- password
     } yield queryParams += ("u" -> u, "p" -> p)
 
@@ -39,20 +42,22 @@ trait DatabaseQuerys {
   }
 
   def readFromDB(dbName: String,
-                 epoch: Epoch = Epoch.NANOS,
+                 query: String,
+                 epoch: String = Epoch.NANOSECONDS,
                  pretty: Boolean = false,
-                 userName: Option[String] = None,
+                 username: Option[String] = None,
                  password: Option[String] = None
                 ): Uri = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
       "db" -> dbName,
       "pretty" -> pretty.toString,
-      "epoch" -> epoch
+      "epoch" -> epoch,
+      "q" -> query
     )
 
     for  {
-      u <- userName
+      u <- username
       p <- password
     } yield queryParams += ("u" -> u, "p" -> p)
 
