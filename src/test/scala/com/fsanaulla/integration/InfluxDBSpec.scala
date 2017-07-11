@@ -18,23 +18,23 @@ class InfluxDBSpec
   with DockerInfluxService {
 
   implicit val pc = PatienceConfig(Span(20, Seconds), Span(1, Second))
-  val influx = new InfluxDBClient("172.17.0.2", 8086)
 
+  "Influxdb client" should "correctly work" in {
 
-  "Influxdb container" should "be ready" in {
+    lazy val host = influxdbContainer.getIpAddresses().futureValue
+    lazy val port = influxdbContainer.getPorts().futureValue.get(8086)
+
+    // CHECKING CONTAINER
     isContainerReady(influxdbContainer).futureValue shouldBe true
-    influxdbContainer.getPorts().futureValue.get(8086) should not be empty
-    influxdbContainer.getIpAddresses().futureValue should not be Seq.empty
-  }
+    port should not be None
+    host should not be Seq.empty
 
-  behavior of "Influxdb client"
+    val influx = new InfluxDBClient(host.head, 8086)
 
-  it should "successfully create db" in {
+    // CREATING DB TEST
     influx.createDatabase("mydb").futureValue.status shouldEqual StatusCodes.OK
-  }
 
-  it should "successfully drop db" in {
+    // DROP DB TEST
     influx.dropDatabase("mydb").futureValue.status shouldEqual StatusCodes.OK
   }
-
 }
