@@ -1,5 +1,7 @@
 package com.fsanaulla.model
 
+import spray.json.{JsArray, JsObject}
+
 import scala.annotation.implicitNotFound
 
 /**
@@ -9,7 +11,7 @@ import scala.annotation.implicitNotFound
 @implicitNotFound(
   "No Format found for type ${T}. Try to implement an implicit Format for this type."
 )
-trait Format[T] extends Readable[T] with Writable[T]
+trait InfluxFormatter[T] extends InfluxReader[T] with InfluxWriter[T]
 
 /**
   * Return string must be in following format
@@ -19,13 +21,16 @@ trait Format[T] extends Readable[T] with Writable[T]
 @implicitNotFound(
   "No Writable found for type ${T}. Try to implement an implicit Writable for this type."
 )
-trait Writable[T] {
+trait InfluxWriter[T] {
   def write(obj: T): String
 }
 
+/**
+  * When trying deserialize JSON from influx, don't forget that influx sort field in db alphabetically.
+  */
 @implicitNotFound(
   "No Readable found for type ${T}. Try to implement an implicit Readable for this type."
 )
-trait Readable[T] {
-  def read(str: String): T
+trait InfluxReader[T] {
+  def read(js: JsArray): T
 }

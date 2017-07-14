@@ -30,7 +30,7 @@ class InfluxDBSpec
     port should not be None
     host should not be Seq.empty
 
-    // INFLUX CLIENT
+    // INIT INFLUX CLIENT
     val influx = new InfluxDBClient(host.head, 8086)
 
     // CREATING DB TEST
@@ -39,7 +39,11 @@ class InfluxDBSpec
     // DATABASE
     val db = influx.use("mydb")
 
+    // WRITE
     db.write("test", singleEntity).futureValue.status shouldEqual StatusCodes.NoContent
+
+    // READ
+    db.read[FakeEntity]("SELECT * FROM test").futureValue shouldEqual Seq(singleEntity)
 
     // DROP DB TEST
     influx.dropDatabase("mydb").futureValue.status shouldEqual StatusCodes.OK
