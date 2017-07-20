@@ -14,13 +14,13 @@ trait DatabaseQuerys {
     Uri("/query").withQuery(Uri.Query("db" -> dbName, "q" -> query))
   }
 
-  def writeToDB(dbName: String,
-                username: Option[String] = None,
-                password: Option[String] = None,
-                consistency: String = Consistency.ONE,
-                precision: String = Precision.NANOSECONDS,
-                retentionPolicy: Option[String] = None
-               ): Uri = {
+  def writeToInflux(dbName: String,
+                    username: Option[String] = None,
+                    password: Option[String] = None,
+                    consistency: String = Consistency.ONE,
+                    precision: String = Precision.NANOSECONDS,
+                    retentionPolicy: Option[String] = None
+                   ): Uri = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
       "db" -> dbName,
@@ -41,19 +41,43 @@ trait DatabaseQuerys {
     Uri("/write").withQuery(Uri.Query(queryParams.toMap))
   }
 
-  def readFromDB(dbName: String,
-                 username: Option[String] = None,
-                 password: Option[String] = None,
-                 query: String,
-                 epoch: String = Epoch.NANOSECONDS,
-                 pretty: Boolean = false
-                ): Uri = {
+  def readFromInfluxSingle(dbName: String,
+                           query: String,
+                           username: Option[String] = None,
+                           password: Option[String] = None,
+                           epoch: String = Epoch.NANOSECONDS,
+                           pretty: Boolean = false
+                          ): Uri = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
       "db" -> dbName,
       "pretty" -> pretty.toString,
       "epoch" -> epoch,
       "q" -> query
+    )
+
+    for  {
+      u <- username
+      p <- password
+    } yield queryParams += ("u" -> u, "p" -> p)
+
+
+    Uri("/query").withQuery(Uri.Query(queryParams.toMap))
+  }
+
+  def readFromInfluxBulk(dbName: String,
+                         querys: Seq[String],
+                         username: Option[String] = None,
+                         password: Option[String] = None,
+                         epoch: String = Epoch.NANOSECONDS,
+                         pretty: Boolean = false
+                        ): Uri = {
+
+    val queryParams = scala.collection.mutable.Map[String, String](
+      "db" -> dbName,
+      "pretty" -> pretty.toString,
+      "epoch" -> epoch,
+      "q" -> querys.mkString(";")
     )
 
     for  {

@@ -9,7 +9,9 @@ import akka.util.ByteString
 import com.fsanaulla.model.{InfluxReader, InfluxWriter}
 import com.fsanaulla.query.DatabaseQuerys
 import com.fsanaulla.utils.ContentTypes._
+import com.fsanaulla.utils.DatabaseHelper
 import com.fsanaulla.utils.TypeAlias._
+import spray.json.JsArray
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -28,7 +30,7 @@ class Database(dbName: String,
     Source.single(
       HttpRequest(
         method = POST,
-        uri = writeToDB(dbName, username, password),
+        uri = writeToInflux(dbName, username, password),
         entity = HttpEntity(
           octetStream,
           ByteString(toInfluxPoint(measurement, writer.write(entity)))
@@ -43,7 +45,7 @@ class Database(dbName: String,
     Source.single(
       HttpRequest(
         method = POST,
-        uri = writeToDB(dbName, username = username, password = password),
+        uri = writeToInflux(dbName, username = username, password = password),
         entity = HttpEntity(
           octetStream,
           ByteString(toInfluxPoints(measurement, entitys.map(writer.write))))
@@ -57,13 +59,37 @@ class Database(dbName: String,
     Source.single(
       HttpRequest(
         method = GET,
-        uri = readFromDB(dbName, username, password, query)
+        uri = readFromInfluxSingle(dbName, query, username, password)
       )
     )
       .via(connection)
       .runWith(Sink.head)
-      .flatMap(toJson)
+      .flatMap(singleQueryResult)
       .map(_.map(reader.read))
+  }
+
+  def readPure(query: String): Future[Seq[InfluxPoint]] = {
+    Source.single(
+      HttpRequest(
+        method = GET,
+        uri = readFromInfluxSingle(dbName, query, username, password)
+      )
+    )
+      .via(connection)
+      .runWith(Sink.head)
+      .flatMap(singleQueryResult)
+  }
+
+  def bulkRead(querys: Seq[String]): Future[Seq[Seq[InfluxPoint]]] = {
+    Source.single(
+      HttpRequest(
+        method = GET,
+        uri = readFromInfluxBulk(dbName, querys, username, password)
+      )
+    )
+      .via(connection)
+      .runWith(Sink.head)
+      .flatMap(bulkQueryResult)
   }
 
   def deleteSeries(measurementName: String): Future[HttpResponse] = {

@@ -3,6 +3,7 @@ package com.fsanaulla.utils
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
 import akka.stream.scaladsl.Flow
+import spray.json.JsArray
 
 import scala.concurrent.Future
 
@@ -10,5 +11,8 @@ import scala.concurrent.Future
   * Created by fayaz on 04.07.17.
   */
 object TypeAlias {
+
+  type InfluxPoint = JsArray
+  type InfluxQueryResult = Seq[InfluxPoint]
   type ConnectionPoint = Flow[HttpRequest, HttpResponse, Future[Http.OutgoingConnection]]
 }

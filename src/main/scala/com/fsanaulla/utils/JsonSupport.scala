@@ -1,4 +1,4 @@
-package com.fsanaulla.model
+package com.fsanaulla.utils
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import spray.json.DefaultJsonProtocol
