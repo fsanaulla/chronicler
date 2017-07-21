@@ -15,14 +15,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /**
   * Created by fayaz on 12.07.17.
   */
-class FunctionSpec
+class DatabaseHelperSpec
   extends FlatSpec
   with Matchers
   with DatabaseHelper
   with BeforeAndAfterAll {
 
-  override implicit val actorSystem: ActorSystem = ActorSystem("TestActorSystem")
-  override implicit val mat: ActorMaterializer = ActorMaterializer()
+  implicit val actorSystem: ActorSystem = ActorSystem("TestActorSystem")
+  implicit val mat: ActorMaterializer = ActorMaterializer()
 
   override def afterAll(): Unit = {
     actorSystem.terminate()

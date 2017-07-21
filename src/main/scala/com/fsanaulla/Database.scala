@@ -6,11 +6,11 @@ import akka.http.scaladsl.model.{HttpEntity, HttpRequest, HttpResponse}
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Sink, Source}
 import akka.util.ByteString
+import com.fsanaulla.model.TypeAlias._
 import com.fsanaulla.model.{InfluxReader, InfluxWriter}
-import com.fsanaulla.query.DatabaseQuerys
+import com.fsanaulla.query.DatabaseQuery
 import com.fsanaulla.utils.ContentTypes._
 import com.fsanaulla.utils.DatabaseHelper
-import com.fsanaulla.utils.TypeAlias._
 import spray.json.JsArray
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -18,13 +18,12 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
   * Created by fayaz on 04.07.17.
   */
-class Database(dbName: String,
-               connection: ConnectionPoint,
-               username: Option[String] = None,
-               password: Option[String] = None
-               )(override implicit val actorSystem: ActorSystem,
-                 override implicit val mat: ActorMaterializer,
-                 implicit val ex: ExecutionContext) extends DatabaseQuerys with DatabaseHelper {
+class Database(dbName: String, username: Option[String] = None, password: Option[String] = None)
+              (implicit val actorSystem: ActorSystem,
+               val mat: ActorMaterializer,
+               val ex: ExecutionContext,
+               val connection: ConnectionPoint)
+  extends DatabaseQuery with DatabaseHelper {
 
   def write[T](measurement: String, entity: T)(implicit writer: InfluxWriter[T]): Future[HttpResponse] = {
     Source.single(

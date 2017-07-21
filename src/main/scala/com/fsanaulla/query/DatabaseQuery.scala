@@ -6,7 +6,7 @@ import com.fsanaulla.utils.constants.{Consistency, Epoch, Precision}
 /**
   * Created by fayaz on 04.07.17.
   */
-trait DatabaseQuerys {
+trait DatabaseQuery {
 
   def dropMeasurement(dbName: String,
                       measurementName: String): Uri = {
@@ -46,12 +46,14 @@ trait DatabaseQuerys {
                            username: Option[String] = None,
                            password: Option[String] = None,
                            epoch: String = Epoch.NANOSECONDS,
-                           pretty: Boolean = false
+                           pretty: Boolean = false,
+                           chunked: Boolean = false
                           ): Uri = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
       "db" -> dbName,
       "pretty" -> pretty.toString,
+      "chunked" -> chunked.toString,
       "epoch" -> epoch,
       "q" -> query
     )
@@ -70,12 +72,14 @@ trait DatabaseQuerys {
                          username: Option[String] = None,
                          password: Option[String] = None,
                          epoch: String = Epoch.NANOSECONDS,
-                         pretty: Boolean = false
+                         pretty: Boolean = false,
+                         chunked: Boolean = false
                         ): Uri = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
       "db" -> dbName,
       "pretty" -> pretty.toString,
+      "chunked" -> chunked.toString,
       "epoch" -> epoch,
       "q" -> querys.mkString(";")
     )

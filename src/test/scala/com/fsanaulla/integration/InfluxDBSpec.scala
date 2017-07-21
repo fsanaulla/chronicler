@@ -2,7 +2,7 @@ package com.fsanaulla.integration
 
 import akka.http.scaladsl.model.StatusCodes
 import com.fsanaulla.Helper._
-import com.fsanaulla.InfluxDBClient
+import com.fsanaulla.InfluxClient
 import com.fsanaulla.SamplesEntity._
 import com.whisk.docker.impl.spotify.DockerKitSpotify
 import com.whisk.docker.scalatest.DockerTestKit
@@ -33,7 +33,7 @@ class InfluxDBSpec
     host should not be Seq.empty
 
     // INIT INFLUX CLIENT
-    val influx = new InfluxDBClient(host.head, 8086)
+    val influx = new InfluxClient(host.head, 8086)
 
     // CREATING DB TEST
     influx.createDatabase("mydb").futureValue.status shouldEqual StatusCodes.OK
