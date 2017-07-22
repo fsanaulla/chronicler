@@ -3,7 +3,7 @@ package com.fsanaulla
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import com.fsanaulla.api.{DatabaseManagement, UserManagement}
+import com.fsanaulla.api.{DatabaseManagement, RetentionPolicyManagement, UserManagement}
 import com.fsanaulla.model.TypeAlias._
 
 import scala.concurrent.ExecutionContext
@@ -17,7 +17,8 @@ class InfluxClient(host: String,
                    password: Option[String] = None)
                   (implicit val ex: ExecutionContext)
   extends DatabaseManagement
-  with UserManagement {
+  with UserManagement
+  with RetentionPolicyManagement {
 
   implicit val system = ActorSystem("system")
   implicit val materializer: ActorMaterializer = ActorMaterializer()
