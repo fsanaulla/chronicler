@@ -11,17 +11,17 @@ import scala.concurrent.Future
 
 trait UserManagement extends UserManagementQuery { self: InfluxClient =>
 
-  def createUser(username: String, password: String, admin: Boolean = false): Future[HttpResponse] = {
-     userManagementRequest(createUserQuery(username, password, admin))
+  def createUser(username: String, password: String): Future[HttpResponse] = {
+     userManagementRequest(createUserQuery(username, password))
    }
 
   def dropUser(username: String): Future[HttpResponse] = userManagementRequest(uri = dropUserQuery(username))
 
   def setUserPassword(username: String, password: String): Future[HttpResponse] = ???
 
-  def grantPrivileges(username: String, database: String, privilege: String): Future[HttpResponse] = ???
+  def setPrivileges(username: String, database: String, privilege: String): Future[HttpResponse] = ???
 
-  def revokePrivileges(username: String, database: String, privilege: String): Future[HttpResponse] = ???
+  def removePrivileges(username: String, database: String, privilege: String): Future[HttpResponse] = ???
 
   def makeAdmin(username: String): Future[HttpResponse] = ???
 

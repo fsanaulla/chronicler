@@ -4,14 +4,38 @@ import akka.http.scaladsl.model.Uri
 
 trait UserManagementQuery {
 
-  def createUserQuery(username: String, password: String, admin: Boolean): Uri = {
-    val userQuery = "CREATE USER $username WITH PASSWORD '$password'"
-    val finalQuery = if (admin) userQuery + "WITH ALL PRIVILEGES" else userQuery
+  def showUsersQuery: Uri = queryBuilder("SHOW USERS")
 
-    Uri("/query").withQuery(Uri.Query("q" -> finalQuery))
+  def showUserPrivilegesQuery(username: String): Uri = queryBuilder(s"SHOW GRANTS FOR $username")
+
+  def setUserPasswordQuery(username: String, password: String): Uri = queryBuilder(s"SET PASSWORD FOR $username = '$password'")
+
+  // ADMIN QUERYS
+  def createAdminQuery(username: String, password: String): Uri = {
+    queryBuilder("CREATE USER $username WITH PASSWORD '$password' WITH ALL PRIVILEGES")
   }
 
-  def dropUserQuery(username: String): Uri = {
-    Uri("/query").withQuery(Uri.Query("q" -> s"DROP USER $username"))
+  def makeAdminQuery(username: String): Uri = queryBuilder(s"GRANT ALL PRIVILEGES TO $username")
+
+  def disableAdminQuery(username: String): Uri = queryBuilder(s"REVOKE ALL PRIVILEGES FROM $username")
+
+  // USER QUERYS
+  def createUserQuery(username: String, password: String): Uri = {
+    queryBuilder("CREATE USER $username WITH PASSWORD '$password'")
   }
+
+  def dropUserQuery(username: String): Uri = queryBuilder(s"DROP USER $username")
+
+  def setPrivilegesQuery(dbName: String, username: String, privileges: String): Uri = {
+    queryBuilder(s"GRANT $privileges ON $dbName TO $username")
+  }
+
+  def revokePrivilegesQuery(dbName: String, username: String, privileges: String): Uri = {
+    queryBuilder(s"REVOKE $privileges ON $dbName FROM $username")
+  }
+
+  private def queryBuilder(queryParam: String) = {
+    Uri("/query").withQuery(Uri.Query("q" -> queryParam))
+  }
+
 }
