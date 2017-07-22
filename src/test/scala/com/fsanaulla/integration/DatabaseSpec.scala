@@ -13,7 +13,7 @@ import spray.json.{JsArray, JsNumber, JsString}
 /**
   * Created by fayaz on 06.07.17.
   */
-class InfluxDBSpec
+class DatabaseSpec
   extends FlatSpec
   with Matchers
   with DockerTestKit
