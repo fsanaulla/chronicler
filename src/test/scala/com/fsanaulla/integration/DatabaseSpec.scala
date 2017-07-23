@@ -22,7 +22,7 @@ class DatabaseSpec
 
   implicit val pc = PatienceConfig(Span(20, Seconds), Span(1, Second))
 
-  "Influxdb client" should "correctly work" in {
+  "Database operation" should "correctly work" in {
 
     lazy val host = influxdbContainer.getIpAddresses().futureValue
     lazy val port = influxdbContainer.getPorts().futureValue.get(8086)

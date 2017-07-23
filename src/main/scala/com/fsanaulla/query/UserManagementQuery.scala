@@ -12,7 +12,8 @@ trait UserManagementQuery {
     queryBuilder(s"SHOW GRANTS FOR $username")
   }
 
-  def setUserPasswordQuery(username: String, password: String): Uri = {
+  def
+  setUserPasswordQuery(username: String, password: String): Uri = {
     queryBuilder(s"SET PASSWORD FOR $username = '$password'")
   }
 
