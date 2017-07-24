@@ -14,9 +14,9 @@ import scala.concurrent.{ExecutionContext, Future}
   */
 trait DatabaseHelper extends JsonSupport {
 
-  def toInfluxPoint(measurement: String, serializedEntity: String): String = measurement + "," + serializedEntity
+  def toPoint(measurement: String, serializedEntity: String): String = measurement + "," + serializedEntity
 
-  def toInfluxPoints(measurement: String, serializedEntitys: Seq[String]): String = serializedEntitys.map(s => measurement + "," + s).mkString("\n")
+  def toPoints(measurement: String, serializedEntitys: Seq[String]): String = serializedEntitys.map(s => measurement + "," + s).mkString("\n")
 
   def unmarshalBody(response: HttpResponse)(implicit mat: ActorMaterializer): Future[JsObject] = {
     Unmarshal(response.entity.withContentType(appJson)).to[JsObject]

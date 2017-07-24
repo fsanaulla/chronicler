@@ -17,10 +17,10 @@ class InfluxClient(host: String,
                    password: Option[String] = None)
                   (implicit val ex: ExecutionContext)
   extends DatabaseManagement
-  with UserManagement
-  with RetentionPolicyManagement {
+    with UserManagement
+    with RetentionPolicyManagement {
 
-  private[fsanaulla] implicit val system = ActorSystem("system")
+  private[fsanaulla] implicit val system = ActorSystem()
   private[fsanaulla] implicit val materializer: ActorMaterializer = ActorMaterializer()
   private[fsanaulla] implicit val connection: ConnectionPoint = Http().outgoingConnection(host, port)
 }
