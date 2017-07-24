@@ -20,7 +20,7 @@ class InfluxClient(host: String,
   with UserManagement
   with RetentionPolicyManagement {
 
-  implicit val system = ActorSystem("system")
-  implicit val materializer: ActorMaterializer = ActorMaterializer()
-  implicit val connection: ConnectionPoint = Http().outgoingConnection(host, port)
+  private[fsanaulla] implicit val system = ActorSystem("system")
+  private[fsanaulla] implicit val materializer: ActorMaterializer = ActorMaterializer()
+  private[fsanaulla] implicit val connection: ConnectionPoint = Http().outgoingConnection(host, port)
 }

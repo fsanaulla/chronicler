@@ -5,13 +5,13 @@ import akka.http.scaladsl.model.Uri
 /**
   * Created by fayaz on 27.06.17.
   */
-trait DatabaseManagementQuery {
+trait DatabaseManagementQuery extends QueryBuilder {
 
-  def createDBQuery(dbName: String): Uri = {
-    Uri("/query").withQuery(Uri.Query(Map("q" -> s"CREATE DATABASE $dbName")))
+  protected def createDatabaseQuery(dbName: String): Uri = {
+    queryBuilder(s"CREATE DATABASE $dbName")
   }
 
-  def dropDBQuery(dbName: String): Uri = {
-    Uri("/query").withQuery(Uri.Query(Map("q" -> s"DROP DATABASE $dbName")))
+  protected def dropDatabaseQuery(dbName: String): Uri = {
+    queryBuilder(s"DROP DATABASE $dbName")
   }
 }

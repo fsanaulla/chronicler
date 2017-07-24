@@ -1,33 +1,19 @@
 package com.fsanaulla.api
 
-import akka.http.scaladsl.model.HttpMethods.POST
-import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
-import akka.stream.scaladsl.{Sink, Source}
+import akka.http.scaladsl.model.HttpResponse
 import com.fsanaulla.query.DatabaseManagementQuery
 import com.fsanaulla.{Database, InfluxClient}
 
 import scala.concurrent.Future
 
-trait DatabaseManagement extends DatabaseManagementQuery { self: InfluxClient =>
+trait DatabaseManagement extends DatabaseManagementQuery with RequestBuilder { self: InfluxClient =>
 
   def createDatabase(dbName: String): Future[HttpResponse] = {
-    Source.single(
-      HttpRequest(
-        method = POST,
-        uri = createDBQuery(dbName))
-    )
-      .via(connection)
-      .runWith(Sink.head)
+    buildRequest(createDatabaseQuery(dbName))
   }
 
   def dropDatabase(dbName: String): Future[HttpResponse] = {
-    Source.single(
-      HttpRequest(
-        method = POST,
-        uri = dropDBQuery(dbName))
-    )
-      .via(connection)
-      .runWith(Sink.head)
+    buildRequest(dropDatabaseQuery(dbName))
   }
 
   def use(dbName: String): Database = new Database(dbName)

@@ -3,12 +3,12 @@ package com.fsanaulla.unit
 import akka.http.scaladsl.model.Uri
 import com.fsanaulla.query.UserManagementQuery
 import com.fsanaulla.utils.constants.Privileges
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.{FlatSpecLike, Matchers}
 
 class UserManagementQuerySpec
-  extends FlatSpec
-  with Matchers
-  with UserManagementQuery {
+  extends UserManagementQuery
+  with FlatSpecLike
+  with Matchers {
 
   private val testUsername = "TEST_USER_NAME"
   private val testPassword = "TEST_PASSWORD"

@@ -8,3 +8,5 @@ dependencies:
   cache_directories:
     - "~/.ivy2"
     - "~/.sbt"
+  override:
+      - sbt coverage test:compile

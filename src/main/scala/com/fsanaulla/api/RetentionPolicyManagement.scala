@@ -2,6 +2,6 @@ package com.fsanaulla.api
 
 import com.fsanaulla.InfluxClient
 
-trait RetentionPolicyManagement { self: InfluxClient =>
+trait RetentionPolicyManagement extends RequestBuilder { self: InfluxClient =>
   //todo: impl
 }

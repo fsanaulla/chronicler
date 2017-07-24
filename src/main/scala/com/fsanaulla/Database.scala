@@ -29,7 +29,7 @@ class Database(dbName: String, username: Option[String] = None, password: Option
     Source.single(
       HttpRequest(
         method = POST,
-        uri = writeToInflux(dbName, username, password),
+        uri = writeToInfluxQuery(dbName, username, password),
         entity = HttpEntity(
           octetStream,
           ByteString(toInfluxPoint(measurement, writer.write(entity)))
@@ -44,7 +44,7 @@ class Database(dbName: String, username: Option[String] = None, password: Option
     Source.single(
       HttpRequest(
         method = POST,
-        uri = writeToInflux(dbName, username = username, password = password),
+        uri = writeToInfluxQuery(dbName, username = username, password = password),
         entity = HttpEntity(
           octetStream,
           ByteString(toInfluxPoints(measurement, entitys.map(writer.write))))
@@ -58,7 +58,7 @@ class Database(dbName: String, username: Option[String] = None, password: Option
     Source.single(
       HttpRequest(
         method = GET,
-        uri = readFromInfluxSingle(dbName, query, username, password)
+        uri = readFromInfluxSingleQuery(dbName, query, username, password)
       )
     )
       .via(connection)
@@ -71,7 +71,7 @@ class Database(dbName: String, username: Option[String] = None, password: Option
     Source.single(
       HttpRequest(
         method = GET,
-        uri = readFromInfluxSingle(dbName, query, username, password)
+        uri = readFromInfluxSingleQuery(dbName, query, username, password)
       )
     )
       .via(connection)
@@ -83,7 +83,7 @@ class Database(dbName: String, username: Option[String] = None, password: Option
     Source.single(
       HttpRequest(
         method = GET,
-        uri = readFromInfluxBulk(dbName, querys, username, password)
+        uri = readFromInfluxBulkQuery(dbName, querys, username, password)
       )
     )
       .via(connection)
@@ -95,7 +95,7 @@ class Database(dbName: String, username: Option[String] = None, password: Option
     Source.single(
       HttpRequest(
         method = POST,
-        uri = dropMeasurement(dbName, measurementName)
+        uri = dropMeasurementQuery(dbName, measurementName)
       )
     )
       .via(connection)

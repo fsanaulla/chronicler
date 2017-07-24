@@ -1,15 +1,12 @@
 package com.fsanaulla.api
 
-import akka.http.scaladsl.model.HttpMethods.POST
-import akka.http.scaladsl.model.{HttpMethod, HttpRequest, HttpResponse, Uri}
-import akka.stream.scaladsl.{Sink, Source}
+import akka.http.scaladsl.model.HttpResponse
 import com.fsanaulla.InfluxClient
-import com.fsanaulla.model.TypeAlias.ConnectionPoint
 import com.fsanaulla.query.UserManagementQuery
 
 import scala.concurrent.Future
 
-trait UserManagement extends UserManagementQuery { self: InfluxClient =>
+trait UserManagement extends UserManagementQuery with RequestBuilder { self: InfluxClient =>
 
   def createUser(username: String, password: String): Future[HttpResponse] = {
      buildRequest(createUserQuery(username, password))
@@ -49,16 +46,5 @@ trait UserManagement extends UserManagementQuery { self: InfluxClient =>
 
   def showUserPrivileges(username: String): Future[HttpResponse] = {
     buildRequest(showUserPrivilegesQuery(username))
-  }
-
-  private def buildRequest(uri: Uri, method: HttpMethod = POST)(implicit connection: ConnectionPoint) = {
-    Source.single(
-      HttpRequest(
-        method = method,
-        uri = uri
-      )
-    )
-      .via(connection)
-      .runWith(Sink.head)
   }
 }

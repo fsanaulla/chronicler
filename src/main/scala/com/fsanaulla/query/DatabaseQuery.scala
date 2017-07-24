@@ -8,18 +8,18 @@ import com.fsanaulla.utils.constants.{Consistency, Epoch, Precision}
   */
 trait DatabaseQuery {
 
-  def dropMeasurement(dbName: String,
-                      measurementName: String): Uri = {
+  protected def dropMeasurementQuery(dbName: String,
+                            measurementName: String): Uri = {
     val query = s"DROP SERIES FROM $measurementName"
     Uri("/query").withQuery(Uri.Query("db" -> dbName, "q" -> query))
   }
 
-  def writeToInflux(dbName: String,
-                    username: Option[String] = None,
-                    password: Option[String] = None,
-                    consistency: String = Consistency.ONE,
-                    precision: String = Precision.NANOSECONDS,
-                    retentionPolicy: Option[String] = None
+  protected def writeToInfluxQuery(dbName: String,
+                         username: Option[String] = None,
+                         password: Option[String] = None,
+                         consistency: String = Consistency.ONE,
+                         precision: String = Precision.NANOSECONDS,
+                         retentionPolicy: Option[String] = None
                    ): Uri = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
@@ -41,13 +41,13 @@ trait DatabaseQuery {
     Uri("/write").withQuery(Uri.Query(queryParams.toMap))
   }
 
-  def readFromInfluxSingle(dbName: String,
-                           query: String,
-                           username: Option[String] = None,
-                           password: Option[String] = None,
-                           epoch: String = Epoch.NANOSECONDS,
-                           pretty: Boolean = false,
-                           chunked: Boolean = false
+  protected def readFromInfluxSingleQuery(dbName: String,
+                                query: String,
+                                username: Option[String] = None,
+                                password: Option[String] = None,
+                                epoch: String = Epoch.NANOSECONDS,
+                                pretty: Boolean = false,
+                                chunked: Boolean = false
                           ): Uri = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
@@ -67,13 +67,13 @@ trait DatabaseQuery {
     Uri("/query").withQuery(Uri.Query(queryParams.toMap))
   }
 
-  def readFromInfluxBulk(dbName: String,
-                         querys: Seq[String],
-                         username: Option[String] = None,
-                         password: Option[String] = None,
-                         epoch: String = Epoch.NANOSECONDS,
-                         pretty: Boolean = false,
-                         chunked: Boolean = false
+  protected def readFromInfluxBulkQuery(dbName: String,
+                              querys: Seq[String],
+                              username: Option[String] = None,
+                              password: Option[String] = None,
+                              epoch: String = Epoch.NANOSECONDS,
+                              pretty: Boolean = false,
+                              chunked: Boolean = false
                         ): Uri = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
