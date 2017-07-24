@@ -6,21 +6,14 @@ import com.fsanaulla.utils.constants.{Consistency, Epoch, Precision}
 /**
   * Created by fayaz on 04.07.17.
   */
-trait DatabaseQuery {
-
-  protected def dropMeasurementQuery(dbName: String,
-                            measurementName: String): Uri = {
-    val query = s"DROP SERIES FROM $measurementName"
-    Uri("/query").withQuery(Uri.Query("db" -> dbName, "q" -> query))
-  }
+trait DatabaseQuery extends QueryBuilder {
 
   protected def writeToInfluxQuery(dbName: String,
                          username: Option[String] = None,
                          password: Option[String] = None,
                          consistency: String = Consistency.ONE,
                          precision: String = Precision.NANOSECONDS,
-                         retentionPolicy: Option[String] = None
-                   ): Uri = {
+                         retentionPolicy: Option[String] = None): Uri = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
       "db" -> dbName,
@@ -38,7 +31,7 @@ trait DatabaseQuery {
     } yield queryParams += ("u" -> u, "p" -> p)
 
 
-    Uri("/write").withQuery(Uri.Query(queryParams.toMap))
+    queryBuilder("/write", queryParams.toMap)
   }
 
   protected def readFromInfluxSingleQuery(dbName: String,
@@ -64,7 +57,7 @@ trait DatabaseQuery {
     } yield queryParams += ("u" -> u, "p" -> p)
 
 
-    Uri("/query").withQuery(Uri.Query(queryParams.toMap))
+    queryBuilder("/query", queryParams.toMap)
   }
 
   protected def readFromInfluxBulkQuery(dbName: String,
@@ -90,6 +83,6 @@ trait DatabaseQuery {
     } yield queryParams += ("u" -> u, "p" -> p)
 
 
-    Uri("/query").withQuery(Uri.Query(queryParams.toMap))
+    queryBuilder("/query", queryParams.toMap)
   }
 }

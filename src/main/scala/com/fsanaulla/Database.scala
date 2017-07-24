@@ -18,12 +18,15 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
   * Created by fayaz on 04.07.17.
   */
-class Database(dbName: String, username: Option[String] = None, password: Option[String] = None)
+class Database(dbName: String,
+               username: Option[String] = None,
+               password: Option[String] = None)
               (implicit val actorSystem: ActorSystem,
                val mat: ActorMaterializer,
                val ex: ExecutionContext,
                val connection: ConnectionPoint)
-  extends DatabaseQuery with DatabaseHelper {
+  extends DatabaseHelper
+  with DatabaseQuery {
 
   def write[T](measurement: String, entity: T)(implicit writer: InfluxWriter[T]): Future[HttpResponse] = {
     Source.single(
@@ -89,16 +92,5 @@ class Database(dbName: String, username: Option[String] = None, password: Option
       .via(connection)
       .runWith(Sink.head)
       .flatMap(bulkQueryResult)
-  }
-
-  def deleteSeries(measurementName: String): Future[HttpResponse] = {
-    Source.single(
-      HttpRequest(
-        method = POST,
-        uri = dropMeasurementQuery(dbName, measurementName)
-      )
-    )
-      .via(connection)
-      .runWith(Sink.head)
   }
 }
