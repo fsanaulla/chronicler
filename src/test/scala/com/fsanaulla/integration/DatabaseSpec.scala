@@ -65,6 +65,8 @@ class DatabaseSpec
 
     multiQuery shouldEqual largeMultiJsonEntity
 
+    db.dropSeries("test").futureValue.status shouldEqual StatusCodes.OK
+
     // DROP DB TEST
     influx.dropDatabase("mydb").futureValue.status shouldEqual StatusCodes.OK
   }

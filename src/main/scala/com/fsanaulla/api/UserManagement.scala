@@ -1,12 +1,19 @@
 package com.fsanaulla.api
 
 import akka.http.scaladsl.model.HttpResponse
-import com.fsanaulla.InfluxClient
+import akka.stream.ActorMaterializer
+import com.fsanaulla.model.TypeAlias.ConnectionPoint
+import com.fsanaulla.model.UserInfo
 import com.fsanaulla.query.UserManagementQuery
+import com.fsanaulla.utils.UserManagementHelper
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait UserManagement extends UserManagementQuery with RequestBuilder { self: InfluxClient =>
+trait UserManagement extends UserManagementQuery with UserManagementHelper with RequestBuilder {
+
+  implicit val materializer: ActorMaterializer
+  implicit val ex: ExecutionContext
+  implicit val connection: ConnectionPoint
 
   def createUser(username: String, password: String): Future[HttpResponse] = {
      buildRequest(createUserQuery(username, password))
@@ -40,8 +47,8 @@ trait UserManagement extends UserManagementQuery with RequestBuilder { self: Inf
     buildRequest(disableAdminQuery(username))
   }
 
-  def showUsers: Future[HttpResponse] = {
-    buildRequest(showUsersQuery)
+  def showUsers: Future[Seq[UserInfo]] = {
+    buildRequest(showUsersQuery).flatMap(toShowResult)
   }
 
   def showUserPrivileges(username: String): Future[HttpResponse] = {

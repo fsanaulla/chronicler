@@ -1,4 +1,4 @@
-package com.fsanaulla.unit
+package com.fsanaulla.unit.management.db
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse}

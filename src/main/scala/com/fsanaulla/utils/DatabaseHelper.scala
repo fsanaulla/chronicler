@@ -1,10 +1,8 @@
 package com.fsanaulla.utils
 
 import akka.http.scaladsl.model.HttpResponse
-import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import com.fsanaulla.model.TypeAlias.{InfluxPoint, InfluxQueryResult}
-import com.fsanaulla.utils.ContentTypes.appJson
 import spray.json.{JsArray, JsObject, JsValue}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -17,10 +15,6 @@ trait DatabaseHelper extends JsonSupport {
   def toPoint(measurement: String, serializedEntity: String): String = measurement + "," + serializedEntity
 
   def toPoints(measurement: String, serializedEntitys: Seq[String]): String = serializedEntitys.map(s => measurement + "," + s).mkString("\n")
-
-  def unmarshalBody(response: HttpResponse)(implicit mat: ActorMaterializer): Future[JsObject] = {
-    Unmarshal(response.entity.withContentType(appJson)).to[JsObject]
-  }
 
   def singleQueryResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[InfluxPoint]] = {
     unmarshalBody(response)

@@ -1,7 +1,7 @@
 package com.fsanaulla.api
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl.model.HttpMethods.{GET, POST}
+import akka.http.scaladsl.model.HttpMethods.GET
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import akka.stream.ActorMaterializer
 import akka.util.ByteString
@@ -25,17 +25,15 @@ abstract class DatabaseOperation(dbName: String, username: Option[String], passw
 
   def write[T](measurement: String, entity: T)(implicit writer: InfluxWriter[T]): Future[HttpResponse] = {
     buildRequest(
-      writeToInfluxQuery(dbName, username, password),
-      POST,
-      HttpEntity(octetStream, ByteString(toPoint(measurement, writer.write(entity))))
+      uri = writeToInfluxQuery(dbName, username, password),
+      entity = HttpEntity(octetStream, ByteString(toPoint(measurement, writer.write(entity))))
     )
   }
 
   def bulkWrite[T](measurement: String, entitys: Seq[T])(implicit writer: InfluxWriter[T]): Future[HttpResponse] = {
     buildRequest(
-      writeToInfluxQuery(dbName, username, password),
-      POST,
-      HttpEntity(octetStream, ByteString(toPoints(measurement, entitys.map(writer.write))))
+      uri = writeToInfluxQuery(dbName, username, password),
+      entity = HttpEntity(octetStream, ByteString(toPoints(measurement, entitys.map(writer.write))))
     )
   }
 
@@ -55,11 +53,11 @@ abstract class DatabaseOperation(dbName: String, username: Option[String], passw
       .flatMap(bulkQueryResult)
   }
 
-  def dropSeries(dbName: String, measurementName: String): Future[HttpResponse] = {
-    buildRequest(dropMeasurementQuery(dbName, measurementName), POST)
+  def dropSeries(measurementName: String): Future[HttpResponse] = {
+    buildRequest(dropMeasurementQuery(dbName, measurementName))
   }
 
   def deleteAllSeries(measurementName: String): Future[HttpResponse] = {
-    buildRequest(deleteAllSeriesQuery(dbName, measurementName), POST)
+    buildRequest(deleteAllSeriesQuery(dbName, measurementName))
   }
 }

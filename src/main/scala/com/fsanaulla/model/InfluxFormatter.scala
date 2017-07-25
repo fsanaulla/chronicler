@@ -9,7 +9,7 @@ import scala.annotation.implicitNotFound
   */
 
 @implicitNotFound(
-  "No Format found for type ${T}. Try to implement an implicit Format for this type."
+  "No InfluxFormatter found for type ${T}. Try to implement an implicit Format for this type."
 )
 trait InfluxFormatter[T] extends InfluxReader[T] with InfluxWriter[T]
 
@@ -19,7 +19,7 @@ trait InfluxFormatter[T] extends InfluxReader[T] with InfluxWriter[T]
   * Look on official documentation [https://docs.influxdata.com/influxdb/v1.2/write_protocols/line_protocol_reference/]
   */
 @implicitNotFound(
-  "No Writable found for type ${T}. Try to implement an implicit Writable for this type."
+  "No InfluxWriter found for type ${T}. Try to implement an implicit Writable for this type."
 )
 trait InfluxWriter[T] {
   def write(obj: T): String
@@ -29,7 +29,7 @@ trait InfluxWriter[T] {
   * When trying deserialize JSON from influx, don't forget that influx sort field in db alphabetically.
   */
 @implicitNotFound(
-  "No Readable found for type ${T}. Try to implement an implicit Readable for this type."
+  "No InfluxReader found for type ${T}. Try to implement an implicit Readable for this type."
 )
 trait InfluxReader[T] {
   def read(js: JsArray): T
