@@ -92,7 +92,4 @@ class UserManagementHelperSpec
   "toUserPrivilegesInfo function" should "return user privileges" in {
     await(toUserPrivilegesInfo(privilegesResponse)) shouldEqual Seq(UserPrivilegesInfo("mydb", "READ"))
   }
-
-
-
 }

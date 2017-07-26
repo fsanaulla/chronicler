@@ -23,5 +23,6 @@ trait UserManagementHelper extends JsonSupport {
     unmarshalBody(response)
       .map(getInfluxValue)
       .map(_.map(reader.read))
+      .recover { case ex: UnsupportedOperationException => Nil }
   }
 }

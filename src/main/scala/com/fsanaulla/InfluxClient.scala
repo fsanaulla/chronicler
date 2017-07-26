@@ -1,12 +1,12 @@
 package com.fsanaulla
 
-import akka.actor.ActorSystem
+import akka.actor.{ActorSystem, Terminated}
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.fsanaulla.api.{DatabaseManagement, RetentionPolicyManagement, UserManagement}
 import com.fsanaulla.model.TypeAlias._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * Created by fayaz on 26.06.17.
@@ -23,4 +23,9 @@ class InfluxClient(host: String,
   private[fsanaulla] implicit val system = ActorSystem()
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   implicit val connection: ConnectionPoint = Http().outgoingConnection(host, port)
+
+  def close: Future[Terminated] = {
+    Http().shutdownAllConnectionPools()
+    system.terminate()
+  }
 }

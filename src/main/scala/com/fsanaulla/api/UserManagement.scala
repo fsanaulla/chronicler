@@ -3,7 +3,7 @@ package com.fsanaulla.api
 import akka.http.scaladsl.model.HttpResponse
 import akka.stream.ActorMaterializer
 import com.fsanaulla.model.TypeAlias.ConnectionPoint
-import com.fsanaulla.model.UserInfo
+import com.fsanaulla.model.{UserInfo, UserPrivilegesInfo}
 import com.fsanaulla.query.UserManagementQuery
 import com.fsanaulla.utils.UserManagementHelper
 
@@ -35,7 +35,7 @@ trait UserManagement extends UserManagementQuery with UserManagementHelper with 
     buildRequest(setPrivilegesQuery(dbName, username, privilege))
   }
 
-  def revovePrivileges(username: String, dbName: String, privilege: String): Future[HttpResponse] = {
+  def revokePrivileges(username: String, dbName: String, privilege: String): Future[HttpResponse] = {
     buildRequest(revokePrivilegesQuery(dbName, username, privilege))
   }
 
@@ -51,7 +51,7 @@ trait UserManagement extends UserManagementQuery with UserManagementHelper with 
     buildRequest(showUsersQuery).flatMap(toUserInfo)
   }
 
-  def showUserPrivileges(username: String): Future[HttpResponse] = {
-    buildRequest(showUserPrivilegesQuery(username))
+  def showUserPrivileges(username: String): Future[Seq[UserPrivilegesInfo]] = {
+    buildRequest(showUserPrivilegesQuery(username)).flatMap(toUserPrivilegesInfo)
   }
 }
