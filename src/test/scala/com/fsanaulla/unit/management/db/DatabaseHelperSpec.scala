@@ -6,7 +6,7 @@ import akka.stream.ActorMaterializer
 import com.fsanaulla.Helper._
 import com.fsanaulla.SamplesEntity.{bulkResult, singleResult}
 import com.fsanaulla.utils.ContentTypes.appJson
-import com.fsanaulla.utils.DatabaseHelper
+import com.fsanaulla.utils.DatabaseHelper._
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 import spray.json.{JsArray, JsNumber, JsObject, JsString, JsonParser}
 
@@ -18,7 +18,6 @@ import scala.concurrent.ExecutionContext
 class DatabaseHelperSpec
   extends FlatSpec
   with Matchers
-  with DatabaseHelper
   with BeforeAndAfterAll {
 
   implicit val actorSystem: ActorSystem = ActorSystem("TestActorSystem")
@@ -117,10 +116,10 @@ class DatabaseHelperSpec
   val bulkHttpResponse: HttpResponse = HttpResponse(entity = HttpEntity(appJson, bulkStrJson))
 
   "single query result function" should "correctly work" in {
-    await(singleQueryResult(singleHttpResponse)) shouldEqual singleResult
+    await(toSingleResult(singleHttpResponse)) shouldEqual singleResult
   }
 
   "bulk query result function" should "correctly work" in {
-    await(bulkQueryResult(bulkHttpResponse)) shouldEqual bulkResult
+    await(toBulkResult(bulkHttpResponse)) shouldEqual bulkResult
   }
 }

@@ -3,7 +3,7 @@ package com.fsanaulla
 import akka.actor.{ActorSystem, Terminated}
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import com.fsanaulla.api.{DatabaseManagement, RetentionPolicyManagement, UserManagement}
+import com.fsanaulla.api.{DataManagement, RetentionPolicyManagement, UserManagement}
 import com.fsanaulla.model.TypeAlias._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -16,16 +16,26 @@ class InfluxClient(host: String,
                    username: Option[String] = None,
                    password: Option[String] = None)
                   (implicit val ex: ExecutionContext)
-  extends DatabaseManagement
-    with UserManagement
-    with RetentionPolicyManagement {
+    extends DataManagement
+      with UserManagement
+      with RetentionPolicyManagement {
 
-  private[fsanaulla] implicit val system = ActorSystem()
-  implicit val materializer: ActorMaterializer = ActorMaterializer()
-  implicit val connection: ConnectionPoint = Http().outgoingConnection(host, port)
+  protected implicit val system = ActorSystem()
+  protected implicit val materializer: ActorMaterializer = ActorMaterializer()
+  protected implicit val connection: ConnectionPoint = Http().outgoingConnection(host, port)
 
-  def close: Future[Terminated] = {
+  def use(dbName: String): Database = new Database(dbName)
+
+  def close(): Future[Terminated] = {
     Http().shutdownAllConnectionPools()
     system.terminate()
   }
+}
+
+object InfluxClient {
+  def apply(host: String,
+            port: Int = 8086,
+            username: Option[String] = None,
+            password: Option[String] = None)
+           (implicit ex: ExecutionContext): InfluxClient = new InfluxClient(host, port, username, password)
 }

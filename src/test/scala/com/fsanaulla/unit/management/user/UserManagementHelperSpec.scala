@@ -5,10 +5,9 @@ import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import akka.stream.ActorMaterializer
 import com.fsanaulla.Helper._
 import com.fsanaulla.model.UserInfo.UserInfoInfluxReader
-import com.fsanaulla.model.UserPrivilegesInfo.UserInfoInfluxReader
 import com.fsanaulla.model.{UserInfo, UserPrivilegesInfo}
 import com.fsanaulla.utils.ContentTypes.appJson
-import com.fsanaulla.utils.UserManagementHelper
+import com.fsanaulla.utils.UserManagementHelper._
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 
 import scala.concurrent.ExecutionContext
@@ -21,7 +20,6 @@ import scala.concurrent.ExecutionContext
 class UserManagementHelperSpec
   extends FlatSpec
     with Matchers
-    with UserManagementHelper
     with BeforeAndAfterAll {
 
   implicit val actorSystem = ActorSystem("TestActorSystem")

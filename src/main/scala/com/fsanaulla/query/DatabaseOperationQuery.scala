@@ -6,7 +6,7 @@ import com.fsanaulla.utils.constants.{Consistency, Epoch, Precision}
 /**
   * Created by fayaz on 04.07.17.
   */
-trait DatabaseQuery extends QueryBuilder {
+trait DatabaseOperationQuery extends QueryBuilder {
 
   protected def writeToInfluxQuery(dbName: String,
                          username: Option[String] = None,
@@ -84,13 +84,5 @@ trait DatabaseQuery extends QueryBuilder {
 
 
     queryBuilder("/query", queryParams.toMap)
-  }
-
-  protected def dropMeasurementQuery(dbName: String, measurementName: String): Uri = {
-    queryBuilder("/query", Map("db" -> dbName, "q" -> s"DROP SERIES FROM $measurementName"))
-  }
-
-  protected def deleteAllSeriesQuery(dbName: String, measurementName: String): Uri = {
-    queryBuilder("/query", Map("db" -> dbName, "q" -> s"DELETE FROM $measurementName"))
   }
 }

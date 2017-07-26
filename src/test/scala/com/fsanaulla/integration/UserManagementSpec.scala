@@ -18,18 +18,17 @@ class UserManagementSpec
 
   implicit val pc = PatienceConfig(Span(20, Seconds), Span(1, Second))
 
-  "User management operation" should "correctly work" in {
-
-    lazy val host = influxdbContainer.getIpAddresses().futureValue
-    lazy val port = influxdbContainer.getPorts().futureValue.get(8086)
-
+  "Influx container" should "get up and run correctly" in {
     // CHECKING CONTAINER
     isContainerReady(influxdbContainer).futureValue shouldBe true
-    port should not be None
-    host should not be Seq.empty
+    influxdbContainer.getPorts().futureValue.get(8086) should not be None
+    influxdbContainer.getIpAddresses().futureValue should not be Seq.empty
+  }
+
+  "User management operation" should "correctly work" in {
 
     // INIT INFLUX CLIENT
-    val influx = new InfluxClient(host.head, 8086)
+    val influx = InfluxClient(influxdbContainer.getIpAddresses().futureValue.head)
 
     influx.createDatabase("mydb").futureValue.status shouldEqual StatusCodes.OK
 
@@ -57,7 +56,5 @@ class UserManagementSpec
 
     influx.dropUser("Martin").futureValue.status shouldEqual StatusCodes.OK
     influx.showUsers.futureValue shouldEqual Seq(UserInfo("Admin", isAdmin = true))
-
-    influx.close
   }
 }

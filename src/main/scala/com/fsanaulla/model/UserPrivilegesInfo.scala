@@ -10,7 +10,7 @@ import spray.json.{DeserializationException, JsArray, JsBoolean, JsString}
 case class UserPrivilegesInfo(database: String, privilege: String)
 
 object UserPrivilegesInfo {
-  implicit object UserInfoInfluxReader extends InfluxReader[UserPrivilegesInfo] {
+  implicit object UserPrivilegesInfoInfluxReader extends InfluxReader[UserPrivilegesInfo] {
     override def read(js: JsArray): UserPrivilegesInfo = js.elements match {
       case Vector(JsString(username), JsString(admin)) => UserPrivilegesInfo(username, admin)
       case _ => throw DeserializationException(s"Can't deserialize $UserPrivilegesInfo object")

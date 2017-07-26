@@ -10,20 +10,17 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
   * Created by fayaz on 12.07.17.
   */
-trait DatabaseHelper extends JsonSupport {
-
-  implicit val mat: ActorMaterializer
-  implicit val ex: ExecutionContext
+object DatabaseHelper extends JsonSupport {
 
   def toPoint(measurement: String, serializedEntity: String): String = measurement + "," + serializedEntity
 
   def toPoints(measurement: String, serializedEntitys: Seq[String]): String = serializedEntitys.map(s => measurement + "," + s).mkString("\n")
 
-  def singleQueryResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[InfluxPoint]] = {
+  def toSingleResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[InfluxPoint]] = {
     unmarshalBody(response).map(getInfluxValue)
   }
 
-  def bulkQueryResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[InfluxQueryResult]] = {
+  def toBulkResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[InfluxQueryResult]] = {
     unmarshalBody(response)
       .map(_.getFields("results").head.convertTo[Seq[JsObject]])
       .map(_.map(_.getFields("series").head.convertTo[Seq[JsObject]].head))

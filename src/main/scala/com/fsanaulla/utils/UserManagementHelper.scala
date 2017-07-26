@@ -8,18 +8,15 @@ import spray.json.{JsArray, JsObject}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait UserManagementHelper extends JsonSupport {
+object UserManagementHelper extends JsonSupport {
 
-  implicit val materializer: ActorMaterializer
-  implicit val ex: ExecutionContext
-
-  def toUserInfo(response: HttpResponse)(implicit reader: InfluxReader[UserInfo]): Future[Seq[UserInfo]] = {
+  def toUserInfo(response: HttpResponse)(implicit reader: InfluxReader[UserInfo], materializer: ActorMaterializer, ex: ExecutionContext): Future[Seq[UserInfo]] = {
     unmarshalBody(response)
       .map(getInfluxValue)
       .map(_.map(reader.read))
   }
 
-  def toUserPrivilegesInfo(response: HttpResponse)(implicit reader: InfluxReader[UserPrivilegesInfo]): Future[Seq[UserPrivilegesInfo]] = {
+  def toUserPrivilegesInfo(response: HttpResponse)(implicit reader: InfluxReader[UserPrivilegesInfo], materializer: ActorMaterializer, ex: ExecutionContext): Future[Seq[UserPrivilegesInfo]] = {
     unmarshalBody(response)
       .map(getInfluxValue)
       .map(_.map(reader.read))

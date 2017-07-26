@@ -7,15 +7,14 @@ import akka.stream.ActorMaterializer
 import akka.util.ByteString
 import com.fsanaulla.model.TypeAlias.{ConnectionPoint, InfluxPoint}
 import com.fsanaulla.model.{InfluxReader, InfluxWriter}
-import com.fsanaulla.query.DatabaseQuery
+import com.fsanaulla.query.DatabaseOperationQuery
 import com.fsanaulla.utils.ContentTypes.octetStream
-import com.fsanaulla.utils.DatabaseHelper
+import com.fsanaulla.utils.DatabaseHelper._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 abstract class DatabaseOperation(dbName: String, username: Option[String], password: Option[String])
-  extends DatabaseHelper
-    with DatabaseQuery
+    extends DatabaseOperationQuery
     with RequestBuilder {
 
   implicit val actorSystem: ActorSystem
@@ -39,25 +38,17 @@ abstract class DatabaseOperation(dbName: String, username: Option[String], passw
 
   def read[T](query: String)(implicit reader: InfluxReader[T]): Future[Seq[T]] = {
     buildRequest(readFromInfluxSingleQuery(dbName, query, username, password), GET)
-      .flatMap(singleQueryResult)
+      .flatMap(toSingleResult)
       .map(_.map(reader.read))
   }
 
   def readPure(query: String): Future[Seq[InfluxPoint]] = {
     buildRequest(readFromInfluxSingleQuery(dbName, query, username, password), GET)
-      .flatMap(singleQueryResult)
+      .flatMap(toSingleResult)
   }
 
   def bulkRead(querys: Seq[String]): Future[Seq[Seq[InfluxPoint]]] = {
     buildRequest(readFromInfluxBulkQuery(dbName, querys, username, password), GET)
-      .flatMap(bulkQueryResult)
-  }
-
-  def dropSeries(measurementName: String): Future[HttpResponse] = {
-    buildRequest(dropMeasurementQuery(dbName, measurementName))
-  }
-
-  def deleteAllSeries(measurementName: String): Future[HttpResponse] = {
-    buildRequest(deleteAllSeriesQuery(dbName, measurementName))
+      .flatMap(toBulkResult)
   }
 }
