@@ -31,7 +31,11 @@ class UserManagementSpec
     val influx = new InfluxClient(host.head, 8086)
 
     influx.createUser("Martin", "password").futureValue.status shouldEqual StatusCodes.OK
-
     influx.showUsers.futureValue shouldEqual Seq(UserInfo("Martin", isAdmin = false))
+
+    influx.createAdmin("Admin", "admin_pass")
+    influx.showUsers.futureValue shouldEqual Seq(UserInfo("Martin", isAdmin = false), UserInfo("Admin", isAdmin = true))
+
+    influx.setUserPassword("Martin", "new_password").futureValue.status shouldEqual StatusCodes.OK
   }
 }

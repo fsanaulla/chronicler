@@ -48,7 +48,7 @@ trait UserManagement extends UserManagementQuery with UserManagementHelper with 
   }
 
   def showUsers: Future[Seq[UserInfo]] = {
-    buildRequest(showUsersQuery).flatMap(toShowResult)
+    buildRequest(showUsersQuery).flatMap(toUserInfo)
   }
 
   def showUserPrivileges(username: String): Future[HttpResponse] = {

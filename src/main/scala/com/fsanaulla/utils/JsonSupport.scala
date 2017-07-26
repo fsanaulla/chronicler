@@ -19,4 +19,10 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   def unmarshalBody(response: HttpResponse)(implicit mat: ActorMaterializer): Future[JsObject] = {
     Unmarshal(response.entity.withContentType(appJson)).to[JsObject]
   }
+
+  def getInfluxValue(js: JsObject): Seq[JsArray] = {
+    js.getFields("results").head.convertTo[Seq[JsObject]].head
+      .getFields("series").head.convertTo[Seq[JsObject]].head
+      .getFields("values").head.convertTo[Seq[JsArray]]
+  }
 }

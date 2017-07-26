@@ -12,15 +12,15 @@ import scala.concurrent.{ExecutionContext, Future}
   */
 trait DatabaseHelper extends JsonSupport {
 
+  implicit val mat: ActorMaterializer
+  implicit val ex: ExecutionContext
+
   def toPoint(measurement: String, serializedEntity: String): String = measurement + "," + serializedEntity
 
   def toPoints(measurement: String, serializedEntitys: Seq[String]): String = serializedEntitys.map(s => measurement + "," + s).mkString("\n")
 
   def singleQueryResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[InfluxPoint]] = {
-    unmarshalBody(response)
-      .map(_.getFields("results").head.convertTo[Seq[JsObject]].head)
-      .map(_.fields("series").convertTo[Seq[JsObject]].head)
-      .map(_.fields("values").convertTo[Seq[InfluxPoint]])
+    unmarshalBody(response).map(getInfluxValue)
   }
 
   def bulkQueryResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[InfluxQueryResult]] = {

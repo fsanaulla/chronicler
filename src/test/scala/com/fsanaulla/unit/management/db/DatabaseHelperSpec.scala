@@ -10,7 +10,7 @@ import com.fsanaulla.utils.DatabaseHelper
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 import spray.json.{JsArray, JsNumber, JsObject, JsString, JsonParser}
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 
 /**
   * Created by fayaz on 12.07.17.
@@ -23,6 +23,7 @@ class DatabaseHelperSpec
 
   implicit val actorSystem: ActorSystem = ActorSystem("TestActorSystem")
   implicit val mat: ActorMaterializer = ActorMaterializer()
+  implicit val ex: ExecutionContext = actorSystem.dispatcher
 
   override def afterAll(): Unit = {
     actorSystem.terminate()

@@ -7,7 +7,7 @@ object UserInfo {
   implicit object UserInfoInfluxReader extends InfluxReader[UserInfo] {
     override def read(js: JsArray): UserInfo = js.elements match {
       case Vector(JsString(username), JsBoolean(admin)) => UserInfo(username, admin)
-      case _ => throw DeserializationException(s"Can't deserialize UserInfo object")
+      case _ => throw DeserializationException(s"Can't deserialize $UserInfo object")
     }
   }
 }
