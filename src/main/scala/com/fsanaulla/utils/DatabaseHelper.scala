@@ -2,7 +2,6 @@ package com.fsanaulla.utils
 
 import akka.http.scaladsl.model.HttpResponse
 import akka.stream.ActorMaterializer
-import com.fsanaulla.model.TypeAlias.{InfluxPoint, InfluxQueryResult}
 import spray.json.{JsArray, JsObject, JsValue}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -16,11 +15,11 @@ object DatabaseHelper extends JsonSupport {
 
   def toPoints(measurement: String, serializedEntitys: Seq[String]): String = serializedEntitys.map(s => measurement + "," + s).mkString("\n")
 
-  def toSingleResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[InfluxPoint]] = {
+  def toSingleResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[JsArray]] = {
     unmarshalBody(response).map(getInfluxValue)
   }
 
-  def toBulkResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[InfluxQueryResult]] = {
+  def toBulkResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[Seq[JsArray]]] = {
     unmarshalBody(response)
       .map(_.getFields("results").head.convertTo[Seq[JsObject]])
       .map(_.map(_.getFields("series").head.convertTo[Seq[JsObject]].head))

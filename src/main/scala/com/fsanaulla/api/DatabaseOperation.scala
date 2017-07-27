@@ -5,11 +5,12 @@ import akka.http.scaladsl.model.HttpMethods.GET
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import akka.stream.ActorMaterializer
 import akka.util.ByteString
-import com.fsanaulla.model.TypeAlias.{ConnectionPoint, InfluxPoint}
+import com.fsanaulla.model.TypeAlias.ConnectionPoint
 import com.fsanaulla.model.{InfluxReader, InfluxWriter}
 import com.fsanaulla.query.DatabaseOperationQuery
 import com.fsanaulla.utils.ContentTypes.octetStream
 import com.fsanaulla.utils.DatabaseHelper._
+import spray.json.JsArray
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -42,12 +43,12 @@ abstract class DatabaseOperation(dbName: String, username: Option[String], passw
       .map(_.map(reader.read))
   }
 
-  def readPure(query: String): Future[Seq[InfluxPoint]] = {
+  def readPure(query: String): Future[Seq[JsArray]] = {
     buildRequest(readFromInfluxSingleQuery(dbName, query, username, password), GET)
       .flatMap(toSingleResult)
   }
 
-  def bulkRead(querys: Seq[String]): Future[Seq[Seq[InfluxPoint]]] = {
+  def bulkRead(querys: Seq[String]): Future[Seq[Seq[JsArray]]] = {
     buildRequest(readFromInfluxBulkQuery(dbName, querys, username, password), GET)
       .flatMap(toBulkResult)
   }

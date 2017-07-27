@@ -11,8 +11,5 @@ import scala.concurrent.Future
   * Created by fayaz on 04.07.17.
   */
 object TypeAlias {
-
-  type InfluxPoint = JsArray
-  type InfluxQueryResult = Seq[InfluxPoint]
   type ConnectionPoint = Flow[HttpRequest, HttpResponse, Future[Http.OutgoingConnection]]
 }
