@@ -1,9 +1,8 @@
 package com.fsanaulla.integration
 
-import akka.http.scaladsl.model.StatusCodes
 import com.fsanaulla.Helper._
 import com.fsanaulla.InfluxClient
-import com.fsanaulla.SamplesEntity._
+import com.fsanaulla.SampleEntitys._
 import com.whisk.docker.impl.spotify.DockerKitSpotify
 import com.whisk.docker.scalatest.DockerTestKit
 import org.scalatest.time.{Second, Seconds, Span}
@@ -35,17 +34,17 @@ class DatabaseSpec
     val influx = InfluxClient(influxdbContainer.getIpAddresses().futureValue.head)
 
     // CREATING DB TEST
-    influx.createDatabase("mydb").futureValue.status shouldEqual StatusCodes.OK
+    influx.createDatabase("mydb").futureValue.status shouldEqual OK
 
     // DATABASE
     val db = influx.use("mydb")
 
     // WRITE - READ TEST
-    db.write("test", singleEntity).futureValue.status shouldEqual StatusCodes.NoContent
+    db.write("test", singleEntity).futureValue.status shouldEqual NoContent
     db.read[FakeEntity]("SELECT * FROM test").futureValue shouldEqual Seq(singleEntity)
     db.readPure("SELECT * FROM test").futureValue shouldEqual Seq(singleJsonEntity)
 
-    db.bulkWrite("test", multiEntitys).futureValue.status shouldEqual StatusCodes.NoContent
+    db.bulkWrite("test", multiEntitys).futureValue.status shouldEqual NoContent
     db.read[FakeEntity]("SELECT * FROM test").futureValue.sortBy(_.age) shouldEqual (singleEntity +: multiEntitys).sortBy(_.age)
     db.readPure("SELECT * FROM test").futureValue shouldEqual multiJsonEntity
 
@@ -65,6 +64,6 @@ class DatabaseSpec
     multiQuery shouldEqual largeMultiJsonEntity
 
     // DROP DB TEST
-    influx.dropDatabase("mydb").futureValue.status shouldEqual StatusCodes.OK
+    influx.dropDatabase("mydb").futureValue.status shouldEqual OK
   }
 }
