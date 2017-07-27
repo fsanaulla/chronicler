@@ -1,6 +1,9 @@
 package com.fsanaulla.integration
 
+import com.fsanaulla.Helper._
 import com.fsanaulla.InfluxClient
+import com.fsanaulla.SampleEntitys.{multiEntitys, singleEntity}
+import com.fsanaulla.model.{DatabaseInfo, MeasurementInfo}
 import com.whisk.docker.impl.spotify.DockerKitSpotify
 import com.whisk.docker.scalatest.DockerTestKit
 import org.scalatest.time.{Second, Seconds, Span}
@@ -19,6 +22,7 @@ class DataManagementSpec
     with DockerInfluxService {
 
   implicit val pc = PatienceConfig(Span(20, Seconds), Span(1, Second))
+  final val dbName = "mydb"
 
   "Influx container" should "get up and run correctly" in {
     // CHECKING CONTAINER
@@ -30,6 +34,23 @@ class DataManagementSpec
   "Data management operation" should "correctly work" in {
     val influx = InfluxClient(influxdbContainer.getIpAddresses().futureValue.head)
 
-    influx.createDatabase("mydb")
+    influx.createDatabase(dbName).futureValue.status shouldEqual OK
+    influx.showDatabases().futureValue shouldEqual Seq(DatabaseInfo("mydb"))
+
+    val db = influx.use(dbName)
+    db.bulkWrite("meas1", multiEntitys).futureValue.status shouldEqual NoContent
+    db.read("SELECT * FROM meas1").futureValue shouldEqual multiEntitys
+
+    db.write("meas2", singleEntity).futureValue.status shouldEqual NoContent
+    db.read("SELECT * FROM meas2").futureValue shouldEqual Seq(singleEntity)
+
+    influx.showMeasurement(dbName).futureValue shouldEqual Seq(MeasurementInfo("meas1"), MeasurementInfo("meas2"))
+
+    influx.dropMeasurement(dbName, "meas1").futureValue.status shouldEqual OK
+    db.read("SELECT * FROM meas1").futureValue shouldEqual Nil
+    influx.showMeasurement(dbName).futureValue shouldEqual Seq(MeasurementInfo("meas2"))
+
+    influx.dropDatabase(dbName).futureValue.status shouldEqual OK
+    influx.showDatabases().futureValue shouldEqual Nil
   }
  }

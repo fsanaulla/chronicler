@@ -22,7 +22,15 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
 
   protected def getInfluxValue(js: JsObject): Seq[JsArray] = {
     js.getFields("results").head.convertTo[Seq[JsObject]].head
-      .getFields("series").head.convertTo[Seq[JsObject]].head
-      .getFields("values").head.convertTo[Seq[JsArray]]
+      .getFields("series") match {
+      case seq: Seq[JsValue] if seq.nonEmpty =>
+        seq.head.convertTo[Seq[JsObject]].head
+          .getFields("values") match {
+          case seq: Seq[JsValue] if seq.nonEmpty =>
+            seq.head.convertTo[Seq[JsArray]]
+          case _ => Nil
+        }
+      case _ => Nil
+    }
   }
 }

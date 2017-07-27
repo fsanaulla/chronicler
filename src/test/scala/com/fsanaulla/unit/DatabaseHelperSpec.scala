@@ -1,10 +1,10 @@
-package com.fsanaulla.unit.management.db
+package com.fsanaulla.unit
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import akka.stream.ActorMaterializer
 import com.fsanaulla.Helper._
-import com.fsanaulla.SamplesEntity.{bulkResult, singleResult}
+import com.fsanaulla.SampleEntitys.{bulkResult, singleResult}
 import com.fsanaulla.utils.ContentTypes.appJson
 import com.fsanaulla.utils.DatabaseHelper._
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}

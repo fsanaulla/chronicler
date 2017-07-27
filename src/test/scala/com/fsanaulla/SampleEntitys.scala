@@ -3,7 +3,7 @@ package com.fsanaulla
 import com.fsanaulla.Helper.{FakeEntity, currentNanoTime}
 import spray.json.{JsArray, JsNumber, JsString}
 
-object SamplesEntity {
+object SampleEntitys {
 
   // INTEGRATION SPEC ENTITYS
   val singleEntity = FakeEntity("Martin", "Odersky", 58)

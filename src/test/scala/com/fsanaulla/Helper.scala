@@ -1,5 +1,6 @@
 package com.fsanaulla
 
+import akka.http.scaladsl.model.{StatusCodes, Uri}
 import com.fsanaulla.model.{InfluxReader, InfluxWriter}
 import com.fsanaulla.utils.JsonSupport
 import spray.json.{DeserializationException, JsArray, JsNumber, JsString}
@@ -12,7 +13,9 @@ import scala.concurrent.{Await, Future}
 object Helper extends JsonSupport {
 
   implicit val timeout: FiniteDuration = 1 second
-  val currentNanoTime: Long = System.currentTimeMillis() * 1000000
+  final val currentNanoTime: Long = System.currentTimeMillis() * 1000000
+  final val OK = StatusCodes.OK
+  final val NoContent = StatusCodes.NoContent
 
   case class FakeEntity(firstName: String, lastName: String, age: Int)
 
@@ -30,4 +33,8 @@ object Helper extends JsonSupport {
   }
 
   def await[T](future: Future[T])(implicit timeout: FiniteDuration): T = Await.result(future, timeout)
+
+  def queryTester(query: String): Uri = Uri(s"/query?q=$query")
+
+  def queryTester(db: String, query: String): Uri = Uri(s"/query?db=$db&q=$query")
 }
