@@ -1,12 +1,12 @@
-package com.fsanaulla.unit
+package com.fsanaulla.unit.db
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import akka.stream.ActorMaterializer
-import com.fsanaulla.Helper._
-import com.fsanaulla.SampleEntitys.{bulkResult, singleResult}
 import com.fsanaulla.utils.ContentTypes.appJson
-import com.fsanaulla.utils.DatabaseHelper._
+import com.fsanaulla.utils.DatabaseOperationHelper._
+import com.fsanaulla.utils.Helper._
+import com.fsanaulla.utils.SampleEntitys.{bulkResult, singleResult}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 import spray.json.{JsArray, JsNumber, JsObject, JsString, JsonParser}
 
@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext
 /**
   * Created by fayaz on 12.07.17.
   */
-class DatabaseHelperSpec
+class DatabaseOperationHelperSpec
   extends FlatSpec
   with Matchers
   with BeforeAndAfterAll {

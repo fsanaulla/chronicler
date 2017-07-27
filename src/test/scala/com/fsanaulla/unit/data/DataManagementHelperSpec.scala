@@ -1,12 +1,12 @@
-package com.fsanaulla.unit.management.data
+package com.fsanaulla.unit.data
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import akka.stream.ActorMaterializer
-import com.fsanaulla.Helper._
 import com.fsanaulla.model.{DatabaseInfo, MeasurementInfo}
 import com.fsanaulla.utils.ContentTypes.appJson
 import com.fsanaulla.utils.DataManagementHelper._
+import com.fsanaulla.utils.Helper._
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 
 import scala.concurrent.ExecutionContext

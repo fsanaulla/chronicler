@@ -1,9 +1,9 @@
 package com.fsanaulla.integration
 
-import com.fsanaulla.Helper._
 import com.fsanaulla.InfluxClient
-import com.fsanaulla.SampleEntitys.{multiEntitys, singleEntity}
 import com.fsanaulla.model.{DatabaseInfo, MeasurementInfo}
+import com.fsanaulla.utils.Helper._
+import com.fsanaulla.utils.SampleEntitys.{multiEntitys, singleEntity}
 import com.whisk.docker.impl.spotify.DockerKitSpotify
 import com.whisk.docker.scalatest.DockerTestKit
 import org.scalatest.time.{Second, Seconds, Span}

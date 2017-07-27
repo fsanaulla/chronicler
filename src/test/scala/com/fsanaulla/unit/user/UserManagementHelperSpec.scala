@@ -1,12 +1,12 @@
-package com.fsanaulla.unit.management.user
+package com.fsanaulla.unit.user
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import akka.stream.ActorMaterializer
-import com.fsanaulla.Helper._
 import com.fsanaulla.model.UserInfo.UserInfoInfluxReader
 import com.fsanaulla.model.{UserInfo, UserPrivilegesInfo}
 import com.fsanaulla.utils.ContentTypes.appJson
+import com.fsanaulla.utils.Helper._
 import com.fsanaulla.utils.UserManagementHelper._
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 

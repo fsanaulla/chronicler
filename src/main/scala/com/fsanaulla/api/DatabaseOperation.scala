@@ -9,7 +9,7 @@ import com.fsanaulla.model.TypeAlias.ConnectionPoint
 import com.fsanaulla.model.{InfluxReader, InfluxWriter}
 import com.fsanaulla.query.DatabaseOperationQuery
 import com.fsanaulla.utils.ContentTypes.octetStream
-import com.fsanaulla.utils.DatabaseHelper._
+import com.fsanaulla.utils.DatabaseOperationHelper._
 import spray.json.JsArray
 
 import scala.concurrent.{ExecutionContext, Future}

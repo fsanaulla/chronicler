@@ -1,8 +1,7 @@
-package com.fsanaulla
+package com.fsanaulla.utils
 
 import akka.http.scaladsl.model.{StatusCodes, Uri}
 import com.fsanaulla.model.{InfluxReader, InfluxWriter}
-import com.fsanaulla.utils.JsonSupport
 import spray.json.{DeserializationException, JsArray, JsNumber, JsString}
 
 import scala.concurrent.duration._

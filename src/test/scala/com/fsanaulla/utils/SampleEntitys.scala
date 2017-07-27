@@ -1,6 +1,6 @@
-package com.fsanaulla
+package com.fsanaulla.utils
 
-import com.fsanaulla.Helper.{FakeEntity, currentNanoTime}
+import com.fsanaulla.utils.Helper.{FakeEntity, currentNanoTime}
 import spray.json.{JsArray, JsNumber, JsString}
 
 object SampleEntitys {

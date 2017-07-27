@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
   * Created by fayaz on 12.07.17.
   */
-object DatabaseHelper extends JsonSupport {
+object DatabaseOperationHelper extends JsonSupport {
 
   def toPoint(measurement: String, serializedEntity: String): String = measurement + "," + serializedEntity
 
