@@ -24,7 +24,7 @@ class DatabaseSpec
   "Influx container" should "get up and run correctly" in {
     // CHECKING CONTAINER
     isContainerReady(influxdbContainer).futureValue shouldBe true
-    influxdbContainer.getPorts().futureValue.get(8086) should not be None
+    influxdbContainer.getPorts().futureValue.get(8087) should not be None
     influxdbContainer.getIpAddresses().futureValue should not be Seq.empty
   }
 

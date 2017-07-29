@@ -2,13 +2,15 @@ package com.fsanaulla.api
 
 import akka.http.scaladsl.model.HttpResponse
 import com.fsanaulla.InfluxClient
-import com.fsanaulla.model.{DatabaseInfo, MeasurementInfo}
+import com.fsanaulla.model.{DatabaseInfo, MeasurementInfo, RetentionPolicyInfo}
 import com.fsanaulla.query.DataManagementQuery
 import com.fsanaulla.utils.DataManagementHelper._
 
 import scala.concurrent.Future
 
-trait DataManagement extends DataManagementQuery with RequestBuilder { self: InfluxClient =>
+trait DataManagement
+  extends DataManagementQuery
+    with RequestBuilder { self: InfluxClient =>
 
   def createDatabase(dbName: String,
                      duration: Option[String] = None,
@@ -33,6 +35,10 @@ trait DataManagement extends DataManagementQuery with RequestBuilder { self: Inf
 
   def showMeasurement(dbName: String): Future[Seq[MeasurementInfo]] = {
     buildRequest(showMeasurementQuery(dbName)).flatMap(toMeasurementInfo)
+  }
+
+  def showRetentionPolicies(dbName: String): Future[Seq[RetentionPolicyInfo]] = {
+    buildRequest(showRetentionPoliciesQuery(dbName)).flatMap(toRetentionPolicy)
   }
 
   def showDatabases(): Future[Seq[DatabaseInfo]] = {

@@ -21,7 +21,7 @@ class UserManagementSpec
   "Influx container" should "get up and run correctly" in {
     // CHECKING CONTAINER
     isContainerReady(influxdbContainer).futureValue shouldBe true
-    influxdbContainer.getPorts().futureValue.get(8086) should not be None
+    influxdbContainer.getPorts().futureValue.get(8087) should not be None
     influxdbContainer.getIpAddresses().futureValue should not be Seq.empty
   }
 
@@ -45,7 +45,7 @@ class UserManagementSpec
     influx.setPrivileges("Martin", "mydb", Privileges.READ).futureValue.status shouldEqual StatusCodes.OK
     influx.showUserPrivileges("Martin").futureValue shouldEqual Seq(UserPrivilegesInfo("mydb", "READ"))
 
-    influx.revokePrivileges("Martin", "mydb", "READ").futureValue.status shouldEqual StatusCodes.OK
+    influx.revokePrivileges("Martin", "mydb", Privileges.READ).futureValue.status shouldEqual StatusCodes.OK
     influx.showUserPrivileges("Martin").futureValue shouldEqual Seq(UserPrivilegesInfo("mydb", "NO PRIVILEGES"))
 
     influx.disableAdmin("Admin").futureValue.status shouldEqual StatusCodes.OK

@@ -14,7 +14,7 @@ trait DockerInfluxService extends DockerKit {
   val dockerImage = "influxdb:1.2.4"
 
   val influxdbContainer: DockerContainer = DockerContainer(dockerImage)
-    .withPorts(8086 -> None)
+    .withPorts(8087 -> None)
 
   abstract override def dockerContainers: List[DockerContainer] =
     influxdbContainer :: super.dockerContainers

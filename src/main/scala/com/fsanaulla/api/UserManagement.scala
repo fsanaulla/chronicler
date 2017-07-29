@@ -5,6 +5,7 @@ import com.fsanaulla.InfluxClient
 import com.fsanaulla.model.{UserInfo, UserPrivilegesInfo}
 import com.fsanaulla.query.UserManagementQuery
 import com.fsanaulla.utils.UserManagementHelper._
+import com.fsanaulla.utils.constants.Privileges._
 
 import scala.concurrent.Future
 
@@ -26,11 +27,11 @@ trait UserManagement extends UserManagementQuery with RequestBuilder { self: Inf
     buildRequest(setUserPasswordQuery(username, password))
   }
 
-  def setPrivileges(username: String, dbName: String, privilege: String): Future[HttpResponse] = {
+  def setPrivileges(username: String, dbName: String, privilege: Privilege): Future[HttpResponse] = {
     buildRequest(setPrivilegesQuery(dbName, username, privilege))
   }
 
-  def revokePrivileges(username: String, dbName: String, privilege: String): Future[HttpResponse] = {
+  def revokePrivileges(username: String, dbName: String, privilege: Privilege): Future[HttpResponse] = {
     buildRequest(revokePrivilegesQuery(dbName, username, privilege))
   }
 

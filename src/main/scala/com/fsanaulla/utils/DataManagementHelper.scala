@@ -2,8 +2,7 @@ package com.fsanaulla.utils
 
 import akka.http.scaladsl.model.HttpResponse
 import akka.stream.ActorMaterializer
-import com.fsanaulla.model.DatabaseInfo.DatabaseInfoInfluxReader
-import com.fsanaulla.model.{DatabaseInfo, InfluxReader, MeasurementInfo}
+import com.fsanaulla.model.{DatabaseInfo, InfluxReader, MeasurementInfo, RetentionPolicyInfo}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -18,6 +17,12 @@ object DataManagementHelper extends JsonSupport {
     unmarshalBody(response)
       .map(getInfluxValue)
       .map(_.map(reader.read).filterNot(_.dbName == "_internal"))
+  }
+
+  def toRetentionPolicy(response: HttpResponse)(implicit reader: InfluxReader[RetentionPolicyInfo], materializer: ActorMaterializer, ex: ExecutionContext): Future[Seq[RetentionPolicyInfo]] = {
+    unmarshalBody(response)
+      .map(getInfluxValue)
+      .map(_.map(reader.read))
   }
 
   def toMeasurementInfo(response: HttpResponse)(implicit reader: InfluxReader[MeasurementInfo], materializer: ActorMaterializer, ex: ExecutionContext): Future[Seq[MeasurementInfo]] = {

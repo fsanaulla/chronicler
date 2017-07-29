@@ -1,7 +1,10 @@
 package com.fsanaulla.query
 
 import akka.http.scaladsl.model.Uri
-import com.fsanaulla.utils.constants.{Consistency, Epoch, Precision}
+import com.fsanaulla.utils.constants.Consistencys._
+import com.fsanaulla.utils.constants.Epochs._
+import com.fsanaulla.utils.constants.Precisions._
+import com.fsanaulla.utils.constants.{Consistencys, Epochs, Precisions}
 
 /**
   * Created by fayaz on 04.07.17.
@@ -11,8 +14,8 @@ trait DatabaseOperationQuery extends QueryBuilder {
   protected def writeToInfluxQuery(dbName: String,
                          username: Option[String] = None,
                          password: Option[String] = None,
-                         consistency: String = Consistency.ONE,
-                         precision: String = Precision.NANOSECONDS,
+                         consistency: Consistency = Consistencys.ONE,
+                         precision: Precision = Precisions.NANOSECONDS,
                          retentionPolicy: Option[String] = None): Uri = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
@@ -38,7 +41,7 @@ trait DatabaseOperationQuery extends QueryBuilder {
                                 query: String,
                                 username: Option[String] = None,
                                 password: Option[String] = None,
-                                epoch: String = Epoch.NANOSECONDS,
+                                epoch: Epoch = Epochs.NANOSECONDS,
                                 pretty: Boolean = false,
                                 chunked: Boolean = false
                           ): Uri = {
@@ -64,7 +67,7 @@ trait DatabaseOperationQuery extends QueryBuilder {
                               querys: Seq[String],
                               username: Option[String] = None,
                               password: Option[String] = None,
-                              epoch: String = Epoch.NANOSECONDS,
+                              epoch: Epoch = Epochs.NANOSECONDS,
                               pretty: Boolean = false,
                               chunked: Boolean = false
                         ): Uri = {

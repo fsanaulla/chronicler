@@ -1,7 +1,22 @@
 package com.fsanaulla.utils.constants
 
 object Privileges {
-  final val READ = "READ"
-  final val WRITE = "WRITE"
-  final val ALL = "ALL"
+
+  implicit def privilege2value(privilege: Privilege): String = privilege.value
+
+  sealed trait Privilege {
+    def value: String
+  }
+
+  case object READ extends Privilege {
+    override def value: String = "READ"
+  }
+
+  case object WRITE extends Privilege {
+    override def value: String = "WRITE"
+  }
+
+  case object ALL extends Privilege {
+    override def value: String = "ALL"
+  }
 }
