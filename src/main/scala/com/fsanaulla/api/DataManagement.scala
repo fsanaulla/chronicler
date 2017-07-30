@@ -44,13 +44,4 @@ trait DataManagement
   def showDatabases(): Future[Seq[DatabaseInfo]] = {
     buildRequest(showDatabasesQuery()).flatMap(toDatabaseInfo)
   }
-
-  //todo: test
-//  def deleteAllFromSeries(dbName: String, measurementName: String): Future[HttpResponse] = {
-//    buildRequest(deleteAllSeriesQuery(dbName, measurementName))
-//  }
-//
-//  def dropSeries(dbName: String, measurementName: String): Future[HttpResponse] = {
-//    buildRequest(dropSeriesQuery(dbName, measurementName))
-//  }
 }

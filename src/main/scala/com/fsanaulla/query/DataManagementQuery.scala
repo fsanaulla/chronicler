@@ -64,7 +64,7 @@ trait DataManagementQuery extends QueryBuilder {
   }
 
   protected def showRetentionPoliciesQuery(dbName: String): Uri = {
-    queryBuilder("/query", "SHOW RETENTION POLICIES")
+    queryBuilder("/query", Map("db" -> dbName, "q" -> "SHOW RETENTION POLICIES"))
   }
 
   protected def showDatabasesQuery(): Uri = {

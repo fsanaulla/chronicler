@@ -27,12 +27,12 @@ class DataManagementSpec
   "Influx container" should "get up and run correctly" in {
     // CHECKING CONTAINER
     isContainerReady(influxdbContainer).futureValue shouldBe true
-    influxdbContainer.getPorts().futureValue.get(8087) should not be None
+    influxdbContainer.getPorts().futureValue.get(dockerPort) should not be None
     influxdbContainer.getIpAddresses().futureValue should not be Seq.empty
   }
 
   "Data management operation" should "correctly work" in {
-    val influx = InfluxClient(influxdbContainer.getIpAddresses().futureValue.head)
+    val influx = InfluxClient(influxdbContainer.getIpAddresses().futureValue.head, dockerPort)
 
     influx.createDatabase(dbName).futureValue.status shouldEqual OK
     influx.showDatabases().futureValue shouldEqual Seq(DatabaseInfo("mydb"))

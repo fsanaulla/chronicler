@@ -3,6 +3,7 @@ package com.fsanaulla.utils
 import akka.http.scaladsl.model.HttpResponse
 import akka.stream.ActorMaterializer
 import com.fsanaulla.model.{DatabaseInfo, InfluxReader, MeasurementInfo, RetentionPolicyInfo}
+import spray.json.JsArray
 
 import scala.concurrent.{ExecutionContext, Future}
 

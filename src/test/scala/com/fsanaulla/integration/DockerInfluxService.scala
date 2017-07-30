@@ -12,9 +12,10 @@ trait DockerInfluxService extends DockerKit {
   override val StartContainersTimeout: FiniteDuration = 20 second
 
   val dockerImage = "influxdb:1.2.4"
+  val dockerPort = 8086
 
   val influxdbContainer: DockerContainer = DockerContainer(dockerImage)
-    .withPorts(8087 -> None)
+    .withPorts(dockerPort -> None)
 
   abstract override def dockerContainers: List[DockerContainer] =
     influxdbContainer :: super.dockerContainers

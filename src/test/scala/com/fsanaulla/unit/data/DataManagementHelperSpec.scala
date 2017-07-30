@@ -3,7 +3,7 @@ package com.fsanaulla.unit.data
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import akka.stream.ActorMaterializer
-import com.fsanaulla.model.{DatabaseInfo, MeasurementInfo}
+import com.fsanaulla.model.{DatabaseInfo, MeasurementInfo, RetentionPolicyInfo}
 import com.fsanaulla.utils.ContentTypes.appJson
 import com.fsanaulla.utils.DataManagementHelper._
 import com.fsanaulla.utils.Helper._
@@ -87,6 +87,50 @@ class DataManagementHelperSpec
 
   val measurementResponse: HttpResponse = HttpResponse(entity = HttpEntity(appJson, measurementJson))
 
+  val rpJson = """{
+                   "results": [
+                     {
+                       "statement_id": 0,
+                       "series": [
+                         {
+                           "columns": [
+                             "name",
+                             "duration",
+                             "shardGroupDuration",
+                             "replicaN",
+                             "default"
+                           ],
+                           "values": [
+                             [
+                               "autogen",
+                               "0s",
+                               "168h0m0s",
+                               1,
+                               true
+                             ],
+                             [
+                               "test",
+                               "4h0m0s",
+                               "4h0m0s",
+                               1,
+                               false
+                             ],
+                             [
+                               "test1",
+                               "4h0m0s",
+                               "4h0m0s",
+                               1,
+                               false
+                             ]
+                           ]
+                         }
+                       ]
+                     }
+                   ]
+                 }"""
+
+  val rpResponse = HttpResponse(entity = HttpEntity(appJson, rpJson))
+
   "toDatabaseInfo" should "return info about databases" in {
     await(toDatabaseInfo(dbResponse)) shouldEqual Seq(
       DatabaseInfo("test"),
@@ -98,5 +142,13 @@ class DataManagementHelperSpec
 
   "toMeasurementInfo" should "return info about measurement" in {
     await(toMeasurementInfo(measurementResponse)) shouldEqual Seq(MeasurementInfo("cpu"))
+  }
+
+  "toRetentionPolicyInfo" should "return info about retention pilicies" in {
+    await(toRetentionPolicy(rpResponse)) shouldEqual Seq(
+      RetentionPolicyInfo("autogen", "0s", "168h0m0s", 1, default = true),
+      RetentionPolicyInfo("test", "4h0m0s", "4h0m0s", 1, default = false),
+      RetentionPolicyInfo("test1", "4h0m0s", "4h0m0s", 1, default = false)
+    )
   }
 }

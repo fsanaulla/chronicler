@@ -16,7 +16,8 @@ case class RetentionPolicyInfo(name: String,
 object RetentionPolicyInfo {
   implicit object RetentionPolicyInfluxReader extends InfluxReader[RetentionPolicyInfo] {
     override def read(js: JsArray): RetentionPolicyInfo = js.elements match {
-      case Vector(JsString(name), JsString(duration), JsString(shardGroupdDuration), JsNumber(replication), JsBoolean(default)) => RetentionPolicyInfo(name, duration, shardGroupdDuration, replication.toInt, default)
+      case Vector(JsString(name), JsString(duration), JsString(shardGroupdDuration), JsNumber(replication), JsBoolean(default)) =>
+        RetentionPolicyInfo(name, duration, shardGroupdDuration, replication.toInt, default)
       case _ => throw DeserializationException(s"Can't deserialize $RetentionPolicyInfo object")
     }
   }
