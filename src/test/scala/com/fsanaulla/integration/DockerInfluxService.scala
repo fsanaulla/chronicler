@@ -11,7 +11,7 @@ trait DockerInfluxService extends DockerKit {
 
   override val StartContainersTimeout: FiniteDuration = 20 second
 
-  val dockerImage = "influxdb:1.2.4"
+  val dockerImage = "influxdb:1.3.1"
   val dockerPort = 8086
 
   val influxdbContainer: DockerContainer = DockerContainer(dockerImage)
