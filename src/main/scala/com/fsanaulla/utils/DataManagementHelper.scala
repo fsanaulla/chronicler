@@ -12,7 +12,7 @@ import scala.concurrent.{ExecutionContext, Future}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 26.07.17
   */
-object DataManagementHelper extends JsonSupport {
+private[fsanaulla] trait DataManagementHelper extends JsonSupport {
 
   def toDatabaseInfo(response: HttpResponse)(implicit reader: InfluxReader[DatabaseInfo], materializer: ActorMaterializer, ex: ExecutionContext): Future[Seq[DatabaseInfo]] = {
     unmarshalBody(response)

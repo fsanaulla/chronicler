@@ -7,7 +7,7 @@ import com.fsanaulla.model.UserInfo.UserInfoInfluxReader
 import com.fsanaulla.model.{UserInfo, UserPrivilegesInfo}
 import com.fsanaulla.utils.ContentTypes.appJson
 import com.fsanaulla.utils.Helper._
-import com.fsanaulla.utils.UserManagementHelper._
+import com.fsanaulla.utils.UserManagementHelper
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 
 import scala.concurrent.ExecutionContext
@@ -20,7 +20,8 @@ import scala.concurrent.ExecutionContext
 class UserManagementHelperSpec
   extends FlatSpec
     with Matchers
-    with BeforeAndAfterAll {
+    with BeforeAndAfterAll
+    with UserManagementHelper {
 
   implicit val actorSystem = ActorSystem("TestActorSystem")
   implicit val materializer: ActorMaterializer = ActorMaterializer()

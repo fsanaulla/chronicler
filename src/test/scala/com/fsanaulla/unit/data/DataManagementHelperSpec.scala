@@ -5,7 +5,7 @@ import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import akka.stream.ActorMaterializer
 import com.fsanaulla.model.{DatabaseInfo, MeasurementInfo, RetentionPolicyInfo}
 import com.fsanaulla.utils.ContentTypes.appJson
-import com.fsanaulla.utils.DataManagementHelper._
+import com.fsanaulla.utils.DataManagementHelper
 import com.fsanaulla.utils.Helper._
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 
@@ -19,7 +19,8 @@ import scala.concurrent.ExecutionContext
 class DataManagementHelperSpec
   extends FlatSpec
     with Matchers
-    with BeforeAndAfterAll {
+    with BeforeAndAfterAll
+    with DataManagementHelper {
 
   implicit val actorSystem: ActorSystem = ActorSystem("TestActorSystem")
   implicit val mat: ActorMaterializer = ActorMaterializer()

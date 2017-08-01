@@ -1,8 +1,7 @@
 package com.fsanaulla.integration
 
-import akka.http.scaladsl.model.StatusCodes
 import com.fsanaulla.InfluxClient
-import com.fsanaulla.model.{UserInfo, UserPrivilegesInfo}
+import com.fsanaulla.model._
 import com.fsanaulla.utils.constants.Privileges
 import com.whisk.docker.impl.spotify.DockerKitSpotify
 import com.whisk.docker.scalatest.DockerTestKit
@@ -30,31 +29,31 @@ class UserManagementSpec
     // INIT INFLUX CLIENT
     val influx = InfluxClient(influxdbContainer.getIpAddresses().futureValue.head, dockerPort)
 
-    influx.createDatabase("mydb").futureValue.status shouldEqual StatusCodes.OK
+    influx.createDatabase("mydb").futureValue shouldEqual CreateResult(200, isSuccess = true)
 
-    influx.createUser("Martin", "password").futureValue.status shouldEqual StatusCodes.OK
+    influx.createUser("Martin", "password").futureValue shouldEqual CreateResult(200, isSuccess = true)
     influx.showUsers.futureValue shouldEqual Seq(UserInfo("Martin", isAdmin = false))
 
-    influx.createAdmin("Admin", "admin_pass")
+    influx.createAdmin("Admin", "admin_pass").futureValue shouldEqual CreateResult(200, isSuccess = true)
     influx.showUsers.futureValue shouldEqual Seq(UserInfo("Martin", isAdmin = false), UserInfo("Admin", isAdmin = true))
 
     influx.showUserPrivileges("Admin").futureValue shouldEqual Nil
 
-    influx.setUserPassword("Martin", "new_password").futureValue.status shouldEqual StatusCodes.OK
+    influx.setUserPassword("Martin", "new_password").futureValue shouldEqual UpdateResult(200, isSuccess = true)
 
-    influx.setPrivileges("Martin", "mydb", Privileges.READ).futureValue.status shouldEqual StatusCodes.OK
+    influx.setPrivileges("Martin", "mydb", Privileges.READ).futureValue shouldEqual UpdateResult(200, isSuccess = true)
     influx.showUserPrivileges("Martin").futureValue shouldEqual Seq(UserPrivilegesInfo("mydb", "READ"))
 
-    influx.revokePrivileges("Martin", "mydb", Privileges.READ).futureValue.status shouldEqual StatusCodes.OK
+    influx.revokePrivileges("Martin", "mydb", Privileges.READ).futureValue shouldEqual DeleteResult(200, isSuccess = true)
     influx.showUserPrivileges("Martin").futureValue shouldEqual Seq(UserPrivilegesInfo("mydb", "NO PRIVILEGES"))
 
-    influx.disableAdmin("Admin").futureValue.status shouldEqual StatusCodes.OK
+    influx.disableAdmin("Admin").futureValue shouldEqual UpdateResult(200, isSuccess = true)
     influx.showUsers.futureValue shouldEqual Seq(UserInfo("Martin", isAdmin = false), UserInfo("Admin", isAdmin = false))
 
-    influx.makeAdmin("Admin").futureValue.status shouldEqual StatusCodes.OK
+    influx.makeAdmin("Admin").futureValue shouldEqual UpdateResult(200, isSuccess = true)
     influx.showUsers.futureValue shouldEqual Seq(UserInfo("Martin", isAdmin = false), UserInfo("Admin", isAdmin = true))
 
-    influx.dropUser("Martin").futureValue.status shouldEqual StatusCodes.OK
+    influx.dropUser("Martin").futureValue shouldEqual DeleteResult(200, isSuccess = true)
     influx.showUsers.futureValue shouldEqual Seq(UserInfo("Admin", isAdmin = true))
   }
 }

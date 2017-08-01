@@ -4,8 +4,8 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import akka.stream.ActorMaterializer
 import com.fsanaulla.utils.ContentTypes.appJson
-import com.fsanaulla.utils.DatabaseOperationHelper._
 import com.fsanaulla.utils.Helper._
+import com.fsanaulla.utils.ResponseWrapper
 import com.fsanaulla.utils.SampleEntitys.{bulkResult, singleResult}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 import spray.json.{JsArray, JsNumber, JsObject, JsString, JsonParser}
@@ -18,7 +18,8 @@ import scala.concurrent.ExecutionContext
 class DatabaseOperationHelperSpec
   extends FlatSpec
   with Matchers
-  with BeforeAndAfterAll {
+  with BeforeAndAfterAll
+  with ResponseWrapper {
 
   implicit val actorSystem: ActorSystem = ActorSystem("TestActorSystem")
   implicit val mat: ActorMaterializer = ActorMaterializer()

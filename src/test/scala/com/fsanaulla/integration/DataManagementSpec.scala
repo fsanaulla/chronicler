@@ -1,8 +1,8 @@
 package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
-import com.fsanaulla.model.{DatabaseInfo, MeasurementInfo}
-import com.fsanaulla.utils.Helper._
+import com.fsanaulla.model._
+import com.fsanaulla.utils.Helper.FakeEntity
 import com.fsanaulla.utils.SampleEntitys.{multiEntitys, singleEntity}
 import com.whisk.docker.impl.spotify.DockerKitSpotify
 import com.whisk.docker.scalatest.DockerTestKit
@@ -34,23 +34,23 @@ class DataManagementSpec
   "Data management operation" should "correctly work" in {
     val influx = InfluxClient(influxdbContainer.getIpAddresses().futureValue.head, dockerPort)
 
-    influx.createDatabase(dbName).futureValue.status shouldEqual OK
+    influx.createDatabase(dbName).futureValue shouldEqual CreateResult(200, isSuccess = true)
     influx.showDatabases().futureValue shouldEqual Seq(DatabaseInfo("mydb"))
 
     val db = influx.use(dbName)
-    db.bulkWrite("meas1", multiEntitys).futureValue.status shouldEqual NoContent
-    db.read("SELECT * FROM meas1").futureValue shouldEqual multiEntitys
+    db.bulkWrite("meas1", multiEntitys).futureValue shouldEqual WriteResult(204, isSuccess = true)
+    db.read[FakeEntity]("SELECT * FROM meas1").futureValue shouldEqual multiEntitys
 
-    db.write("meas2", singleEntity).futureValue.status shouldEqual NoContent
-    db.read("SELECT * FROM meas2").futureValue shouldEqual Seq(singleEntity)
+    db.write("meas2", singleEntity).futureValue shouldEqual WriteResult(204, isSuccess = true)
+    db.read[FakeEntity]("SELECT * FROM meas2").futureValue shouldEqual Seq(singleEntity)
 
     influx.showMeasurement(dbName).futureValue shouldEqual Seq(MeasurementInfo("meas1"), MeasurementInfo("meas2"))
 
-    influx.dropMeasurement(dbName, "meas1").futureValue.status shouldEqual OK
-    db.read("SELECT * FROM meas1").futureValue shouldEqual Nil
+    influx.dropMeasurement(dbName, "meas1").futureValue shouldEqual DeleteResult(200, isSuccess = true)
+    db.read[FakeEntity]("SELECT * FROM meas1").futureValue shouldEqual Nil
     influx.showMeasurement(dbName).futureValue shouldEqual Seq(MeasurementInfo("meas2"))
 
-    influx.dropDatabase(dbName).futureValue.status shouldEqual OK
+    influx.dropDatabase(dbName).futureValue shouldEqual DeleteResult(200, isSuccess = true)
     influx.showDatabases().futureValue shouldEqual Nil
   }
  }
