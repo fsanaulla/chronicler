@@ -1,4 +1,4 @@
-package com.fsanaulla.unit.data
+package com.fsanaulla.unit
 
 import com.fsanaulla.query.DataManagementQuery
 import com.fsanaulla.utils.Helper.queryTester

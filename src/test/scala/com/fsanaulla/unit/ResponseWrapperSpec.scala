@@ -1,4 +1,4 @@
-package com.fsanaulla.unit.db
+package com.fsanaulla.unit
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext
 /**
   * Created by fayaz on 12.07.17.
   */
-class DatabaseOperationHelperSpec
+class ResponseWrapperSpec
   extends FlatSpec
   with Matchers
   with BeforeAndAfterAll
@@ -117,10 +117,10 @@ class DatabaseOperationHelperSpec
   val bulkHttpResponse: HttpResponse = HttpResponse(entity = HttpEntity(appJson, bulkStrJson))
 
   "single query result function" should "correctly work" in {
-    await(toSingleResult(singleHttpResponse)) shouldEqual singleResult
+    await(toSingleJsResult(singleHttpResponse)) shouldEqual singleResult
   }
 
   "bulk query result function" should "correctly work" in {
-    await(toBulkResult(bulkHttpResponse)) shouldEqual bulkResult
+    await(toBulkJsResult(bulkHttpResponse)) shouldEqual bulkResult
   }
 }

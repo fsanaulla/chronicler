@@ -1,4 +1,4 @@
-package com.fsanaulla.unit.db
+package com.fsanaulla.unit
 
 /**
   * Created by

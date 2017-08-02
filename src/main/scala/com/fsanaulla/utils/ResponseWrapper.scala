@@ -12,33 +12,44 @@ import scala.concurrent.{ExecutionContext, Future}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 31.07.17
   */
-trait ResponseWrapper extends JsonSupport {
+private[fsanaulla] trait ResponseWrapper extends JsonSupport {
 
-  def toSingleResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[JsArray]] = {
+  def toSingleJsResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[JsArray]] = {
     unmarshalBody(response).map(getInfluxValue)
   }
 
-  def toBulkResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[Seq[JsArray]]] = {
+  def toBulkJsResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[Seq[JsArray]]] = {
     unmarshalBody(response)
       .map(_.getFields("results").head.convertTo[Seq[JsObject]])
       .map(_.map(_.getFields("series").head.convertTo[Seq[JsObject]].head))
       .map(_.map(_.getFields("values").head.convertTo[Seq[JsArray]]))
   }
 
-  def toQueryResponse[T](response: HttpResponse, result: => Future[Seq[T]])(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[T]] = {
+  def toQueryResult[T](response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer, reader: InfluxReader[T]): Future[Seq[T]] = {
+    toQueryJsResult(response).map(_.map(reader.read))
+  }
+
+  def toQueryJsResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[JsArray]] = {
     response.status.intValue() match {
-      case 200 => result
+      case code if isSuccess(code) => toSingleJsResult(response)
       case other => errorHandler(other, response).map(ex => throw ex)
     }
   }
 
-  def toResponse[T <: InfluxResult](response: HttpResponse, result: => T)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[T] = {
+  def toBulkQueryJsResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[Seq[JsArray]]] = {
     response.status.intValue() match {
-      case 200 => Future.successful(result)
-      case 204 => Future.successful(result)
+      case code if isSuccess(code) => toBulkJsResult(response)
       case other => errorHandler(other, response).map(ex => throw ex)
     }
   }
+
+  def toResult[T <: InfluxResult](response: HttpResponse, result: => T)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[T] = {
+    response.status.intValue() match {
+      case code if isSuccess(code) => Future.successful(result)
+      case other => errorHandler(other, response).map(ex => throw ex)
+    }
+  }
+  private def isSuccess(code: Int) = if (code >= 200 && code < 300) true else false
 
   private def errorHandler(code: Int, response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[InfluxException] = code match {
     case 400 => getError(response).map(errMsg => new BadRequestException(errMsg))

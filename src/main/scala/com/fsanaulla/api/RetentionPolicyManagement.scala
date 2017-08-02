@@ -17,7 +17,7 @@ trait RetentionPolicyManagement extends RetentionPolicyManagementQuery { self: I
     require(replication > 0, "Replication must greater that 0")
 
     buildRequest(createRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default))
-      .flatMap(resp => toResponse(resp, CreateResult(200, isSuccess = true)))
+      .flatMap(resp => toResult(resp, CreateResult(200, isSuccess = true)))
   }
 
   def updateRetentionPolicy(rpName: String,
@@ -27,11 +27,11 @@ trait RetentionPolicyManagement extends RetentionPolicyManagementQuery { self: I
                             shardDuration: Option[String] = None,
                             default: Boolean = false): Future[UpdateResult] = {
     buildRequest(updateRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default))
-      .flatMap(resp => toResponse(resp, UpdateResult(200, isSuccess = true)))
+      .flatMap(resp => toResult(resp, UpdateResult(200, isSuccess = true)))
   }
 
   def dropRetentionPolicy(rpName: String, dbName: String): Future[DeleteResult] = {
     buildRequest(dropRetentionPolicyQuery(rpName, dbName))
-      .flatMap(resp => toResponse(resp, DeleteResult(200, isSuccess = true)))
+      .flatMap(resp => toResult(resp, DeleteResult(200, isSuccess = true)))
   }
 }

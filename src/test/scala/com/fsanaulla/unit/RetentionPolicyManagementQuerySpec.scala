@@ -1,4 +1,4 @@
-package com.fsanaulla.unit.policy
+package com.fsanaulla.unit
 
 import com.fsanaulla.query.RetentionPolicyManagementQuery
 import com.fsanaulla.utils.Helper._

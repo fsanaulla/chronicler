@@ -30,26 +30,23 @@ abstract class DatabaseOperation(dbName: String,
     buildRequest(
       uri = writeToInfluxQuery(dbName, username, password),
       entity = HttpEntity(octetStream, ByteString(toPoint(measurement, writer.write(entity))))
-    ).flatMap(resp => toResponse(resp, WriteResult(204, isSuccess = true)))
+    ).flatMap(resp => toResult(resp, WriteResult(204, isSuccess = true)))
   }
 
   def bulkWrite[T](measurement: String, entitys: Seq[T])(implicit writer: InfluxWriter[T]): Future[WriteResult] = {
     buildRequest(
       uri = writeToInfluxQuery(dbName, username, password),
       entity = HttpEntity(octetStream, ByteString(toPoints(measurement, entitys.map(writer.write))))
-    ).flatMap(resp => toResponse(resp, WriteResult(204, isSuccess = true)))
+    ).flatMap(resp => toResult(resp, WriteResult(204, isSuccess = true)))
   }
 
   def read[T](query: String)(implicit reader: InfluxReader[T]): Future[Seq[T]] = readJs(query).map(_.map(reader.read))
 
   def readJs(query: String): Future[Seq[JsArray]] = {
-    buildRequest(readFromInfluxSingleQuery(dbName, query, username, password), GET)
-      .flatMap(response => toQueryResponse[JsArray](response, toSingleResult(response)))
+    buildRequest(readFromInfluxSingleQuery(dbName, query, username, password), GET).flatMap(toQueryJsResult)
   }
 
   def bulkReadJs(querys: Seq[String]): Future[Seq[Seq[JsArray]]] = {
-    buildRequest(readFromInfluxBulkQuery(dbName, querys, username, password), GET)
-      .flatMap(response => toQueryResponse[Seq[JsArray]](response, toBulkResult(response)))
-//      Future.sequence(querys.map(readJs))
+    buildRequest(readFromInfluxBulkQuery(dbName, querys, username, password), GET).flatMap(toBulkQueryJsResult)
   }
 }

@@ -1,4 +1,4 @@
-package com.fsanaulla.unit.user
+package com.fsanaulla.unit
 
 import akka.http.scaladsl.model.Uri
 import com.fsanaulla.query.UserManagementQuery

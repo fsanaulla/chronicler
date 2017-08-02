@@ -13,7 +13,7 @@ import scala.concurrent.Future
 /**
   * Created by fayaz on 12.07.17.
   */
-trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
+private[utils] trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   import spray.json._
 
   protected def unmarshalBody(response: HttpResponse)(implicit mat: ActorMaterializer): Future[JsObject] = {
