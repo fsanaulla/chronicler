@@ -9,13 +9,12 @@ import spray.json.JsArray
   */
 sealed trait InfluxResult {
   val code: Int
-  val isSuccess: Boolean
 }
 
-case class WriteResult(code: Int, isSuccess: Boolean) extends InfluxResult
+case class WriteResult(code: Int) extends InfluxResult
 
-case class CreateResult(code: Int, isSuccess: Boolean) extends InfluxResult
+case class CreateResult(code: Int) extends InfluxResult
 
-case class DeleteResult(code: Int, isSuccess: Boolean) extends InfluxResult
+case class DropResult(code: Int) extends InfluxResult
 
-case class UpdateResult(code: Int, isSuccess: Boolean) extends InfluxResult
+case class UpdateResult(code: Int) extends InfluxResult

@@ -1,7 +1,7 @@
 package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
-import com.fsanaulla.model.{CreateResult, DeleteResult, ResourceNotFoundException, WriteResult}
+import com.fsanaulla.model._
 import com.fsanaulla.utils.Helper._
 import com.fsanaulla.utils.SampleEntitys._
 import com.whisk.docker.impl.spotify.DockerKitSpotify
@@ -9,8 +9,6 @@ import com.whisk.docker.scalatest.DockerTestKit
 import org.scalatest.time.{Second, Seconds, Span}
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json.{JsArray, JsNumber, JsString}
-
-import scala.concurrent.duration._
 
 /**
   * Created by fayaz on 06.07.17.
@@ -37,25 +35,23 @@ class DatabaseSpec
     val influx = InfluxClient(influxdbContainer.getIpAddresses().futureValue.head, dockerPort)
 
     // CREATING DB TEST
-    influx.createDatabase("mydb").futureValue shouldEqual CreateResult(200, isSuccess = true)
+    influx.createDatabase("mydb").futureValue shouldEqual {}
 
     // DATABASE
     val db = influx.use("mydb")
     val notExistedDb = influx.use("unknown_db")
 
-    val ex = the [ResourceNotFoundException] thrownBy {
-      await(notExistedDb.write("test", singleEntity))(1.seconds)
+    notExistedDb.write("test", singleEntity).recover {
+      case ex: InfluxException => ex.getMessage shouldEqual "database not found: \"unknown_db\""
     }
 
-    ex.getMessage shouldEqual "database not found: \"unknown_db\""
-
     // WRITE - READ TEST
-    db.write("test", singleEntity).futureValue shouldEqual WriteResult(204, isSuccess = true)
+    db.write("test", singleEntity).futureValue shouldEqual {}
 
     db.read[FakeEntity]("SELECT * FROM test").futureValue shouldEqual Seq(singleEntity)
     db.readJs("SELECT * FROM test").futureValue shouldEqual Seq(singleJsonEntity)
 
-    db.bulkWrite("test", multiEntitys).futureValue shouldEqual WriteResult(204, isSuccess = true)
+    db.bulkWrite("test", multiEntitys).futureValue shouldEqual {}
     db.read[FakeEntity]("SELECT * FROM test").futureValue.sortBy(_.age) shouldEqual (singleEntity +: multiEntitys).sortBy(_.age)
     db.readJs("SELECT * FROM test").futureValue shouldEqual multiJsonEntity
 
@@ -75,6 +71,6 @@ class DatabaseSpec
     multiQuery shouldEqual largeMultiJsonEntity
 
     // DROP DB TEST
-    influx.dropDatabase("mydb").futureValue shouldEqual DeleteResult(200, isSuccess = true)
+    influx.dropDatabase("mydb").futureValue shouldEqual {}
   }
 }

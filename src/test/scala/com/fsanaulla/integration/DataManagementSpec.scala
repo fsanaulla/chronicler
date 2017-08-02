@@ -34,23 +34,23 @@ class DataManagementSpec
   "Data management operation" should "correctly work" in {
     val influx = InfluxClient(influxdbContainer.getIpAddresses().futureValue.head, dockerPort)
 
-    influx.createDatabase(dbName).futureValue shouldEqual CreateResult(200, isSuccess = true)
+    influx.createDatabase(dbName).futureValue shouldEqual {}
     influx.showDatabases().futureValue shouldEqual Seq(DatabaseInfo("mydb"))
 
     val db = influx.use(dbName)
-    db.bulkWrite("meas1", multiEntitys).futureValue shouldEqual WriteResult(204, isSuccess = true)
+    db.bulkWrite("meas1", multiEntitys).futureValue shouldEqual {}
     db.read[FakeEntity]("SELECT * FROM meas1").futureValue shouldEqual multiEntitys
 
-    db.write("meas2", singleEntity).futureValue shouldEqual WriteResult(204, isSuccess = true)
+    db.write("meas2", singleEntity).futureValue shouldEqual {}
     db.read[FakeEntity]("SELECT * FROM meas2").futureValue shouldEqual Seq(singleEntity)
 
     influx.showMeasurement(dbName).futureValue shouldEqual Seq(MeasurementInfo("meas1"), MeasurementInfo("meas2"))
 
-    influx.dropMeasurement(dbName, "meas1").futureValue shouldEqual DeleteResult(200, isSuccess = true)
+    influx.dropMeasurement(dbName, "meas1").futureValue shouldEqual {}
     db.read[FakeEntity]("SELECT * FROM meas1").futureValue shouldEqual Nil
     influx.showMeasurement(dbName).futureValue shouldEqual Seq(MeasurementInfo("meas2"))
 
-    influx.dropDatabase(dbName).futureValue shouldEqual DeleteResult(200, isSuccess = true)
+    influx.dropDatabase(dbName).futureValue shouldEqual {}
     influx.showDatabases().futureValue shouldEqual Nil
   }
  }

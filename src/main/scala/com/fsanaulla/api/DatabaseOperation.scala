@@ -26,18 +26,18 @@ abstract class DatabaseOperation(dbName: String,
   implicit val ex: ExecutionContext
   implicit val connection: ConnectionPoint
 
-  def write[T](measurement: String, entity: T)(implicit writer: InfluxWriter[T]): Future[WriteResult] = {
+  def write[T](measurement: String, entity: T)(implicit writer: InfluxWriter[T]): Future[Unit] = {
     buildRequest(
       uri = writeToInfluxQuery(dbName, username, password),
       entity = HttpEntity(octetStream, ByteString(toPoint(measurement, writer.write(entity))))
-    ).flatMap(resp => toResult(resp, WriteResult(204, isSuccess = true)))
+    ).flatMap(toResult)
   }
 
-  def bulkWrite[T](measurement: String, entitys: Seq[T])(implicit writer: InfluxWriter[T]): Future[WriteResult] = {
+  def bulkWrite[T](measurement: String, entitys: Seq[T])(implicit writer: InfluxWriter[T]): Future[Unit] = {
     buildRequest(
       uri = writeToInfluxQuery(dbName, username, password),
       entity = HttpEntity(octetStream, ByteString(toPoints(measurement, entitys.map(writer.write))))
-    ).flatMap(resp => toResult(resp, WriteResult(204, isSuccess = true)))
+    ).flatMap(toResult)
   }
 
   def read[T](query: String)(implicit reader: InfluxReader[T]): Future[Seq[T]] = readJs(query).map(_.map(reader.read))

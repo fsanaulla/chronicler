@@ -12,24 +12,20 @@ trait DataManagement extends DataManagementQuery { self: InfluxClient =>
                      duration: Option[String] = None,
                      replication: Option[String] = None,
                      shardDuration: Option[String] = None,
-                     name: Option[String] = None): Future[CreateResult] = {
-    buildRequest(createDatabaseQuery(dbName, duration, replication, shardDuration, name))
-      .flatMap(resp => toResult(resp, CreateResult(200, isSuccess = true)))
+                     name: Option[String] = None): Future[Unit] = {
+    buildRequest(createDatabaseQuery(dbName, duration, replication, shardDuration, name)).flatMap(toResult)
   }
 
-  def dropDatabase(dbName: String): Future[DeleteResult] = {
-    buildRequest(dropDatabaseQuery(dbName))
-      .flatMap(resp => toResult(resp, DeleteResult(200, isSuccess = true)))
+  def dropDatabase(dbName: String): Future[Unit] = {
+    buildRequest(dropDatabaseQuery(dbName)).flatMap(toResult)
   }
 
-  def dropMeasurement(dbName: String, measurementName: String): Future[DeleteResult] = {
-    buildRequest(dropMeasurementQuery(dbName, measurementName))
-      .flatMap(resp => toResult(resp, DeleteResult(200, isSuccess = true)))
+  def dropMeasurement(dbName: String, measurementName: String): Future[Unit] = {
+    buildRequest(dropMeasurementQuery(dbName, measurementName)).flatMap(toResult)
   }
 
-  def dropShard(shardId: Int): Future[DeleteResult] = {
-    buildRequest(dropShardQuery(shardId))
-      .flatMap(resp => toResult(resp, DeleteResult(200, isSuccess = true)))
+  def dropShard(shardId: Int): Future[Unit] = {
+    buildRequest(dropShardQuery(shardId)).flatMap(toResult)
   }
 
   def showMeasurement(dbName: String)(implicit reader: InfluxReader[MeasurementInfo]): Future[Seq[MeasurementInfo]] = {

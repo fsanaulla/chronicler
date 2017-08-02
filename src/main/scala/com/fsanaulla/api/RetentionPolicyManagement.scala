@@ -1,7 +1,6 @@
 package com.fsanaulla.api
 
 import com.fsanaulla.InfluxClient
-import com.fsanaulla.model.{CreateResult, DeleteResult, UpdateResult}
 import com.fsanaulla.query.RetentionPolicyManagementQuery
 
 import scala.concurrent.Future
@@ -13,11 +12,11 @@ trait RetentionPolicyManagement extends RetentionPolicyManagementQuery { self: I
                             duration: String,
                             replication: Int = 1,
                             shardDuration: Option[String] = None,
-                            default: Boolean = false): Future[CreateResult] = {
+                            default: Boolean = false): Future[Unit] = {
     require(replication > 0, "Replication must greater that 0")
 
     buildRequest(createRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default))
-      .flatMap(resp => toResult(resp, CreateResult(200, isSuccess = true)))
+      .flatMap(toResult)
   }
 
   def updateRetentionPolicy(rpName: String,
@@ -25,13 +24,12 @@ trait RetentionPolicyManagement extends RetentionPolicyManagementQuery { self: I
                             duration: Option[String] = None,
                             replication: Option[Int] = None,
                             shardDuration: Option[String] = None,
-                            default: Boolean = false): Future[UpdateResult] = {
+                            default: Boolean = false): Future[Unit] = {
     buildRequest(updateRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default))
-      .flatMap(resp => toResult(resp, UpdateResult(200, isSuccess = true)))
+      .flatMap(toResult)
   }
 
-  def dropRetentionPolicy(rpName: String, dbName: String): Future[DeleteResult] = {
-    buildRequest(dropRetentionPolicyQuery(rpName, dbName))
-      .flatMap(resp => toResult(resp, DeleteResult(200, isSuccess = true)))
+  def dropRetentionPolicy(rpName: String, dbName: String): Future[Unit] = {
+    buildRequest(dropRetentionPolicyQuery(rpName, dbName)).flatMap(toResult)
   }
 }

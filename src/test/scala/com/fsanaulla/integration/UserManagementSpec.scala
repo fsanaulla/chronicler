@@ -29,31 +29,31 @@ class UserManagementSpec
     // INIT INFLUX CLIENT
     val influx = InfluxClient(influxdbContainer.getIpAddresses().futureValue.head, dockerPort)
 
-    influx.createDatabase("mydb").futureValue shouldEqual CreateResult(200, isSuccess = true)
+    influx.createDatabase("mydb").futureValue shouldEqual {}
 
-    influx.createUser("Martin", "password").futureValue shouldEqual CreateResult(200, isSuccess = true)
+    influx.createUser("Martin", "password").futureValue shouldEqual {}
     influx.showUsers.futureValue shouldEqual Seq(UserInfo("Martin", isAdmin = false))
 
-    influx.createAdmin("Admin", "admin_pass").futureValue shouldEqual CreateResult(200, isSuccess = true)
+    influx.createAdmin("Admin", "admin_pass").futureValue shouldEqual {}
     influx.showUsers.futureValue shouldEqual Seq(UserInfo("Martin", isAdmin = false), UserInfo("Admin", isAdmin = true))
 
     influx.showUserPrivileges("Admin").futureValue shouldEqual Nil
 
-    influx.setUserPassword("Martin", "new_password").futureValue shouldEqual UpdateResult(200, isSuccess = true)
+    influx.setUserPassword("Martin", "new_password").futureValue shouldEqual {}
 
-    influx.setPrivileges("Martin", "mydb", Privileges.READ).futureValue shouldEqual UpdateResult(200, isSuccess = true)
+    influx.setPrivileges("Martin", "mydb", Privileges.READ).futureValue shouldEqual {}
     influx.showUserPrivileges("Martin").futureValue shouldEqual Seq(UserPrivilegesInfo("mydb", "READ"))
 
-    influx.revokePrivileges("Martin", "mydb", Privileges.READ).futureValue shouldEqual DeleteResult(200, isSuccess = true)
+    influx.revokePrivileges("Martin", "mydb", Privileges.READ).futureValue shouldEqual {}
     influx.showUserPrivileges("Martin").futureValue shouldEqual Seq(UserPrivilegesInfo("mydb", "NO PRIVILEGES"))
 
-    influx.disableAdmin("Admin").futureValue shouldEqual UpdateResult(200, isSuccess = true)
+    influx.disableAdmin("Admin").futureValue shouldEqual {}
     influx.showUsers.futureValue shouldEqual Seq(UserInfo("Martin", isAdmin = false), UserInfo("Admin", isAdmin = false))
 
-    influx.makeAdmin("Admin").futureValue shouldEqual UpdateResult(200, isSuccess = true)
+    influx.makeAdmin("Admin").futureValue shouldEqual {}
     influx.showUsers.futureValue shouldEqual Seq(UserInfo("Martin", isAdmin = false), UserInfo("Admin", isAdmin = true))
 
-    influx.dropUser("Martin").futureValue shouldEqual DeleteResult(200, isSuccess = true)
+    influx.dropUser("Martin").futureValue shouldEqual {}
     influx.showUsers.futureValue shouldEqual Seq(UserInfo("Admin", isAdmin = true))
   }
 }

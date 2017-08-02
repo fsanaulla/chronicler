@@ -3,16 +3,17 @@ package com.fsanaulla.utils
 import akka.http.scaladsl.model.HttpResponse
 import akka.stream.ActorMaterializer
 import com.fsanaulla.model._
+import com.fsanaulla.utils.JsonSupport._
 import spray.json.{JsArray, JsObject}
 
 import scala.concurrent.{ExecutionContext, Future}
-
+import scala.util.Failure
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 31.07.17
   */
-private[fsanaulla] trait ResponseWrapper extends JsonSupport {
+private[fsanaulla] trait ResponseWrapper {
 
   def toSingleJsResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[JsArray]] = {
     unmarshalBody(response).map(getInfluxValue)
@@ -43,12 +44,13 @@ private[fsanaulla] trait ResponseWrapper extends JsonSupport {
     }
   }
 
-  def toResult[T <: InfluxResult](response: HttpResponse, result: => T)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[T] = {
+  def toResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Unit] = {
     response.status.intValue() match {
-      case code if isSuccess(code) => Future.successful(result)
-      case other => errorHandler(other, response).map(ex => throw ex)
+      case code if isSuccess(code) => Future.successful({})
+      case other => errorHandler(other, response).map(ex => Failure(ex))
     }
   }
+
   private def isSuccess(code: Int) = if (code >= 200 && code < 300) true else false
 
   private def errorHandler(code: Int, response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[InfluxException] = code match {

@@ -9,44 +9,36 @@ import scala.concurrent.Future
 
 trait UserManagement extends UserManagementQuery { self: InfluxClient =>
 
-  def createUser(username: String, password: String): Future[CreateResult] = {
-     buildRequest(createUserQuery(username, password))
-      .flatMap(resp => toResult(resp, CreateResult(200, isSuccess = true)))
+  def createUser(username: String, password: String): Future[Unit] = {
+     buildRequest(createUserQuery(username, password)).flatMap(toResult)
   }
 
-  def createAdmin(username: String, password: String): Future[CreateResult] = {
-    buildRequest(createAdminQuery(username, password))
-      .flatMap(resp => toResult(resp, CreateResult(200, isSuccess = true)))
+  def createAdmin(username: String, password: String): Future[Unit] = {
+    buildRequest(createAdminQuery(username, password)).flatMap(toResult)
   }
 
-  def dropUser(username: String): Future[DeleteResult] = {
-    buildRequest(uri = dropUserQuery(username))
-      .flatMap(resp => toResult(resp, DeleteResult(200, isSuccess = true)))
+  def dropUser(username: String): Future[Unit] = {
+    buildRequest(uri = dropUserQuery(username)).flatMap(toResult)
   }
 
-  def setUserPassword(username: String, password: String): Future[UpdateResult] = {
-    buildRequest(setUserPasswordQuery(username, password))
-      .flatMap(resp => toResult(resp, UpdateResult(200, isSuccess = true)))
+  def setUserPassword(username: String, password: String): Future[Unit] = {
+    buildRequest(setUserPasswordQuery(username, password)).flatMap(toResult)
   }
 
-  def setPrivileges(username: String, dbName: String, privilege: Privilege): Future[UpdateResult] = {
-    buildRequest(setPrivilegesQuery(dbName, username, privilege))
-      .flatMap(resp => toResult(resp, UpdateResult(200, isSuccess = true)))
+  def setPrivileges(username: String, dbName: String, privilege: Privilege): Future[Unit] = {
+    buildRequest(setPrivilegesQuery(dbName, username, privilege)).flatMap(toResult)
   }
 
-  def revokePrivileges(username: String, dbName: String, privilege: Privilege): Future[DeleteResult] = {
-    buildRequest(revokePrivilegesQuery(dbName, username, privilege))
-      .flatMap(resp => toResult(resp, DeleteResult(200, isSuccess = true)))
+  def revokePrivileges(username: String, dbName: String, privilege: Privilege): Future[Unit] = {
+    buildRequest(revokePrivilegesQuery(dbName, username, privilege)).flatMap(toResult)
   }
 
-  def makeAdmin(username: String): Future[UpdateResult] = {
-    buildRequest(makeAdminQuery(username))
-      .flatMap(resp => toResult(resp, UpdateResult(200, isSuccess = true)))
+  def makeAdmin(username: String): Future[Unit] = {
+    buildRequest(makeAdminQuery(username)).flatMap(toResult)
   }
 
-  def disableAdmin(username: String): Future[UpdateResult] = {
-    buildRequest(disableAdminQuery(username))
-      .flatMap(resp => toResult(resp, UpdateResult(200, isSuccess = true)))
+  def disableAdmin(username: String): Future[Unit] = {
+    buildRequest(disableAdminQuery(username)).flatMap(toResult)
   }
 
   def showUsers(implicit reader: InfluxReader[UserInfo]): Future[Seq[UserInfo]] = {

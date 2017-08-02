@@ -9,7 +9,7 @@ import scala.concurrent.{Await, Future}
 /**
   * Created by fayaz on 11.07.17.
   */
-object Helper extends JsonSupport {
+object Helper extends {
 
   implicit val timeout: FiniteDuration = 1 second
   final val currentNanoTime: Long = System.currentTimeMillis() * 1000000
