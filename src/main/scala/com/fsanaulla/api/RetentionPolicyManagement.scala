@@ -2,6 +2,7 @@ package com.fsanaulla.api
 
 import com.fsanaulla.InfluxClient
 import com.fsanaulla.query.RetentionPolicyManagementQuery
+import com.fsanaulla.utils.ResponseWrapper.toResult
 
 import scala.concurrent.Future
 

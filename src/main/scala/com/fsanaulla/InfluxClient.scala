@@ -5,7 +5,6 @@ import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.fsanaulla.api.{DataManagement, RequestBuilder, RetentionPolicyManagement, UserManagement}
 import com.fsanaulla.model.TypeAlias._
-import com.fsanaulla.utils.ResponseWrapper
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -20,8 +19,7 @@ class InfluxClient(host: String,
     extends DataManagement
       with UserManagement
       with RetentionPolicyManagement
-      with RequestBuilder
-      with ResponseWrapper {
+      with RequestBuilder {
 
   protected implicit val system = ActorSystem()
   protected implicit val materializer: ActorMaterializer = ActorMaterializer()

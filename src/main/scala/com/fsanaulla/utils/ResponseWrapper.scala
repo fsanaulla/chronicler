@@ -7,13 +7,12 @@ import com.fsanaulla.utils.JsonSupport._
 import spray.json.{JsArray, JsObject}
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Failure
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 31.07.17
   */
-private[fsanaulla] trait ResponseWrapper {
+private[fsanaulla] object ResponseWrapper {
 
   def toSingleJsResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[JsArray]] = {
     unmarshalBody(response).map(getInfluxValue)
@@ -47,7 +46,7 @@ private[fsanaulla] trait ResponseWrapper {
   def toResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Unit] = {
     response.status.intValue() match {
       case code if isSuccess(code) => Future.successful({})
-      case other => errorHandler(other, response).map(ex => Failure(ex))
+      case other => errorHandler(other, response).flatMap(ex => Future.failed(ex))
     }
   }
 

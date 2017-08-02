@@ -11,7 +11,8 @@ import com.fsanaulla.model.TypeAlias.ConnectionPoint
 import com.fsanaulla.model._
 import com.fsanaulla.query.DatabaseOperationQuery
 import com.fsanaulla.utils.ContentTypes.octetStream
-import com.fsanaulla.utils.{DatabaseOperationHelper, ResponseWrapper}
+import com.fsanaulla.utils.DatabaseOperationHelper
+import com.fsanaulla.utils.ResponseWrapper.{toBulkQueryJsResult, toQueryJsResult, toResult}
 import spray.json.JsArray
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -19,7 +20,7 @@ import scala.concurrent.{ExecutionContext, Future}
 abstract class DatabaseOperation(dbName: String,
                                  username: Option[String],
                                  password: Option[String])
-  extends DatabaseOperationQuery with DatabaseOperationHelper with RequestBuilder with ResponseWrapper{ self: Database =>
+  extends DatabaseOperationQuery with DatabaseOperationHelper with RequestBuilder { self: Database =>
 
   implicit val actorSystem: ActorSystem
   implicit val mat: ActorMaterializer

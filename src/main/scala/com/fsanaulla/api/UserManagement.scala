@@ -3,6 +3,7 @@ package com.fsanaulla.api
 import com.fsanaulla.InfluxClient
 import com.fsanaulla.model._
 import com.fsanaulla.query.UserManagementQuery
+import com.fsanaulla.utils.ResponseWrapper.{toQueryJsResult, toResult}
 import com.fsanaulla.utils.constants.Privileges._
 
 import scala.concurrent.Future

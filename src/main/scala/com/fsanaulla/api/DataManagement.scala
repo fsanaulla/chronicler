@@ -3,6 +3,7 @@ package com.fsanaulla.api
 import com.fsanaulla.InfluxClient
 import com.fsanaulla.model._
 import com.fsanaulla.query.DataManagementQuery
+import com.fsanaulla.utils.ResponseWrapper.{toQueryJsResult, toResult}
 
 import scala.concurrent.Future
 
