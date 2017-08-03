@@ -46,6 +46,9 @@ class DatabaseSpec
     }
 
     // WRITE - READ TEST
+    db.writeFromFile("src/test/resources/points.txt").futureValue shouldEqual NoContentResult
+    db.readJs("SELECT * FROM test1").futureValue.queryResult.size shouldEqual 3
+
     db.write("test", singleEntity).futureValue shouldEqual NoContentResult
 
     db.read[FakeEntity]("SELECT * FROM test").futureValue.queryResult shouldEqual Seq(singleEntity)

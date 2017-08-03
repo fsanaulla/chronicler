@@ -1,9 +1,12 @@
 package com.fsanaulla.api
 
+import java.nio.file.Paths
+
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.HttpEntity
 import akka.http.scaladsl.model.HttpMethods.GET
 import akka.stream.ActorMaterializer
+import akka.stream.scaladsl.FileIO
 import akka.util.ByteString
 import com.fsanaulla.Database
 import com.fsanaulla.model.JsArrayReadeable.JsArrayInfluxReader
@@ -38,6 +41,13 @@ abstract class DatabaseOperation(dbName: String,
     buildRequest(
       uri = writeToInfluxQuery(dbName, username, password),
       entity = HttpEntity(octetStream, ByteString(toPoints(measurement, entitys.map(writer.write))))
+    ).flatMap(toResult)
+  }
+
+  def writeFromFile(path: String): Future[Result] = {
+    buildRequest(
+      uri = writeToInfluxQuery(dbName, username, password),
+      entity = HttpEntity(octetStream, FileIO.fromPath(Paths.get(path), chunkSize = 10000))
     ).flatMap(toResult)
   }
 
