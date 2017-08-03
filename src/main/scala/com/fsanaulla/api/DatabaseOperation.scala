@@ -44,10 +44,10 @@ abstract class DatabaseOperation(dbName: String,
     ).flatMap(toResult)
   }
 
-  def writeFromFile(path: String): Future[Result] = {
+  def writeFromFile(path: String, chunkSize: Int = 8192): Future[Result] = {
     buildRequest(
       uri = writeToInfluxQuery(dbName, username, password),
-      entity = HttpEntity(octetStream, FileIO.fromPath(Paths.get(path), chunkSize = 10000))
+      entity = HttpEntity(octetStream, FileIO.fromPath(Paths.get(path), chunkSize = chunkSize))
     ).flatMap(toResult)
   }
 
