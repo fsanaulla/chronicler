@@ -2,7 +2,7 @@ package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
 import com.fsanaulla.model._
-import com.fsanaulla.utils.Helper.FakeEntity
+import com.fsanaulla.utils.Helper.{FakeEntity, NoContentResult, OkResult}
 import com.fsanaulla.utils.SampleEntitys.{multiEntitys, singleEntity}
 import com.whisk.docker.impl.spotify.DockerKitSpotify
 import com.whisk.docker.scalatest.DockerTestKit
@@ -34,23 +34,23 @@ class DataManagementSpec
   "Data management operation" should "correctly work" in {
     val influx = InfluxClient(influxdbContainer.getIpAddresses().futureValue.head, dockerPort)
 
-    influx.createDatabase(dbName).futureValue shouldEqual {}
-    influx.showDatabases().futureValue shouldEqual Seq(DatabaseInfo("mydb"))
+    influx.createDatabase(dbName).futureValue shouldEqual OkResult
+    influx.showDatabases().futureValue.queryResult shouldEqual Seq(DatabaseInfo("mydb"))
 
     val db = influx.use(dbName)
-    db.bulkWrite("meas1", multiEntitys).futureValue shouldEqual {}
-    db.read[FakeEntity]("SELECT * FROM meas1").futureValue shouldEqual multiEntitys
+    db.bulkWrite("meas1", multiEntitys).futureValue shouldEqual NoContentResult
+    db.read[FakeEntity]("SELECT * FROM meas1").futureValue.queryResult shouldEqual multiEntitys
 
-    db.write("meas2", singleEntity).futureValue shouldEqual {}
-    db.read[FakeEntity]("SELECT * FROM meas2").futureValue shouldEqual Seq(singleEntity)
+    db.write("meas2", singleEntity).futureValue shouldEqual NoContentResult
+    db.read[FakeEntity]("SELECT * FROM meas2").futureValue.queryResult shouldEqual Seq(singleEntity)
 
-    influx.showMeasurement(dbName).futureValue shouldEqual Seq(MeasurementInfo("meas1"), MeasurementInfo("meas2"))
+    influx.showMeasurement(dbName).futureValue.queryResult shouldEqual Seq(MeasurementInfo("meas1"), MeasurementInfo("meas2"))
 
-    influx.dropMeasurement(dbName, "meas1").futureValue shouldEqual {}
-    db.read[FakeEntity]("SELECT * FROM meas1").futureValue shouldEqual Nil
-    influx.showMeasurement(dbName).futureValue shouldEqual Seq(MeasurementInfo("meas2"))
+    influx.dropMeasurement(dbName, "meas1").futureValue shouldEqual OkResult
+    db.read[FakeEntity]("SELECT * FROM meas1").futureValue.queryResult shouldEqual Nil
+    influx.showMeasurement(dbName).futureValue.queryResult shouldEqual Seq(MeasurementInfo("meas2"))
 
-    influx.dropDatabase(dbName).futureValue shouldEqual {}
-    influx.showDatabases().futureValue shouldEqual Nil
+    influx.dropDatabase(dbName).futureValue shouldEqual OkResult
+    influx.showDatabases().futureValue.queryResult shouldEqual Nil
   }
  }

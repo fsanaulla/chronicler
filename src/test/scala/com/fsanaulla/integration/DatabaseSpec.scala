@@ -35,7 +35,7 @@ class DatabaseSpec
     val influx = InfluxClient(influxdbContainer.getIpAddresses().futureValue.head, dockerPort)
 
     // CREATING DB TEST
-    influx.createDatabase("mydb").futureValue shouldEqual {}
+    influx.createDatabase("mydb").futureValue shouldEqual OkResult
 
     // DATABASE
     val db = influx.use("mydb")
@@ -46,31 +46,31 @@ class DatabaseSpec
     }
 
     // WRITE - READ TEST
-    db.write("test", singleEntity).futureValue shouldEqual {}
+    db.write("test", singleEntity).futureValue shouldEqual NoContentResult
 
-    db.read[FakeEntity]("SELECT * FROM test").futureValue shouldEqual Seq(singleEntity)
-    db.readJs("SELECT * FROM test").futureValue shouldEqual Seq(singleJsonEntity)
+    db.read[FakeEntity]("SELECT * FROM test").futureValue.queryResult shouldEqual Seq(singleEntity)
+    db.readJs("SELECT * FROM test").futureValue.queryResult shouldEqual Seq(singleJsonEntity)
 
-    db.bulkWrite("test", multiEntitys).futureValue shouldEqual {}
-    db.read[FakeEntity]("SELECT * FROM test").futureValue.sortBy(_.age) shouldEqual (singleEntity +: multiEntitys).sortBy(_.age)
-    db.readJs("SELECT * FROM test").futureValue shouldEqual multiJsonEntity
+    db.bulkWrite("test", multiEntitys).futureValue shouldEqual NoContentResult
+    db.read[FakeEntity]("SELECT * FROM test").futureValue.queryResult.sortBy(_.age) shouldEqual (singleEntity +: multiEntitys).sortBy(_.age)
+    db.readJs("SELECT * FROM test").futureValue.queryResult shouldEqual multiJsonEntity
 
     val multiQuery = db.bulkReadJs(Seq("SELECT * FROM test", "SELECT * FROM test WHERE age > 25")).futureValue
 
-    multiQuery.size shouldEqual 2
-    multiQuery shouldBe a [Seq[_]]
+    multiQuery.queryResult.size shouldEqual 2
+    multiQuery.queryResult shouldBe a [Seq[_]]
 
-    multiQuery.head.size shouldEqual 3
-    multiQuery.head shouldBe a [Seq[_]]
-    multiQuery.head.head shouldBe a [JsArray]
+    multiQuery.queryResult.head.size shouldEqual 3
+    multiQuery.queryResult.head shouldBe a [Seq[_]]
+    multiQuery.queryResult.head.head shouldBe a [JsArray]
 
-    multiQuery.last.size shouldEqual 2
-    multiQuery.last shouldBe a [Seq[_]]
-    multiQuery.last.head shouldBe a [JsArray]
+    multiQuery.queryResult.last.size shouldEqual 2
+    multiQuery.queryResult.last shouldBe a [Seq[_]]
+    multiQuery.queryResult.last.head shouldBe a [JsArray]
 
-    multiQuery shouldEqual largeMultiJsonEntity
+    multiQuery.queryResult shouldEqual largeMultiJsonEntity
 
     // DROP DB TEST
-    influx.dropDatabase("mydb").futureValue shouldEqual {}
+    influx.dropDatabase("mydb").futureValue shouldEqual OkResult
   }
 }

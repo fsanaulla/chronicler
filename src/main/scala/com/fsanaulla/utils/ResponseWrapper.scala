@@ -25,32 +25,33 @@ private[fsanaulla] object ResponseWrapper {
       .map(_.map(_.getFields("values").head.convertTo[Seq[JsArray]]))
   }
 
-  def toQueryResult[T](response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer, reader: InfluxReader[T]): Future[Seq[T]] = {
-    toQueryJsResult(response).map(_.map(reader.read))
+  def toQueryResult[T](response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer, reader: InfluxReader[T]): Future[QueryResult[T]] = {
+    toQueryJsResult(response).map(res => QueryResult[T](res.code, isSuccess = res.isSuccess, res.queryResult.map(reader.read)))
   }
 
-  def toQueryJsResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[JsArray]] = {
+  def toQueryJsResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[QueryResult[JsArray]] = {
     response.status.intValue() match {
-      case code if isSuccess(code) => toSingleJsResult(response)
-      case other => errorHandler(other, response).map(ex => throw ex)
+      case code if isSuccessful(code) => toSingleJsResult(response).map(seq => QueryResult(code, isSuccess = true, seq))
+      case other => errorHandler(other, response).map(ex => QueryResult(other, isSuccess = false, ex = Some(ex)))
     }
   }
 
-  def toBulkQueryJsResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[Seq[JsArray]]] = {
+  def toBulkQueryJsResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[QueryResult[Seq[JsArray]]] = {
     response.status.intValue() match {
-      case code if isSuccess(code) => toBulkJsResult(response)
-      case other => errorHandler(other, response).map(ex => throw ex)
+      case code if isSuccessful(code) =>
+        toBulkJsResult(response).map(seq => QueryResult[Seq[JsArray]](code, isSuccess = true, seq))
+      case other => errorHandler(other, response).map(ex => QueryResult(other, isSuccess = false, ex = Some(ex)))
     }
   }
 
-  def toResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Unit] = {
+  def toResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Result] = {
     response.status.intValue() match {
-      case code if isSuccess(code) => Future.successful({})
-      case other => errorHandler(other, response).flatMap(ex => Future.failed(ex))
+      case code if isSuccessful(code) => Future.successful(Result(code, isSuccess = true, None))
+      case other => errorHandler(other, response).map(ex => Result(other, isSuccess = false, Some(ex)))
     }
   }
 
-  private def isSuccess(code: Int) = if (code >= 200 && code < 300) true else false
+  private def isSuccessful(code: Int): Boolean = if (code >= 200 && code < 300) true else false
 
   private def errorHandler(code: Int, response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[InfluxException] = code match {
     case 400 => getError(response).map(errMsg => new BadRequestException(errMsg))

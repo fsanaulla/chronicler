@@ -9,12 +9,10 @@ import spray.json.JsArray
   */
 sealed trait InfluxResult {
   val code: Int
+  val isSuccess: Boolean
+  val ex: Option[Throwable]
 }
 
-case class WriteResult(code: Int) extends InfluxResult
+case class Result(code: Int, isSuccess: Boolean, ex: Option[Throwable] = None) extends InfluxResult
 
-case class CreateResult(code: Int) extends InfluxResult
-
-case class DropResult(code: Int) extends InfluxResult
-
-case class UpdateResult(code: Int) extends InfluxResult
+case class QueryResult[T](code: Int, isSuccess: Boolean, queryResult: Seq[T] = Nil, ex: Option[Throwable] = None) extends InfluxResult

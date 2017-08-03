@@ -2,6 +2,7 @@ package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
 import com.fsanaulla.model.RetentionPolicyInfo
+import com.fsanaulla.utils.Helper.OkResult
 import com.fsanaulla.utils.InfluxDuration._
 import com.whisk.docker.impl.spotify.DockerKitSpotify
 import com.whisk.docker.scalatest.DockerTestKit
@@ -35,25 +36,25 @@ class RetentionPolicyManagerSpec
     val influx = InfluxClient(influxdbContainer.getIpAddresses().futureValue.head, dockerPort)
 
     // CREATING DB TEST
-    influx.createDatabase("mydb").futureValue shouldEqual {}
+    influx.createDatabase("mydb").futureValue shouldEqual OkResult
 
-    influx.createRetentionPolicy("test", "mydb", 2 hours, 2, Some(2 hours), default = true).futureValue shouldEqual {}
+    influx.createRetentionPolicy("test", "mydb", 2 hours, 2, Some(2 hours), default = true).futureValue shouldEqual OkResult
 
-    influx.showRetentionPolicies("mydb").futureValue shouldEqual Seq(
+    influx.showRetentionPolicies("mydb").futureValue.queryResult shouldEqual Seq(
       RetentionPolicyInfo("autogen", "0s", "168h0m0s", 1, default = false),
       RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true)
     )
 
-    influx.dropRetentionPolicy("autogen", "mydb").futureValue shouldEqual {}
+    influx.dropRetentionPolicy("autogen", "mydb").futureValue shouldEqual OkResult
 
-    influx.showRetentionPolicies("mydb").futureValue shouldEqual Seq(RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true))
+    influx.showRetentionPolicies("mydb").futureValue.queryResult shouldEqual Seq(RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true))
 
-    influx.updateRetentionPolicy("test", "mydb", Some(3 hours)).futureValue shouldEqual {}
+    influx.updateRetentionPolicy("test", "mydb", Some(3 hours)).futureValue shouldEqual OkResult
 
-    influx.showRetentionPolicies("mydb").futureValue shouldEqual Seq(RetentionPolicyInfo("test", "3h0m0s", "2h0m0s", 2, default = true))
+    influx.showRetentionPolicies("mydb").futureValue.queryResult shouldEqual Seq(RetentionPolicyInfo("test", "3h0m0s", "2h0m0s", 2, default = true))
 
-    influx.dropRetentionPolicy("test", "mydb").futureValue shouldEqual {}
+    influx.dropRetentionPolicy("test", "mydb").futureValue shouldEqual OkResult
 
-    influx.showRetentionPolicies("mydb").futureValue shouldEqual Nil
+    influx.showRetentionPolicies("mydb").futureValue.queryResult shouldEqual Nil
   }
 }

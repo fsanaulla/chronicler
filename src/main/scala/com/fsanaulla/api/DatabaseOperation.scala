@@ -12,7 +12,7 @@ import com.fsanaulla.model._
 import com.fsanaulla.query.DatabaseOperationQuery
 import com.fsanaulla.utils.ContentTypes.octetStream
 import com.fsanaulla.utils.DatabaseOperationHelper
-import com.fsanaulla.utils.ResponseWrapper.{toBulkQueryJsResult, toQueryJsResult, toResult}
+import com.fsanaulla.utils.ResponseWrapper.{toBulkQueryJsResult, toQueryJsResult, toQueryResult, toResult}
 import spray.json.JsArray
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -27,27 +27,29 @@ abstract class DatabaseOperation(dbName: String,
   implicit val ex: ExecutionContext
   implicit val connection: ConnectionPoint
 
-  def write[T](measurement: String, entity: T)(implicit writer: InfluxWriter[T]): Future[Unit] = {
+  def write[T](measurement: String, entity: T)(implicit writer: InfluxWriter[T]): Future[Result] = {
     buildRequest(
       uri = writeToInfluxQuery(dbName, username, password),
       entity = HttpEntity(octetStream, ByteString(toPoint(measurement, writer.write(entity))))
     ).flatMap(toResult)
   }
 
-  def bulkWrite[T](measurement: String, entitys: Seq[T])(implicit writer: InfluxWriter[T]): Future[Unit] = {
+  def bulkWrite[T](measurement: String, entitys: Seq[T])(implicit writer: InfluxWriter[T]): Future[Result] = {
     buildRequest(
       uri = writeToInfluxQuery(dbName, username, password),
       entity = HttpEntity(octetStream, ByteString(toPoints(measurement, entitys.map(writer.write))))
     ).flatMap(toResult)
   }
 
-  def read[T](query: String)(implicit reader: InfluxReader[T]): Future[Seq[T]] = readJs(query).map(_.map(reader.read))
+  def read[T](query: String)(implicit reader: InfluxReader[T]): Future[QueryResult[T]] = {
+    buildRequest(readFromInfluxSingleQuery(dbName, query, username, password), GET).flatMap(toQueryResult[T])
+  }
 
-  def readJs(query: String): Future[Seq[JsArray]] = {
+  def readJs(query: String): Future[QueryResult[JsArray]] = {
     buildRequest(readFromInfluxSingleQuery(dbName, query, username, password), GET).flatMap(toQueryJsResult)
   }
 
-  def bulkReadJs(querys: Seq[String]): Future[Seq[Seq[JsArray]]] = {
+  def bulkReadJs(querys: Seq[String]): Future[QueryResult[Seq[JsArray]]] = {
     buildRequest(readFromInfluxBulkQuery(dbName, querys, username, password), GET).flatMap(toBulkQueryJsResult)
   }
 }

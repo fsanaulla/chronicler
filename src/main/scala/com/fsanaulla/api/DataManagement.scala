@@ -3,7 +3,7 @@ package com.fsanaulla.api
 import com.fsanaulla.InfluxClient
 import com.fsanaulla.model._
 import com.fsanaulla.query.DataManagementQuery
-import com.fsanaulla.utils.ResponseWrapper.{toQueryJsResult, toResult}
+import com.fsanaulla.utils.ResponseWrapper.{toQueryResult, toResult}
 
 import scala.concurrent.Future
 
@@ -13,37 +13,33 @@ trait DataManagement extends DataManagementQuery { self: InfluxClient =>
                      duration: Option[String] = None,
                      replication: Option[String] = None,
                      shardDuration: Option[String] = None,
-                     name: Option[String] = None): Future[Unit] = {
+                     name: Option[String] = None): Future[Result] = {
     buildRequest(createDatabaseQuery(dbName, duration, replication, shardDuration, name)).flatMap(toResult)
   }
 
-  def dropDatabase(dbName: String): Future[Unit] = {
+  def dropDatabase(dbName: String): Future[Result] = {
     buildRequest(dropDatabaseQuery(dbName)).flatMap(toResult)
   }
 
-  def dropMeasurement(dbName: String, measurementName: String): Future[Unit] = {
+  def dropMeasurement(dbName: String, measurementName: String): Future[Result] = {
     buildRequest(dropMeasurementQuery(dbName, measurementName)).flatMap(toResult)
   }
 
-  def dropShard(shardId: Int): Future[Unit] = {
+  def dropShard(shardId: Int): Future[Result] = {
     buildRequest(dropShardQuery(shardId)).flatMap(toResult)
   }
 
-  def showMeasurement(dbName: String)(implicit reader: InfluxReader[MeasurementInfo]): Future[Seq[MeasurementInfo]] = {
-    buildRequest(showMeasurementQuery(dbName))
-      .flatMap(toQueryJsResult)
-      .map(_.map(reader.read))
+  def showMeasurement(dbName: String)(implicit reader: InfluxReader[MeasurementInfo]): Future[QueryResult[MeasurementInfo]] = {
+    buildRequest(showMeasurementQuery(dbName)).flatMap(toQueryResult[MeasurementInfo])
   }
 
-  def showRetentionPolicies(dbName: String)(implicit reader: InfluxReader[RetentionPolicyInfo]): Future[Seq[RetentionPolicyInfo]] = {
-    buildRequest(showRetentionPoliciesQuery(dbName))
-      .flatMap(toQueryJsResult)
-      .map(_.map(reader.read))
+  def showRetentionPolicies(dbName: String)(implicit reader: InfluxReader[RetentionPolicyInfo]): Future[QueryResult[RetentionPolicyInfo]] = {
+    buildRequest(showRetentionPoliciesQuery(dbName)).flatMap(toQueryResult[RetentionPolicyInfo])
   }
 
-  def showDatabases()(implicit reader: InfluxReader[DatabaseInfo]): Future[Seq[DatabaseInfo]] = {
+  def showDatabases()(implicit reader: InfluxReader[DatabaseInfo]): Future[QueryResult[DatabaseInfo]] = {
     buildRequest(showDatabasesQuery())
-      .flatMap(toQueryJsResult)
-      .map(_.map(reader.read).filterNot(_.dbName == "_internal"))
+      .flatMap(toQueryResult[DatabaseInfo])
+      .map(res => res.copy(queryResult = res.queryResult.filterNot(_.dbName == "_internal")))
   }
 }
