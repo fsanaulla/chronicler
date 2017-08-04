@@ -2,7 +2,7 @@ package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
 import com.fsanaulla.model._
-import com.fsanaulla.utils.Helper.OkResult
+import com.fsanaulla.utils.TestHelper.OkResult
 import com.fsanaulla.utils.constants.Privileges
 import com.whisk.docker.impl.spotify.DockerKitSpotify
 import com.whisk.docker.scalatest.DockerTestKit

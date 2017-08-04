@@ -2,8 +2,8 @@ package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
 import com.fsanaulla.model.RetentionPolicyInfo
-import com.fsanaulla.utils.Helper.OkResult
 import com.fsanaulla.utils.InfluxDuration._
+import com.fsanaulla.utils.TestHelper.OkResult
 import com.whisk.docker.impl.spotify.DockerKitSpotify
 import com.whisk.docker.scalatest.DockerTestKit
 import org.scalatest.time.{Second, Seconds, Span}

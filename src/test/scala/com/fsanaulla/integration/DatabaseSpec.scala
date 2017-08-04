@@ -2,8 +2,8 @@ package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
 import com.fsanaulla.model._
-import com.fsanaulla.utils.Helper._
 import com.fsanaulla.utils.SampleEntitys._
+import com.fsanaulla.utils.TestHelper._
 import com.whisk.docker.impl.spotify.DockerKitSpotify
 import com.whisk.docker.scalatest.DockerTestKit
 import org.scalatest.time.{Second, Seconds, Span}

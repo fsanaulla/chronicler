@@ -3,15 +3,11 @@ package com.fsanaulla.utils
 import akka.http.scaladsl.model.Uri
 import com.fsanaulla.model.{InfluxReader, InfluxWriter, Result}
 import spray.json.{DeserializationException, JsArray, JsNumber, JsString}
-
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
 /**
   * Created by fayaz on 11.07.17.
   */
-object Helper extends {
+object TestHelper {
 
-  implicit val timeout: FiniteDuration = 1 second
   final val currentNanoTime: Long = System.currentTimeMillis() * 1000000
   final val OkResult = Result(200, isSuccess = true)
   final val NoContentResult = Result(204, isSuccess = true)
@@ -31,9 +27,9 @@ object Helper extends {
     }
   }
 
-  def await[T](future: Future[T])(implicit timeout: FiniteDuration): T = Await.result(future, timeout)
-
   def queryTester(query: String): Uri = Uri(s"/query?q=$query")
+
+  def writeTester(query: String): Uri = Uri(s"/write?$query")
 
   def queryTester(db: String, query: String): Uri = Uri(s"/query?db=$db&q=$query")
 }
