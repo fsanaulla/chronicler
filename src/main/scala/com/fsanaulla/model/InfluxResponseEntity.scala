@@ -78,11 +78,3 @@ object UserPrivilegesInfo {
   }
 
 }
-
-object JsArrayReadeable {
-
-  implicit object JsArrayInfluxReader extends InfluxReader[JsArray] {
-    override def read(js: JsArray): JsArray = js
-  }
-
-}

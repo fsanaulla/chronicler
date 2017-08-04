@@ -7,7 +7,7 @@ import com.fsanaulla.utils.ResponseWrapper.{toQueryResult, toResult}
 
 import scala.concurrent.Future
 
-trait DataManagement extends DataManagementQuery { self: InfluxClient =>
+private[fsanaulla] trait DataManagement extends DataManagementQuery { self: InfluxClient =>
 
   def createDatabase(dbName: String,
                      duration: Option[String] = None,

@@ -9,21 +9,20 @@ import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.FileIO
 import akka.util.ByteString
 import com.fsanaulla.Database
-import com.fsanaulla.model.JsArrayReadeable.JsArrayInfluxReader
-import com.fsanaulla.model.TypeAlias.ConnectionPoint
 import com.fsanaulla.model._
 import com.fsanaulla.query.DatabaseOperationQuery
 import com.fsanaulla.utils.ContentTypes.octetStream
-import com.fsanaulla.utils.DatabaseOperationHelper
 import com.fsanaulla.utils.ResponseWrapper.{toBulkQueryJsResult, toQueryJsResult, toQueryResult, toResult}
+import com.fsanaulla.utils.TypeAlias.ConnectionPoint
 import spray.json.JsArray
 
 import scala.concurrent.{ExecutionContext, Future}
 
-abstract class DatabaseOperation(dbName: String,
+private[fsanaulla] abstract class DatabaseOperation(dbName: String,
                                  username: Option[String],
                                  password: Option[String])
-  extends DatabaseOperationQuery with DatabaseOperationHelper with RequestBuilder { self: Database =>
+  extends DatabaseOperationQuery with RequestBuilder { self: Database =>
+  import DatabaseOperation._
 
   implicit val actorSystem: ActorSystem
   implicit val mat: ActorMaterializer
@@ -62,4 +61,11 @@ abstract class DatabaseOperation(dbName: String,
   def bulkReadJs(querys: Seq[String]): Future[QueryResult[Seq[JsArray]]] = {
     buildRequest(readFromInfluxBulkQuery(dbName, querys, username, password), GET).flatMap(toBulkQueryJsResult)
   }
+}
+
+object DatabaseOperation {
+
+  def toPoint(measurement: String, serializedEntity: String): String = measurement + "," + serializedEntity
+
+  def toPoints(measurement: String, serializedEntitys: Seq[String]): String = serializedEntitys.map(s => measurement + "," + s).mkString("\n")
 }

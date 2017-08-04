@@ -1,4 +1,4 @@
-package com.fsanaulla.model
+package com.fsanaulla.utils
 
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse}

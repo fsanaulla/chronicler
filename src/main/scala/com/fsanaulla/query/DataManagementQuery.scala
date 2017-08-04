@@ -5,7 +5,7 @@ import akka.http.scaladsl.model.Uri
 /**
   * Created by fayaz on 27.06.17.
   */
-trait DataManagementQuery extends QueryBuilder {
+private[fsanaulla] trait DataManagementQuery extends QueryBuilder {
 
   protected def createDatabaseQuery(dbName: String,
                                     duration: Option[String],

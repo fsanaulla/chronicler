@@ -8,7 +8,7 @@ import com.fsanaulla.utils.constants.Privileges._
 
 import scala.concurrent.Future
 
-trait UserManagement extends UserManagementQuery { self: InfluxClient =>
+private[fsanaulla] trait UserManagement extends UserManagementQuery { self: InfluxClient =>
 
   def createUser(username: String, password: String): Future[Result] = {
      buildRequest(createUserQuery(username, password)).flatMap(toResult)

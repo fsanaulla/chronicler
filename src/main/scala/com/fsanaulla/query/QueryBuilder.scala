@@ -2,7 +2,7 @@ package com.fsanaulla.query
 
 import akka.http.scaladsl.model.Uri
 
-trait QueryBuilder {
+private[fsanaulla] trait QueryBuilder {
 
   protected def queryBuilder(path: String, queryParam: String): Uri = {
     Uri(path).withQuery(Uri.Query("q" -> queryParam))

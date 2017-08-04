@@ -9,7 +9,7 @@ import com.fsanaulla.utils.constants.{Consistencys, Epochs, Precisions}
 /**
   * Created by fayaz on 04.07.17.
   */
-trait DatabaseOperationQuery extends QueryBuilder {
+private[fsanaulla] trait DatabaseOperationQuery extends QueryBuilder {
 
   protected def writeToInfluxQuery(dbName: String,
                          username: Option[String] = None,

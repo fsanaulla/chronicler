@@ -2,7 +2,7 @@ package com.fsanaulla.query
 
 import akka.http.scaladsl.model.Uri
 
-trait UserManagementQuery extends QueryBuilder {
+private[fsanaulla] trait UserManagementQuery extends QueryBuilder {
 
   protected def showUsersQuery: Uri = {
     queryBuilder("/query", "SHOW USERS")

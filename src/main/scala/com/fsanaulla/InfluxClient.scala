@@ -4,7 +4,7 @@ import akka.actor.{ActorSystem, Terminated}
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.fsanaulla.api.{DataManagement, RequestBuilder, RetentionPolicyManagement, UserManagement}
-import com.fsanaulla.model.TypeAlias._
+import com.fsanaulla.utils.TypeAlias._
 
 import scala.concurrent.{ExecutionContext, Future}
 

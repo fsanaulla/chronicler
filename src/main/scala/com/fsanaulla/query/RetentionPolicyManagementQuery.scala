@@ -2,7 +2,7 @@ package com.fsanaulla.query
 
 import akka.http.scaladsl.model.Uri
 
-trait RetentionPolicyManagementQuery extends QueryBuilder {
+private[fsanaulla] trait RetentionPolicyManagementQuery extends QueryBuilder {
 
   protected def createRetentionPolicyQuery(rpName: String,
                                            dbName: String,

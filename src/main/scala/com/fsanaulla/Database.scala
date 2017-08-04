@@ -3,7 +3,7 @@ package com.fsanaulla
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import com.fsanaulla.api.DatabaseOperation
-import com.fsanaulla.model.TypeAlias._
+import com.fsanaulla.utils.TypeAlias._
 import spray.json.JsArray
 
 import scala.concurrent.ExecutionContext

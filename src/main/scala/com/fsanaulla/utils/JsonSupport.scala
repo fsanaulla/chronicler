@@ -13,14 +13,14 @@ import scala.concurrent.Future
 /**
   * Created by fayaz on 12.07.17.
   */
-object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
+private[utils] object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   import spray.json._
 
-  private[utils] def unmarshalBody(response: HttpResponse)(implicit mat: ActorMaterializer): Future[JsObject] = {
+  def unmarshalBody(response: HttpResponse)(implicit mat: ActorMaterializer): Future[JsObject] = {
     Unmarshal(response.entity.withContentType(appJson)).to[JsObject]
   }
 
-  private[utils] def getInfluxValue(js: JsObject): Seq[JsArray] = {
+  def getInfluxValue(js: JsObject): Seq[JsArray] = {
     js.getFields("results").head.convertTo[Seq[JsObject]].head
       .getFields("series") match {
       case seq: Seq[JsValue] if seq.nonEmpty =>

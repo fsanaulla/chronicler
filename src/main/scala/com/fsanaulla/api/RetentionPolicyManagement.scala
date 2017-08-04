@@ -7,7 +7,7 @@ import com.fsanaulla.utils.ResponseWrapper.toResult
 
 import scala.concurrent.Future
 
-trait RetentionPolicyManagement extends RetentionPolicyManagementQuery { self: InfluxClient =>
+private[fsanaulla] trait RetentionPolicyManagement extends RetentionPolicyManagementQuery { self: InfluxClient =>
 
   def createRetentionPolicy(rpName: String,
                             dbName: String,
