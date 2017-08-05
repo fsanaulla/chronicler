@@ -68,6 +68,14 @@ private[fsanaulla] abstract class DatabaseOperation(dbName: String,
     write(HttpEntity(octetStream, FileIO.fromPath(Paths.get(path), chunkSize = chunkSize)))
   }
 
+  def writePoint(point: Point): Future[Result] = {
+    write(HttpEntity(octetStream, ByteString(point.serialize)))
+  }
+
+  def bulkWritePoints(points: Seq[Point]): Future[Result] = {
+    write(HttpEntity(octetStream, ByteString(points.map(_.serialize).mkString("\n"))))
+  }
+
   def read[T](query: String)(implicit reader: InfluxReader[T]): Future[QueryResult[T]] = {
     buildRequest(readFromInfluxSingleQuery(dbName, query, username, password), GET).flatMap(toQueryResult[T])
   }

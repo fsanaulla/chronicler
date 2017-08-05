@@ -31,6 +31,16 @@ class DatabaseSpec
 
   "Database operation" should "correctly work" in {
 
+    val point1 = Point("test2")
+      .addTag("firstName", "Martin")
+      .addTag("lastName", "Odersky")
+      .addField("age", 54)
+
+    val point2 = Point("test2")
+      .addTag("firstName", "Jame")
+      .addTag("lastName", "Franko")
+      .addField("age", 36)
+
     // INIT INFLUX CLIENT
     val influx = InfluxClient(influxdbContainer.getIpAddresses().futureValue.head, dockerPort)
 
@@ -48,6 +58,12 @@ class DatabaseSpec
     // WRITE - READ TEST
     db.writeFromFile("src/test/resources/points.txt").futureValue shouldEqual NoContentResult
     db.readJs("SELECT * FROM test1").futureValue.queryResult.size shouldEqual 3
+
+    db.writePoint(point1).futureValue shouldEqual NoContentResult
+    db.read[FakeEntity]("SELECT * FROM test2").futureValue.queryResult shouldEqual Seq(FakeEntity("Martin", "Odersky", 54))
+
+    db.bulkWritePoints(Seq(point1, point2)).futureValue shouldEqual NoContentResult
+    db.read[FakeEntity]("SELECT * FROM test2").futureValue.queryResult shouldEqual Seq(FakeEntity("Martin", "Odersky", 54), FakeEntity("Jame", "Franko", 36), FakeEntity("Martin", "Odersky", 54))
 
     db.write("test", singleEntity).futureValue shouldEqual NoContentResult
 
