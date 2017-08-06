@@ -32,4 +32,6 @@ object TestHelper {
   def writeTester(query: String): Uri = Uri(s"/write?$query")
 
   def queryTester(db: String, query: String): Uri = Uri(s"/query?db=$db&q=$query")
+
+  def queryTesterSimple(query: Map[String, String]): Uri = Uri("/query").withQuery(Uri.Query(query))
 }
