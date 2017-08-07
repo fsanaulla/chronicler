@@ -1,0 +1,15 @@
+language: scala
+
+jdk: oraclejdk8
+
+scala:
+  - 2.12.0
+
+services:
+  - docker
+
+script:
+  - sbt clean coverage test
+
+after_success:
+  - sbt coverageReport coveralls
