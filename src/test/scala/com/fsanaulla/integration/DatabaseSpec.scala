@@ -91,5 +91,7 @@ class DatabaseSpec
 
     // DROP DB TEST
     influx.dropDatabase("mydb").futureValue shouldEqual OkResult
+
+    influx.close()
   }
 }

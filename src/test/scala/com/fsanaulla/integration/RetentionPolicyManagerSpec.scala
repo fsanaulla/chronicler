@@ -56,5 +56,7 @@ class RetentionPolicyManagerSpec
     influx.dropRetentionPolicy("test", "mydb").futureValue shouldEqual OkResult
 
     influx.showRetentionPolicies("mydb").futureValue.queryResult shouldEqual Nil
+
+    influx.close()
   }
 }

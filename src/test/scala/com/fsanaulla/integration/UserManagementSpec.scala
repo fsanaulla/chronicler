@@ -56,5 +56,7 @@ class UserManagementSpec
 
     influx.dropUser("Martin").futureValue shouldEqual OkResult
     influx.showUsers.futureValue.queryResult shouldEqual Seq(UserInfo("Admin", isAdmin = true))
+
+    influx.close()
   }
 }

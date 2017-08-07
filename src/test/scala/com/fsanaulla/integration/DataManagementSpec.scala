@@ -52,5 +52,7 @@ class DataManagementSpec
 
     influx.dropDatabase(dbName).futureValue shouldEqual OkResult
     influx.showDatabases().futureValue.queryResult shouldEqual Nil
+
+    influx.close()
   }
  }
