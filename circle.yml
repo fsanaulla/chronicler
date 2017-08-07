@@ -1,4 +1,9 @@
 machine:
+  environment:
+      SCALA_VERSION: 2.12.0
+      SCALA_BINARY_VERSION: 2.12
+  java:
+      version: oraclejdk8
   services:
     - docker
 dependencies:
@@ -9,4 +14,10 @@ dependencies:
     - "~/.ivy2"
     - "~/.sbt"
   override:
-      - sbt coverage test:compile
+      - sbt ++$SCALA_VERSION coverage test:compile
+  test:
+    override:
+      - sbt ++$SCALA_VERSION coverage test coverageReport
+    post:
+      - mv target/scala-$SCALA_BINARY_VERSION/coverage-report  $CIRCLE_ARTIFACTS/coverage-report
+      - mv target/scala-$SCALA_BINARY_VERSION/scoverage-report $CIRCLE_ARTIFACTS/scoverage-report
