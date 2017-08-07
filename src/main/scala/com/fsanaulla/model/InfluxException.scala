@@ -9,5 +9,7 @@ abstract class InfluxException(errMsg: String) extends Throwable(errMsg)
 
 class BadRequestException(errMsg: String) extends InfluxException(errMsg)
 class ResourceNotFoundException(errMsg: String) extends InfluxException(errMsg)
+class ConnectionException(errMsg: String) extends InfluxException(errMsg)
 class InternalServerError(errMsg: String) extends InfluxException(errMsg)
-class UnknownException(errMsg: String) extends InfluxException(errMsg)
+class UnknownConnectionException(errMsg: String) extends InfluxException(errMsg)
+class UnknownResponseException(errMsg: String) extends InfluxException(errMsg)

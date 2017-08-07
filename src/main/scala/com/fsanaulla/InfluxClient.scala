@@ -2,8 +2,9 @@ package com.fsanaulla
 
 import akka.actor.{ActorSystem, Terminated}
 import akka.http.scaladsl.Http
-import akka.stream.ActorMaterializer
+import akka.stream.{ActorMaterializer, StreamTcpException}
 import com.fsanaulla.api.{DataManagement, RequestBuilder, RetentionPolicyManagement, UserManagement}
+import com.fsanaulla.model.{ConnectionException, UnknownConnectionException}
 import com.fsanaulla.utils.TypeAlias._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -23,7 +24,10 @@ class InfluxClient(host: String,
 
   protected implicit val system = ActorSystem()
   protected implicit val materializer: ActorMaterializer = ActorMaterializer()
-  protected implicit val connection: ConnectionPoint = Http().outgoingConnection(host, port)
+  protected implicit val connection: Connection = Http().outgoingConnection(host, port) recover {
+    case ex: StreamTcpException => throw new ConnectionException(ex.getMessage)
+    case unknown => throw new UnknownConnectionException(unknown.getMessage)
+  }
 
   def use(dbName: String): Database = new Database(dbName)
 

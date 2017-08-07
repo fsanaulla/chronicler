@@ -57,7 +57,7 @@ private[fsanaulla] object ResponseWrapper {
     case 400 => getError(response).map(errMsg => new BadRequestException(errMsg))
     case 404 => getError(response).map(errMsg => new ResourceNotFoundException(errMsg))
     case code: Int if code < 599 && code >= 500 => getError(response).map(errMsg => new InternalServerError(errMsg))
-    case other => getError(response).map(errMsg => new UnknownException(errMsg))
+    case other => getError(response).map(errMsg => new UnknownResponseException(errMsg))
   }
 
   private def getError(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[String] = unmarshalBody(response).map(_.getFields("error").head.convertTo[String])
