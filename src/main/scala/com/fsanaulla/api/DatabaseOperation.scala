@@ -12,7 +12,6 @@ import com.fsanaulla.Database
 import com.fsanaulla.model._
 import com.fsanaulla.query.DatabaseOperationQuery
 import com.fsanaulla.utils.ContentTypes.octetStream
-import com.fsanaulla.utils.Helper._
 import com.fsanaulla.utils.ResponseWrapper.{toBulkQueryJsResult, toQueryJsResult, toQueryResult, toResult}
 import com.fsanaulla.utils.TypeAlias.ConnectionPoint
 import spray.json.JsArray
@@ -30,24 +29,6 @@ private[fsanaulla] abstract class DatabaseOperation(dbName: String,
   implicit val ex: ExecutionContext
   implicit val connection: ConnectionPoint
 
-  //SYNCHRONOUS API
-  def writeSync[T](measurement: String, entity: T)(implicit writer: InfluxWriter[T]): Result = await(write[T](measurement, entity))
-
-  def bulkWriteSync[T](measurement: String, entitys: Seq[T])(implicit writer: InfluxWriter[T]): Result = await(bulkWrite[T](measurement, entitys))
-
-  def writeNativeSync(point: String): Result = await(writeNative(point))
-
-  def bulkWriteNativeSync(points: Seq[String]): Result = await(bulkWriteNative(points))
-
-  def writeFromFileSync(path: String, chunkSize: Int = 8192): Result = await(writeFromFile(path, chunkSize))
-
-  def readSync[T](query: String)(implicit reader: InfluxReader[T]): QueryResult[T] = await(read[T](query))
-
-  def readJsSync(query: String): QueryResult[JsArray] = await(readJs(query))
-
-  def bulkReadJsSync(querys: Seq[String]): QueryResult[Seq[JsArray]] = await(bulkReadJs(querys))
-
-  //ASYNCHRONOUS API
   def write[T](measurement: String, entity: T)(implicit writer: InfluxWriter[T]): Future[Result] = {
     write(HttpEntity(octetStream, ByteString(toPoint(measurement, writer.write(entity)))))
   }

@@ -4,13 +4,14 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import akka.stream.ActorMaterializer
 import com.fsanaulla.utils.ContentTypes.appJson
-import com.fsanaulla.utils.Helper._
+import com.fsanaulla.utils.Extension._
 import com.fsanaulla.utils.ResponseWrapper.{toBulkJsResult, toSingleJsResult}
 import com.fsanaulla.utils.SampleEntitys.{bulkResult, singleResult}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 import spray.json.{JsArray, JsNumber, JsObject, JsString, JsonParser}
 
 import scala.concurrent.ExecutionContext
+import scala.concurrent.duration._
 
 /**
   * Created by fayaz on 12.07.17.
@@ -23,6 +24,7 @@ class ResponseWrapperSpec
   implicit val actorSystem: ActorSystem = ActorSystem("TestActorSystem")
   implicit val mat: ActorMaterializer = ActorMaterializer()
   implicit val ex: ExecutionContext = actorSystem.dispatcher
+  implicit val timeout: FiniteDuration = 1 second
 
   override def afterAll(): Unit = {
     actorSystem.terminate()
@@ -116,10 +118,10 @@ class ResponseWrapperSpec
   val bulkHttpResponse: HttpResponse = HttpResponse(entity = HttpEntity(appJson, bulkStrJson))
 
   "single query result function" should "correctly work" in {
-    await(toSingleJsResult(singleHttpResponse)) shouldEqual singleResult
+    toSingleJsResult(singleHttpResponse).sync shouldEqual singleResult
   }
 
   "bulk query result function" should "correctly work" in {
-    await(toBulkJsResult(bulkHttpResponse)) shouldEqual bulkResult
+    toBulkJsResult(bulkHttpResponse).sync shouldEqual bulkResult
   }
 }

@@ -3,33 +3,12 @@ package com.fsanaulla.api
 import com.fsanaulla.InfluxClient
 import com.fsanaulla.model._
 import com.fsanaulla.query.DataManagementQuery
-import com.fsanaulla.utils.Helper._
 import com.fsanaulla.utils.ResponseWrapper.{toQueryResult, toResult}
 
 import scala.concurrent.Future
 
 private[fsanaulla] trait DataManagement extends DataManagementQuery { self: InfluxClient =>
 
-  //SYNCHRONOUS API
-  def createDatabaseSync(dbName: String,
-                         duration: Option[String] = None,
-                         replication: Option[String] = None,
-                         shardDuration: Option[String] = None,
-                         name: Option[String] = None): Result = await(createDatabase(dbName, duration, replication, shardDuration, name))
-
-  def dropDatabaseSync(dbName: String): Result = await(dropDatabase(dbName))
-
-  def dropMeasurementSync(dbName: String, measurementName: String): Result = await(dropMeasurement(dbName, measurementName))
-
-  def dropShardSync(shardId: Int): Result = await(dropShard(shardId))
-
-  def showMeasurementSync(dbName: String)(implicit reader: InfluxReader[MeasurementInfo]): QueryResult[MeasurementInfo] = await(showMeasurement(dbName))
-
-  def showRetentionPoliciesSync(dbName: String)(implicit reader: InfluxReader[RetentionPolicyInfo]): QueryResult[RetentionPolicyInfo] = await(showRetentionPolicies(dbName))
-
-  def showDatabaseSync()(implicit reader: InfluxReader[DatabaseInfo]): QueryResult[DatabaseInfo] = await(showDatabases())
-
-  //ASYNCHRONOUS API
   def createDatabase(dbName: String,
                      duration: Option[String] = None,
                      replication: Option[String] = None,
