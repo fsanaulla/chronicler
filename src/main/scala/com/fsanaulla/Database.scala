@@ -17,5 +17,5 @@ class Database(dbName: String,
               (implicit val actorSystem: ActorSystem,
                override val mat: ActorMaterializer,
                override val ex: ExecutionContext,
-               override val connection: ConnectionPoint)
+               override val connection: Connection)
   extends DatabaseOperation(dbName, username, password)

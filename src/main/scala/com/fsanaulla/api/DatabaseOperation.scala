@@ -13,7 +13,7 @@ import com.fsanaulla.model._
 import com.fsanaulla.query.DatabaseOperationQuery
 import com.fsanaulla.utils.ContentTypes.octetStream
 import com.fsanaulla.utils.ResponseWrapper.{toBulkQueryJsResult, toQueryJsResult, toQueryResult, toResult}
-import com.fsanaulla.utils.TypeAlias.ConnectionPoint
+import com.fsanaulla.utils.TypeAlias.Connection
 import spray.json.JsArray
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -27,7 +27,7 @@ private[fsanaulla] abstract class DatabaseOperation(dbName: String,
   implicit val actorSystem: ActorSystem
   implicit val mat: ActorMaterializer
   implicit val ex: ExecutionContext
-  implicit val connection: ConnectionPoint
+  implicit val connection: Connection
 
   def write[T](measurement: String, entity: T)(implicit writer: InfluxWriter[T]): Future[Result] = {
     write(HttpEntity(octetStream, ByteString(toPoint(measurement, writer.write(entity)))))
