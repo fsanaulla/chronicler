@@ -18,11 +18,11 @@ lazy val Versions = new {
 }
 
 libraryDependencies ++= Seq(
-  "com.typesafe.akka"   %    "akka-http_2.12"               %   Versions.akkaHttp,
+  "com.typesafe.akka"   %%   "akka-http"                    %   Versions.akkaHttp,
   "com.whisk"           %%   "docker-testkit-scalatest"     %   Versions.whisk      % "test",
   "com.whisk"           %%   "docker-testkit-impl-spotify"  %   Versions.whisk      % "test",
-  "org.scalatest"       %    "scalatest_2.12"               %   "3.0.3"             % "test",
-  "com.typesafe.akka"   %    "akka-http-spray-json_2.12"    %   Versions.akkaHttp
+  "org.scalatest"       %%   "scalatest"                    %   "3.0.3"             % "test",
+  "com.typesafe.akka"   %%   "akka-http-spray-json"         %   Versions.akkaHttp
 )
 
 parallelExecution := false
