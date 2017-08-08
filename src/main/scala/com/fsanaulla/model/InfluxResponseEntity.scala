@@ -23,6 +23,8 @@ case class RetentionPolicyInfo(name: String,
                                replication: Int,
                                default: Boolean) extends InfoResponseEntity
 
+case class ContinuousQueryInfo(name: String, query: String) extends InfoResponseEntity
+
 object RetentionPolicyInfo {
 
   implicit object RetentionPolicyInfluxReader extends InfluxReader[RetentionPolicyInfo] {
