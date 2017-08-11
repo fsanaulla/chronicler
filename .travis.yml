@@ -9,9 +9,9 @@ services:
   - docker
 
 before_script:
-  - chmod 777 ~/scripts/sbt.sh ~/scripts/influxdb.sh
-  - ~/scripts/sbt.sh
-  - ~/scripts/influxdb.sh
+  - chmod 777 ~/$TRAVIS_BUILD_DIR/scripts/sbt.sh ~/$TRAVIS_BUILD_DIR/scripts/influxdb.sh
+  - ~/$TRAVIS_BUILD_DIR/scripts/sbt.sh
+  - ~/$TRAVIS_BUILD_DIR/scripts/influxdb.sh
 
 script:
   - sbt clean coverage test
