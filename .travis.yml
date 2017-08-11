@@ -13,6 +13,7 @@ before_script:
   - chmod 777 sbt.sh influxdb.sh
   - ./sbt.sh
   - ./influxdb.sh
+  - cd $TRAVIS_BUILD_DIR
 
 script:
   - sbt clean coverage test
