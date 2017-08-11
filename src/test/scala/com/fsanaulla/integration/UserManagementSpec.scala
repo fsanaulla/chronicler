@@ -35,11 +35,11 @@ class UserManagementSpec extends IntegrationSpec {
 
     influx.setUserPassword("Martin", "new_password").sync shouldEqual OkResult
 
-    influx.setPrivileges("Martin", "mydb", Privileges.READ).sync shouldEqual OkResult
-    influx.showUserPrivileges("Martin").sync.queryResult shouldEqual Seq(UserPrivilegesInfo("mydb", "READ"))
+    influx.setPrivileges("Martin", userDB, Privileges.READ).sync shouldEqual OkResult
+    influx.showUserPrivileges("Martin").sync.queryResult shouldEqual Seq(UserPrivilegesInfo(userDB, "READ"))
 
-    influx.revokePrivileges("Martin", "mydb", Privileges.READ).sync shouldEqual OkResult
-    influx.showUserPrivileges("Martin").sync.queryResult shouldEqual Seq(UserPrivilegesInfo("mydb", "NO PRIVILEGES"))
+    influx.revokePrivileges("Martin", userDB, Privileges.READ).sync shouldEqual OkResult
+    influx.showUserPrivileges("Martin").sync.queryResult shouldEqual Seq(UserPrivilegesInfo(userDB, "NO PRIVILEGES"))
 
     influx.disableAdmin("Admin").sync shouldEqual OkResult
     influx.showUsers.sync.queryResult shouldEqual Seq(UserInfo("Martin", isAdmin = false), UserInfo("Admin", isAdmin = false))
