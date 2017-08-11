@@ -16,8 +16,8 @@ class ContinuousQueryManagementSpec extends IntegrationSpec {
 
   val testDB = "cq_db"
   val testCQ = "test_cq"
-  val query = "SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m)"
-  val updateQuery = "SELECT mean(value) AS mean_value INTO mydb.autogen.new_aggr FROM mydb.autogen.cpu_load_short GROUP BY time(30m)"
+  val query = "SELECT mean(\"value\") AS \"mean_value\" INTO \"aggregate\" FROM \"cpu_load_short\" GROUP BY time(30m)"
+  val updateQuery = "SELECT mean(\"value\") AS \"mean_value\" INTO \"new_aggregate\" FROM \"cpu_load_short\" GROUP BY time(30m)"
 
   "CQ management operation" should "work correctly" in {
 
@@ -30,11 +30,11 @@ class ContinuousQueryManagementSpec extends IntegrationSpec {
 
     influx.createCQ(testDB, testCQ, query).sync shouldEqual OkResult
 
-    influx.showCQ(testDB).sync.queryResult shouldEqual Seq(ContinuousQuery(testCQ, s"CREATE CONTINUOUS QUERY $testCQ ON $testDB BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END"))
+    influx.showCQ(testDB).sync.queryResult shouldEqual Seq(ContinuousQuery(testCQ, s"CREATE CONTINUOUS QUERY $testCQ ON $testDB BEGIN SELECT mean(value) AS mean_value INTO cq_db.autogen.aggregate FROM cq_db.autogen.cpu_load_short GROUP BY time(30m) END"))
 
     influx.updateCQ(testDB, testCQ, updateQuery).sync shouldEqual OkResult
 
-    influx.showCQ(testDB).sync.queryResult.contains(ContinuousQuery(testCQ, s"CREATE CONTINUOUS QUERY $testCQ ON $testDB BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.new_aggr FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END)")) shouldEqual true
+    influx.showCQ(testDB).sync.queryResult.contains(ContinuousQuery(testCQ, s"CREATE CONTINUOUS QUERY $testCQ ON $testDB BEGIN SELECT mean(value) AS mean_value INTO cq_db.autogen.new_aggregate FROM cq_db.autogen.cpu_load_short GROUP BY time(30m) END")) shouldEqual true
 
     influx.dropCQ(testDB, testCQ).sync shouldEqual OkResult
 

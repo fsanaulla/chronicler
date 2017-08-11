@@ -22,3 +22,5 @@ libraryDependencies ++= Seq(
   "org.scalatest"       %%   "scalatest"                    %   "3.0.3"             % "test",
   "com.typesafe.akka"   %%   "akka-http-spray-json"         %   Versions.akkaHttp
 )
+
+parallelExecution := false
