@@ -9,8 +9,9 @@ services:
   - docker
 
 before_script:
-  - wget -q https://dl.bintray.com/sbt/debian/sbt-0.13.15.deb
-  - sudo dpkg -i sbt-0.13.15.deb
+  - chmod 777 ~/scripts/sbt.sh ~/scripts/influxdb.sh
+  - ~/scripts/sbt.sh
+  - ~/scripts/influxdb.sh
 
 script:
   - sbt clean coverage test

@@ -19,11 +19,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 implicit val ex: ExecutionContext = _
 ```
 
-Creating simply connection based on `host` with default `port`
+Creating simply connection based on `host` and default `port`
 ```
 val influx = InfluxClient("host") //default port 8086
 ```
-or with `host` and `port`
+or with `host` and custom `port`
 ```
 val influx = InfluxClient("host", 8087)
 ```

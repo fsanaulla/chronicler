@@ -18,11 +18,22 @@ private[fsanaulla] object ResponseWrapper {
     unmarshalBody(response).map(getInfluxValue)
   }
 
+  def toCQResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer, reader: InfluxReader[ContinuousQuery]): Future[Seq[ContinuousQueryInfo]] = {
+    unmarshalBody(response).map(getInfluxCQInfo)
+  }
+
   def toBulkJsResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[Seq[JsArray]]] = {
     unmarshalBody(response)
       .map(_.getFields("results").head.convertTo[Seq[JsObject]])
       .map(_.map(_.getFields("series").head.convertTo[Seq[JsObject]].head))
       .map(_.map(_.getFields("values").head.convertTo[Seq[JsArray]]))
+  }
+
+  def toCqQueryResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer, reader: InfluxReader[ContinuousQuery]): Future[QueryResult[ContinuousQueryInfo]] = {
+    response.status.intValue() match {
+      case code if isSuccessful(code) => toCQResult(response).map(seq => QueryResult[ContinuousQueryInfo](code, isSuccess = true, seq))
+      case other => errorHandler(other, response).map(ex => QueryResult[ContinuousQueryInfo](other, isSuccess = false, ex = Some(ex)))
+    }
   }
 
   def toQueryResult[T](response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer, reader: InfluxReader[T]): Future[QueryResult[T]] = {
