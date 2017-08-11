@@ -9,7 +9,7 @@ services:
   - docker
 
 before_script:
-  - chmod 777 $TRAVIS_BUILD_DIR/sbt.sh $TRAVIS_BUILD_DIR/influxdb.sh
+  - chmod 777 $TRAVIS_BUILD_DIR/scripts/sbt.sh $TRAVIS_BUILD_DIR/scripts/influxdb.sh
   - $TRAVIS_BUILD_DIR/scripts/sbt.sh
   - $TRAVIS_BUILD_DIR/scripts/influxdb.sh
 

@@ -30,11 +30,11 @@ class ContinuousQueryManagementSpec extends IntegrationSpec {
 
     influx.createCQ(testDB, testCQ, query).sync shouldEqual OkResult
 
-    influx.showCQ(testDB).sync.queryResult shouldEqual Seq(ContinuousQuery("test_cq", "CREATE CONTINUOUS QUERY test_cq ON cq_db BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END"))
+    influx.showCQ(testDB).sync.queryResult shouldEqual Seq(ContinuousQuery(testCQ, s"CREATE CONTINUOUS QUERY $testCQ ON $testDB BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END"))
 
     influx.updateCQ(testDB, testCQ, updateQuery).sync shouldEqual OkResult
 
-    influx.showCQ(testDB).sync.queryResult.contains(ContinuousQuery("test_cq", "CREATE CONTINUOUS QUERY test_cq ON cq_db BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.new_aggr FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END)")) shouldEqual true
+    influx.showCQ(testDB).sync.queryResult.contains(ContinuousQuery(testCQ, s"CREATE CONTINUOUS QUERY $testCQ ON $testDB BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.new_aggr FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END)")) shouldEqual true
 
     influx.dropCQ(testDB, testCQ).sync shouldEqual OkResult
 
