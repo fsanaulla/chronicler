@@ -3,7 +3,7 @@ package com.fsanaulla
 import akka.actor.{ActorSystem, Terminated}
 import akka.http.scaladsl.Http
 import akka.stream.{ActorMaterializer, StreamTcpException}
-import com.fsanaulla.api.{DataManagement, RequestBuilder, RetentionPolicyManagement, UserManagement}
+import com.fsanaulla.api._
 import com.fsanaulla.model.{ConnectionException, UnknownConnectionException}
 import com.fsanaulla.utils.TypeAlias._
 
@@ -20,6 +20,7 @@ class InfluxClient(host: String,
     extends DataManagement
       with UserManagement
       with RetentionPolicyManagement
+      with ContinuousQueryManagement
       with RequestBuilder {
 
   protected implicit val system = ActorSystem()

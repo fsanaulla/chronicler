@@ -1,6 +1,6 @@
 package com.fsanaulla.model
 
-import spray.json.{DeserializationException, JsArray, JsBoolean, JsNumber, JsString}
+import spray.json.{DeserializationException, JsArray, JsBoolean, JsNumber, JsObject, JsString}
 
 /**
   * Created by
@@ -22,6 +22,10 @@ case class RetentionPolicyInfo(name: String,
                                shardGroupDuration: String,
                                replication: Int,
                                default: Boolean) extends InfoResponseEntity
+
+case class ContinuousQuery(cqName: String, query: String)
+
+case class ContinuousQueryInfo(dbName: String, querys: Seq[ContinuousQuery]) extends InfoResponseEntity
 
 object RetentionPolicyInfo {
 
@@ -77,4 +81,14 @@ object UserPrivilegesInfo {
     }
   }
 
+}
+
+object ContinuousQuery {
+
+  implicit object ContinuousQueryInfluxReader extends InfluxReader[ContinuousQuery] {
+    override def read(js: JsArray): ContinuousQuery = js.elements match {
+      case Vector(JsString(cqName), JsString(query)) => ContinuousQuery(cqName, query)
+      case _ => throw DeserializationException(s"Can't deserialize $UserPrivilegesInfo object")
+    }
+  }
 }

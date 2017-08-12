@@ -2,32 +2,20 @@ package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
 import com.fsanaulla.model._
+import com.fsanaulla.utils.Extension._
 import com.fsanaulla.utils.SampleEntitys._
 import com.fsanaulla.utils.TestHelper._
-import com.whisk.docker.impl.spotify.DockerKitSpotify
-import com.whisk.docker.scalatest.DockerTestKit
-import org.scalatest.time.{Second, Seconds, Span}
-import org.scalatest.{FlatSpec, Matchers}
+import com.fsanaulla.utils.TestSpec
 import spray.json.{JsArray, JsNumber, JsString}
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * Created by fayaz on 06.07.17.
   */
-class DatabaseSpec
-  extends FlatSpec
-  with Matchers
-  with DockerTestKit
-  with DockerKitSpotify
-  with DockerInfluxService {
+class DatabaseSpec extends TestSpec {
 
-  implicit val pc = PatienceConfig(Span(20, Seconds), Span(1, Second))
-
-  "Influx container" should "get up and run correctly" in {
-    // CHECKING CONTAINER
-    isContainerReady(influxdbContainer).futureValue shouldBe true
-    influxdbContainer.getPorts().futureValue.get(dockerPort) should not be None
-    influxdbContainer.getIpAddresses().futureValue should not be Seq.empty
-  }
+  val testDB = "db"
 
   "Database operation" should "correctly work" in {
 
@@ -42,13 +30,13 @@ class DatabaseSpec
       .addField("age", 36)
 
     // INIT INFLUX CLIENT
-    val influx = InfluxClient(influxdbContainer.getIpAddresses().futureValue.head, dockerPort)
+    val influx = InfluxClient(host)
 
     // CREATING DB TEST
-    influx.createDatabase("mydb").futureValue shouldEqual OkResult
+    influx.createDatabase(testDB).futureValue shouldEqual OkResult
 
     // DATABASE
-    val db = influx.use("mydb")
+    val db = influx.use(testDB)
     val notExistedDb = influx.use("unknown_db")
 
     notExistedDb.write("test", singleEntity).recover {
@@ -90,7 +78,7 @@ class DatabaseSpec
     multiQuery.queryResult shouldEqual largeMultiJsonEntity
 
     // DROP DB TEST
-    influx.dropDatabase("mydb").futureValue shouldEqual OkResult
+    influx.dropDatabase(testDB).futureValue shouldEqual OkResult
 
     influx.close()
   }
