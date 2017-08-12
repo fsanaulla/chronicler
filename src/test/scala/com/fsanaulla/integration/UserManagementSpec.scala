@@ -17,6 +17,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class UserManagementSpec extends IntegrationSpec {
 
   val userDB = "user_db"
+  val userName = "Martin"
+  val userPass = "pass"
+  val userNPass = "new_pass"
+
+  val admin = "Admin"
+  val adminPass = "admin_pass"
 
   "User management operation" should "correctly work" in {
 
@@ -25,30 +31,30 @@ class UserManagementSpec extends IntegrationSpec {
 
     influx.createDatabase(userDB).sync shouldEqual OkResult
 
-    influx.createUser("Martin", "password").sync shouldEqual OkResult
-    influx.showUsers.sync.queryResult.contains(UserInfo("Martin", isAdmin = false)) shouldEqual true
+    influx.createUser(userName, userPass).sync shouldEqual OkResult
+    influx.showUsers.sync.queryResult.contains(UserInfo(userName, isAdmin = false)) shouldEqual true
 
-    influx.createAdmin("Admin", "admin_pass").sync shouldEqual OkResult
-    influx.showUsers.sync.queryResult shouldEqual Seq(UserInfo("Martin", isAdmin = false), UserInfo("Admin", isAdmin = true))
+    influx.createAdmin(admin, adminPass).sync shouldEqual OkResult
+    influx.showUsers.sync.queryResult shouldEqual Seq(UserInfo(userName, isAdmin = false), UserInfo(admin, isAdmin = true))
 
-    influx.showUserPrivileges("Admin").sync.queryResult shouldEqual Nil
+    influx.showUserPrivileges(admin).sync.queryResult shouldEqual Nil
 
-    influx.setUserPassword("Martin", "new_password").sync shouldEqual OkResult
+    influx.setUserPassword(userName, userNPass).sync shouldEqual OkResult
 
-    influx.setPrivileges("Martin", userDB, Privileges.READ).sync shouldEqual OkResult
-    influx.showUserPrivileges("Martin").sync.queryResult shouldEqual Seq(UserPrivilegesInfo(userDB, "READ"))
+    influx.setPrivileges(userName, userDB, Privileges.READ).sync shouldEqual OkResult
+    influx.showUserPrivileges(userName).sync.queryResult shouldEqual Seq(UserPrivilegesInfo(userDB, Privileges.READ))
 
-    influx.revokePrivileges("Martin", userDB, Privileges.READ).sync shouldEqual OkResult
-    influx.showUserPrivileges("Martin").sync.queryResult shouldEqual Seq(UserPrivilegesInfo(userDB, "NO PRIVILEGES"))
+    influx.revokePrivileges(userName, userDB, Privileges.READ).sync shouldEqual OkResult
+    influx.showUserPrivileges(userName).sync.queryResult shouldEqual Seq(UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES))
 
-    influx.disableAdmin("Admin").sync shouldEqual OkResult
-    influx.showUsers.sync.queryResult shouldEqual Seq(UserInfo("Martin", isAdmin = false), UserInfo("Admin", isAdmin = false))
+    influx.disableAdmin(admin).sync shouldEqual OkResult
+    influx.showUsers.sync.queryResult shouldEqual Seq(UserInfo(userName, isAdmin = false), UserInfo(admin, isAdmin = false))
 
-    influx.makeAdmin("Admin").sync shouldEqual OkResult
-    influx.showUsers.sync.queryResult shouldEqual Seq(UserInfo("Martin", isAdmin = false), UserInfo("Admin", isAdmin = true))
+    influx.makeAdmin(admin).sync shouldEqual OkResult
+    influx.showUsers.sync.queryResult shouldEqual Seq(UserInfo(userName, isAdmin = false), UserInfo(admin, isAdmin = true))
 
-    influx.dropUser("Martin").sync shouldEqual OkResult
-    influx.showUsers.sync.queryResult shouldEqual Seq(UserInfo("Admin", isAdmin = true))
+    influx.dropUser(userName).sync shouldEqual OkResult
+    influx.showUsers.sync.queryResult shouldEqual Seq(UserInfo(admin, isAdmin = true))
 
     influx.close()
   }

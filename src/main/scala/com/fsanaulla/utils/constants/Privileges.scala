@@ -19,4 +19,8 @@ object Privileges {
   case object ALL extends Privilege {
     override def value: String = "ALL"
   }
+
+  case object NO_PRIVILEGES extends Privilege {
+    override def value: String = "NO PRIVILEGES"
+  }
 }
