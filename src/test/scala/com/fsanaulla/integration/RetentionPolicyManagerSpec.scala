@@ -5,6 +5,7 @@ import com.fsanaulla.model.{DatabaseInfo, RetentionPolicyInfo}
 import com.fsanaulla.utils.Extension._
 import com.fsanaulla.utils.InfluxDuration._
 import com.fsanaulla.utils.TestHelper.OkResult
+import com.fsanaulla.utils.TestSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -13,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class RetentionPolicyManagerSpec extends IntegrationSpec {
+class RetentionPolicyManagerSpec extends TestSpec {
 
   val rpDB = "rp_db"
 
@@ -23,29 +24,29 @@ class RetentionPolicyManagerSpec extends IntegrationSpec {
     val influx = InfluxClient(host)
 
     // CREATING DB TEST
-    influx.createDatabase(rpDB).sync shouldEqual OkResult
+    influx.createDatabase(rpDB).futureValue shouldEqual OkResult
 
-    influx.showDatabases().sync.queryResult.contains(DatabaseInfo(rpDB)) shouldEqual true
+    influx.showDatabases().futureValue.queryResult.contains(DatabaseInfo(rpDB)) shouldEqual true
 
-    influx.createRetentionPolicy("test", rpDB, 2 hours, 2, Some(2 hours), default = true).sync shouldEqual OkResult
+    influx.createRetentionPolicy("test", rpDB, 2 hours, 2, Some(2 hours), default = true).futureValue shouldEqual OkResult
 
-    influx.showRetentionPolicies(rpDB).sync.queryResult.contains(RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true)) shouldEqual true
+    influx.showRetentionPolicies(rpDB).futureValue.queryResult.contains(RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true)) shouldEqual true
 
-    influx.dropRetentionPolicy("autogen", rpDB).sync shouldEqual OkResult
+    influx.dropRetentionPolicy("autogen", rpDB).futureValue shouldEqual OkResult
 
-    influx.showRetentionPolicies(rpDB).sync.queryResult shouldEqual Seq(RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true))
+    influx.showRetentionPolicies(rpDB).futureValue.queryResult shouldEqual Seq(RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true))
 
-    influx.updateRetentionPolicy("test", rpDB, Some(3 hours)).sync shouldEqual OkResult
+    influx.updateRetentionPolicy("test", rpDB, Some(3 hours)).futureValue shouldEqual OkResult
 
-    influx.showRetentionPolicies(rpDB).sync.queryResult shouldEqual Seq(RetentionPolicyInfo("test", "3h0m0s", "2h0m0s", 2, default = true))
+    influx.showRetentionPolicies(rpDB).futureValue.queryResult shouldEqual Seq(RetentionPolicyInfo("test", "3h0m0s", "2h0m0s", 2, default = true))
 
-    influx.dropRetentionPolicy("test", rpDB).sync shouldEqual OkResult
+    influx.dropRetentionPolicy("test", rpDB).futureValue shouldEqual OkResult
 
-    influx.showRetentionPolicies(rpDB).sync.queryResult shouldEqual Nil
+    influx.showRetentionPolicies(rpDB).futureValue.queryResult shouldEqual Nil
 
-    influx.dropDatabase(rpDB).sync shouldEqual OkResult
+    influx.dropDatabase(rpDB).futureValue shouldEqual OkResult
 
-    influx.showDatabases().sync.queryResult.contains(DatabaseInfo(rpDB)) shouldEqual false
+    influx.showDatabases().futureValue.queryResult.contains(DatabaseInfo(rpDB)) shouldEqual false
 
     influx.close()
   }

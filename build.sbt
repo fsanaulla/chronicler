@@ -14,7 +14,6 @@ scalacOptions ++= Seq(
 
 lazy val Versions = new {
   val akkaHttp = "10.0.9"
-  val whisk = "0.9.0"
 }
 
 libraryDependencies ++= Seq(
@@ -22,5 +21,3 @@ libraryDependencies ++= Seq(
   "org.scalatest"       %%   "scalatest"                    %   "3.0.3"             % "test",
   "com.typesafe.akka"   %%   "akka-http-spray-json"         %   Versions.akkaHttp
 )
-
-parallelExecution := false

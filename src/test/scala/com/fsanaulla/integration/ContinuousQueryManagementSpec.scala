@@ -4,6 +4,7 @@ import com.fsanaulla.InfluxClient
 import com.fsanaulla.model.{ContinuousQuery, DatabaseInfo}
 import com.fsanaulla.utils.Extension._
 import com.fsanaulla.utils.TestHelper._
+import com.fsanaulla.utils.TestSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -12,7 +13,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 09.08.17 on Anna's birthday
   */
-class ContinuousQueryManagementSpec extends IntegrationSpec {
+class ContinuousQueryManagementSpec extends TestSpec {
 
   val testDB = "cq_db"
   val testCQ = "test_cq"
@@ -24,23 +25,23 @@ class ContinuousQueryManagementSpec extends IntegrationSpec {
     // INIT INFLUX CLIENT
     val influx = InfluxClient(host)
 
-    influx.createDatabase(testDB).sync shouldEqual OkResult
+    influx.createDatabase(testDB).futureValue shouldEqual OkResult
 
-    influx.showDatabases().sync.queryResult.contains(DatabaseInfo(testDB)) shouldEqual true
+    influx.showDatabases().futureValue.queryResult.contains(DatabaseInfo(testDB)) shouldEqual true
 
-    influx.createCQ(testDB, testCQ, query).sync shouldEqual OkResult
+    influx.createCQ(testDB, testCQ, query).futureValue shouldEqual OkResult
 
-    influx.showCQ(testDB).sync.queryResult shouldEqual Seq(ContinuousQuery(testCQ, s"CREATE CONTINUOUS QUERY $testCQ ON $testDB BEGIN SELECT mean(value) AS mean_value INTO cq_db.autogen.aggregate FROM cq_db.autogen.cpu_load_short GROUP BY time(30m) END"))
+    influx.showCQ(testDB).futureValue.queryResult shouldEqual Seq(ContinuousQuery(testCQ, s"CREATE CONTINUOUS QUERY $testCQ ON $testDB BEGIN SELECT mean(value) AS mean_value INTO cq_db.autogen.aggregate FROM cq_db.autogen.cpu_load_short GROUP BY time(30m) END"))
 
-    influx.updateCQ(testDB, testCQ, updateQuery).sync shouldEqual OkResult
+    influx.updateCQ(testDB, testCQ, updateQuery).futureValue shouldEqual OkResult
 
-    influx.showCQ(testDB).sync.queryResult.contains(ContinuousQuery(testCQ, s"CREATE CONTINUOUS QUERY $testCQ ON $testDB BEGIN SELECT mean(value) AS mean_value INTO cq_db.autogen.new_aggregate FROM cq_db.autogen.cpu_load_short GROUP BY time(30m) END")) shouldEqual true
+    influx.showCQ(testDB).futureValue.queryResult.contains(ContinuousQuery(testCQ, s"CREATE CONTINUOUS QUERY $testCQ ON $testDB BEGIN SELECT mean(value) AS mean_value INTO cq_db.autogen.new_aggregate FROM cq_db.autogen.cpu_load_short GROUP BY time(30m) END")) shouldEqual true
 
-    influx.dropCQ(testDB, testCQ).sync shouldEqual OkResult
+    influx.dropCQ(testDB, testCQ).futureValue shouldEqual OkResult
 
-    influx.showCQ(testDB).sync.queryResult shouldEqual Nil
+    influx.showCQ(testDB).futureValue.queryResult shouldEqual Nil
 
-    influx.dropDatabase(testDB).sync shouldEqual OkResult
+    influx.dropDatabase(testDB).futureValue shouldEqual OkResult
 
     influx.close()
   }

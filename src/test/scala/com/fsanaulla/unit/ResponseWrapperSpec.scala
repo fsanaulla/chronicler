@@ -8,7 +8,8 @@ import com.fsanaulla.utils.ContentTypes.appJson
 import com.fsanaulla.utils.Extension._
 import com.fsanaulla.utils.ResponseWrapper.{toBulkJsResult, toCQResult, toSingleJsResult}
 import com.fsanaulla.utils.SampleEntitys.{bulkResult, singleResult}
-import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
+import com.fsanaulla.utils.TestSpec
+import org.scalatest.BeforeAndAfterAll
 import spray.json.{JsArray, JsNumber, JsObject, JsString, JsonParser}
 
 import scala.concurrent.ExecutionContext
@@ -17,10 +18,7 @@ import scala.concurrent.duration._
 /**
   * Created by fayaz on 12.07.17.
   */
-class ResponseWrapperSpec
-  extends FlatSpec
-  with Matchers
-  with BeforeAndAfterAll {
+class ResponseWrapperSpec extends TestSpec with BeforeAndAfterAll {
 
   implicit val actorSystem: ActorSystem = ActorSystem("TestActorSystem")
   implicit val mat: ActorMaterializer = ActorMaterializer()
@@ -172,14 +170,14 @@ class ResponseWrapperSpec
   val cqHttpResponse: HttpResponse = HttpResponse(entity = HttpEntity(appJson, cqStrJson))
 
   "single query result function" should "correctly work" in {
-    toSingleJsResult(singleHttpResponse).sync shouldEqual singleResult
+    toSingleJsResult(singleHttpResponse).futureValue shouldEqual singleResult
   }
 
   "bulk query result function" should "correctly work" in {
-    toBulkJsResult(bulkHttpResponse).sync shouldEqual bulkResult
+    toBulkJsResult(bulkHttpResponse).futureValue shouldEqual bulkResult
   }
 
   "cq unpacking" should "correctly work" in {
-    toCQResult(cqHttpResponse).sync.filter(_.querys.nonEmpty).head shouldEqual ContinuousQueryInfo("mydb", Seq(ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")))
+    toCQResult(cqHttpResponse).futureValue.filter(_.querys.nonEmpty).head shouldEqual ContinuousQueryInfo("mydb", Seq(ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")))
   }
 }

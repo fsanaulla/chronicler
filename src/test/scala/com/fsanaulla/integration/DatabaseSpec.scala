@@ -5,6 +5,7 @@ import com.fsanaulla.model._
 import com.fsanaulla.utils.Extension._
 import com.fsanaulla.utils.SampleEntitys._
 import com.fsanaulla.utils.TestHelper._
+import com.fsanaulla.utils.TestSpec
 import spray.json.{JsArray, JsNumber, JsString}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -12,7 +13,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /**
   * Created by fayaz on 06.07.17.
   */
-class DatabaseSpec extends IntegrationSpec {
+class DatabaseSpec extends TestSpec {
 
   val testDB = "db"
 
@@ -32,7 +33,7 @@ class DatabaseSpec extends IntegrationSpec {
     val influx = InfluxClient(host)
 
     // CREATING DB TEST
-    influx.createDatabase(testDB).sync shouldEqual OkResult
+    influx.createDatabase(testDB).futureValue shouldEqual OkResult
 
     // DATABASE
     val db = influx.use(testDB)
@@ -43,25 +44,25 @@ class DatabaseSpec extends IntegrationSpec {
     }
 
     // WRITE - READ TEST
-    db.writeFromFile("src/test/resources/points.txt").sync shouldEqual NoContentResult
-    db.readJs("SELECT * FROM test1").sync.queryResult.size shouldEqual 3
+    db.writeFromFile("src/test/resources/points.txt").futureValue shouldEqual NoContentResult
+    db.readJs("SELECT * FROM test1").futureValue.queryResult.size shouldEqual 3
 
-    db.writePoint(point1).sync shouldEqual NoContentResult
-    db.read[FakeEntity]("SELECT * FROM test2").sync.queryResult shouldEqual Seq(FakeEntity("Martin", "Odersky", 54))
+    db.writePoint(point1).futureValue shouldEqual NoContentResult
+    db.read[FakeEntity]("SELECT * FROM test2").futureValue.queryResult shouldEqual Seq(FakeEntity("Martin", "Odersky", 54))
 
-    db.bulkWritePoints(Seq(point1, point2)).sync shouldEqual NoContentResult
-    db.read[FakeEntity]("SELECT * FROM test2").sync.queryResult shouldEqual Seq(FakeEntity("Martin", "Odersky", 54), FakeEntity("Jame", "Franko", 36), FakeEntity("Martin", "Odersky", 54))
+    db.bulkWritePoints(Seq(point1, point2)).futureValue shouldEqual NoContentResult
+    db.read[FakeEntity]("SELECT * FROM test2").futureValue.queryResult shouldEqual Seq(FakeEntity("Martin", "Odersky", 54), FakeEntity("Jame", "Franko", 36), FakeEntity("Martin", "Odersky", 54))
 
-    db.write("test", singleEntity).sync shouldEqual NoContentResult
+    db.write("test", singleEntity).futureValue shouldEqual NoContentResult
 
-    db.read[FakeEntity]("SELECT * FROM test").sync.queryResult shouldEqual Seq(singleEntity)
-    db.readJs("SELECT * FROM test").sync.queryResult shouldEqual Seq(singleJsonEntity)
+    db.read[FakeEntity]("SELECT * FROM test").futureValue.queryResult shouldEqual Seq(singleEntity)
+    db.readJs("SELECT * FROM test").futureValue.queryResult shouldEqual Seq(singleJsonEntity)
 
-    db.bulkWrite("test", multiEntitys).sync shouldEqual NoContentResult
-    db.read[FakeEntity]("SELECT * FROM test").sync.queryResult.sortBy(_.age) shouldEqual (singleEntity +: multiEntitys).sortBy(_.age)
-    db.readJs("SELECT * FROM test").sync.queryResult shouldEqual multiJsonEntity
+    db.bulkWrite("test", multiEntitys).futureValue shouldEqual NoContentResult
+    db.read[FakeEntity]("SELECT * FROM test").futureValue.queryResult.sortBy(_.age) shouldEqual (singleEntity +: multiEntitys).sortBy(_.age)
+    db.readJs("SELECT * FROM test").futureValue.queryResult shouldEqual multiJsonEntity
 
-    val multiQuery = db.bulkReadJs(Seq("SELECT * FROM test", "SELECT * FROM test WHERE age > 25")).sync
+    val multiQuery = db.bulkReadJs(Seq("SELECT * FROM test", "SELECT * FROM test WHERE age > 25")).futureValue
 
     multiQuery.queryResult.size shouldEqual 2
     multiQuery.queryResult shouldBe a [Seq[_]]
@@ -77,7 +78,7 @@ class DatabaseSpec extends IntegrationSpec {
     multiQuery.queryResult shouldEqual largeMultiJsonEntity
 
     // DROP DB TEST
-    influx.dropDatabase(testDB).sync shouldEqual OkResult
+    influx.dropDatabase(testDB).futureValue shouldEqual OkResult
 
     influx.close()
   }
