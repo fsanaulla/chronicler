@@ -4,7 +4,8 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.HttpResponse
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
-import com.fsanaulla.model.{ContinuousQuery, ContinuousQueryInfo, InfluxReader}
+import com.fsanaulla.model.InfluxImplicits._
+import com.fsanaulla.model.InfluxReader
 import com.fsanaulla.utils.ContentTypes.appJson
 import spray.json.DefaultJsonProtocol
 

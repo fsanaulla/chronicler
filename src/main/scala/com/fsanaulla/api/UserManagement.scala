@@ -1,6 +1,7 @@
 package com.fsanaulla.api
 
 import com.fsanaulla.InfluxClient
+import com.fsanaulla.model.InfluxImplicits._
 import com.fsanaulla.model._
 import com.fsanaulla.query.UserManagementQuery
 import com.fsanaulla.utils.ResponseWrapper.{toQueryResult, toResult}

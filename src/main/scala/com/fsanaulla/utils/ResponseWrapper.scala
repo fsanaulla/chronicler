@@ -2,6 +2,7 @@ package com.fsanaulla.utils
 
 import akka.http.scaladsl.model.HttpResponse
 import akka.stream.ActorMaterializer
+import com.fsanaulla.model.InfluxImplicits._
 import com.fsanaulla.model._
 import com.fsanaulla.utils.JsonSupport._
 import spray.json.{JsArray, JsObject}

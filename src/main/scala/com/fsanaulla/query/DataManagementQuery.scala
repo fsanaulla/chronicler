@@ -9,14 +9,14 @@ private[fsanaulla] trait DataManagementQuery extends QueryBuilder {
 
   protected def createDatabaseQuery(dbName: String,
                                     duration: Option[String],
-                                    replication: Option[String],
+                                    replication: Option[Int],
                                     shardDuration: Option[String],
-                                    name: Option[String]): Uri = {
+                                    rpName: Option[String]): Uri = {
     val sb = StringBuilder.newBuilder
 
     sb.append(s"CREATE DATABASE $dbName")
 
-    if (duration.isDefined || replication.isDefined || shardDuration.isDefined || name.isDefined) {
+    if (duration.isDefined || replication.isDefined || shardDuration.isDefined || rpName.isDefined) {
       sb.append(" WITH")
     }
 
@@ -32,8 +32,8 @@ private[fsanaulla] trait DataManagementQuery extends QueryBuilder {
       sb.append(s" SHARD DURATION $sd")
     }
 
-    for (n <- name) {
-      sb.append(s" NAME $n")
+    for (rp <- rpName) {
+      sb.append(s" NAME $rp")
     }
 
     queryBuilder("/query", sb.toString())

@@ -1,8 +1,7 @@
 package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
-import com.fsanaulla.model._
-import com.fsanaulla.utils.Extension._
+import com.fsanaulla.model.InfluxImplicits._
 import com.fsanaulla.utils.SampleEntitys.{multiEntitys, singleEntity}
 import com.fsanaulla.utils.TestHelper.{FakeEntity, NoContentResult, OkResult}
 import com.fsanaulla.utils.TestSpec
@@ -14,7 +13,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 26.07.17
   */
-class DataManagementSpec extends TestSpec {
+class DatabaseManagementSpec extends TestSpec {
 
   final val dbName = "data_db"
 
@@ -23,7 +22,7 @@ class DataManagementSpec extends TestSpec {
 
     influx.createDatabase(dbName).futureValue shouldEqual OkResult
 
-    influx.showDatabases().futureValue.queryResult.contains(DatabaseInfo(dbName)) shouldEqual true
+    influx.showDatabases().futureValue.queryResult.contains(dbName) shouldEqual true
 
     val db = influx.use(dbName)
 
@@ -33,17 +32,17 @@ class DataManagementSpec extends TestSpec {
     db.write[FakeEntity]("meas2", singleEntity).futureValue shouldEqual NoContentResult
     db.read[FakeEntity]("SELECT * FROM meas2").futureValue.queryResult shouldEqual Seq(singleEntity)
 
-    influx.showMeasurement(dbName).futureValue.queryResult shouldEqual Seq(MeasurementInfo("meas1"), MeasurementInfo("meas2"))
+    influx.showMeasurement(dbName).futureValue.queryResult shouldEqual Seq("meas1", "meas2")
 
     influx.dropMeasurement(dbName, "meas1").futureValue shouldEqual OkResult
 
     db.read[FakeEntity]("SELECT * FROM meas1").futureValue.queryResult shouldEqual Nil
 
-    influx.showMeasurement(dbName).futureValue.queryResult shouldEqual Seq(MeasurementInfo("meas2"))
+    influx.showMeasurement(dbName).futureValue.queryResult shouldEqual Seq("meas2")
 
     influx.dropDatabase(dbName).futureValue shouldEqual OkResult
 
-    influx.showDatabases().futureValue.queryResult.contains(DatabaseInfo(dbName)) shouldEqual false
+    influx.showDatabases().futureValue.queryResult.contains(dbName) shouldEqual false
 
     influx.close()
   }

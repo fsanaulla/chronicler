@@ -25,9 +25,9 @@ class DataManagementQuerySpec
 
     createDatabaseQuery(testDb, Some("3d"), None, None, None) shouldEqual queryTester(s"CREATE+DATABASE+$testDb+WITH+DURATION+3d")
 
-    createDatabaseQuery(testDb, None, Some("replication"), None, None) shouldEqual queryTester(s"CREATE+DATABASE+$testDb+WITH+REPLICATION+replication")
+    createDatabaseQuery(testDb, None, Some(2), None, None) shouldEqual queryTester(s"CREATE+DATABASE+$testDb+WITH+REPLICATION+2")
 
-    createDatabaseQuery(testDb, Some("3d"), Some("repl"), Some("1d"), Some("testName")) shouldEqual queryTester(s"CREATE+DATABASE+$testDb+WITH+DURATION+3d+REPLICATION+repl+SHARD+DURATION+1d+NAME+testName")
+    createDatabaseQuery(testDb, Some("3d"), Some(2), Some("1d"), Some("testName")) shouldEqual queryTester(s"CREATE+DATABASE+$testDb+WITH+DURATION+3d+REPLICATION+2+SHARD+DURATION+1d+NAME+testName")
   }
 
   "drop database query" should "return correct query" in {

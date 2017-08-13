@@ -1,9 +1,10 @@
 package com.fsanaulla.api
 
 import com.fsanaulla.InfluxClient
-import com.fsanaulla.model.Result
+import com.fsanaulla.model.InfluxImplicits._
+import com.fsanaulla.model.{InfluxReader, QueryResult, Result}
 import com.fsanaulla.query.RetentionPolicyManagementQuery
-import com.fsanaulla.utils.ResponseWrapper.toResult
+import com.fsanaulla.utils.ResponseWrapper.{toQueryResult, toResult}
 
 import scala.concurrent.Future
 
@@ -33,5 +34,9 @@ private[fsanaulla] trait RetentionPolicyManagement extends RetentionPolicyManage
 
   def dropRetentionPolicy(rpName: String, dbName: String): Future[Result] = {
     buildRequest(dropRetentionPolicyQuery(rpName, dbName)).flatMap(toResult)
+  }
+
+  def showRetentionPolicies(dbName: String)(implicit reader: InfluxReader[RetentionPolicyInfo]): Future[QueryResult[RetentionPolicyInfo]] = {
+    buildRequest(showRetentionPoliciesQuery(dbName)).flatMap(toQueryResult[RetentionPolicyInfo])
   }
 }

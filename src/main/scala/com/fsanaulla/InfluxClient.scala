@@ -17,7 +17,7 @@ class InfluxClient(host: String,
                    username: Option[String] = None,
                    password: Option[String] = None)
                   (implicit val ex: ExecutionContext)
-    extends DataManagement
+    extends DatabaseManagement
       with UserManagement
       with RetentionPolicyManagement
       with ContinuousQueryManagement

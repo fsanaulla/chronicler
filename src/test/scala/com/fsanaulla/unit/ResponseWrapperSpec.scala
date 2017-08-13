@@ -3,9 +3,8 @@ package com.fsanaulla.unit
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import akka.stream.ActorMaterializer
-import com.fsanaulla.model.{ContinuousQuery, ContinuousQueryInfo}
+import com.fsanaulla.model.InfluxImplicits._
 import com.fsanaulla.utils.ContentTypes.appJson
-import com.fsanaulla.utils.Extension._
 import com.fsanaulla.utils.ResponseWrapper._
 import com.fsanaulla.utils.SampleEntitys.{bulkResult, singleResult}
 import com.fsanaulla.utils.TestSpec
