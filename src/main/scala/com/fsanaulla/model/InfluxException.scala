@@ -7,6 +7,7 @@ package com.fsanaulla.model
   */
 abstract class InfluxException(errMsg: String) extends Throwable(errMsg)
 
+class OperationException(errMsg: String) extends InfluxException(errMsg)
 class BadRequestException(errMsg: String) extends InfluxException(errMsg)
 class ResourceNotFoundException(errMsg: String) extends InfluxException(errMsg)
 class ConnectionException(errMsg: String) extends InfluxException(errMsg)

@@ -26,10 +26,11 @@ class DataManagementSpec extends TestSpec {
     influx.showDatabases().futureValue.queryResult.contains(DatabaseInfo(dbName)) shouldEqual true
 
     val db = influx.use(dbName)
-    db.bulkWrite("meas1", multiEntitys).futureValue shouldEqual NoContentResult
+
+    db.bulkWrite[FakeEntity]("meas1", multiEntitys).futureValue shouldEqual NoContentResult
     db.read[FakeEntity]("SELECT * FROM meas1").futureValue.queryResult shouldEqual multiEntitys
 
-    db.write("meas2", singleEntity).futureValue shouldEqual NoContentResult
+    db.write[FakeEntity]("meas2", singleEntity).futureValue shouldEqual NoContentResult
     db.read[FakeEntity]("SELECT * FROM meas2").futureValue.queryResult shouldEqual Seq(singleEntity)
 
     influx.showMeasurement(dbName).futureValue.queryResult shouldEqual Seq(MeasurementInfo("meas1"), MeasurementInfo("meas2"))
