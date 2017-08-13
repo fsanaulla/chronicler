@@ -2,7 +2,6 @@ package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
 import com.fsanaulla.model._
-import com.fsanaulla.utils.Extension._
 import com.fsanaulla.utils.SampleEntitys._
 import com.fsanaulla.utils.TestHelper._
 import com.fsanaulla.utils.TestSpec

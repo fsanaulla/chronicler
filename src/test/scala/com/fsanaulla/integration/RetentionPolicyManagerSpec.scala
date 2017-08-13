@@ -1,8 +1,7 @@
 package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
-import com.fsanaulla.model.{DatabaseInfo, RetentionPolicyInfo}
-import com.fsanaulla.utils.Extension._
+import com.fsanaulla.model.InfluxImplicits._
 import com.fsanaulla.utils.InfluxDuration._
 import com.fsanaulla.utils.TestHelper.OkResult
 import com.fsanaulla.utils.TestSpec
@@ -26,7 +25,7 @@ class RetentionPolicyManagerSpec extends TestSpec {
     // CREATING DB TEST
     influx.createDatabase(rpDB).futureValue shouldEqual OkResult
 
-    influx.showDatabases().futureValue.queryResult.contains(DatabaseInfo(rpDB)) shouldEqual true
+    influx.showDatabases().futureValue.queryResult.contains(rpDB) shouldEqual true
 
     influx.createRetentionPolicy("test", rpDB, 2 hours, 2, Some(2 hours), default = true).futureValue shouldEqual OkResult
 
@@ -46,7 +45,7 @@ class RetentionPolicyManagerSpec extends TestSpec {
 
     influx.dropDatabase(rpDB).futureValue shouldEqual OkResult
 
-    influx.showDatabases().futureValue.queryResult.contains(DatabaseInfo(rpDB)) shouldEqual false
+    influx.showDatabases().futureValue.queryResult.contains(rpDB) shouldEqual false
 
     influx.close()
   }

@@ -1,8 +1,7 @@
 package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
-import com.fsanaulla.model.{ContinuousQuery, DatabaseInfo}
-import com.fsanaulla.utils.Extension._
+import com.fsanaulla.model.InfluxImplicits._
 import com.fsanaulla.utils.TestHelper._
 import com.fsanaulla.utils.TestSpec
 
@@ -27,7 +26,7 @@ class ContinuousQueryManagementSpec extends TestSpec {
 
     influx.createDatabase(testDB).futureValue shouldEqual OkResult
 
-    influx.showDatabases().futureValue.queryResult.contains(DatabaseInfo(testDB)) shouldEqual true
+    influx.showDatabases().futureValue.queryResult.contains(testDB) shouldEqual true
 
     influx.createCQ(testDB, testCQ, query).futureValue shouldEqual OkResult
 
