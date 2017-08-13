@@ -13,6 +13,12 @@ sealed trait InfluxResult {
   val ex: Option[Throwable]
 }
 
-case class Result(code: Int, isSuccess: Boolean, ex: Option[Throwable] = None) extends InfluxResult
+case class Result(code: Int, isSuccess: Boolean, ex: Option[Throwable] = None) extends InfluxResult {
+  def successful(code: Int) = Result(code, isSuccess = true, None)
+}
+
+object Result {
+  def successful(code: Int) = Result(code, isSuccess = true, None)
+}
 
 case class QueryResult[T](code: Int, isSuccess: Boolean, queryResult: Seq[T] = Nil, ex: Option[Throwable] = None) extends InfluxResult

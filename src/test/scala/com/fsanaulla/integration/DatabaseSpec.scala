@@ -6,6 +6,7 @@ import com.fsanaulla.utils.Extension._
 import com.fsanaulla.utils.SampleEntitys._
 import com.fsanaulla.utils.TestHelper._
 import com.fsanaulla.utils.TestSpec
+import org.scalatest.OptionValues
 import spray.json.{JsArray, JsNumber, JsString}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -13,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /**
   * Created by fayaz on 06.07.17.
   */
-class DatabaseSpec extends TestSpec {
+class DatabaseSpec extends TestSpec with OptionValues {
 
   val testDB = "db"
 
@@ -39,9 +40,7 @@ class DatabaseSpec extends TestSpec {
     val db = influx.use(testDB)
     val notExistedDb = influx.use("unknown_db")
 
-    notExistedDb.write("test", singleEntity).recover {
-      case ex: InfluxException => ex.getMessage shouldEqual "database not found: \"unknown_db\""
-    }
+    notExistedDb.write("test", singleEntity).futureValue.ex.value shouldBe a [ResourceNotFoundException]
 
     // WRITE - READ TEST
     db.writeFromFile("src/test/resources/points.txt").futureValue shouldEqual NoContentResult

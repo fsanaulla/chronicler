@@ -14,25 +14,32 @@ import scala.concurrent.{ExecutionContext, Future}
   */
 private[fsanaulla] object ResponseWrapper {
 
-  def toSingleJsResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[JsArray]] = {
-    unmarshalBody(response).map(getInfluxValue)
+  // RESULT
+  def toResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Result] = {
+    response.status.intValue() match {
+      case code if isSuccessful(code) && code != 204 => getErrorOpt(response) map {
+        case Some(msg) => Result(code, isSuccess = false, Some(new OperationException(msg)))
+        case _ => Result.successful(code)
+      }
+      case 204  => Future.successful(Result.successful(204))
+      case other => errorHandler(other, response).map(ex => Result(other, isSuccess = false, Some(ex)))
+    }
   }
 
-  def toCQResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer, reader: InfluxReader[ContinuousQuery]): Future[Seq[ContinuousQueryInfo]] = {
-    unmarshalBody(response).map(getInfluxCQInfo)
-  }
 
-  def toBulkJsResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[Seq[JsArray]]] = {
-    unmarshalBody(response)
-      .map(_.getFields("results").head.convertTo[Seq[JsObject]])
-      .map(_.map(_.getFields("series").head.convertTo[Seq[JsObject]].head))
-      .map(_.map(_.getFields("values").head.convertTo[Seq[JsArray]]))
-  }
-
+  // CQ QUERY RESULT
   def toCqQueryResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer, reader: InfluxReader[ContinuousQuery]): Future[QueryResult[ContinuousQueryInfo]] = {
     response.status.intValue() match {
-      case code if isSuccessful(code) => toCQResult(response).map(seq => QueryResult[ContinuousQueryInfo](code, isSuccess = true, seq))
+      case code if isSuccessful(code) => unmarshalBody(response).map(getInfluxCQInfo).map(seq => QueryResult[ContinuousQueryInfo](code, isSuccess = true, seq))
       case other => errorHandler(other, response).map(ex => QueryResult[ContinuousQueryInfo](other, isSuccess = false, ex = Some(ex)))
+    }
+  }
+
+  // QUERY RESULT
+  def toQueryJsResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[QueryResult[JsArray]] = {
+    response.status.intValue() match {
+      case code if isSuccessful(code) => unmarshalBody(response).map(getInfluxValue).map(seq => QueryResult(code, isSuccess = true, seq))
+      case other => errorHandler(other, response).map(ex => QueryResult(other, isSuccess = false, ex = Some(ex)))
     }
   }
 
@@ -40,11 +47,12 @@ private[fsanaulla] object ResponseWrapper {
     toQueryJsResult(response).map(res => QueryResult[T](res.code, isSuccess = res.isSuccess, res.queryResult.map(reader.read)))
   }
 
-  def toQueryJsResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[QueryResult[JsArray]] = {
-    response.status.intValue() match {
-      case code if isSuccessful(code) => toSingleJsResult(response).map(seq => QueryResult(code, isSuccess = true, seq))
-      case other => errorHandler(other, response).map(ex => QueryResult(other, isSuccess = false, ex = Some(ex)))
-    }
+  // BULK QUERY RESULT
+  def toBulkJsResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Seq[Seq[JsArray]]] = {
+    unmarshalBody(response)
+      .map(_.getFields("results").head.convertTo[Seq[JsObject]])
+      .map(_.map(_.getFields("series").head.convertTo[Seq[JsObject]].head))
+      .map(_.map(_.getFields("values").head.convertTo[Seq[JsArray]]))
   }
 
   def toBulkQueryJsResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[QueryResult[Seq[JsArray]]] = {
@@ -52,13 +60,6 @@ private[fsanaulla] object ResponseWrapper {
       case code if isSuccessful(code) =>
         toBulkJsResult(response).map(seq => QueryResult[Seq[JsArray]](code, isSuccess = true, seq))
       case other => errorHandler(other, response).map(ex => QueryResult(other, isSuccess = false, ex = Some(ex)))
-    }
-  }
-
-  def toResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Result] = {
-    response.status.intValue() match {
-      case code if isSuccessful(code) => Future.successful(Result(code, isSuccess = true, None))
-      case other => errorHandler(other, response).map(ex => Result(other, isSuccess = false, Some(ex)))
     }
   }
 
@@ -71,6 +72,10 @@ private[fsanaulla] object ResponseWrapper {
     case other => getError(response).map(errMsg => new UnknownResponseException(errMsg))
   }
 
-  private def getError(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[String] = unmarshalBody(response).map(_.getFields("error").head.convertTo[String])
+  def getError(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[String] = unmarshalBody(response).map(_.getFields("error").head.convertTo[String])
+
+  def getErrorOpt(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Option[String]] = {
+    unmarshalBody(response).map(_.getFields("results").head.convertTo[Seq[JsObject]].head.fields.get("error").map(_.convertTo[String]))
+  }
 }
 

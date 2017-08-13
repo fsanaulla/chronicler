@@ -5,6 +5,7 @@ import com.fsanaulla.model._
 import com.fsanaulla.utils.TestHelper.OkResult
 import com.fsanaulla.utils.TestSpec
 import com.fsanaulla.utils.constants.Privileges
+import org.scalatest.OptionValues
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -13,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UserManagementSpec extends TestSpec {
+class UserManagementSpec extends TestSpec with OptionValues {
 
   val userDB = "user_db"
   val userName = "Martin"
@@ -41,6 +42,8 @@ class UserManagementSpec extends TestSpec {
     influx.setUserPassword(userName, userNPass).futureValue shouldEqual OkResult
 
     influx.setPrivileges(userName, userDB, Privileges.READ).futureValue shouldEqual OkResult
+    influx.setPrivileges("unknown", userDB, Privileges.READ).futureValue.ex.value.getMessage shouldEqual "user not found"
+    
     influx.showUserPrivileges(userName).futureValue.queryResult shouldEqual Seq(UserPrivilegesInfo(userDB, Privileges.READ))
 
     influx.revokePrivileges(userName, userDB, Privileges.READ).futureValue shouldEqual OkResult
