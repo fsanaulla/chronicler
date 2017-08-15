@@ -35,7 +35,7 @@ class UserManagementSpec extends TestSpec with OptionValues {
     influx.showUsers.futureValue.queryResult.contains(UserInfo(userName, isAdmin = false)) shouldEqual true
 
     influx.createAdmin(admin, adminPass).futureValue shouldEqual OkResult
-    influx.showUsers.futureValue.queryResult shouldEqual Seq(UserInfo(userName, isAdmin = false), UserInfo(admin, isAdmin = true))
+    influx.showUsers.futureValue.queryResult.contains(UserInfo(admin, isAdmin = true)) shouldEqual true
 
     influx.showUserPrivileges(admin).futureValue.queryResult shouldEqual Nil
 
@@ -50,13 +50,15 @@ class UserManagementSpec extends TestSpec with OptionValues {
     influx.showUserPrivileges(userName).futureValue.queryResult shouldEqual Seq(UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES))
 
     influx.disableAdmin(admin).futureValue shouldEqual OkResult
-    influx.showUsers.futureValue.queryResult shouldEqual Seq(UserInfo(userName, isAdmin = false), UserInfo(admin, isAdmin = false))
+    influx.showUsers.futureValue.queryResult.contains(UserInfo(admin, isAdmin = false)) shouldEqual true
 
     influx.makeAdmin(admin).futureValue shouldEqual OkResult
-    influx.showUsers.futureValue.queryResult shouldEqual Seq(UserInfo(userName, isAdmin = false), UserInfo(admin, isAdmin = true))
+    influx.showUsers.futureValue.queryResult.contains(UserInfo(admin, isAdmin = true)) shouldEqual true
 
     influx.dropUser(userName).futureValue shouldEqual OkResult
-    influx.showUsers.futureValue.queryResult shouldEqual Seq(UserInfo(admin, isAdmin = true))
+    influx.dropUser(admin).futureValue shouldEqual OkResult
+
+    influx.showUsers.futureValue.queryResult shouldEqual Seq(UserInfo(optUser.get, isAdmin = true))
 
     influx.close()
   }
