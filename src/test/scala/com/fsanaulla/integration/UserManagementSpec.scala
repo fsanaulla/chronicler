@@ -27,7 +27,7 @@ class UserManagementSpec extends TestSpec with OptionValues {
   "User management operation" should "correctly work" in {
 
     // INIT INFLUX CLIENT
-    val influx = InfluxClient("localhost")
+    val influx = InfluxClient(host = influxHost, username = optUser, password = optPassword)
 
     influx.createDatabase(userDB).futureValue shouldEqual OkResult
 

@@ -18,7 +18,9 @@ class DatabaseManagementSpec extends TestSpec {
   final val dbName = "data_db"
 
   "Data management operation" should "correctly work" in {
-    val influx = InfluxClient(host)
+
+    // INIT INFLUX CLIENT
+    val influx = InfluxClient(host = influxHost, username = optUser, password = optPassword)
 
     influx.createDatabase(dbName).futureValue shouldEqual OkResult
 

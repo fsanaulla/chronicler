@@ -114,7 +114,7 @@ res0: Future[Seq[String]]
 ```
 #### Show databases
 ```
-influx.showDatabase()
+influx.showDatabase().map(_.queryResult)
 res0: Future[Seq[String]]
 ```
 ### Writing data(impl in future)

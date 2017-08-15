@@ -30,7 +30,7 @@ class DatabaseSpec extends TestSpec with OptionValues {
       .addField("age", 36)
 
     // INIT INFLUX CLIENT
-    val influx = InfluxClient(host)
+    val influx = InfluxClient(host = influxHost, username = optUser, password = optPassword)
 
     // CREATING DB TEST
     influx.createDatabase(testDB).futureValue shouldEqual OkResult

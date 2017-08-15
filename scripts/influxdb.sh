@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-wget https://dl.influxdata.com/influxdb/releases/influxdb_1.3.2_amd64.deb
-sudo dpkg -i influxdb_1.3.2_amd64.deb
+wget https://dl.influxdata.com/influxdb/releases/influxdb_$INFLUXDB_VERSION_amd64.deb
+sudo dpkg -i influxdb_$INFLUXDB_VERSION_amd64.deb
 sudo service influxdb start
-sleep 5
-#/usr/bin/influx --execute "CREATE USER influx_user WITH PASSWORD 'influx_password' WITH ALL PRIVILEGES"
+sudo nohup influxd -config $TRAVIS_BUILD_DIR/src/test/resources/influxdb.conf &
+/usr/bin/influx --execute "CREATE USER admin WITH PASSWORD 'admin' WITH ALL PRIVILEGES"
