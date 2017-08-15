@@ -2,7 +2,7 @@ package com.fsanaulla.utils.constants
 
 object Privileges {
 
-  implicit def privilege2value(privilege: Privilege): String = privilege.value
+  implicit def privilege2value(priv: Privilege): String = priv.value
 
   sealed trait Privilege {
     def value: String

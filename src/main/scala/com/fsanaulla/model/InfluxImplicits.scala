@@ -9,21 +9,19 @@ import spray.json.{DeserializationException, JsArray, JsBoolean, JsNumber, JsObj
   */
 object InfluxImplicits {
 
-  sealed trait InfoResponseEntity
+  case class UserInfo(username: String, isAdmin: Boolean)
 
-  case class UserInfo(username: String, isAdmin: Boolean) extends InfoResponseEntity
-
-  case class UserPrivilegesInfo(database: String, privilege: String) extends InfoResponseEntity
+  case class UserPrivilegesInfo(database: String, privilege: String)
 
   case class RetentionPolicyInfo(name: String,
                                  duration: String,
                                  shardGroupDuration: String,
                                  replication: Int,
-                                 default: Boolean) extends InfoResponseEntity
+                                 default: Boolean)
 
   case class ContinuousQuery(cqName: String, query: String)
 
-  case class ContinuousQueryInfo(dbName: String, querys: Seq[ContinuousQuery]) extends InfoResponseEntity
+  case class ContinuousQueryInfo(dbName: String, querys: Seq[ContinuousQuery])
 
   implicit object StringInfluxReader extends InfluxReader[String] {
     override def read(js: JsArray): String = js.elements match {

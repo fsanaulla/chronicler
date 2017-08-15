@@ -27,7 +27,6 @@ private[fsanaulla] object ResponseWrapper {
     }
   }
 
-
   // CQ QUERY RESULT
   def toCqQueryResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer, reader: InfluxReader[ContinuousQuery]): Future[QueryResult[ContinuousQueryInfo]] = {
     response.status.intValue() match {

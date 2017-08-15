@@ -19,8 +19,8 @@ import spray.json.JsArray
 import scala.concurrent.{ExecutionContext, Future}
 
 private[fsanaulla] abstract class DatabaseOperation(dbName: String,
-                                 username: Option[String],
-                                 password: Option[String])
+                                                    username: Option[String],
+                                                    password: Option[String])
   extends DatabaseOperationQuery with RequestBuilder { self: Database =>
   import DatabaseOperation._
 
@@ -79,7 +79,7 @@ private[fsanaulla] abstract class DatabaseOperation(dbName: String,
 
 object DatabaseOperation {
 
-  def toPoint(measurement: String, serializedEntity: String): String = measurement + "," + serializedEntity
+    def toPoint(measurement: String, serializedEntity: String): String = measurement + "," + serializedEntity
 
   def toPoints(measurement: String, serializedEntitys: Seq[String]): String = serializedEntitys.map(s => measurement + "," + s).mkString("\n")
 }
