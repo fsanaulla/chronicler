@@ -117,4 +117,5 @@ res0: Future[Seq[String]]
 influx.showDatabase().map(_.queryResult)
 res0: Future[Seq[String]]
 ```
-### Writing data(impl in future)
+## Read and Write operation
+#### Read operatione

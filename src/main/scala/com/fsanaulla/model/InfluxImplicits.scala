@@ -27,8 +27,36 @@ object InfluxImplicits {
 
   implicit object StringInfluxReader extends InfluxReader[String] {
     override def read(js: JsArray): String = js.elements match {
-      case Vector(JsString(name)) => name
+      case Vector(JsString(str)) => str
       case _ => throw DeserializationException(s"Can't deserialize $js to String")
+    }
+  }
+
+  implicit object IntInfluxReader extends InfluxReader[Int] {
+    override def read(js: JsArray): Int = js.elements match {
+      case Vector(JsNumber(num)) => num.toInt
+      case _ => throw DeserializationException(s"Can't deserialize $js to Int")
+    }
+  }
+
+  implicit object DoubleInfluxReader extends InfluxReader[Double] {
+    override def read(js: JsArray): Double = js.elements match {
+      case Vector(JsNumber(num)) => num.toDouble
+      case _ => throw DeserializationException(s"Can't deserialize $js to Double")
+    }
+  }
+
+  implicit object LongInfluxReader extends InfluxReader[Long] {
+    override def read(js: JsArray): Long = js.elements match {
+      case Vector(JsNumber(num)) => num.toLong
+      case _ => throw DeserializationException(s"Can't deserialize $js to Long")
+    }
+  }
+
+  implicit object BooleanInfluxReader extends InfluxReader[Boolean] {
+    override def read(js: JsArray): Boolean = js.elements match {
+      case Vector(JsBoolean(bool)) => bool
+      case _ => throw DeserializationException(s"Can't deserialize $js to Boolean")
     }
   }
 
