@@ -12,22 +12,29 @@ import org.scalatest.{FlatSpec, Matchers}
 class ContinuousQuerysSpec
   extends FlatSpec
     with Matchers
-    with ContinuousQuerys {
+    with ContinuousQuerys
+    with TestCredentials {
 
   val db = "mydb"
   val cq = "bee_cq"
-  val query = "SELECT+mean(bees)+AS+mean_bees+INTO+aggregate_bees+FROM+farm+GROUP+BY+time(30m)"
+  val query = "SELECT mean(bees) AS mean_bees INTO aggregate_bees FROM farm GROUP BY time(30m)"
 
   "show CQ query" should "generate correct query" in {
-    showCQQuery() shouldEqual queryTester("SHOW+CONTINUOUS+QUERIES")
+    showCQQuery() shouldEqual queryTesterAuth("SHOW CONTINUOUS QUERIES")
+
+    showCQQuery()(emptyCredentials) shouldEqual queryTester("SHOW CONTINUOUS QUERIES")
   }
 
   "drop CQ query" should "generate correct query" in {
-    dropCQQuery(db, cq) shouldEqual queryTester(s"DROP+CONTINUOUS+QUERY+$cq+ON+$db")
+    dropCQQuery(db, cq) shouldEqual queryTesterAuth(s"DROP CONTINUOUS QUERY $cq ON $db")
+
+    dropCQQuery(db, cq)(emptyCredentials) shouldEqual queryTester(s"DROP CONTINUOUS QUERY $cq ON $db")
   }
 
   "create CQ query" should "generate correct query" in {
-    createCQQuery(db, cq, "SELECT mean(bees) AS mean_bees INTO aggregate_bees FROM farm GROUP BY time(30m)") shouldEqual queryTester(s"CREATE+CONTINUOUS+QUERY+$cq+ON+$db+BEGIN+$query+END")
+    createCQQuery(db, cq, query) shouldEqual queryTesterAuth(s"CREATE CONTINUOUS QUERY $cq ON $db BEGIN $query END")
+
+    createCQQuery(db, cq, query)(emptyCredentials) shouldEqual queryTester(s"CREATE CONTINUOUS QUERY $cq ON $db BEGIN $query END")
   }
 
 }

@@ -1,6 +1,9 @@
 package com.fsanaulla.query
 
 import akka.http.scaladsl.model.Uri
+import com.fsanaulla.model.InfluxCredentials
+
+import scala.collection.mutable
 
 /**
   * Created by fayaz on 27.06.17.
@@ -11,7 +14,7 @@ private[fsanaulla] trait DataManagementQuery extends QueryBuilder {
                                     duration: Option[String],
                                     replication: Option[Int],
                                     shardDuration: Option[String],
-                                    rpName: Option[String]): Uri = {
+                                    rpName: Option[String])(implicit credentials: InfluxCredentials): Uri = {
     val sb = StringBuilder.newBuilder
 
     sb.append(s"CREATE DATABASE $dbName")
@@ -36,38 +39,38 @@ private[fsanaulla] trait DataManagementQuery extends QueryBuilder {
       sb.append(s" NAME $rp")
     }
 
-    queryBuilder("/query", sb.toString())
+    queryBuilder("/query", buildQueryParams(sb.toString()))
   }
 
-  protected def dropDatabaseQuery(dbName: String): Uri = {
-    queryBuilder("/query", s"DROP DATABASE $dbName")
+  protected def dropDatabaseQuery(dbName: String)(implicit credentials: InfluxCredentials): Uri = {
+    queryBuilder("/query", buildQueryParams(s"DROP DATABASE $dbName"))
   }
 
-  protected def dropSeriesQuery(dbName: String, seriesName: String): Uri = {
-    queryBuilder("/query", Map("db" -> dbName, "q" -> s"DROP SERIES FROM $seriesName"))
+  protected def dropSeriesQuery(dbName: String, seriesName: String)(implicit credentials: InfluxCredentials): Uri = {
+    queryBuilder("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DROP SERIES FROM $seriesName")))
   }
 
-  protected def dropMeasurementQuery(dbName: String, measurementName: String): Uri = {
-    queryBuilder("/query", Map("db" -> dbName, "q" -> s"DROP MEASUREMENT $measurementName"))
+  protected def dropMeasurementQuery(dbName: String, measurementName: String)(implicit credentials: InfluxCredentials): Uri = {
+    queryBuilder("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DROP MEASUREMENT $measurementName")))
   }
 
-  protected def deleteAllSeriesQuery(dbName: String, seriesName: String): Uri = {
-    queryBuilder("/query", Map("db" -> dbName, "q" -> s"DELETE FROM $seriesName"))
+  protected def deleteAllSeriesQuery(dbName: String, seriesName: String)(implicit credentials: InfluxCredentials): Uri = {
+    queryBuilder("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DELETE FROM $seriesName")))
   }
 
-  protected def dropShardQuery(shardId: Int): Uri = {
-    queryBuilder("/query", s"DROP SHARD $shardId")
+  protected def dropShardQuery(shardId: Int)(implicit credentials: InfluxCredentials): Uri = {
+    queryBuilder("/query", buildQueryParams(s"DROP SHARD $shardId"))
   }
 
-  protected def showMeasurementQuery(dbName: String): Uri = {
-    queryBuilder("/query", Map("db" -> dbName, "q" -> s"SHOW MEASUREMENTS"))
+  protected def showMeasurementQuery(dbName: String)(implicit credentials: InfluxCredentials): Uri = {
+    queryBuilder("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"SHOW MEASUREMENTS")))
   }
 
-  protected def showRetentionPoliciesQuery(dbName: String): Uri = {
-    queryBuilder("/query", Map("db" -> dbName, "q" -> "SHOW RETENTION POLICIES"))
+  protected def showRetentionPoliciesQuery(dbName: String)(implicit credentials: InfluxCredentials): Uri = {
+    queryBuilder("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> "SHOW RETENTION POLICIES")))
   }
 
-  protected def showDatabasesQuery(): Uri = {
-    queryBuilder("/query", s"SHOW DATABASES")
+  protected def showDatabasesQuery()(implicit credentials: InfluxCredentials): Uri = {
+    queryBuilder("/query", buildQueryParams(s"SHOW DATABASES"))
   }
 }

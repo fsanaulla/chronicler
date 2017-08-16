@@ -1,10 +1,13 @@
 package com.fsanaulla.query
 
 import akka.http.scaladsl.model.Uri
+import com.fsanaulla.model.InfluxCredentials
 import com.fsanaulla.utils.constants.Consistencys._
 import com.fsanaulla.utils.constants.Epochs._
 import com.fsanaulla.utils.constants.Precisions._
 import com.fsanaulla.utils.constants.{Consistencys, Epochs, Precisions}
+
+import scala.collection.mutable
 
 /**
   * Created by fayaz on 04.07.17.
@@ -12,11 +15,9 @@ import com.fsanaulla.utils.constants.{Consistencys, Epochs, Precisions}
 private[fsanaulla] trait DatabaseOperationQuery extends QueryBuilder {
 
   protected def writeToInfluxQuery(dbName: String,
-                         username: Option[String] = None,
-                         password: Option[String] = None,
-                         consistency: Consistency = Consistencys.ONE,
-                         precision: Precision = Precisions.NANOSECONDS,
-                         retentionPolicy: Option[String] = None): Uri = {
+                                   consistency: Consistency = Consistencys.ONE,
+                                   precision: Precision = Precisions.NANOSECONDS,
+                                   retentionPolicy: Option[String] = None)(implicit credentials: InfluxCredentials): Uri = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
       "db" -> dbName,
@@ -28,23 +29,14 @@ private[fsanaulla] trait DatabaseOperationQuery extends QueryBuilder {
       queryParams += ("rp" -> rp)
     }
 
-    for  {
-      u <- username
-      p <- password
-    } yield queryParams += ("u" -> u, "p" -> p)
-
-
-    queryBuilder("/write", queryParams.toMap)
+    queryBuilder("/write", buildQueryParams(queryParams))
   }
 
   protected def readFromInfluxSingleQuery(dbName: String,
-                                query: String,
-                                username: Option[String] = None,
-                                password: Option[String] = None,
-                                epoch: Epoch = Epochs.NANOSECONDS,
-                                pretty: Boolean = false,
-                                chunked: Boolean = false
-                          ): Uri = {
+                                          query: String,
+                                          epoch: Epoch = Epochs.NANOSECONDS,
+                                          pretty: Boolean = false,
+                                          chunked: Boolean = false)(implicit credentials: InfluxCredentials): Uri = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
       "db" -> dbName,
@@ -54,25 +46,16 @@ private[fsanaulla] trait DatabaseOperationQuery extends QueryBuilder {
       "q" -> query
     )
 
-    for  {
-      u <- username
-      p <- password
-    } yield queryParams += ("u" -> u, "p" -> p)
-
-
-    queryBuilder("/query", queryParams.toMap)
+    queryBuilder("/query", buildQueryParams(queryParams))
   }
 
   protected def readFromInfluxBulkQuery(dbName: String,
-                              querys: Seq[String],
-                              username: Option[String] = None,
-                              password: Option[String] = None,
-                              epoch: Epoch = Epochs.NANOSECONDS,
-                              pretty: Boolean = false,
-                              chunked: Boolean = false
-                        ): Uri = {
+                                        querys: Seq[String],
+                                        epoch: Epoch = Epochs.NANOSECONDS,
+                                        pretty: Boolean = false,
+                                        chunked: Boolean = false)(implicit credentials: InfluxCredentials): Uri = {
 
-    val queryParams = scala.collection.mutable.Map[String, String](
+    val queryParams = mutable.Map[String, String](
       "db" -> dbName,
       "pretty" -> pretty.toString,
       "chunked" -> chunked.toString,
@@ -80,12 +63,6 @@ private[fsanaulla] trait DatabaseOperationQuery extends QueryBuilder {
       "q" -> querys.mkString(";")
     )
 
-    for  {
-      u <- username
-      p <- password
-    } yield queryParams += ("u" -> u, "p" -> p)
-
-
-    queryBuilder("/query", queryParams.toMap)
+    queryBuilder("/query", buildQueryParams(queryParams))
   }
 }

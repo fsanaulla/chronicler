@@ -13,50 +13,49 @@ import org.scalatest.{FlatSpec, Matchers}
 class DatabaseOperationQuerySpec
   extends FlatSpec
     with Matchers
-    with DatabaseOperationQuery {
+    with DatabaseOperationQuery
+    with TestCredentials {
 
   val testDB = "db"
-  val optTestUsername = Some("User")
-  val optTestPass = Some("pass")
   val testQuery = "SELECT * FROM test"
 
   "write query generator" should "return correct query" in {
-    writeToInfluxQuery(testDB, optTestUsername, optTestPass) shouldEqual
-      writeTester(s"precision=ns&u=${optTestUsername.get}&consistency=one&db=$testDB&p=${optTestPass.get}")
+    writeToInfluxQuery(testDB) shouldEqual
+      writeTester(s"precision=ns&u=${credentials.username.get}&consistency=one&db=$testDB&p=${credentials.password.get}")
 
-    writeToInfluxQuery(testDB, optTestUsername) shouldEqual
+    writeToInfluxQuery(testDB)(emptyCredentials) shouldEqual
       writeTester(s"db=$testDB&precision=ns&consistency=one")
 
-    writeToInfluxQuery(testDB, optTestUsername, optTestPass, consistency = Consistencys.ALL) shouldEqual
-      writeTester(s"precision=ns&u=${optTestUsername.get}&consistency=all&db=$testDB&p=${optTestPass.get}")
+    writeToInfluxQuery(testDB, consistency = Consistencys.ALL) shouldEqual
+      writeTester(s"precision=ns&u=${credentials.username.get}&consistency=all&db=$testDB&p=${credentials.password.get}")
 
-    writeToInfluxQuery(testDB, precision = Precisions.MICROSECONDS) shouldEqual
+    writeToInfluxQuery(testDB, precision = Precisions.MICROSECONDS)(emptyCredentials) shouldEqual
       writeTester(s"db=$testDB&precision=u&consistency=one")
   }
 
   "read single query generator" should "return correct query" in {
     val map = Map[String, String](
       "db" -> testDB,
-      "u" -> optTestUsername.get,
-      "p" -> optTestPass.get,
+      "u" -> credentials.username.get,
+      "p" -> credentials.password.get,
       "pretty" -> "false",
       "chunked" -> "false",
       "epoch" -> "ns",
       "q" -> "SELECT * FROM test"
     )
-    readFromInfluxSingleQuery(testDB, testQuery, optTestUsername, optTestPass) shouldEqual queryTesterSimple(map)
+    readFromInfluxSingleQuery(testDB, testQuery) shouldEqual queryTesterSimple(map)
   }
 
   "read bulk query generator" should "return correct query" in {
     val map = Map[String, String](
       "db" -> testDB,
-      "u" -> optTestUsername.get,
-      "p" -> optTestPass.get,
+      "u" -> credentials.username.get,
+      "p" -> credentials.password.get,
       "pretty" -> "false",
       "chunked" -> "false",
       "epoch" -> "ns",
       "q" -> "SELECT * FROM test;SELECT * FROM test1"
     )
-    readFromInfluxBulkQuery(testDB, Seq("SELECT * FROM test", "SELECT * FROM test1"), optTestUsername, optTestPass) shouldEqual queryTesterSimple(map)
+    readFromInfluxBulkQuery(testDB, Seq("SELECT * FROM test", "SELECT * FROM test1")) shouldEqual queryTesterSimple(map)
   }
 }

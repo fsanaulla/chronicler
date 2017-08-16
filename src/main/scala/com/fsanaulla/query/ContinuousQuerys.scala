@@ -1,6 +1,7 @@
 package com.fsanaulla.query
 
 import akka.http.scaladsl.model.Uri
+import com.fsanaulla.model.InfluxCredentials
 
 /**
   * Created by
@@ -9,13 +10,13 @@ import akka.http.scaladsl.model.Uri
   */
 private[fsanaulla] trait ContinuousQuerys extends QueryBuilder {
 
-  protected def showCQQuery(): Uri = queryBuilder("/query", "SHOW CONTINUOUS QUERIES")
+  protected def showCQQuery()(implicit credentials: InfluxCredentials): Uri = queryBuilder("/query", buildQueryParams("SHOW CONTINUOUS QUERIES"))
 
-  protected def dropCQQuery(dbName: String, cqName: String): Uri = {
-    queryBuilder("/query", s"DROP CONTINUOUS QUERY $cqName ON $dbName")
+  protected def dropCQQuery(dbName: String, cqName: String)(implicit credentials: InfluxCredentials): Uri = {
+    queryBuilder("/query", buildQueryParams(s"DROP CONTINUOUS QUERY $cqName ON $dbName"))
   }
 
-  protected def createCQQuery(dbName: String, cqName: String, query: String): Uri = {
-    queryBuilder("/query", s"CREATE CONTINUOUS QUERY $cqName ON $dbName BEGIN $query END")
+  protected def createCQQuery(dbName: String, cqName: String, query: String)(implicit credentials: InfluxCredentials): Uri = {
+    queryBuilder("/query", buildQueryParams(s"CREATE CONTINUOUS QUERY $cqName ON $dbName BEGIN $query END"))
   }
 }

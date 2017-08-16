@@ -9,7 +9,7 @@ import com.fsanaulla.utils.constants.Privileges._
 
 import scala.concurrent.Future
 
-private[fsanaulla] trait UserManagement extends UserManagementQuery { self: InfluxClient =>
+private[fsanaulla] trait UserManagement extends UserManagementQuery with HasCredentials { self: InfluxClient =>
 
   def createUser(username: String, password: String): Future[Result] = {
      buildRequest(createUserQuery(username, password)).flatMap(toResult)
@@ -20,7 +20,7 @@ private[fsanaulla] trait UserManagement extends UserManagementQuery { self: Infl
   }
 
   def dropUser(username: String): Future[Result] = {
-    buildRequest(uri = dropUserQuery(username)).flatMap(toResult)
+    buildRequest(dropUserQuery(username)).flatMap(toResult)
   }
 
   def setUserPassword(username: String, password: String): Future[Result] = {
@@ -43,7 +43,7 @@ private[fsanaulla] trait UserManagement extends UserManagementQuery { self: Infl
     buildRequest(disableAdminQuery(username)).flatMap(toResult)
   }
 
-  def showUsers(implicit reader: InfluxReader[UserInfo]): Future[QueryResult[UserInfo]] = {
+  def showUsers()(implicit reader: InfluxReader[UserInfo]): Future[QueryResult[UserInfo]] = {
     buildRequest(showUsersQuery).flatMap(toQueryResult[UserInfo])
   }
 

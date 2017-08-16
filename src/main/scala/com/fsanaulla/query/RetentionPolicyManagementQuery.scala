@@ -1,6 +1,7 @@
 package com.fsanaulla.query
 
 import akka.http.scaladsl.model.Uri
+import com.fsanaulla.model.InfluxCredentials
 
 private[fsanaulla] trait RetentionPolicyManagementQuery extends QueryBuilder {
 
@@ -9,7 +10,7 @@ private[fsanaulla] trait RetentionPolicyManagementQuery extends QueryBuilder {
                                            duration: String,
                                            replication: Int,
                                            shardDuration: Option[String],
-                                           default: Boolean = false): Uri = {
+                                           default: Boolean = false)(implicit credentials: InfluxCredentials): Uri = {
     val sb = StringBuilder.newBuilder
 
     sb.append("CREATE RETENTION POLICY ").append(rpName)
@@ -23,11 +24,11 @@ private[fsanaulla] trait RetentionPolicyManagementQuery extends QueryBuilder {
 
     if (default) sb.append(" DEFAULT")
 
-    queryBuilder("/query", sb.toString())
+    queryBuilder("/query", buildQueryParams(sb.toString()))
   }
 
-  protected def dropRetentionPolicyQuery(rpName: String, dbName: String): Uri = {
-    queryBuilder("/query", s"DROP RETENTION POLICY $rpName ON $dbName")
+  protected def dropRetentionPolicyQuery(rpName: String, dbName: String)(implicit credentials: InfluxCredentials) : Uri = {
+    queryBuilder("/query", buildQueryParams(s"DROP RETENTION POLICY $rpName ON $dbName"))
   }
 
   protected def updateRetentionPolicyQuery(rpName: String,
@@ -35,7 +36,7 @@ private[fsanaulla] trait RetentionPolicyManagementQuery extends QueryBuilder {
                                            duration: Option[String],
                                            replication: Option[Int],
                                            shardDuration: Option[String],
-                                           default: Boolean = false): Uri = {
+                                           default: Boolean = false)(implicit credentials: InfluxCredentials): Uri = {
     val sb = StringBuilder.newBuilder
 
     sb.append("ALTER RETENTION POLICY ").append(rpName)
@@ -55,6 +56,6 @@ private[fsanaulla] trait RetentionPolicyManagementQuery extends QueryBuilder {
 
     if (default) sb.append(" DEFAULT")
 
-    queryBuilder("/query", sb.toString())
+    queryBuilder("/query", buildQueryParams(sb.toString()))
   }
 }

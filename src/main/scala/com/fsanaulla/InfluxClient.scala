@@ -4,7 +4,7 @@ import akka.actor.{ActorSystem, Terminated}
 import akka.http.scaladsl.Http
 import akka.stream.{ActorMaterializer, StreamTcpException}
 import com.fsanaulla.api._
-import com.fsanaulla.model.{ConnectionException, UnknownConnectionException}
+import com.fsanaulla.model.{ConnectionException, InfluxCredentials, UnknownConnectionException}
 import com.fsanaulla.utils.TypeAlias._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -23,6 +23,7 @@ class InfluxClient(host: String,
       with ContinuousQueryManagement
       with RequestBuilder {
 
+  implicit val credentials = InfluxCredentials(username, password)
   protected implicit val system = ActorSystem()
   protected implicit val materializer: ActorMaterializer = ActorMaterializer()
   protected implicit val connection: Connection = Http().outgoingConnection(host, port) recover {

@@ -18,10 +18,10 @@ import spray.json.JsArray
 
 import scala.concurrent.{ExecutionContext, Future}
 
-private[fsanaulla] abstract class DatabaseOperation(dbName: String,
-                                                    username: Option[String],
-                                                    password: Option[String])
-  extends DatabaseOperationQuery with RequestBuilder { self: Database =>
+private[fsanaulla] abstract class DatabaseOperation(dbName: String)
+  extends DatabaseOperationQuery
+    with RequestBuilder
+    with HasCredentials { self: Database =>
   import DatabaseOperation._
 
   implicit val actorSystem: ActorSystem
@@ -58,20 +58,20 @@ private[fsanaulla] abstract class DatabaseOperation(dbName: String,
   }
 
   def read[T](query: String)(implicit reader: InfluxReader[T]): Future[QueryResult[T]] = {
-    buildRequest(readFromInfluxSingleQuery(dbName, query, username, password), GET).flatMap(toQueryResult[T])
+    buildRequest(readFromInfluxSingleQuery(dbName, query), GET).flatMap(toQueryResult[T])
   }
 
   def readJs(query: String): Future[QueryResult[JsArray]] = {
-    buildRequest(readFromInfluxSingleQuery(dbName, query, username, password), GET).flatMap(toQueryJsResult)
+    buildRequest(readFromInfluxSingleQuery(dbName, query), GET).flatMap(toQueryJsResult)
   }
 
   def bulkReadJs(querys: Seq[String]): Future[QueryResult[Seq[JsArray]]] = {
-    buildRequest(readFromInfluxBulkQuery(dbName, querys, username, password), GET).flatMap(toBulkQueryJsResult)
+    buildRequest(readFromInfluxBulkQuery(dbName, querys), GET).flatMap(toBulkQueryJsResult)
   }
 
   private def write(entity: RequestEntity): Future[Result] = {
     buildRequest(
-      uri = writeToInfluxQuery(dbName, username, password),
+      uri = writeToInfluxQuery(dbName),
       entity = entity
     ).flatMap(toResult)
   }

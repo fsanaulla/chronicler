@@ -67,12 +67,15 @@ private[fsanaulla] object ResponseWrapper {
 
   private def errorHandler(code: Int, response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[InfluxException] = code match {
     case 400 => getError(response).map(errMsg => new BadRequestException(errMsg))
+    case 401 => getError(response).map(errMsg => new AuthorizationException(errMsg))
     case 404 => getError(response).map(errMsg => new ResourceNotFoundException(errMsg))
     case code: Int if code < 599 && code >= 500 => getError(response).map(errMsg => new InternalServerError(errMsg))
     case other => getError(response).map(errMsg => new UnknownResponseException(errMsg))
   }
 
-  def getError(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[String] = unmarshalBody(response).map(_.getFields("error").head.convertTo[String])
+  def getError(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[String] = {
+    unmarshalBody(response).map(_.getFields("error").head.convertTo[String])
+  }
 
   def getErrorOpt(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Option[String]] = {
     unmarshalBody(response).map(_.getFields("results").head.convertTo[Seq[JsObject]].head.fields.get("error").map(_.convertTo[String]))

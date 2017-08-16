@@ -1,7 +1,7 @@
 package com.fsanaulla.utils
 
 import akka.http.scaladsl.model.Uri
-import com.fsanaulla.model.{InfluxReader, InfluxWriter, Result}
+import com.fsanaulla.model.{InfluxCredentials, InfluxReader, InfluxWriter, Result}
 import spray.json.{DeserializationException, JsArray, JsNumber, JsString}
 /**
   * Created by fayaz on 11.07.17.
@@ -27,11 +27,15 @@ object TestHelper {
     }
   }
 
-  def queryTester(query: String): Uri = Uri(s"/query?q=$query")
+  def queryTesterAuth(query: String)(implicit credentials: InfluxCredentials): Uri = Uri("/query").withQuery(Uri.Query("q" -> query, "p" -> credentials.password.get, "u" -> credentials.username.get))
 
-  def writeTester(query: String): Uri = Uri(s"/write?$query")
+  def queryTesterAuth(db: String, query: String)(implicit credentials: InfluxCredentials): Uri = Uri("/query").withQuery(Uri.Query("q" -> query, "p" -> credentials.password.get, "db" -> db, "u" -> credentials.username.get))
 
-  def queryTester(db: String, query: String): Uri = Uri(s"/query?db=$db&q=$query")
+  def queryTester(query: String): Uri = Uri("/query").withQuery(Uri.Query("q" -> query))
+
+  def queryTester(db: String, query: String): Uri = Uri("/query").withQuery(Uri.Query("q" -> query, "db" -> db))
+
+  def writeTester(query: String): Uri = Uri("/write").withQuery(Uri.Query(query))
 
   def queryTesterSimple(query: Map[String, String]): Uri = Uri("/query").withQuery(Uri.Query(query))
 }
