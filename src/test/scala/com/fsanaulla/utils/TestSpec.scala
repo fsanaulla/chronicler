@@ -10,7 +10,7 @@ import org.scalatest.{FlatSpec, Matchers, OptionValues}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 11.08.17
   */
-trait TestSpec extends FlatSpec with Matchers with ScalaFutures with OptionValues with TestCredentials{
+trait TestSpec extends FlatSpec with Matchers with ScalaFutures with OptionValues with TestCredentials {
 
   final val influxHost = "localhost"
 
