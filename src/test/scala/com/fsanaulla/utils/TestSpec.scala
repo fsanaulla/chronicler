@@ -1,15 +1,16 @@
 package com.fsanaulla.utils
 
+import com.fsanaulla.unit.TestCredentials
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Second, Seconds, Span}
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.{FlatSpec, Matchers, OptionValues}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 11.08.17
   */
-trait TestSpec extends FlatSpec with Matchers with ScalaFutures {
+trait TestSpec extends FlatSpec with Matchers with ScalaFutures with OptionValues with TestCredentials{
 
   final val influxHost = "localhost"
 

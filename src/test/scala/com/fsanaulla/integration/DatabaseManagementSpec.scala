@@ -1,7 +1,6 @@
 package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
-import com.fsanaulla.model.InfluxImplicits._
 import com.fsanaulla.utils.SampleEntitys.{multiEntitys, singleEntity}
 import com.fsanaulla.utils.TestHelper.{FakeEntity, NoContentResult, OkResult}
 import com.fsanaulla.utils.TestSpec
@@ -20,8 +19,7 @@ class DatabaseManagementSpec extends TestSpec {
   "Data management operation" should "correctly work" in {
 
     // INIT INFLUX CLIENT
-    val influx = InfluxClient(host = influxHost, username = optUser, password = optPassword)
-
+    val influx = InfluxClient(host = influxHost, username = credentials.username, password = credentials.password)
     influx.createDatabase(dbName).futureValue shouldEqual OkResult
 
     influx.showDatabases().futureValue.queryResult.contains(dbName) shouldEqual true

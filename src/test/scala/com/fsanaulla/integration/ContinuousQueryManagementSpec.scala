@@ -22,7 +22,7 @@ class ContinuousQueryManagementSpec extends TestSpec {
   "CQ management operation" should "work correctly" in {
 
     // INIT INFLUX CLIENT
-    val influx = InfluxClient(host = influxHost, username = optUser, password = optPassword)
+    val influx = InfluxClient(host = influxHost, username = credentials.username, password = credentials.password)
 
     influx.createDatabase(testDB).futureValue shouldEqual OkResult
 

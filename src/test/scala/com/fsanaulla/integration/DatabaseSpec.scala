@@ -2,11 +2,9 @@ package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
 import com.fsanaulla.model._
-import com.fsanaulla.unit.TestCredentials
 import com.fsanaulla.utils.SampleEntitys._
 import com.fsanaulla.utils.TestHelper._
 import com.fsanaulla.utils.TestSpec
-import org.scalatest.OptionValues
 import spray.json.{JsArray, JsNumber, JsString}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -14,7 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /**
   * Created by fayaz on 06.07.17.
   */
-class DatabaseSpec extends TestSpec with OptionValues with TestCredentials {
+class DatabaseSpec extends TestSpec {
 
   val testDB = "db"
 

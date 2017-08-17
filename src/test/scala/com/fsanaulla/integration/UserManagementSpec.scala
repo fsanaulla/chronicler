@@ -27,7 +27,7 @@ class UserManagementSpec extends TestSpec with OptionValues {
   "User management operation" should "correctly work" in {
 
     // INIT INFLUX CLIENT
-    val influx = InfluxClient(host = influxHost, username = optUser, password = optPassword)
+    val influx = InfluxClient(host = influxHost, username = credentials.username, password = credentials.password)
 
     influx.createDatabase(userDB).futureValue shouldEqual OkResult
 
@@ -58,7 +58,7 @@ class UserManagementSpec extends TestSpec with OptionValues {
     influx.dropUser(userName).futureValue shouldEqual OkResult
     influx.dropUser(admin).futureValue shouldEqual OkResult
 
-    influx.showUsers.futureValue.queryResult shouldEqual Seq(UserInfo(optUser.get, isAdmin = true))
+    influx.showUsers.futureValue.queryResult shouldEqual Seq(UserInfo(credentials.username.get, isAdmin = true))
 
     influx.close()
   }

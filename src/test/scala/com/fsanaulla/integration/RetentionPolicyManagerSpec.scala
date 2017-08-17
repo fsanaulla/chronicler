@@ -20,7 +20,7 @@ class RetentionPolicyManagerSpec extends TestSpec {
   "retention policy operation" should "correctly work" in {
 
     // INIT INFLUX CLIENT
-    val influx = InfluxClient(host = influxHost, username = optUser, password = optPassword)
+    val influx = InfluxClient(host = influxHost, username = credentials.username, password = credentials.password)
 
     // CREATING DB TEST
     influx.createDatabase(rpDB).futureValue shouldEqual OkResult
