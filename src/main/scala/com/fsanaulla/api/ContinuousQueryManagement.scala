@@ -13,7 +13,7 @@ import scala.concurrent.Future
   * Author: fayaz.sanaulla@gmail.com
   * Date: 08.08.17
   */
-private[fsanaulla] trait ContinuousQueryManagement extends ContinuousQuerys with HasCredentials { self: InfluxClient =>
+private[fsanaulla] trait ContinuousQueryManagement extends ContinuousQuerys { self: InfluxClient =>
 
   def showCQs(): Future[QueryResult[ContinuousQueryInfo]] = buildRequest(uri = showCQQuery()).flatMap(toCqQueryResult)
 

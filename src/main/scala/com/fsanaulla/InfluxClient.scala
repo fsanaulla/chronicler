@@ -23,7 +23,7 @@ class InfluxClient(host: String,
       with ContinuousQueryManagement
       with RequestBuilder {
 
-  implicit val credentials = InfluxCredentials(username, password)
+  protected implicit val credentials = InfluxCredentials(username, password)
   protected implicit val system = ActorSystem()
   protected implicit val materializer: ActorMaterializer = ActorMaterializer()
   protected implicit val connection: Connection = Http().outgoingConnection(host, port) recover {

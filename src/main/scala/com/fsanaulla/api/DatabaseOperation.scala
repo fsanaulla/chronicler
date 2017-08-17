@@ -20,10 +20,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 private[fsanaulla] abstract class DatabaseOperation(dbName: String)
   extends DatabaseOperationQuery
-    with RequestBuilder
-    with HasCredentials { self: Database =>
+    with RequestBuilder { self: Database =>
   import DatabaseOperation._
 
+  implicit val credentials: InfluxCredentials
   implicit val actorSystem: ActorSystem
   implicit val mat: ActorMaterializer
   implicit val ex: ExecutionContext

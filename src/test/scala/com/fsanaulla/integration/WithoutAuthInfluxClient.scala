@@ -2,7 +2,9 @@ package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
 import com.fsanaulla.model.AuthorizationException
-import com.fsanaulla.utils.TestSpec
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.time.{Second, Seconds, Span}
+import org.scalatest.{FlatSpec, Matchers, OptionValues}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -11,14 +13,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 17.08.17
   */
-class WithoutAuthInfluxClient extends TestSpec {
+class WithoutAuthInfluxClient extends FlatSpec with Matchers with ScalaFutures with OptionValues {
+
+  implicit val pc = PatienceConfig(Span(20, Seconds), Span(1, Second))
 
   "With out auth" should "correctly work" in {
-    val influx = InfluxClient(influxHost)
+    val influx = InfluxClient("localhost")
 
-    influx.createUser("some_name", "pass").futureValue.ex.get shouldBe a [AuthorizationException]
+    influx.createUser("some_name", "pass").futureValue.ex.value shouldBe a [AuthorizationException]
 
-    influx.use("db").readJs("SELECT * FROM meas").futureValue.ex.get shouldBe a [AuthorizationException]
+    influx.use("db").readJs("SELECT * FROM meas").futureValue.ex.value shouldBe a [AuthorizationException]
 
     influx.close()
   }

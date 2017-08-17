@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext
   */
 class Database(dbName: String)
               (implicit val credentials: InfluxCredentials,
-               implicit val actorSystem: ActorSystem,
-               override val mat: ActorMaterializer,
-               override val ex: ExecutionContext,
-               override val connection: Connection) extends DatabaseOperation(dbName)
+               val actorSystem: ActorSystem,
+               val mat: ActorMaterializer,
+               val ex: ExecutionContext,
+               val connection: Connection) extends DatabaseOperation(dbName)
