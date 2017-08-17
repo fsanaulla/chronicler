@@ -81,7 +81,7 @@ class DatabaseSpec extends TestSpec {
   }
 
   "With out auth" should "correctly work" in {
-    val influx = InfluxClient(influxHost, username = emptyCredentials.username, password = emptyCredentials.password)
+    val influx = InfluxClient(influxHost)
 
     influx.createUser("some_name", "pass").futureValue.ex.value shouldBe a [AuthorizationException]
 

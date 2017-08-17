@@ -1,6 +1,6 @@
 # InfluxDB-Scala-client [![Build Status](https://travis-ci.org/fsanaulla/influxdb-scala-client.svg?branch=master)](https://travis-ci.org/fsanaulla/influxdb-scala-client) [![Coverage Status](https://coveralls.io/repos/github/fsanaulla/influxdb-scala-client/badge.svg?branch=master)](https://coveralls.io/github/fsanaulla/influxdb-scala-client?branch=master)
 
-Async [Scala](https://www.scala-lang.org/) client library for [InfluxDB](https://www.influxdata.com/) based on [Akka HTTP](http://doc.akka.io/docs/akka-http/current/scala/http/).
+Asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](https://www.influxdata.com/) based on [Akka HTTP](http://doc.akka.io/docs/akka-http/current/scala/http/).
 
 # Usage
 ## Helper tools
@@ -13,7 +13,7 @@ import com.fsanaulla.utils.InfluxDuration._
 // Simply write
 1.hours + 30.minutes + 45.seconds // that equal to 1h30m45s
 
-// another exitsed extension
+// another existed extension
 1.nanoseconds
 1.microseconds
 1.milliseconds
@@ -119,4 +119,27 @@ res0: Future[Seq[String]]
 ```
 ## Read and Write operation
 #### Read operatione
-There is several read method exist
+There is several read method exist. The base one is:
+```
+db.readJs("SELEC * FROM measurement").map(_.queryResult)
+res0: Seq[JsArray] // where JsArray it's influx point representation
+```
+The next one it's typed method, for using it you need define your own `InfluxReader[T]` and add it implicitly to scope. There is example of one on that:
+```
+case class FakeEntity(firstName: String, lastName: String, age: Int)
+
+implicit object InfluxReaderFakeEntity extends InfluxReader[FakeEntity] {
+    override def read(js: JsArray): FakeEntity = js.elements match {
+      case Vector(_, JsNumber(age), JsString(name), JsString(lastName)) => FakeEntity(name, lastName, age.toInt)
+      case _ => throw DeserializationException("Can't deserialize FakeEntity object")
+    }
+  }
+
+```
+And then just use it
+```
+import implicits.reader.location._
+
+db.read[FakeEntity]("SELECT * FROM measurement").map(_.queryResult)
+res0: Seq[T]
+```
