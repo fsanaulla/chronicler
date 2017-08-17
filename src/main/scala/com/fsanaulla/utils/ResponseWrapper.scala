@@ -44,7 +44,7 @@ private[fsanaulla] object ResponseWrapper {
   }
 
   def toQueryResult[T](response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer, reader: InfluxReader[T]): Future[QueryResult[T]] = {
-    toQueryJsResult(response).map(res => QueryResult[T](res.code, isSuccess = res.isSuccess, res.queryResult.map(reader.read)))
+    toQueryJsResult(response).map(res => QueryResult[T](res.code, isSuccess = res.isSuccess, res.queryResult.map(reader.read), res.ex))
   }
 
   // BULK QUERY RESULT

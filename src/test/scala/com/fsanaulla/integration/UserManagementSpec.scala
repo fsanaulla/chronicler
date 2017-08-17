@@ -5,7 +5,6 @@ import com.fsanaulla.model.InfluxImplicits._
 import com.fsanaulla.utils.TestHelper.OkResult
 import com.fsanaulla.utils.TestSpec
 import com.fsanaulla.utils.constants.Privileges
-import org.scalatest.OptionValues
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -14,7 +13,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UserManagementSpec extends TestSpec with OptionValues {
+class UserManagementSpec extends TestSpec {
 
   val userDB = "user_db"
   val userName = "Martin"

@@ -143,3 +143,8 @@ import implicits.reader.location._
 db.read[FakeEntity]("SELECT * FROM measurement").map(_.queryResult)
 res0: Future[Seq[FakeEntity]]
 ```
+You can execute multiple query's in one request:
+```
+db.bulkReadJs(Seq("SELECT * FROM measurement", "SELECT * FROM measurement1")).map(_.queryResult)
+res0: Future[Seq[Seq[JsArray]]]
+```
