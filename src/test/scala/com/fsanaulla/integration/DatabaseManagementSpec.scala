@@ -4,6 +4,7 @@ import com.fsanaulla.InfluxClient
 import com.fsanaulla.utils.SampleEntitys.{multiEntitys, singleEntity}
 import com.fsanaulla.utils.TestHelper.{FakeEntity, NoContentResult, OkResult}
 import com.fsanaulla.utils.TestSpec
+import com.fsanaulla.model.InfluxImplicits._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
