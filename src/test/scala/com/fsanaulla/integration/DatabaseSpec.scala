@@ -79,14 +79,4 @@ class DatabaseSpec extends TestSpec {
 
     influx.close()
   }
-
-  "With out auth" should "correctly work" in {
-    val influx = InfluxClient(influxHost)
-
-    influx.createUser("some_name", "pass").futureValue.ex.value shouldBe a [AuthorizationException]
-
-    influx.use("db").readJs("SELECT * FROM meas").futureValue.ex.value shouldBe a [AuthorizationException]
-
-    influx.close()
-  }
 }
