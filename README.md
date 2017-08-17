@@ -28,7 +28,7 @@ import com.fsanaulla.utils.InfluxDuration._
 #### Synchronize
 To complete future you can use Extension object
 ```
-import com.fsanaulla.utils.Extension._
+import com.fsanaulla.utils.Synchronization._
 import scala.concurrent.duration._
 
 implicit val timeout = 1 second

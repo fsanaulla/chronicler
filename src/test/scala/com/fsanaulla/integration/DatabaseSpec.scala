@@ -2,6 +2,7 @@ package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
 import com.fsanaulla.model._
+import com.fsanaulla.unit.TestCredentials
 import com.fsanaulla.utils.SampleEntitys._
 import com.fsanaulla.utils.TestHelper._
 import com.fsanaulla.utils.TestSpec
@@ -13,11 +14,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /**
   * Created by fayaz on 06.07.17.
   */
-class DatabaseSpec extends TestSpec with OptionValues {
+class DatabaseSpec extends TestSpec with OptionValues with TestCredentials {
 
   val testDB = "db"
 
-  "Database operation" should "correctly work" in {
+  "Auth database operation" should "correctly work" in {
 
     val point1 = Point("test2")
       .addTag("firstName", "Martin")
@@ -30,7 +31,7 @@ class DatabaseSpec extends TestSpec with OptionValues {
       .addField("age", 36)
 
     // INIT INFLUX CLIENT
-    val influx = InfluxClient(host = influxHost, username = optUser, password = optPassword)
+    val influx = InfluxClient(host = influxHost, username = credentials.username, password = credentials.password)
 
     // CREATING DB TEST
     influx.createDatabase(testDB).futureValue shouldEqual OkResult
@@ -77,6 +78,16 @@ class DatabaseSpec extends TestSpec with OptionValues {
 
     // DROP DB TEST
     influx.dropDatabase(testDB).futureValue shouldEqual OkResult
+
+    influx.close()
+  }
+
+  "With out auth" should "correctly work" in {
+    val influx = InfluxClient(influxHost, username = emptyCredentials.username, password = emptyCredentials.password)
+
+    influx.createUser("User", "pass").futureValue.ex.value shouldBe a [AuthorizationException]
+
+    influx.use("db").readJs("SELECT * FROM meas").futureValue.ex.value shouldBe a [AuthorizationException]
 
     influx.close()
   }

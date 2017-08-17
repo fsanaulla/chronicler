@@ -8,7 +8,7 @@ import scala.concurrent.{Await, Future}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 07.08.17
   */
-object Extension {
+object Synchronization {
   implicit class RichFuture[T](future: Future[T]) {
     def sync(implicit timeout: FiniteDuration): T = Await.result(future, timeout)
   }

@@ -79,7 +79,7 @@ private[fsanaulla] abstract class DatabaseOperation(dbName: String)
 
 object DatabaseOperation {
 
-    def toPoint(measurement: String, serializedEntity: String): String = measurement + "," + serializedEntity
+  def toPoint(measurement: String, serializedEntity: String): String = measurement + "," + serializedEntity
 
   def toPoints(measurement: String, serializedEntitys: Seq[String]): String = serializedEntitys.map(s => measurement + "," + s).mkString("\n")
 }

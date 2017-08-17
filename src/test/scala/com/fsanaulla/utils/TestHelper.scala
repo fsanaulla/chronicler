@@ -1,7 +1,7 @@
 package com.fsanaulla.utils
 
 import akka.http.scaladsl.model.Uri
-import com.fsanaulla.model.{InfluxCredentials, InfluxReader, InfluxWriter, Result}
+import com.fsanaulla.model._
 import spray.json.{DeserializationException, JsArray, JsNumber, JsString}
 /**
   * Created by fayaz on 11.07.17.
@@ -11,6 +11,7 @@ object TestHelper {
   final val currentNanoTime: Long = System.currentTimeMillis() * 1000000
   final val OkResult = Result(200, isSuccess = true)
   final val NoContentResult = Result(204, isSuccess = true)
+  final val AuthErrorResult = Result(401, isSuccess = false, Some(new AuthorizationException("SomeMessage")))
 
   case class FakeEntity(firstName: String, lastName: String, age: Int)
 
