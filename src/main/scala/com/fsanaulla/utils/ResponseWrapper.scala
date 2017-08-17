@@ -57,8 +57,7 @@ private[fsanaulla] object ResponseWrapper {
 
   def toBulkQueryJsResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[QueryResult[Seq[JsArray]]] = {
     response.status.intValue() match {
-      case code if isSuccessful(code) =>
-        toBulkJsResult(response).map(seq => QueryResult[Seq[JsArray]](code, isSuccess = true, seq))
+      case code if isSuccessful(code) => toBulkJsResult(response).map(seq => QueryResult[Seq[JsArray]](code, isSuccess = true, seq))
       case other => errorHandler(other, response).map(ex => QueryResult(other, isSuccess = false, ex = Some(ex)))
     }
   }
