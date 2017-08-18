@@ -1,6 +1,6 @@
 # InfluxDB-Scala-client [![Build Status](https://travis-ci.org/fsanaulla/influxdb-scala-client.svg?branch=master)](https://travis-ci.org/fsanaulla/influxdb-scala-client) [![Coverage Status](https://coveralls.io/repos/github/fsanaulla/influxdb-scala-client/badge.svg?branch=master)](https://coveralls.io/github/fsanaulla/influxdb-scala-client?branch=master)
 
-Asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](https://www.influxdata.com/) based on [Akka HTTP](http://doc.akka.io/docs/akka-http/current/scala/http/).
+Asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](https://www.influxdata.com/) based on [Akka HTTP](http://doc.akka.io/docs/akka-http/current/scala/http/). (IN PROGRESS)
 
 # Usage
 ## Helper tools
@@ -147,4 +147,65 @@ You can execute multiple query's in one request:
 ```
 db.bulkReadJs(Seq("SELECT * FROM measurement", "SELECT * FROM measurement1")).map(_.queryResult)
 res0: Future[Seq[Seq[JsArray]]]
+```
+#### Write operation
+There is much more opportunities to store data.
+First one save point in pure [Line Protocol Format](https://docs.influxdata.com/influxdb/v1.3/write_protocols/line_protocol_reference/)
+```
+// single
+db.writeNative("cpu_load_short,host=server02,region=us-west value=0.55 1422568543702900257")
+res0: Future[Result]
+
+// bulk
+db.bulkWriteNative(Seq("cpu_load_short,host=server02,region=us-west value=0.55 1422568543702900257", "cpu_load_short,host=server03,region=us-west value=0.56 1422568539002900257"))
+res1: Future[Result]
+```
+`writePoint` add possibility to save `Point` into InfluxDB:
+```
+// single
+val p1 = Point("testMeasurement")
+            .addTag("name", "Jimbo")
+            .addTag("surname", "Bimbo")
+            .addField("age", 56)
+
+db.writePoint(p1)
+reso: Future[Result]
+
+// bulk
+db.bulkWritePoints(Seq(p1, ...))
+res0: Future[Result]
+```
+Another one is typed method. That one can take any type that have implicit `InfluxWriter`object in the scope, that parse your object to [Line Protocol String](https://docs.influxdata.com/influxdb/v1.3/write_protocols/line_protocol_reference/). For example:
+```
+case class FakeEntity(firstName: String, lastName: String, age: Int)
+
+implicit object InfluxWriterFakeEntity extends InfluxWriter[FakeEntity] {
+  override def write(obj: FakeEntity): String = {
+    s"firstName=${obj.firstName},lastName=${obj.lastName} age=${obj.age} $currentNanoTime"
+  }
+}
+```
+Then you can simply:
+```
+val fe = FakeEntity("Name", "Surname", 54)
+
+// single
+db.write[FakeEntity](fe)
+res0: Future[Result]
+
+// bulk
+db.bulkWrite(Seq(fe, ...))
+res0: Future[Result]
+```
+
+Another option is to write from file. File format example:
+```
+test1,host=server02 value=0.67
+test1,host=server02,region=us-west value=0.55 1422568543702900257
+test1,direction=in,host=server01,region=us-west value=2.0 1422568543702900257
+```
+every point must be on separate line in Line Protocol format.
+```
+db.writeFromFile("path/to/your/file")
+res0: Future[Result]
 ```
