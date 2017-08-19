@@ -55,11 +55,6 @@ class DataManagementQuerySpec
     deleteAllSeriesQuery(testDb, testSeries)(emptyCredentials) shouldEqual queryTester(testDb, s"DELETE FROM $testSeries")
   }
 
-  "drop shard query" should "return correct query" in {
-    dropShardQuery(testShardId) shouldEqual queryTesterAuth(s"DROP SHARD $testShardId")
-
-    dropShardQuery(testShardId)(emptyCredentials) shouldEqual queryTester(s"DROP SHARD $testShardId")
-  }
 
   "show measurements query" should "return correct query" in {
     showMeasurementQuery(testDb) shouldEqual queryTesterAuth(testDb, "SHOW MEASUREMENTS")

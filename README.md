@@ -118,7 +118,7 @@ influx.showDatabase().map(_.queryResult)
 res0: Future[Seq[String]]
 ```
 ## Read and Write operation
-#### Read operatione
+#### Read operations
 There is several read method exist. The base one is:
 ```
 db.readJs("SELEC * FROM measurement").map(_.queryResult)
@@ -204,8 +204,10 @@ test1,host=server02 value=0.67
 test1,host=server02,region=us-west value=0.55 1422568543702900257
 test1,direction=in,host=server01,region=us-west value=2.0 1422568543702900257
 ```
-every point must be on separate line in Line Protocol format.
+every point must be on separate line in Line Protocol format. And then:
 ```
 db.writeFromFile("path/to/your/file")
 res0: Future[Result]
 ```
+## User management
+Main [User Management](https://docs.influxdata.com/influxdb/v1.3/query_language/authentication_and_authorization/#user-management-commands) operations

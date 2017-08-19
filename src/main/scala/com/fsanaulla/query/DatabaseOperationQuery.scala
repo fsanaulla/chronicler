@@ -29,7 +29,7 @@ private[fsanaulla] trait DatabaseOperationQuery extends QueryBuilder {
       queryParams += ("rp" -> rp)
     }
 
-    queryBuilder("/write", buildQueryParams(queryParams))
+    buildQuery("/write", buildQueryParams(queryParams))
   }
 
   protected def readFromInfluxSingleQuery(dbName: String,
@@ -46,7 +46,7 @@ private[fsanaulla] trait DatabaseOperationQuery extends QueryBuilder {
       "q" -> query
     )
 
-    queryBuilder("/query", buildQueryParams(queryParams))
+    buildQuery("/query", buildQueryParams(queryParams))
   }
 
   protected def readFromInfluxBulkQuery(dbName: String,
@@ -63,6 +63,6 @@ private[fsanaulla] trait DatabaseOperationQuery extends QueryBuilder {
       "q" -> querys.mkString(";")
     )
 
-    queryBuilder("/query", buildQueryParams(queryParams))
+    buildQuery("/query", buildQueryParams(queryParams))
   }
 }

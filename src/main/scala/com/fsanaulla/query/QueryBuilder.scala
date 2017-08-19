@@ -7,11 +7,11 @@ import scala.collection.mutable
 
 private[fsanaulla] trait QueryBuilder {
 
-  protected def queryBuilder(path: String, queryParam: String): Uri = {
+  protected def buildQuery(path: String, queryParam: String): Uri = {
     Uri(path).withQuery(Uri.Query("q" -> queryParam))
   }
 
-  protected def queryBuilder(path: String, queryParams: Map[String, String]): Uri = {
+  protected def buildQuery(path: String, queryParams: Map[String, String]): Uri = {
     Uri(path).withQuery(Uri.Query(queryParams))
   }
 

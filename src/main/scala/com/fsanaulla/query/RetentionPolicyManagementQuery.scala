@@ -24,11 +24,11 @@ private[fsanaulla] trait RetentionPolicyManagementQuery extends QueryBuilder {
 
     if (default) sb.append(" DEFAULT")
 
-    queryBuilder("/query", buildQueryParams(sb.toString()))
+    buildQuery("/query", buildQueryParams(sb.toString()))
   }
 
   protected def dropRetentionPolicyQuery(rpName: String, dbName: String)(implicit credentials: InfluxCredentials) : Uri = {
-    queryBuilder("/query", buildQueryParams(s"DROP RETENTION POLICY $rpName ON $dbName"))
+    buildQuery("/query", buildQueryParams(s"DROP RETENTION POLICY $rpName ON $dbName"))
   }
 
   protected def updateRetentionPolicyQuery(rpName: String,
@@ -56,6 +56,6 @@ private[fsanaulla] trait RetentionPolicyManagementQuery extends QueryBuilder {
 
     if (default) sb.append(" DEFAULT")
 
-    queryBuilder("/query", buildQueryParams(sb.toString()))
+    buildQuery("/query", buildQueryParams(sb.toString()))
   }
 }

@@ -4,7 +4,7 @@ import com.fsanaulla.InfluxClient
 import com.fsanaulla.model.InfluxImplicits._
 import com.fsanaulla.model._
 import com.fsanaulla.query.UserManagementQuery
-import com.fsanaulla.utils.ResponseWrapper.{toQueryResult, toResult}
+import com.fsanaulla.utils.ResponseHandler.{toQueryResult, toResult}
 import com.fsanaulla.utils.constants.Privileges._
 
 import scala.concurrent.Future
@@ -43,11 +43,11 @@ private[fsanaulla] trait UserManagement extends UserManagementQuery { self: Infl
     buildRequest(disableAdminQuery(username)).flatMap(toResult)
   }
 
-  def showUsers()(implicit reader: InfluxReader[UserInfo]): Future[QueryResult[UserInfo]] = {
+  def showUsers(): Future[QueryResult[UserInfo]] = {
     buildRequest(showUsersQuery).flatMap(toQueryResult[UserInfo])
   }
 
-  def showUserPrivileges(username: String)(implicit reader: InfluxReader[UserPrivilegesInfo]): Future[QueryResult[UserPrivilegesInfo]] = {
+  def showUserPrivileges(username: String): Future[QueryResult[UserPrivilegesInfo]] = {
     buildRequest(showUserPrivilegesQuery(username)).flatMap(toQueryResult[UserPrivilegesInfo])
   }
 }

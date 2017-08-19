@@ -1,5 +1,6 @@
 package com.fsanaulla.model
 
+import com.fsanaulla.utils.JsonSupport._
 import spray.json.{DeserializationException, JsArray, JsBoolean, JsNumber, JsObject, JsString}
 
 /**
@@ -9,19 +10,7 @@ import spray.json.{DeserializationException, JsArray, JsBoolean, JsNumber, JsObj
   */
 object InfluxImplicits {
 
-  case class UserInfo(username: String, isAdmin: Boolean)
-
-  case class UserPrivilegesInfo(database: String, privilege: String)
-
-  case class RetentionPolicyInfo(name: String,
-                                 duration: String,
-                                 shardGroupDuration: String,
-                                 replication: Int,
-                                 default: Boolean)
-
-  case class ContinuousQuery(cqName: String, query: String)
-
-  case class ContinuousQueryInfo(dbName: String, querys: Seq[ContinuousQuery])
+  implicit def bigDec2Int(bd: BigDecimal): Int = bd.toInt
 
   implicit object StringInfluxReader extends InfluxReader[String] {
     override def read(js: JsArray): String = js.elements match {
@@ -32,7 +21,7 @@ object InfluxImplicits {
 
   implicit object IntInfluxReader extends InfluxReader[Int] {
     override def read(js: JsArray): Int = js.elements match {
-      case Vector(JsNumber(num)) => num.toInt
+      case Vector(JsNumber(num)) => num
       case _ => throw DeserializationException(s"Can't deserialize $js to Int")
     }
   }
@@ -60,8 +49,11 @@ object InfluxImplicits {
 
   implicit object RetentionPolicyInfluxReader extends InfluxReader[RetentionPolicyInfo] {
     override def read(js: JsArray): RetentionPolicyInfo = js.elements match {
-      case Vector(JsString(name), JsString(duration), JsString(shardGroupdDuration), JsNumber(replication), JsBoolean(default)) =>
-        RetentionPolicyInfo(name, duration, shardGroupdDuration, replication.toInt, default)
+      case Vector(JsString(name),
+                  JsString(duration),
+                  JsString(shardGroupdDuration),
+                  JsNumber(replication),
+                  JsBoolean(default)) => RetentionPolicyInfo(name, duration, shardGroupdDuration, replication, default)
       case _ => throw DeserializationException(s"Can't deserialize $RetentionPolicyInfo object")
     }
   }
@@ -85,7 +77,49 @@ object InfluxImplicits {
   implicit object ContinuousQueryInfluxReader extends InfluxReader[ContinuousQuery] {
     override def read(js: JsArray): ContinuousQuery = js.elements match {
       case Vector(JsString(cqName), JsString(query)) => ContinuousQuery(cqName, query)
-      case _ => throw DeserializationException(s"Can't deserialize $UserPrivilegesInfo object")
+      case _ => throw DeserializationException(s"Can't deserialize $ContinuousQuery object")
+    }
+  }
+
+  implicit object ShardInfluxReader extends InfluxReader[Shard] {
+    override def read(js: JsArray): Shard = js.elements match {
+      case Vector(JsNumber(shardId),
+                  JsString(dbName),
+                  JsString(rpName),
+                  JsNumber(shardGroupId),
+                  JsString(startTime),
+                  JsString(endTime),
+                  JsString(expiryTime),
+                  JsString(owners)) => Shard(shardId.toInt, dbName, rpName, shardGroupId, startTime, endTime, expiryTime, owners)
+      case _ => throw DeserializationException(s"Can't deserialize $Shard object")
+    }
+  }
+
+  implicit object QueryInfoInfluxReader extends InfluxReader[QueryInfo] {
+    override def read(js: JsArray): QueryInfo = js.elements match {
+      case Vector(JsNumber(queryId), JsString(query), JsString(dbName), JsString(duration)) =>
+        QueryInfo(queryId, query, dbName, duration)
+      case _ => throw DeserializationException(s"Can't deserialize $QueryInfo object")
+    }
+  }
+
+  implicit object ShardGroupInfluxReader extends InfluxReader[ShardGroup] {
+    override def read(js: JsArray): ShardGroup = js.elements match {
+      case Vector(JsNumber(shardId),
+                  JsString(dbName),
+                  JsString(rpName),
+                  JsString(startTime),
+                  JsString(endTime),
+                  JsString(expiryTime)) => ShardGroup(shardId, dbName, rpName, startTime, endTime, expiryTime)
+      case _ => throw DeserializationException(s"Can't deserialize $QueryInfo object")
+    }
+  }
+
+  implicit object SubscriptionInfluxReader extends InfluxReader[Subscription] {
+    override def read(js: JsArray): Subscription = js.elements match {
+      case Vector(JsString(rpName), JsString(subsName), JsString(destType), JsArray(elems)) =>
+        Subscription(rpName, subsName, destType, elems.map(_.convertTo[String]))
+      case _ => throw DeserializationException(s"Can't deserialize $QueryInfo object")
     }
   }
 }

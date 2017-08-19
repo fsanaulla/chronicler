@@ -1,7 +1,7 @@
 package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
-import com.fsanaulla.model.InfluxImplicits._
+import com.fsanaulla.model.RetentionPolicyInfo
 import com.fsanaulla.utils.InfluxDuration._
 import com.fsanaulla.utils.TestHelper.OkResult
 import com.fsanaulla.utils.TestSpec

@@ -12,7 +12,7 @@ import com.fsanaulla.api.RequestBuilder
 import com.fsanaulla.model._
 import com.fsanaulla.query.DatabaseOperationQuery
 import com.fsanaulla.utils.ContentTypes.octetStream
-import com.fsanaulla.utils.ResponseWrapper.{toBulkQueryJsResult, toQueryJsResult, toQueryResult, toResult}
+import com.fsanaulla.utils.ResponseHandler.{toBulkQueryJsResult, toQueryJsResult, toQueryResult, toResult}
 import com.fsanaulla.utils.TypeAlias._
 import spray.json.JsArray
 

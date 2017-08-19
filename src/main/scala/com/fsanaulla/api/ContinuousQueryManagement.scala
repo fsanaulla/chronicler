@@ -2,9 +2,9 @@ package com.fsanaulla.api
 
 import com.fsanaulla.InfluxClient
 import com.fsanaulla.model.InfluxImplicits._
-import com.fsanaulla.model.{QueryResult, Result}
+import com.fsanaulla.model.{ContinuousQuery, ContinuousQueryInfo, QueryResult, Result}
 import com.fsanaulla.query.ContinuousQuerys
-import com.fsanaulla.utils.ResponseWrapper.{toCqQueryResult, toResult}
+import com.fsanaulla.utils.ResponseHandler.{toCqQueryResult, toResult}
 
 import scala.concurrent.Future
 

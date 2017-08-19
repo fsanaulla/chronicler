@@ -21,6 +21,9 @@ class InfluxClient(host: String,
       with UserManagement
       with RetentionPolicyManagement
       with ContinuousQueryManagement
+      with ShardManagement
+      with QuerysManagement
+      with SubscriptionManagement
       with RequestBuilder {
 
   protected implicit val credentials = InfluxCredentials(username, password)

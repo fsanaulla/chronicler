@@ -1,7 +1,7 @@
 package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
-import com.fsanaulla.model.InfluxImplicits._
+import com.fsanaulla.model.ContinuousQuery
 import com.fsanaulla.utils.TestHelper._
 import com.fsanaulla.utils.TestSpec
 

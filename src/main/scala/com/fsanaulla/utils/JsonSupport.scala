@@ -4,7 +4,6 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.HttpResponse
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
-import com.fsanaulla.model.InfluxImplicits._
 import com.fsanaulla.model.InfluxReader
 import com.fsanaulla.utils.ContentTypes.appJson
 import spray.json.DefaultJsonProtocol
@@ -22,6 +21,12 @@ private[fsanaulla] object JsonSupport extends SprayJsonSupport with DefaultJsonP
     Unmarshal(response.entity.withContentType(appJson)).to[JsObject]
   }
 
+  def getBulkInfluxValue(js: JsObject): Seq[Seq[JsArray]] = {
+    js.getFields("results").head.convertTo[Seq[JsObject]]
+      .map(_.getFields("series").head.convertTo[Seq[JsObject]].head)
+      .map(_.getFields("values").head.convertTo[Seq[JsArray]])
+  }
+
   def getInfluxValue(js: JsObject): Seq[JsArray] = {
     js.getFields("results").head.convertTo[Seq[JsObject]].head
       .getFields("series") match {
@@ -36,7 +41,7 @@ private[fsanaulla] object JsonSupport extends SprayJsonSupport with DefaultJsonP
     }
   }
 
-  def getInfluxCQInfo(js: JsObject)(implicit reader: InfluxReader[ContinuousQuery]): Seq[ContinuousQueryInfo] = {
+  def getInfluxInfo[T](js: JsObject)(implicit reader: InfluxReader[T]): Seq[(String, Seq[T])] = {
     js.getFields("results").head.convertTo[Seq[JsObject]].head
       .getFields("series") match {
       case seq: Seq[JsValue] if seq.nonEmpty =>
@@ -49,7 +54,7 @@ private[fsanaulla] object JsonSupport extends SprayJsonSupport with DefaultJsonP
               case _ => Nil
             }
 
-            ContinuousQueryInfo(dbName, cqInfo)
+            dbName -> cqInfo
           }
       case _ => Nil
     }

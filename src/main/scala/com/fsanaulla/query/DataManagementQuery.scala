@@ -39,38 +39,34 @@ private[fsanaulla] trait DataManagementQuery extends QueryBuilder {
       sb.append(s" NAME $rp")
     }
 
-    queryBuilder("/query", buildQueryParams(sb.toString()))
+    buildQuery("/query", buildQueryParams(sb.toString()))
   }
 
   protected def dropDatabaseQuery(dbName: String)(implicit credentials: InfluxCredentials): Uri = {
-    queryBuilder("/query", buildQueryParams(s"DROP DATABASE $dbName"))
+    buildQuery("/query", buildQueryParams(s"DROP DATABASE $dbName"))
   }
 
   protected def dropSeriesQuery(dbName: String, seriesName: String)(implicit credentials: InfluxCredentials): Uri = {
-    queryBuilder("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DROP SERIES FROM $seriesName")))
+    buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DROP SERIES FROM $seriesName")))
   }
 
   protected def dropMeasurementQuery(dbName: String, measurementName: String)(implicit credentials: InfluxCredentials): Uri = {
-    queryBuilder("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DROP MEASUREMENT $measurementName")))
+    buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DROP MEASUREMENT $measurementName")))
   }
 
   protected def deleteAllSeriesQuery(dbName: String, seriesName: String)(implicit credentials: InfluxCredentials): Uri = {
-    queryBuilder("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DELETE FROM $seriesName")))
-  }
-
-  protected def dropShardQuery(shardId: Int)(implicit credentials: InfluxCredentials): Uri = {
-    queryBuilder("/query", buildQueryParams(s"DROP SHARD $shardId"))
+    buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DELETE FROM $seriesName")))
   }
 
   protected def showMeasurementQuery(dbName: String)(implicit credentials: InfluxCredentials): Uri = {
-    queryBuilder("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"SHOW MEASUREMENTS")))
+    buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"SHOW MEASUREMENTS")))
   }
 
   protected def showRetentionPoliciesQuery(dbName: String)(implicit credentials: InfluxCredentials): Uri = {
-    queryBuilder("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> "SHOW RETENTION POLICIES")))
+    buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> "SHOW RETENTION POLICIES")))
   }
 
   protected def showDatabasesQuery()(implicit credentials: InfluxCredentials): Uri = {
-    queryBuilder("/query", buildQueryParams(s"SHOW DATABASES"))
+    buildQuery("/query", buildQueryParams(s"SHOW DATABASES"))
   }
 }

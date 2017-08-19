@@ -1,7 +1,7 @@
 package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
-import com.fsanaulla.model.InfluxImplicits._
+import com.fsanaulla.model.{UserInfo, UserPrivilegesInfo}
 import com.fsanaulla.utils.TestHelper.OkResult
 import com.fsanaulla.utils.TestSpec
 import com.fsanaulla.utils.constants.Privileges
