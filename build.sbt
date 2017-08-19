@@ -1,6 +1,6 @@
-name := "influx-scala-client"
+name := "influxdb-scala-client"
 
-version := "1.0"
+version := "0.1"
 
 organization := "com.fsanaulla"
 
