@@ -1,7 +1,6 @@
 package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
-import com.fsanaulla.utils.InfluxDuration._
 import com.fsanaulla.utils.TestHelper._
 import com.fsanaulla.utils.TestSpec
 
@@ -14,29 +13,24 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class ShardManagementSpec extends TestSpec {
 
-  val testRp = "test_rp"
-  val testDb = "test_db"
-  val time: String = 1.hours + 15.minutes
+  val testDb = "_internal"
 
   "shard operations" should "correctly work" in {
+
     // INIT INFLUX CLIENT
     val influx = InfluxClient(host = influxHost, username = credentials.username, password = credentials.password)
 
-    influx.createDatabase(testDb).futureValue shouldEqual OkResult
+//    influx.createDatabase(testDb).futureValue shouldEqual OkResult
+//
+//    influx.createRetentionPolicy(testRp, testDb, time, 1, Some(time)).futureValue shouldEqual OkResult
 
-    influx.createRetentionPolicy(testRp, testDb, time, 1, Some(time)).futureValue shouldEqual OkResult
-
-    val shards = influx.showShards().futureValue.queryResult.filter(_.shards.nonEmpty).head.shards
+    val shards = influx.getShards(testDb).futureValue
 
     shards.size should not equal 0
 
     influx.dropShard(shards.head.id).futureValue shouldEqual OkResult
 
-    influx.showShards().futureValue.queryResult.filter(_.shards.nonEmpty).head.shards.find(_.id == shards.head.id) shouldEqual None
-
-    influx.dropRetentionPolicy(testRp, testDb).futureValue shouldEqual OkResult
-
-    influx.dropDatabase(testDb).futureValue shouldEqual OkResult
+    influx.getShards(testDb).futureValue.size shouldEqual shards.size - 1
 
     influx.close()
   }

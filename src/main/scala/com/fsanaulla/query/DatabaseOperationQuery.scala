@@ -2,6 +2,7 @@ package com.fsanaulla.query
 
 import akka.http.scaladsl.model.Uri
 import com.fsanaulla.model.InfluxCredentials
+import com.fsanaulla.utils.QueryBuilder
 import com.fsanaulla.utils.constants.Consistencys._
 import com.fsanaulla.utils.constants.Epochs._
 import com.fsanaulla.utils.constants.Precisions._

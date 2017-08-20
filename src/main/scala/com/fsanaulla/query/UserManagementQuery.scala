@@ -2,6 +2,7 @@ package com.fsanaulla.query
 
 import akka.http.scaladsl.model.Uri
 import com.fsanaulla.model.InfluxCredentials
+import com.fsanaulla.utils.QueryBuilder
 
 private[fsanaulla] trait UserManagementQuery extends QueryBuilder {
 

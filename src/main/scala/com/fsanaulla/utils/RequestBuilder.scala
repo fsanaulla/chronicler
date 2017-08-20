@@ -1,4 +1,4 @@
-package com.fsanaulla.api
+package com.fsanaulla.utils
 
 import akka.http.scaladsl.model.HttpMethods.POST
 import akka.http.scaladsl.model._

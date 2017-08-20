@@ -8,10 +8,10 @@ import akka.http.scaladsl.model.{HttpEntity, RequestEntity}
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.FileIO
 import akka.util.ByteString
-import com.fsanaulla.api.RequestBuilder
 import com.fsanaulla.model._
 import com.fsanaulla.query.DatabaseOperationQuery
 import com.fsanaulla.utils.ContentTypes.octetStream
+import com.fsanaulla.utils.RequestBuilder
 import com.fsanaulla.utils.ResponseHandler.{toBulkQueryJsResult, toQueryJsResult, toQueryResult, toResult}
 import com.fsanaulla.utils.TypeAlias._
 import spray.json.JsArray

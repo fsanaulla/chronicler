@@ -2,7 +2,7 @@ package com.fsanaulla.api
 
 import com.fsanaulla.InfluxClient
 import com.fsanaulla.model.InfluxImplicits._
-import com.fsanaulla.model.{QueryResult, Result, ShardGroupsInfo, ShardInfo}
+import com.fsanaulla.model._
 import com.fsanaulla.query.ShardManagementQuery
 import com.fsanaulla.utils.ResponseHandler._
 
@@ -25,5 +25,9 @@ private[fsanaulla] trait ShardManagement extends ShardManagementQuery { self: In
 
   def showShards(): Future[QueryResult[ShardInfo]] = {
     buildRequest(showShards()).flatMap(toShardQueryResult)
+  }
+
+  def getShards(dbName: String): Future[Seq[Shard]] = {
+    showShards().map(_.queryResult.find(_.dbName == dbName).map(_.shards).getOrElse(Nil))
   }
 }

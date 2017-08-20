@@ -1,4 +1,4 @@
-package com.fsanaulla.query
+package com.fsanaulla.utils
 
 import akka.http.scaladsl.model.Uri
 import com.fsanaulla.model.InfluxCredentials

@@ -5,6 +5,7 @@ import akka.http.scaladsl.Http
 import akka.stream.{ActorMaterializer, StreamTcpException}
 import com.fsanaulla.api._
 import com.fsanaulla.model.{ConnectionException, InfluxCredentials, UnknownConnectionException}
+import com.fsanaulla.utils.RequestBuilder
 import com.fsanaulla.utils.TypeAlias._
 
 import scala.concurrent.{ExecutionContext, Future}
