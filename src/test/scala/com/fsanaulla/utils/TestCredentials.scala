@@ -1,4 +1,4 @@
-package com.fsanaulla.unit
+package com.fsanaulla.utils
 
 import com.fsanaulla.model.InfluxCredentials
 

@@ -2,6 +2,7 @@ package com.fsanaulla.unit
 
 import com.fsanaulla.query.RetentionPolicyManagementQuery
 import com.fsanaulla.utils.InfluxDuration._
+import com.fsanaulla.utils.TestCredentials
 import com.fsanaulla.utils.TestHelper._
 import org.scalatest.{FlatSpecLike, Matchers}
 

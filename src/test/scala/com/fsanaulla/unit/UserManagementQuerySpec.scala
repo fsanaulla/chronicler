@@ -1,6 +1,7 @@
 package com.fsanaulla.unit
 
 import com.fsanaulla.query.UserManagementQuery
+import com.fsanaulla.utils.TestCredentials
 import com.fsanaulla.utils.TestHelper._
 import com.fsanaulla.utils.constants.Privileges
 import org.scalatest.{FlatSpecLike, Matchers}

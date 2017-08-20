@@ -1,6 +1,7 @@
 package com.fsanaulla.unit
 
 import com.fsanaulla.query.DatabaseOperationQuery
+import com.fsanaulla.utils.TestCredentials
 import com.fsanaulla.utils.TestHelper._
 import com.fsanaulla.utils.constants.{Consistencys, Precisions}
 import org.scalatest.{FlatSpec, Matchers}

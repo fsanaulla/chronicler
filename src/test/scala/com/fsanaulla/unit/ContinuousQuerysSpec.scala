@@ -1,6 +1,7 @@
 package com.fsanaulla.unit
 
 import com.fsanaulla.query.ContinuousQuerys
+import com.fsanaulla.utils.TestCredentials
 import com.fsanaulla.utils.TestHelper._
 import org.scalatest.{FlatSpec, Matchers}
 

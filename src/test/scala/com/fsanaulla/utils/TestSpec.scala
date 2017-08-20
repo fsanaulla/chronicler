@@ -1,6 +1,5 @@
 package com.fsanaulla.utils
 
-import com.fsanaulla.unit.TestCredentials
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Second, Seconds, Span}
 import org.scalatest.{FlatSpec, Matchers, OptionValues}

@@ -28,14 +28,16 @@ class ShardManagementSpec extends TestSpec {
 
     val shards = influx.showShards().futureValue.queryResult.filter(_.shards.nonEmpty).head.shards
 
-    shards.size shouldEqual 6
+    shards.size should not equal 0
 
     influx.dropShard(shards.head.id).futureValue shouldEqual OkResult
 
-    influx.showShards().futureValue.queryResult.filter(_.shards.nonEmpty).head.shards.size shouldEqual 5
+    influx.showShards().futureValue.queryResult.filter(_.shards.nonEmpty).head.shards.size shouldEqual shards.size - 1
 
     influx.dropRetentionPolicy(testRp, testDb).futureValue shouldEqual OkResult
 
     influx.dropDatabase(testDb).futureValue shouldEqual OkResult
+
+    influx.close()
   }
 }

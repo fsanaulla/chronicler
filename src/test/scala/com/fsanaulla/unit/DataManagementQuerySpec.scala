@@ -1,6 +1,7 @@
 package com.fsanaulla.unit
 
 import com.fsanaulla.query.DataManagementQuery
+import com.fsanaulla.utils.TestCredentials
 import com.fsanaulla.utils.TestHelper._
 import org.scalatest.{FlatSpecLike, Matchers}
 
