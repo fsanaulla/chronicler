@@ -32,7 +32,7 @@ class ShardManagementSpec extends TestSpec {
 
     influx.dropShard(shards.head.id).futureValue shouldEqual OkResult
 
-    influx.showShards().futureValue.queryResult.filter(_.shards.nonEmpty).head.shards.size shouldEqual shards.size - 1
+    influx.showShards().futureValue.queryResult.filter(_.shards.nonEmpty).head.shards.find(_.id == shards.head.id) shouldEqual None
 
     influx.dropRetentionPolicy(testRp, testDb).futureValue shouldEqual OkResult
 
