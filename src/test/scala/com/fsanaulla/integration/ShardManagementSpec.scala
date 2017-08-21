@@ -19,18 +19,14 @@ class ShardManagementSpec extends TestSpec {
 
     // INIT INFLUX CLIENT
     val influx = InfluxClient(host = influxHost, username = credentials.username, password = credentials.password)
-
-//    influx.createDatabase(testDb).futureValue shouldEqual OkResult
-//
-//    influx.createRetentionPolicy(testRp, testDb, time, 1, Some(time)).futureValue shouldEqual OkResult
-
+    //
     val shards = influx.getShards(testDb).futureValue
 
-    shards.size should not equal 0
+    shards should not be Nil
 
     influx.dropShard(shards.head.id).futureValue shouldEqual OkResult
 
-    influx.getShards(testDb).futureValue.size shouldEqual shards.size - 1
+    influx.getShards(testDb).futureValue should not be shards
 
     influx.close()
   }
