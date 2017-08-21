@@ -2,7 +2,7 @@ package com.fsanaulla.api
 
 import com.fsanaulla.InfluxClient
 import com.fsanaulla.model.InfluxImplicits._
-import com.fsanaulla.model.{QueryResult, Result, SubscriptionInfo}
+import com.fsanaulla.model.{QueryResult, Result, Subscription, SubscriptionInfo}
 import com.fsanaulla.query.SubscriptionsManagementQuery
 import com.fsanaulla.utils.ResponseHandler._
 import com.fsanaulla.utils.constants.Destinations.Destination
@@ -28,8 +28,12 @@ private[fsanaulla] trait SubscriptionManagement extends SubscriptionsManagementQ
     buildRequest(dropSubscriptionQuery(subName, dbName, rpName)).flatMap(toResult)
   }
 
-  def showSubscriptions(): Future[QueryResult[SubscriptionInfo]] = {
+  def showSubscriptionsInfo(): Future[QueryResult[SubscriptionInfo]] = {
     buildRequest(showSubscriptionsQuery()).flatMap(toSubscriptionQueryResult)
+  }
+
+  def showSubscriptions(dbName: String): Future[Seq[Subscription]] = {
+    showSubscriptionsInfo().map(_.queryResult.find(_.dbName == dbName).map(_.subscriptions).getOrElse(Nil))
   }
 
   def updateSubscription(subsName: String,

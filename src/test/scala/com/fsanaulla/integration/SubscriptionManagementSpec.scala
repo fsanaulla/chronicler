@@ -1,6 +1,7 @@
 package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
+import com.fsanaulla.model.Subscription
 import com.fsanaulla.utils.InfluxDuration._
 import com.fsanaulla.utils.TestHelper._
 import com.fsanaulla.utils.TestSpec
@@ -21,6 +22,8 @@ class SubscriptionManagementSpec extends TestSpec {
   val destType  = Destinations.ANY
   val newDestType = Destinations.ALL
   val hosts = Seq("udp://h1.example.com:9090", "udp://h2.example.com:9090")
+  val subscription = Subscription(rpName, subName, destType, hosts)
+  val newSubscription = subscription.copy(destType = newDestType)
 
   val duration = 1.hours + 30.minutes
 
@@ -37,21 +40,15 @@ class SubscriptionManagementSpec extends TestSpec {
 
     influx.createSubscription(subName, dbName, rpName, destType, hosts).futureValue shouldEqual OkResult
 
-    influx.showSubscriptions().futureValue.queryResult
-      .find(_.dbName == dbName).value.subscriptions.exists(_.subsName == subName) shouldEqual true
+    influx.showSubscriptions(dbName).futureValue shouldEqual Seq(subscription)
 
     influx.updateSubscription(subName, dbName, rpName, newDestType, hosts).futureValue shouldEqual OkResult
 
-    influx.showSubscriptions().futureValue.queryResult
-      .find(_.dbName == dbName).value.subscriptions.exists(_.destType == destType) shouldEqual false
-
-    influx.showSubscriptions().futureValue.queryResult
-      .find(_.dbName == dbName).value.subscriptions.exists(_.destType == newDestType) shouldEqual true
+    influx.showSubscriptions(dbName).futureValue shouldEqual Seq(newSubscription)
 
     influx.dropSubscription(subName, dbName, rpName).futureValue shouldEqual OkResult
 
-    influx.showSubscriptions().futureValue.queryResult
-      .find(_.dbName == dbName).value.subscriptions.exists(_.subsName == subName) shouldEqual false
+    influx.showSubscriptions(dbName).futureValue shouldEqual Nil
 
     influx.dropRetentionPolicy(rpName, dbName).futureValue shouldEqual OkResult
 
