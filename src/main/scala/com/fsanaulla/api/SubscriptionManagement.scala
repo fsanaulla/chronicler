@@ -24,8 +24,8 @@ private[fsanaulla] trait SubscriptionManagement extends SubscriptionsManagementQ
     buildRequest(createSubscriptionQuery(subsName, dbName, rpName, destinationType, addresses)).flatMap(toResult)
   }
 
-  def dropSubscription(subsName: String, dbName: String, rpName: String): Future[Result] = {
-    buildRequest(dropSubscriptionQuery(subsName, dbName, rpName)).flatMap(toResult)
+  def dropSubscription(subName: String, dbName: String, rpName: String): Future[Result] = {
+    buildRequest(dropSubscriptionQuery(subName, dbName, rpName)).flatMap(toResult)
   }
 
   def showSubscriptions(): Future[QueryResult[SubscriptionInfo]] = {
