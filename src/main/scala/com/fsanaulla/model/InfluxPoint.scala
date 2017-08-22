@@ -7,35 +7,35 @@ package com.fsanaulla.model
   */
 case class Tag(key: String, value: String)
 
-sealed trait Field {
+sealed trait InfluxField {
   override def toString: String
 }
 
-case class StringField(key: String, value: String) extends Field {
+case class StringField(key: String, value: String) extends InfluxField {
   override def toString: String = key + "=" + value
 }
 
-case class IntField(key: String, value: Int) extends Field {
+case class IntField(key: String, value: Int) extends InfluxField {
   override def toString: String = key + "=" + value
 }
 
-case class LongField(key: String, value: Long) extends Field {
+case class LongField(key: String, value: Long) extends InfluxField {
   override def toString: String = key + "=" + value
 }
 
-case class DoubleField(key: String, value: Double) extends Field {
+case class DoubleField(key: String, value: Double) extends InfluxField {
   override def toString: String = key + "=" + value
 }
 
-case class BooleanField(key: String, value: Boolean) extends Field {
+case class BooleanField(key: String, value: Boolean) extends InfluxField {
   override def toString: String = key + "=" + value
 }
 
-case class CharField(key: String, value: Char) extends Field {
+case class CharField(key: String, value: Char) extends InfluxField {
   override def toString: String = key + "=" + value
 }
 
-case class Point(measurement: String, tags: List[Tag] = Nil, fields: List[Field] = Nil, time: Long = -1L) {
+case class Point(measurement: String, tags: List[Tag] = Nil, fields: List[InfluxField] = Nil, time: Long = -1L) {
   def addTag(key: String, value: String): Point = copy(tags = Tag(key, value) :: tags)
 
   def addField(key: String, value: String): Point = copy(fields = StringField(key, value) :: fields)

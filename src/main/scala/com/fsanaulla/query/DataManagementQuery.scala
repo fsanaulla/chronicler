@@ -70,4 +70,8 @@ private[fsanaulla] trait DataManagementQuery extends QueryBuilder {
   protected def showDatabasesQuery()(implicit credentials: InfluxCredentials): Uri = {
     buildQuery("/query", buildQueryParams(s"SHOW DATABASES"))
   }
+
+  protected def showFieldKeysQuery(dbName: String, measurementName: String)(implicit credentials: InfluxCredentials): Uri = {
+    buildQuery("/query", buildQueryParams(s"SHOW FIELD KEYS ON $dbName FROM $measurementName"))
+  }
 }

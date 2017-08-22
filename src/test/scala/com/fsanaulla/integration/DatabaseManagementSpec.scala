@@ -1,10 +1,10 @@
 package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
+import com.fsanaulla.model.Field
 import com.fsanaulla.utils.SampleEntitys.{multiEntitys, singleEntity}
 import com.fsanaulla.utils.TestHelper.{FakeEntity, NoContentResult, OkResult}
 import com.fsanaulla.utils.TestSpec
-import com.fsanaulla.model.InfluxImplicits._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -29,6 +29,8 @@ class DatabaseManagementSpec extends TestSpec {
 
     db.bulkWrite[FakeEntity]("meas1", multiEntitys).futureValue shouldEqual NoContentResult
     db.read[FakeEntity]("SELECT * FROM meas1").futureValue.queryResult shouldEqual multiEntitys
+
+    influx.showFieldKeys(dbName, "meas1").futureValue.queryResult shouldEqual Seq(Field("age", "float"))
 
     db.write[FakeEntity]("meas2", singleEntity).futureValue shouldEqual NoContentResult
     db.read[FakeEntity]("SELECT * FROM meas2").futureValue.queryResult shouldEqual Seq(singleEntity)

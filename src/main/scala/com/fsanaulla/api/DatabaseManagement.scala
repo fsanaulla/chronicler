@@ -35,4 +35,8 @@ private[fsanaulla] trait DatabaseManagement extends DataManagementQuery { self: 
       .flatMap(toQueryResult[String])
       .map(res => res.copy(queryResult = res.queryResult))
   }
+
+  def showFieldKeys(dbName: String, measurementName: String): Future[QueryResult[Field]] = {
+    buildRequest(showFieldKeysQuery(dbName, measurementName)).flatMap(toQueryResult[Field])
+  }
 }

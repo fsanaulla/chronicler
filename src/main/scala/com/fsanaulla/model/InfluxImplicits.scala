@@ -111,7 +111,7 @@ object InfluxImplicits {
                   JsString(startTime),
                   JsString(endTime),
                   JsString(expiryTime)) => ShardGroup(shardId, dbName, rpName, startTime, endTime, expiryTime)
-      case _ => throw DeserializationException(s"Can't deserialize $QueryInfo object")
+      case _ => throw DeserializationException(s"Can't deserialize $ShardGroup object")
     }
   }
 
@@ -119,7 +119,14 @@ object InfluxImplicits {
     override def read(js: JsArray): Subscription = js.elements match {
       case Vector(JsString(rpName), JsString(subsName), JsString(destType), JsArray(elems)) =>
         Subscription(rpName, subsName, destType, elems.map(_.convertTo[String]))
-      case _ => throw DeserializationException(s"Can't deserialize $QueryInfo object")
+      case _ => throw DeserializationException(s"Can't deserialize $Subscription object")
+    }
+  }
+
+  implicit object FieldInfluxReader extends InfluxReader[Field] {
+    override def read(js: JsArray): Field = js.elements match {
+      case Vector(JsString(fieldName), JsString(fieldType)) => Field(fieldName, fieldType)
+      case _ => throw DeserializationException(s"Can't deserialize $Field object")
     }
   }
 }
