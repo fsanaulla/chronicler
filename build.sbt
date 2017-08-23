@@ -22,5 +22,9 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka"   %%   "akka-http-spray-json"         %   Versions.akkaHttp
 )
 
-coverageMinimum := 75
-coverageExcludedPackages := "com\\.fsanaulla\\.utils.*;com\\.fsanaulla\\.model.*;com\\.fsanaulla\\.dsl.*"
+coverageMinimum := 90
+
+coverageExcludedPackages := "" +
+  "com\\.fsanaulla\\.utils.*;" +
+  "com\\.fsanaulla\\.model.*;" +
+  "com\\.fsanaulla\\.InfluxClient.*"

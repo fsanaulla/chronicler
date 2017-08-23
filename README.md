@@ -211,3 +211,26 @@ res0: Future[Result]
 ```
 ## User management
 Main [User Management](https://docs.influxdata.com/influxdb/v1.3/query_language/authentication_and_authorization/#user-management-commands) operations
+
+Create non-admin user:
+```
+influx.createUser("UserName", "UserPassword")
+```
+Create admin user:
+```
+influx.createAdmin("AdminUser", "AdminPass")
+```
+Drop user:
+```
+influx.dropUser("UserName")
+```
+Set user password:
+```
+influx.setUserPassword("UserName", "UserPassword")
+```
+Set user privileges for some database:
+```
+import com.fsanaulla.utils.constants.Privileges._
+
+influx.setPrivileges("SomeUser", "SomeDB", Privileges.READ)
+```
