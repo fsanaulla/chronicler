@@ -39,4 +39,21 @@ private[fsanaulla] trait DatabaseManagement extends DataManagementQuery { self: 
   def showFieldKeys(dbName: String, measurementName: String): Future[QueryResult[Field]] = {
     buildRequest(showFieldKeysQuery(dbName, measurementName)).flatMap(toQueryResult[Field])
   }
+
+  def showTagKeys(dbName: String,
+                  measurementName: String,
+                  whereClause: Option[String] = None,
+                  limit: Option[Int] = None,
+                  offset: Option[Int] = None): Future[QueryResult[String]] = {
+    buildRequest(showTagKeysQuery(dbName, measurementName, whereClause, limit, offset)).flatMap(toQueryResult[String])
+  }
+
+  def showTagValues(dbName: String,
+                    measurementName: String,
+                    withKey: Seq[String],
+                    whereClause: Option[String] = None,
+                    limit: Option[Int] = None,
+                    offset: Option[Int] = None): Future[QueryResult[TagValue]] = {
+    buildRequest(showTagValuesQuery(dbName, measurementName, withKey, whereClause, limit, offset)).flatMap(toQueryResult[TagValue])
+  }
 }

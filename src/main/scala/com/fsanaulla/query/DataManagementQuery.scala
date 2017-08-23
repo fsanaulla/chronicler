@@ -74,4 +74,62 @@ private[fsanaulla] trait DataManagementQuery extends QueryBuilder {
   protected def showFieldKeysQuery(dbName: String, measurementName: String)(implicit credentials: InfluxCredentials): Uri = {
     buildQuery("/query", buildQueryParams(s"SHOW FIELD KEYS ON $dbName FROM $measurementName"))
   }
+
+  protected def showTagKeysQuery(dbName: String,
+                                 measurementName: String,
+                                 whereClause: Option[String],
+                                 limit: Option[Int],
+                                 offset: Option[Int])(implicit credentials: InfluxCredentials): Uri = {
+    val sb = StringBuilder.newBuilder
+
+    sb.append("SHOW TAG KEYS ON ").append(dbName)
+      .append(" FROM ").append(measurementName)
+
+    for (where <- whereClause) {
+      sb.append(" WHERE ").append(where)
+    }
+
+    for (l <- limit) {
+      sb.append(" LIMIT ").append(l)
+    }
+
+    for (o <- offset) {
+      sb.append(" OFFSET ").append(o)
+    }
+
+    buildQuery("/query", buildQueryParams(sb.toString()))
+  }
+
+  protected def showTagValuesQuery(dbName: String,
+                                   measurementName: String,
+                                   withKey: Seq[String],
+                                   whereClause: Option[String],
+                                   limit: Option[Int],
+                                   offset: Option[Int])(implicit credentials: InfluxCredentials): Uri = {
+    require(withKey.nonEmpty, "Keys can't be empty")
+    val sb = StringBuilder.newBuilder
+
+    sb.append("SHOW TAG VALUES ON ").append(dbName)
+      .append(" FROM ").append(measurementName)
+
+    if (withKey.size == 1) {
+      sb.append(" WITH KEY = ").append(withKey.head)
+    } else {
+      sb.append(" WITH KEY IN ").append(s"(${withKey.mkString(",")})")
+    }
+
+    for (where <- whereClause) {
+      sb.append(" WHERE ").append(where)
+    }
+
+    for (l <- limit) {
+      sb.append(" LIMIT ").append(l)
+    }
+
+    for (o <- offset) {
+      sb.append(" OFFSET ").append(o)
+    }
+
+    buildQuery("/query", buildQueryParams(sb.toString()))
+  }
 }

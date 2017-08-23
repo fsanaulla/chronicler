@@ -5,7 +5,7 @@ package com.fsanaulla.model
   * Author: fayaz.sanaulla@gmail.com
   * Date: 05.08.17
   */
-case class Tag(key: String, value: String)
+case class InfluxTag(key: String, value: String)
 
 sealed trait InfluxField {
   override def toString: String
@@ -35,8 +35,8 @@ case class CharField(key: String, value: Char) extends InfluxField {
   override def toString: String = key + "=" + value
 }
 
-case class Point(measurement: String, tags: List[Tag] = Nil, fields: List[InfluxField] = Nil, time: Long = -1L) {
-  def addTag(key: String, value: String): Point = copy(tags = Tag(key, value) :: tags)
+case class Point(measurement: String, tags: List[InfluxTag] = Nil, fields: List[InfluxField] = Nil, time: Long = -1L) {
+  def addTag(key: String, value: String): Point = copy(tags = InfluxTag(key, value) :: tags)
 
   def addField(key: String, value: String): Point = copy(fields = StringField(key, value) :: fields)
   def addField(key: String, value: Int): Point = copy(fields = IntField(key, value) :: fields)
