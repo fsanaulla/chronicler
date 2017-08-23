@@ -36,6 +36,8 @@ implicit val timeout = 1 second
 val future: Future[T] = _
 val completedFuture: T = future.sync
 ```
+## Response handling
+
 ## Connection
 #### Imports
 ```
@@ -262,7 +264,7 @@ influx.showUsers()
 ```
 Show user's privileges:
 ```
-influx.showUserPrivileges
+influx.showUserPrivileges()
 ```
 ## 
 

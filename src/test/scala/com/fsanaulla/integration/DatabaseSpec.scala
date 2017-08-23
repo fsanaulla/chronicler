@@ -74,6 +74,9 @@ class DatabaseSpec extends TestSpec {
 
     multiQuery.queryResult shouldEqual largeMultiJsonEntity
 
+    db.writeNative("meas3,firstName=Jame,lastName=Lannister age=48").futureValue shouldEqual NoContentResult
+    db.read[FakeEntity]("SELECT * FROM meas3").futureValue.queryResult shouldEqual Seq(FakeEntity("Jame", "Lannister", 48))
+
     // DROP DB TEST
     influx.dropDatabase(testDB).futureValue shouldEqual OkResult
 

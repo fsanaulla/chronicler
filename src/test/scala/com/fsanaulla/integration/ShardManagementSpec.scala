@@ -1,6 +1,7 @@
 package com.fsanaulla.integration
 
 import com.fsanaulla.InfluxClient
+import com.fsanaulla.model.ShardGroupsInfo
 import com.fsanaulla.utils.TestHelper._
 import com.fsanaulla.utils.TestSpec
 
@@ -27,6 +28,14 @@ class ShardManagementSpec extends TestSpec {
     influx.dropShard(shards.head.id).futureValue shouldEqual OkResult
 
     influx.getShards(testDb).futureValue should not be shards
+
+    val shardGroups = influx.showShardGroups().futureValue.queryResult
+
+    shardGroups should not equal Nil
+
+    shardGroups shouldBe a [Seq[_]]
+
+    shardGroups.head shouldBe a [ShardGroupsInfo]
 
     influx.close()
   }
