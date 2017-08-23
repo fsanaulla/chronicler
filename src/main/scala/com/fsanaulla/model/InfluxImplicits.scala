@@ -123,10 +123,10 @@ object InfluxImplicits {
     }
   }
 
-  implicit object FieldInfluxReader extends InfluxReader[Field] {
-    override def read(js: JsArray): Field = js.elements match {
-      case Vector(JsString(fieldName), JsString(fieldType)) => Field(fieldName, fieldType)
-      case _ => throw DeserializationException(s"Can't deserialize $Field object")
+  implicit object FieldInfoInfluxReader extends InfluxReader[FieldInfo] {
+    override def read(js: JsArray): FieldInfo = js.elements match {
+      case Vector(JsString(fieldName), JsString(fieldType)) => FieldInfo(fieldName, fieldType)
+      case _ => throw DeserializationException(s"Can't deserialize $FieldInfo object")
     }
   }
 

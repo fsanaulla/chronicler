@@ -63,9 +63,8 @@ or with user auth info
 val influx = InfluxClient("host", 8087, Some("username"), Some("password"))
 ```
 
-## Data management
+## Database management
 Main [Database management](https://docs.influxdata.com/influxdb/v1.3/query_language/database_management/) operation:
-#### Create database
 
 You can create db with such signatures
 ```
@@ -85,37 +84,46 @@ influx.createDatabase("db", Some("2h"), Some(1), Some("2h"))
 influx.createDatabase("db", Some("2h"), Some(1), Some("2h"), Some("my_retention_policy"))
 ```
 
-#### Select database
-To choose needed database simply write:
+To choose needed database:
 ```
 val db: Database = influx.use("mydb")
 ```
-
-#### Drop database
-Specify database name
+Drop database
 ```
 influx.dropDatabase("db_name")
 ```
-#### Drop measurement
-Specify measurement name
+Drop measurement
 ```
 influx.dropMeasurement("measurement_name")
 ```
-#### Drop shard
-Specify shard id
+Drop shard bu shardId
 ```
 influx.dropShard(2)
 ```
-#### Show measurements
-Specify database name
+Show database measurement
 ```
 influx.showMeasurement("db_name").map(_.queryResult)
 res0: Future[Seq[String]]
 ```
-#### Show databases
+Show databases
 ```
 influx.showDatabase().map(_.queryResult)
 res0: Future[Seq[String]]
+```
+Show measurement tag keys, `whereClause` it's simply predicate to filtering like `"bar > 4"`. `whereClause`, `limit`, `offset` are optional parameters.
+```
+influx.showTagKeys("database", "measurement", "whereClause", optLimit, optOffset)
+res0: Future[QueryResult[String]]
+```
+Show measurement tag value's, `whereClause` it's simply predicate to filtering like `"bar > 4"`. `whereClause`, `limit`, `offset` are optional parameters.
+```
+influx.showTagValues("db_name", "measuremetn_name", Seq("key1", "key2"), whereClause, limit, offset)
+res0: Future[QueryResult[TagValue]]
+```
+Show field keys:
+```
+influx.showFieldKeys("db_name", "measuremetn_name")
+res0: Future[QueryResult[FieldInfo]]
 ```
 ## Read and Write operation
 #### Read operations
@@ -234,3 +242,28 @@ import com.fsanaulla.utils.constants.Privileges._
 
 influx.setPrivileges("SomeUser", "SomeDB", Privileges.READ)
 ```
+Revoke privileges from user
+```
+import com.fsanaulla.utils.constants.Privileges._
+
+influx.revokePrivileges("SomeUser", "SomeDB", Privileges.READ)
+```
+Make admin user from non-admin user:
+```
+influx.makeAdmin("NonAdminUser")
+```
+Demote admin user:
+```
+influx.disableAdmin("AdminUser")
+```
+Show users:
+```
+influx.showUsers()
+```
+Show user's privileges:
+```
+influx.showUserPrivileges
+```
+## 
+
+

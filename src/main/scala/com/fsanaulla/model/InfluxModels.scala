@@ -29,6 +29,6 @@ case class ShardInfo(dbName: String, shards: Seq[Shard])
 
 case class SubscriptionInfo(dbName: String, subscriptions: Seq[Subscription])
 
-case class Field(fieldName: String, fieldType: String)
+case class FieldInfo(fieldName: String, fieldType: String)
 
 case class TagValue(tag: String, value: String)
