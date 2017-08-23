@@ -23,3 +23,4 @@ libraryDependencies ++= Seq(
 )
 
 coverageMinimum := 75
+coverageExcludedPackages := "com.fsanaulla.utils"
