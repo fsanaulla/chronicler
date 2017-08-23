@@ -129,4 +129,11 @@ object InfluxImplicits {
       case _ => throw DeserializationException(s"Can't deserialize $Field object")
     }
   }
+
+  implicit object TagValueInfluxReader extends InfluxReader[TagValue] {
+    override def read(js: JsArray): TagValue = js.elements match {
+      case Vector(JsString(tag), JsString(value)) => TagValue(tag, value)
+      case _ => throw DeserializationException(s"Can't deserialize $TagValue object")
+    }
+  }
 }
