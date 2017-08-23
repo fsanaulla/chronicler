@@ -23,4 +23,4 @@ libraryDependencies ++= Seq(
 )
 
 coverageMinimum := 75
-coverageExcludedPackages := "com\\.fsanaulla\\.utils.*;com\\.fsanaulla\\.model.*"
+coverageExcludedPackages := "com\\.fsanaulla\\.utils.*;com\\.fsanaulla\\.model.*;com\\.fsanaulla\\.dsl.*"
