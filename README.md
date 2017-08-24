@@ -7,7 +7,8 @@ Asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](
     - [Helper Tools](#helptools)
         - [Time](#time)
         - [Synchronize](#sync)
-- [Response Handling](#reps)
+- [Response Handling](#resp)
+- [Connection](#connection)
 
 ## Usage <a name="usage"></a>
 ### Helper tools <a name="helptools"></a>
@@ -58,8 +59,8 @@ db.read[T]("SELECT * FROM some_measurement").map {
       case _ => // handle error
     }
 ```
-## Connection
-#### Imports
+## Connection <a name="connection"></a>
+### Imports
 ```
 import com.fsanaulla.InfluxClient
 
@@ -71,7 +72,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 implicit val ex: ExecutionContext = _
 ```
-#### Create connection
+### Create connection
 Creating simply connection based on `host` and default `port`
 ```
 val influx = InfluxClient("host") // default port 8086
