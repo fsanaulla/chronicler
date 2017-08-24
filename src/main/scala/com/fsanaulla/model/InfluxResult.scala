@@ -7,9 +7,7 @@ import spray.json.JsArray
   * Author: fayaz.sanaulla@gmail.com
   * Date: 30.07.17
   */
-case class Result(code: Int, isSuccess: Boolean, ex: Option[Throwable] = None) {
-  def successful(code: Int) = Result(code, isSuccess = true, None)
-}
+case class Result(code: Int, isSuccess: Boolean, ex: Option[Throwable] = None)
 
 object Result {
   def successful(code: Int) = Result(code, isSuccess = true, None)

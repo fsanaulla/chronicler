@@ -15,11 +15,12 @@ Asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](
 - [Read and Write operation](#readWrite)
     - [Read operation](#read)
     - [Write operation](#write)
-- [User management](#userManagement)
+- [User management](#userManagement)'
+- [Continuously Query management](#CQManagement)
 
-## Usage <a name="usage"></a>
-### Helper tools <a name="helptools"></a>
-#### Time <a name="time"></a>
+# Usage <a name="usage"></a>
+## Helper tools <a name="helptools"></a>
+### Time <a name="time"></a>
 In many place you need to specify special influx time format, like in `duration` related fields. In this case you can simply write string based time like, `1h30m45s` by hand according to [Duration Time Format](https://docs.influxdata.com/influxdb/v1.3/query_language/spec/#durations).
 Or use `InfluxDuration` object.
 ```
@@ -40,7 +41,7 @@ import com.fsanaulla.utils.InfluxDuration._
 
 // the same for Long
 ```
-#### Synchronize <a name="sync"></a>
+### Synchronize <a name="sync"></a>
 To complete future you can use Extension object
 ```
 import com.fsanaulla.utils.Synchronization._
@@ -61,10 +62,23 @@ case class QueryResult[T](code: Int,                    // response HTTP code
 ```
 So in your code you can handle responses like that:
 ```
-db.read[T]("SELECT * FROM some_measurement").map {
-      case QueryResult(_, _, queryResult, None) => queryResult // if no ex exist
+db.read[T]("SELECT * FROM some_measurement") map {
+      case QueryResult(_, _, queryResult, None) => queryResult // if no exсeption exist
       case _ => // handle error
-    }
+}
+```
+Another non-query method like `setPassword`, `setUserPrivileges` return a `Result` object:
+```
+case class Result(code: Int,                    // HTTP response code
+                  isSuccess: Boolean,           // success status
+                  ex: Option[Throwable] = None) // optional exception
+```
+To handle it:
+```
+influx.setUserPassword("SomeUser", "newPassword") map {
+        case Result(_, _, None) => // succesfully finished operation
+        case _ => // handle error
+}
 ```
 ## Connection <a name="connection"></a>
 ### Imports <a name="import"></a>
@@ -156,7 +170,7 @@ influx.showFieldKeys("db_name", "measuremetn_name")
 res0: Future[QueryResult[FieldInfo]]
 ```
 ## Read and Write operation <a name="readWrite"></a>
-#### Read operations <a name="read"></a>
+### Read operations <a name="read"></a>
 There is several read method exist. The base one is:
 ```
 db.readJs("SELEC * FROM measurement").map(_.queryResult)
@@ -186,7 +200,7 @@ You can execute multiple query's in one request:
 db.bulkReadJs(Seq("SELECT * FROM measurement", "SELECT * FROM measurement1")).map(_.queryResult)
 res0: Future[Seq[Seq[JsArray]]]
 ```
-#### Write operation <a name="write"></a>
+### Write operation <a name="write"></a>
 There is much more opportunities to store data.
 First one save point in pure [Line Protocol Format](https://docs.influxdata.com/influxdb/v1.3/write_protocols/line_protocol_reference/)
 ```
@@ -294,4 +308,25 @@ Show user's privileges:
 ```
 influx.showUserPrivileges()
 ```
-
+## Continuously Query management <a name="CQManagement"></a>
+Main [CQ management](https://docs.influxdata.com/influxdb/v1.3/query_language/continuous_queries/#continuous-query-management)
+To create Continuously Query(further CQ). Where query params look's like `SELECT count("bees") AS "count_bees" INTO "aggregate_bees" FROM "farm" GROUP BY time(30m)`:
+```
+influx.createCQ("dbName", "cqName", "query")
+```
+Droping CQ:
+```
+influx.dropCQ("dbName", "cqName")
+```
+Show CQ's:
+```
+influx.showCQs()
+```
+Show database related CQ's:
+```
+influx.showCQ("dbName")
+```
+There is no default update method for CQ, so `updateCQ` it's simulation using `dropCQ` and `createCQ` methods.
+```
+influx.updateCQ("dbName", "cqName", "query")
+```
