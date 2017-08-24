@@ -78,7 +78,7 @@ class DatabaseSpec extends TestSpec {
     db.read[FakeEntity]("SELECT * FROM meas3").futureValue.queryResult shouldEqual Seq(FakeEntity("Jame", "Lannister", 48))
 
     db.bulkWriteNative(Seq("meas3,firstName=Jon,lastName=Show age=24", "meas3,firstName=Deny,lastName=Targaryen age=25"))
-    db.read[FakeEntity]("SELECT * FROM meas3").futureValue.queryResult shouldEqual Seq(FakeEntity("Jame", "Lannister", 48), FakeEntity("Jon", "Snow", 34), FakeEntity("Deny", "Targaryen", 25))
+    db.read[FakeEntity]("SELECT * FROM meas3").futureValue.queryResult shouldEqual Seq(FakeEntity("Jame", "Lannister", 48), FakeEntity("Jon", "Snow", 24), FakeEntity("Deny", "Targaryen", 25))
 
     // DROP DB TEST
     influx.dropDatabase(testDB).futureValue shouldEqual OkResult

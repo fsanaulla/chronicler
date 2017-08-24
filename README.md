@@ -9,6 +9,13 @@ Asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](
         - [Synchronize](#sync)
 - [Response Handling](#resp)
 - [Connection](#connection)
+    - [Imports](#import)
+    - [Create connection](#createConn)
+- [Database management](#dbManagement)
+- [Read and Write operation](#readWrite)
+    - [Read operation](#read)
+    - [Write operation](#write)
+- [User management](#userManagement)
 
 ## Usage <a name="usage"></a>
 ### Helper tools <a name="helptools"></a>
@@ -60,7 +67,7 @@ db.read[T]("SELECT * FROM some_measurement").map {
     }
 ```
 ## Connection <a name="connection"></a>
-### Imports
+### Imports <a name="import"></a>
 ```
 import com.fsanaulla.InfluxClient
 
@@ -72,7 +79,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 implicit val ex: ExecutionContext = _
 ```
-### Create connection
+### Create connection <a name="createConn"></a>
 Creating simply connection based on `host` and default `port`
 ```
 val influx = InfluxClient("host") // default port 8086
@@ -86,7 +93,7 @@ or with user auth info
 val influx = InfluxClient("host", 8087, Some("username"), Some("password"))
 ```
 
-## Database management
+## Database management <a name="dbManagement"></a>
 Main [Database management](https://docs.influxdata.com/influxdb/v1.3/query_language/database_management/) operation:
 
 You can create db with such signatures
@@ -148,8 +155,8 @@ Show field keys:
 influx.showFieldKeys("db_name", "measuremetn_name")
 res0: Future[QueryResult[FieldInfo]]
 ```
-## Read and Write operation
-#### Read operations
+## Read and Write operation <a name="readWrite"></a>
+#### Read operations <a name="read"></a>
 There is several read method exist. The base one is:
 ```
 db.readJs("SELEC * FROM measurement").map(_.queryResult)
@@ -179,7 +186,7 @@ You can execute multiple query's in one request:
 db.bulkReadJs(Seq("SELECT * FROM measurement", "SELECT * FROM measurement1")).map(_.queryResult)
 res0: Future[Seq[Seq[JsArray]]]
 ```
-#### Write operation
+#### Write operation <a name="write"></a>
 There is much more opportunities to store data.
 First one save point in pure [Line Protocol Format](https://docs.influxdata.com/influxdb/v1.3/write_protocols/line_protocol_reference/)
 ```
@@ -240,7 +247,7 @@ every point must be on separate line in Line Protocol format. And then:
 db.writeFromFile("path/to/your/file")
 res0: Future[Result]
 ```
-## User management
+## User management <a name="userManagement"></a>
 Main [User Management](https://docs.influxdata.com/influxdb/v1.3/query_language/authentication_and_authorization/#user-management-commands) operations
 
 Create non-admin user:
