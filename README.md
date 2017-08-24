@@ -2,9 +2,16 @@
 
 Asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](https://www.influxdata.com/) based on [Akka HTTP](http://doc.akka.io/docs/akka-http/current/scala/http/). (IN PROGRESS)
 
-# Usage
-## Helper tools
-#### Time
+# Table of content
+- [Usage](#usage)
+    - [Helper Tools](#helptools)
+        - [Time](#time)
+        - [Synchronize](#sync)
+- [Response Handling](#reps)
+
+## Usage <a name="usage"></a>
+### Helper tools <a name="helptools"></a>
+#### Time <a name="time"></a>
 In many place you need to specify special influx time format, like in `duration` related fields. In this case you can simply write string based time like, `1h30m45s` by hand according to [Duration Time Format](https://docs.influxdata.com/influxdb/v1.3/query_language/spec/#durations).
 Or use `InfluxDuration` object.
 ```
@@ -25,7 +32,7 @@ import com.fsanaulla.utils.InfluxDuration._
 
 // the same for Long
 ```
-#### Synchronize
+#### Synchronize <a name="sync"></a>
 To complete future you can use Extension object
 ```
 import com.fsanaulla.utils.Synchronization._
@@ -36,8 +43,21 @@ implicit val timeout = 1 second
 val future: Future[T] = _
 val completedFuture: T = future.sync
 ```
-## Response handling
-
+## Response handling <a name="resp"></a>
+For now you need to understand how handle response from library api. Most of method that have querying functionality return `QueryResult`. What looks like:
+```
+case class QueryResult[T](code: Int,                    // response HTTP code
+                          isSuccess: Boolean,           // success status 
+                          queryResult: Seq[T] = Nil,    // quered data  
+                          ex: Option[Throwable] = None) // optional exception 
+```
+So in your code you can handle responses like that:
+```
+db.read[T]("SELECT * FROM some_measurement").map {
+      case QueryResult(_, _, queryResult, None) => queryResult // if no ex exist
+      case _ => // handle error
+    }
+```
 ## Connection
 #### Imports
 ```
@@ -54,7 +74,7 @@ implicit val ex: ExecutionContext = _
 #### Create connection
 Creating simply connection based on `host` and default `port`
 ```
-val influx = InfluxClient("host") //default port 8086
+val influx = InfluxClient("host") // default port 8086
 ```
 or with `host` and custom `port`
 ```
@@ -266,6 +286,4 @@ Show user's privileges:
 ```
 influx.showUserPrivileges()
 ```
-## 
-
 
