@@ -23,9 +23,9 @@ class SubscriptionManagementSpec extends TestSpec {
   val newDestType = Destinations.ALL
   val hosts = Seq("udp://h1.example.com:9090", "udp://h2.example.com:9090")
   val subscription = Subscription(rpName, subName, destType, hosts)
-  val newSubscription = subscription.copy(destType = newDestType)
+  val newSubscription: Subscription = subscription.copy(destType = newDestType)
 
-  val duration = 1.hours + 30.minutes
+  val duration: String = 1.hours + 30.minutes
 
   "subs operation" should "correctly work" in {
 
@@ -44,11 +44,11 @@ class SubscriptionManagementSpec extends TestSpec {
 
     influx.updateSubscription(subName, dbName, rpName, newDestType, hosts).futureValue shouldEqual OkResult
 
-    influx.showSubscriptions(dbName).futureValue shouldEqual Seq(newSubscription)
+    influx.showSubscriptions(dbName).futureValue.queryResult shouldEqual Seq(newSubscription)
 
     influx.dropSubscription(subName, dbName, rpName).futureValue shouldEqual OkResult
 
-    influx.showSubscriptions(dbName).futureValue shouldEqual Nil
+    influx.showSubscriptions(dbName).futureValue.queryResult shouldEqual Nil
 
     influx.dropRetentionPolicy(rpName, dbName).futureValue shouldEqual OkResult
 

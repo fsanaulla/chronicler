@@ -17,6 +17,7 @@ Asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](
     - [Write operation](#write)
 - [User management](#userManagement)'
 - [Continuously Query management](#CQManagement)
+- [Subscription Management](#subsManagement)
 
 # Usage <a name="usage"></a>
 ## Helper tools <a name="helptools"></a>
@@ -114,18 +115,23 @@ You can create db with such signatures
 ```
 // With database name
 influx.createDatabase("db")
+res0: Future[Result]
 
 // and with duration
 influx.createDatabase("db", Some("2h))
+res0: Future[Result]
 
 // and with replication
 influx.createDatabase("db", Some("2h"), Some(1))
+res0: Future[Result]
 
 // and with shard duration
 influx.createDatabase("db", Some("2h"), Some(1), Some("2h"))
+res0: Future[Result]
 
 // and with associated retention policy name
 influx.createDatabase("db", Some("2h"), Some(1), Some("2h"), Some("my_retention_policy"))
+res0: Future[Result]
 ```
 
 To choose needed database:
@@ -135,24 +141,27 @@ val db: Database = influx.use("mydb")
 Drop database
 ```
 influx.dropDatabase("db_name")
+res0: Future[Result]
 ```
 Drop measurement
 ```
 influx.dropMeasurement("measurement_name")
+res0: Future[Result]
 ```
 Drop shard bu shardId
 ```
 influx.dropShard(2)
+res0: Future[Result]
 ```
 Show database measurement
 ```
-influx.showMeasurement("db_name").map(_.queryResult)
-res0: Future[Seq[String]]
+influx.showMeasurement("db_name")
+res0: Future[QueryResult[String]]
 ```
 Show databases
 ```
-influx.showDatabase().map(_.queryResult)
-res0: Future[Seq[String]]
+influx.showDatabase()
+res0: Future[QueryResult[String]]
 ```
 Show measurement tag keys, `whereClause` it's simply predicate to filtering like `"bar > 4"`. `whereClause`, `limit`, `offset` are optional parameters.
 ```
@@ -173,8 +182,8 @@ res0: Future[QueryResult[FieldInfo]]
 ### Read operations <a name="read"></a>
 There is several read method exist. The base one is:
 ```
-db.readJs("SELEC * FROM measurement").map(_.queryResult)
-res0: Future[Seq[JsArray]] // where JsArray it's influx point representation
+db.readJs("SELEC * FROM measurement")
+res0: Future[QueryResult[JsArray]] // where JsArray it's influx point representation
 ```
 The next one it's typed method, for using it you need define your own `InfluxReader[T]` and add it implicitly to scope. There is example of one on that:
 ```
@@ -192,13 +201,13 @@ And then just use it
 ```
 import implicits.reader.location._
 
-db.read[FakeEntity]("SELECT * FROM measurement").map(_.queryResult)
-res0: Future[Seq[FakeEntity]]
+db.read[FakeEntity]("SELECT * FROM measurement")
+res0: Future[QueryResult[FakeEntity]]
 ```
 You can execute multiple query's in one request:
 ```
-db.bulkReadJs(Seq("SELECT * FROM measurement", "SELECT * FROM measurement1")).map(_.queryResult)
-res0: Future[Seq[Seq[JsArray]]]
+db.bulkReadJs(Seq("SELECT * FROM measurement", "SELECT * FROM measurement1"))
+res0: Future[QueryResult[Seq[JsArray]]]
 ```
 ### Write operation <a name="write"></a>
 There is much more opportunities to store data.
@@ -221,7 +230,7 @@ val p1 = Point("testMeasurement")
             .addField("age", 56)
 
 db.writePoint(p1)
-reso: Future[Result]
+res0: Future[Result]
 
 // bulk
 db.bulkWritePoints(Seq(p1, ...))
@@ -267,66 +276,111 @@ Main [User Management](https://docs.influxdata.com/influxdb/v1.3/query_language/
 Create non-admin user:
 ```
 influx.createUser("UserName", "UserPassword")
+res0: Future[Result]
 ```
 Create admin user:
 ```
 influx.createAdmin("AdminUser", "AdminPass")
+res0: Future[Result]
 ```
 Drop user:
 ```
 influx.dropUser("UserName")
+res0: Future[Result]
 ```
 Set user password:
 ```
 influx.setUserPassword("UserName", "UserPassword")
+res0: Future[Result]
 ```
 Set user privileges for some database:
 ```
 import com.fsanaulla.utils.constants.Privileges._
 
 influx.setPrivileges("SomeUser", "SomeDB", Privileges.READ)
+res0: Future[Result]
 ```
 Revoke privileges from user
 ```
 import com.fsanaulla.utils.constants.Privileges._
 
 influx.revokePrivileges("SomeUser", "SomeDB", Privileges.READ)
+res0: Future[Result]
 ```
 Make admin user from non-admin user:
 ```
 influx.makeAdmin("NonAdminUser")
+res0: Future[Result]
 ```
 Demote admin user:
 ```
 influx.disableAdmin("AdminUser")
+res0: Future[Result]
 ```
 Show users:
 ```
 influx.showUsers()
+res0: Future[Result]
 ```
 Show user's privileges:
 ```
 influx.showUserPrivileges()
+res0: Future[Result]
 ```
 ## Continuously Query management <a name="CQManagement"></a>
 Main [CQ management](https://docs.influxdata.com/influxdb/v1.3/query_language/continuous_queries/#continuous-query-management)
 To create Continuously Query(further CQ). Where query params look's like `SELECT count("bees") AS "count_bees" INTO "aggregate_bees" FROM "farm" GROUP BY time(30m)`:
 ```
 influx.createCQ("dbName", "cqName", "query")
+res0: Future[Result]
 ```
 Droping CQ:
 ```
 influx.dropCQ("dbName", "cqName")
+res0: Future[Result]
 ```
 Show CQ's:
 ```
 influx.showCQs()
+res0: Future[QueryResult[ContinuousQueryInfo]]
 ```
 Show database related CQ's:
 ```
 influx.showCQ("dbName")
+res0: Future[QueryResult[ContinuousQuery]]
 ```
 There is no default update method for CQ, so `updateCQ` it's simulation using `dropCQ` and `createCQ` methods.
 ```
 influx.updateCQ("dbName", "cqName", "query")
+res0: Future[Result]
+```
+## Subscription management <a name="subsManagement"></a>
+You can simply create `subscription`:
+```
+import com.fsanaulla.utils.constants.Destinations._
+
+influx.createSubscription("subsName", "dbName", "rpName", Destinations.ALL, Seq("host1", "host2"))
+res0: Future[Result]
+```
+To drop subscription:
+```
+influx.dropSubscription("subsName", "dbName", "rpName")
+res0: Future[Result]
+```
+Show subscriptions:
+```
+influx.showSubscriptionsInfo()
+res0: Future[QueryResult[SubscriptionInfo]]
+```
+To show database related subscriptions:
+```
+influx.showSubscriptions("dbName")
+res0: Future[QueryResult[Subscription]]
+```
+There is no update method in subs api, so it's just simulation using drop and create:
+```
+import com.fsanaulla.utils.constants.Destinations._
+
+influx.updateSubscription("subsName", "dbName", "rpName", Destinations.ALL, Seq("host1", "host2"))
+res0: Future[Result]
 ```

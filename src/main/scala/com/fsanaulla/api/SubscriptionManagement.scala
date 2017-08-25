@@ -32,8 +32,12 @@ private[fsanaulla] trait SubscriptionManagement extends SubscriptionsManagementQ
     buildRequest(showSubscriptionsQuery()).flatMap(toSubscriptionQueryResult)
   }
 
-  def showSubscriptions(dbName: String): Future[Seq[Subscription]] = {
-    showSubscriptionsInfo().map(_.queryResult.find(_.dbName == dbName).map(_.subscriptions).getOrElse(Nil))
+  def showSubscriptions(dbName: String): Future[QueryResult[Subscription]] = {
+    showSubscriptionsInfo().map { queryRes =>
+      val seq = queryRes.queryResult.find(_.dbName == dbName).map(_.subscriptions).getOrElse(Nil)
+
+      QueryResult[Subscription](queryRes.code, queryRes.isSuccess, seq, queryRes.ex)
+    }
   }
 
   def updateSubscription(subsName: String,
