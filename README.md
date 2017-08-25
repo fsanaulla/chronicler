@@ -15,7 +15,7 @@ Asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](
 - [Read and Write operation](#readWrite)
     - [Read operation](#read)
     - [Write operation](#write)
-- [User management](#userManagement)'
+- [User management](#userManagement)
 - [Continuously Query management](#CQManagement)
 - [Subscription management](#subsManagement)
 - [Retention Policy management](#rpManagement)
@@ -159,7 +159,7 @@ Show database measurement
 influx.showMeasurement("db_name")
 res0: Future[QueryResult[String]]
 ```
-Show databases
+Show databases:
 ```
 influx.showDatabase()
 res0: Future[QueryResult[String]]
@@ -386,3 +386,25 @@ influx.updateSubscription("subsName", "dbName", "rpName", Destinations.ALL, Seq(
 res0: Future[Result]
 ```
 ## Retention Policy management <a name="rpManagement"></a>
+[Retention Policy](https://docs.influxdata.com/influxdb/v1.3/query_language/database_management/)(further RP) operation
+Create RP:
+```
+influx.createRetentionPolicy("rpName", "dbName", "duration", intReplicationCount, "optShardDuration", defaulfBool)
+res0: Future[Result] 
+```
+Show database related RP's:
+```
+influx.showRetentionPolicies("dbName")
+res0: Future[QueryResult[RetentionPolicyInfo]]
+```
+Drop RP:
+```
+influx.dropRetentionPolicy("rpName", "dbName")
+res0: Future[Result]
+```
+Update RP:
+```
+influx.updateRetentionPolicy("rpName", "dbName", "duration", intReplicationCount, "optShardDuration", defaulfBool)
+res0: Future[Result]
+```
+## Shard management <a name="shardManagement"></a>
