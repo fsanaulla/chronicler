@@ -40,7 +40,7 @@ class SubscriptionManagementSpec extends TestSpec {
 
     influx.createSubscription(subName, dbName, rpName, destType, hosts).futureValue shouldEqual OkResult
 
-    influx.showSubscriptions(dbName).futureValue shouldEqual Seq(subscription)
+    influx.showSubscriptions(dbName).futureValue.queryResult shouldEqual Seq(subscription)
 
     influx.updateSubscription(subName, dbName, rpName, newDestType, hosts).futureValue shouldEqual OkResult
 

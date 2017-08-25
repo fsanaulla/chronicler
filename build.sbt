@@ -4,7 +4,7 @@ version := "0.1"
 
 organization := "com.fsanaulla"
 
-scalaVersion := "2.12.0"
+scalaVersion := "2.12.3"
 
 scalacOptions ++= Seq(
   "-feature",

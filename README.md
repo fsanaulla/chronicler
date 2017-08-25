@@ -17,7 +17,8 @@ Asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](
     - [Write operation](#write)
 - [User management](#userManagement)'
 - [Continuously Query management](#CQManagement)
-- [Subscription Management](#subsManagement)
+- [Subscription management](#subsManagement)
+- [Retention Policy management](#rpManagement)
 
 # Usage <a name="usage"></a>
 ## Helper tools <a name="helptools"></a>
@@ -384,3 +385,4 @@ import com.fsanaulla.utils.constants.Destinations._
 influx.updateSubscription("subsName", "dbName", "rpName", Destinations.ALL, Seq("host1", "host2"))
 res0: Future[Result]
 ```
+## Retention Policy management <a name="rpManagement"></a>
