@@ -6,15 +6,34 @@ organization := "com.fsanaulla"
 
 scalaVersion := "2.12.3"
 
+crossScalaVersions := Seq("2.12.3", "2.11.8")
+
+useGpg := true
+
+pgpReadOnly := false
+
 scalacOptions ++= Seq(
   "-feature",
   "-language:implicitConversions",
   "-language:postfixOps"
 )
 
-lazy val Versions = new {
-  val akkaHttp = "10.0.9"
-}
+homepage := Some(url("https://github.com/fsanaulla/chronicler"))
+
+licenses += "MIT" -> url("https://opensource.org/licenses/MIT")
+
+scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/fsanaulla/chronicler"),
+    "https://github.com/fsanaulla/chronicler.git")
+)
+
+developers += Developer(
+  id = "fsanaulla",
+  name = "Faiaz Sanaulla",
+  email = "fayaz.sanaulla@gmail.com",
+  url = url("https://github.com/fsanaulla")
+)
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka"   %%   "akka-http"                    %   Versions.akkaHttp,
@@ -28,3 +47,5 @@ coverageExcludedPackages := "" +
   "com\\.fsanaulla\\.utils.*;" +
   "com\\.fsanaulla\\.model.*;" +
   "com\\.fsanaulla\\.InfluxClient.*"
+
+publishMavenStyle := true
