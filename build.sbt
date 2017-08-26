@@ -1,4 +1,4 @@
-name := "influxdb-scala-client"
+name := "chronicler"
 
 version := "0.1"
 
