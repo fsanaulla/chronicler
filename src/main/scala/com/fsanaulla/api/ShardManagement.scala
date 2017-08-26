@@ -27,7 +27,11 @@ private[fsanaulla] trait ShardManagement extends ShardManagementQuery { self: In
     buildRequest(showShards()).flatMap(toShardQueryResult)
   }
 
-  def getShards(dbName: String): Future[Seq[Shard]] = {
-    showShards().map(_.queryResult.find(_.dbName == dbName).map(_.shards).getOrElse(Nil))
+  def getShards(dbName: String): Future[QueryResult[Shard]] = {
+    showShards().map { queryResult =>
+      val seq = queryResult.queryResult.find(_.dbName == dbName).map(_.shards).getOrElse(Nil)
+
+      QueryResult[Shard](queryResult.code, queryResult.isSuccess, seq, queryResult.ex)
+    }
   }
 }

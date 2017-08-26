@@ -21,13 +21,13 @@ class ShardManagementSpec extends TestSpec {
     // INIT INFLUX CLIENT
     val influx = InfluxClient(host = influxHost, username = credentials.username, password = credentials.password)
 
-    val shards = influx.getShards(testDb).futureValue
+    val shards = influx.getShards(testDb).futureValue.queryResult
 
     shards should not be Nil
 
     influx.dropShard(shards.head.id).futureValue shouldEqual OkResult
 
-    influx.getShards(testDb).futureValue should not be shards
+    influx.getShards(testDb).futureValue.queryResult should not be shards
 
     val shardGroups = influx.showShardGroups().futureValue.queryResult
 

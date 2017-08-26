@@ -23,7 +23,6 @@ class InfluxClient(host: String,
       with RetentionPolicyManagement
       with ContinuousQueryManagement
       with ShardManagement
-      with QuerysManagement
       with SubscriptionManagement
       with RequestBuilder {
 

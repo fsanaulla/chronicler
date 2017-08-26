@@ -386,7 +386,7 @@ influx.updateSubscription("subsName", "dbName", "rpName", Destinations.ALL, Seq(
 res0: Future[Result]
 ```
 ## Retention Policy management <a name="rpManagement"></a>
-[Retention Policy](https://docs.influxdata.com/influxdb/v1.3/query_language/database_management/)(further RP) operation
+Main [Retention Policy](https://docs.influxdata.com/influxdb/v1.3/query_language/database_management/)(further RP) operation
 Create RP:
 ```
 influx.createRetentionPolicy("rpName", "dbName", "duration", intReplicationCount, "optShardDuration", defaulfBool)
@@ -408,3 +408,23 @@ influx.updateRetentionPolicy("rpName", "dbName", "duration", intReplicationCount
 res0: Future[Result]
 ```
 ## Shard management <a name="shardManagement"></a>
+Drop shard by id:
+```
+influx.dropShard(4)
+res0: Future[Result]
+```
+Show shards group:
+```
+influx.showShardGroups()
+res0: Future[QueryResult[ShardGroupsInfo]]
+```
+Show shards:
+```
+influx.showShards()
+res0: Future[QueryResult[ShardInfo]]
+```
+Get database related shards:
+```
+influx.getShards("someDB")
+res0: Future[QueryResult[Shard]]
+```
