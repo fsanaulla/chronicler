@@ -19,6 +19,7 @@ Asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](
 - [Continuously Query management](#CQManagement)
 - [Subscription management](#subsManagement)
 - [Retention Policy management](#rpManagement)
+- [Shards management](#shardManagement)
 
 # Usage <a name="usage"></a>
 ## Helper tools <a name="helptools"></a>
