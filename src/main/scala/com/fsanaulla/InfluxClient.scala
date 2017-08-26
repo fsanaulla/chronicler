@@ -2,10 +2,12 @@ package com.fsanaulla
 
 import akka.actor.{ActorSystem, Terminated}
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.model.HttpMethods.GET
 import akka.stream.{ActorMaterializer, StreamTcpException}
 import com.fsanaulla.api._
-import com.fsanaulla.model.{ConnectionException, InfluxCredentials, UnknownConnectionException}
+import com.fsanaulla.model.{ConnectionException, InfluxCredentials, Result, UnknownConnectionException}
 import com.fsanaulla.utils.RequestBuilder
+import com.fsanaulla.utils.ResponseHandler.toResult
 import com.fsanaulla.utils.TypeAlias._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,6 +37,8 @@ class InfluxClient(host: String,
   }
 
   def use(dbName: String): Database = new Database(dbName)
+
+  def ping(): Future[Result] = buildRequest("/ping", GET).flatMap(toResult)
 
   def close(): Future[Terminated] = {
     Http().shutdownAllConnectionPools()

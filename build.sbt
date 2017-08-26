@@ -12,14 +12,11 @@ scalacOptions ++= Seq(
   "-language:postfixOps"
 )
 
-lazy val Versions = new {
-  val akkaHttp = "10.0.9"
-}
-
 libraryDependencies ++= Seq(
-  "com.typesafe.akka"   %%   "akka-http"                    %   Versions.akkaHttp,
-  "org.scalatest"       %%   "scalatest"                    %   "3.0.3"             % "test",
-  "com.typesafe.akka"   %%   "akka-http-spray-json"         %   Versions.akkaHttp
+  "com.typesafe.akka"   %%   "akka-http"              %   Versions.akkaHttp,
+  "com.typesafe.akka"   %%   "akka-http-spray-json"   %   Versions.akkaHttp,
+  "org.scalatest"       %%   "scalatest"              %   Versions.scalaTest   % "test",
+  "com.storm-enroute"   %%   "scalameter"             %   Versions.scalaMeter  % "test"
 )
 
 coverageMinimum := 90
