@@ -8,6 +8,7 @@ scala:
   - 2.12.0
 
 before_script:
+  - unset SBT_OPTS JVM_OPTS
   - chmod 777 $TRAVIS_BUILD_DIR/scripts/sbt.sh $TRAVIS_BUILD_DIR/scripts/influxdb.sh
   - $TRAVIS_BUILD_DIR/scripts/sbt.sh
   - $TRAVIS_BUILD_DIR/scripts/influxdb.sh
