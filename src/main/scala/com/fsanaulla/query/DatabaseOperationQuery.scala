@@ -6,7 +6,6 @@ import com.fsanaulla.utils.QueryBuilder
 import com.fsanaulla.utils.constants.Consistencys._
 import com.fsanaulla.utils.constants.Epochs._
 import com.fsanaulla.utils.constants.Precisions._
-import com.fsanaulla.utils.constants.{Consistencys, Epochs, Precisions}
 
 import scala.collection.mutable
 
@@ -16,9 +15,9 @@ import scala.collection.mutable
 private[fsanaulla] trait DatabaseOperationQuery extends QueryBuilder {
 
   protected def writeToInfluxQuery(dbName: String,
-                                   consistency: Consistency = Consistencys.ONE,
-                                   precision: Precision = Precisions.NANOSECONDS,
-                                   retentionPolicy: Option[String] = None)(implicit credentials: InfluxCredentials): Uri = {
+                                   consistency: Consistency,
+                                   precision: Precision,
+                                   retentionPolicy: Option[String])(implicit credentials: InfluxCredentials): Uri = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
       "db" -> dbName,
@@ -35,9 +34,9 @@ private[fsanaulla] trait DatabaseOperationQuery extends QueryBuilder {
 
   protected def readFromInfluxSingleQuery(dbName: String,
                                           query: String,
-                                          epoch: Epoch = Epochs.NANOSECONDS,
-                                          pretty: Boolean = false,
-                                          chunked: Boolean = false)(implicit credentials: InfluxCredentials): Uri = {
+                                          epoch: Epoch,
+                                          pretty: Boolean,
+                                          chunked: Boolean)(implicit credentials: InfluxCredentials): Uri = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
       "db" -> dbName,
@@ -52,9 +51,9 @@ private[fsanaulla] trait DatabaseOperationQuery extends QueryBuilder {
 
   protected def readFromInfluxBulkQuery(dbName: String,
                                         querys: Seq[String],
-                                        epoch: Epoch = Epochs.NANOSECONDS,
-                                        pretty: Boolean = false,
-                                        chunked: Boolean = false)(implicit credentials: InfluxCredentials): Uri = {
+                                        epoch: Epoch,
+                                        pretty: Boolean,
+                                        chunked: Boolean)(implicit credentials: InfluxCredentials): Uri = {
 
     val queryParams = mutable.Map[String, String](
       "db" -> dbName,

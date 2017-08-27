@@ -1,6 +1,6 @@
 package com.fsanaulla.integration
 
-import com.fsanaulla.InfluxClient
+import com.fsanaulla.InfluxClientsFactory
 import com.fsanaulla.model._
 import com.fsanaulla.utils.SampleEntitys._
 import com.fsanaulla.utils.TestHelper._
@@ -29,7 +29,7 @@ class DatabaseSpec extends TestSpec {
       .addField("age", 36)
 
     // INIT INFLUX CLIENT
-    val influx = InfluxClient(host = influxHost, username = credentials.username, password = credentials.password)
+    val influx = InfluxClientsFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
 
     // CREATING DB TEST
     influx.createDatabase(testDB).futureValue shouldEqual OkResult

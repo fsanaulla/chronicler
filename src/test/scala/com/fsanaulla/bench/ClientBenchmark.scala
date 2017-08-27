@@ -1,6 +1,7 @@
 package com.fsanaulla.bench
 
-import com.fsanaulla.InfluxClient
+import com.fsanaulla.InfluxClientsFactory
+import com.fsanaulla.clients.InfluxHttpClient
 import com.fsanaulla.utils.Synchronization._
 import org.scalameter.api._
 import org.scalameter.picklers.Implicits._
@@ -16,7 +17,7 @@ object ClientBenchmark extends Bench[Double] {
 
   implicit val timeout: FiniteDuration = 5 seconds
 
-  private var influx: InfluxClient = _
+  private var influx: InfluxHttpClient = _
 
   /* configuration */
 
@@ -43,7 +44,7 @@ object ClientBenchmark extends Bench[Double] {
       exec.benchRuns -> 3
       exec.independentSamples -> 3
     } setUp { _ =>
-      influx = InfluxClient("localhost")
+      influx = InfluxClientsFactory.createHttpClient("localhost")
     } tearDown { _ =>
       influx.close()
     } in {
@@ -57,7 +58,7 @@ object ClientBenchmark extends Bench[Double] {
       exec.benchRuns -> 3
       exec.independentSamples -> 3
     } setUp { _ =>
-      influx = InfluxClient("localhost")
+      influx = InfluxClientsFactory.createHttpClient("localhost")
       influx.createDatabase("db").sync
     } tearDown { _ =>
       influx.dropDatabase("db").sync
