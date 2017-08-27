@@ -15,6 +15,7 @@ import scala.io.Source
 private[fsanaulla] class InfluxUdpClient(host: String, port: Int = 8089) extends PointTransformer {
 
   private val socket = new DatagramSocket()
+
   private implicit val conn = UdpConnection(InetAddress.getByName(host), port)
 
   def writeNative(point: String): Unit = {

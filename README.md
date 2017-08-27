@@ -97,17 +97,21 @@ import scala.concurrent.ExecutionContext.Implicits.global
 implicit val ex: ExecutionContext = _
 ```
 ### Create connection <a name="createConn"></a>
-Creating simply connection based on `host` and default `port`
+Creating simply `HTTP` connection based on `host` and default `port`
 ```
-val influx = InfluxClient("host") // default port 8086
+val influx = InfluxClientsFactory.createHttpClient("host") // default port 8086
 ```
 or with `host` and custom `port`
 ```
-val influx = InfluxClient("host", 8087)
+val influx = InfluxClientsFactory.createHttpClient("host", 8087)
 ```
 or with user auth info
 ```
-val influx = InfluxClient("host", 8087, Some("username"), Some("password"))
+val influx = InfluxClientsFactory.createHttpClient("host", 8087, Some("username"), Some("password"))
+```
+TO create `UDP` connection you need simply define host address and port:
+```
+val udpInflux = InfluxClientsFactory.createUdpClient("host", 8089)
 ```
 
 ## Database management <a name="dbManagement"></a>
