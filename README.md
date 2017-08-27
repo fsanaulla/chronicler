@@ -86,8 +86,6 @@ influx.setUserPassword("SomeUser", "newPassword") map {
 ## Connection <a name="connection"></a>
 ### Imports <a name="import"></a>
 ```
-import com.fsanaulla.InfluxClient
-
 // import executor
 
 import scala.concurrent.ExecutionContext.Implicits.global

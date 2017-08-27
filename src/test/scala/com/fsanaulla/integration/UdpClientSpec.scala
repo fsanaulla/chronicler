@@ -109,11 +109,11 @@ class UdpClientSpec extends TestSpec with BeforeAndAfterAll {
     val udpInflux: InfluxUdpClient = InfluxClientsFactory.createUdpClient(influxHost)
     udpInflux.bulkWritePoints(
       Seq(
-        Point("meas1")
+        Point("meas2")
           .addTag("firstName", "Jame")
           .addTag("lastName", "Lannister")
           .addField("age", 48),
-        Point("meas1")
+        Point("meas2")
           .addTag("firstName", "Jon")
           .addTag("lastName", "Snow")
           .addField("age", 27))) shouldEqual {}
@@ -121,9 +121,9 @@ class UdpClientSpec extends TestSpec with BeforeAndAfterAll {
 
     Thread.sleep(1000) // necessary for influx
 
-    db.read[FakeEntity]("SELECT * FROM meas1").sync.queryResult shouldEqual Seq(FakeEntity("Jame", "Lannister", 48), FakeEntity("Jon", "Snow", 27))
+    db.read[FakeEntity]("SELECT * FROM meas2").sync.queryResult shouldEqual Seq(FakeEntity("Jame", "Lannister", 48), FakeEntity("Jon", "Snow", 27))
 
-    influx.dropMeasurement("udp", "meas1").futureValue shouldEqual OkResult
+    influx.dropMeasurement("udp", "meas2").futureValue shouldEqual OkResult
   }
 
 }
