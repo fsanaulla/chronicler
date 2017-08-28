@@ -42,12 +42,12 @@ useGpg := true
 
 pgpReadOnly := false
 
-pgpSecretRing := file("/home/fayaz/.sbt/gpg/secring.asc")
-pgpPublicRing := file("/home/fayaz/.sbt/gpg/pubring.asc")
-
 releaseCrossBuild := true
 
 publishMavenStyle := true
+
+pomIncludeRepository := (_ => false)
+
 
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
@@ -55,7 +55,6 @@ releaseProcess := Seq[ReleaseStep](
   checkSnapshotDependencies,
   inquireVersions,
   runClean,
-  runTest,
   setReleaseVersion,
   commitReleaseVersion,
   tagRelease,
