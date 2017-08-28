@@ -16,7 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class NotAuthUserManagementSpec extends FlatSpec with Matchers with ScalaFutures with OptionValues {
 
-  val userDB = "user_db"
+  val userDB = "not_auth_user_spec_db"
   val userName = "Martin"
   val userPass = "pass"
   val userNPass = "new_pass"

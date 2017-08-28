@@ -17,7 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class SubscriptionManagementSpec extends TestSpec {
 
   val subName = "subs"
-  val dbName = "subs_db"
+  val dbName = "subs_spec_db"
   val rpName = "subs_rp"
   val destType  = Destinations.ANY
   val newDestType = Destinations.ALL

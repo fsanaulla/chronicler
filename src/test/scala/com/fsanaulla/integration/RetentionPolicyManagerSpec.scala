@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class RetentionPolicyManagerSpec extends TestSpec {
 
-  val rpDB = "rp_db"
+  val rpDB = "rp_spec_db"
 
   "retention policy operation" should "correctly work" in {
 

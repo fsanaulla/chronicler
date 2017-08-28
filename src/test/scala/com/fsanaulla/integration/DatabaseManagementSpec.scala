@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class DatabaseManagementSpec extends TestSpec {
 
-  final val dbName = "data_db"
+  final val dbName = "data_management_spec_db"
 
   "Data management operation" should "correctly work" in {
 

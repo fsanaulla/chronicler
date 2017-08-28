@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class DatabaseSpec extends TestSpec {
 
-  val testDB = "db"
+  val testDB = "database_spec_db"
 
   "Auth database operation" should "correctly work" in {
 

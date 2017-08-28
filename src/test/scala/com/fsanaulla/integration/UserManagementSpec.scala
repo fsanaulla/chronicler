@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class UserManagementSpec extends TestSpec {
 
-  val userDB = "user_db"
+  val userDB = "user_management_spec_db"
   val userName = "Martin"
   val userPass = "pass"
   val userNPass = "new_pass"
