@@ -4,7 +4,7 @@ organization := "com.fsanaulla"
 
 scalaVersion := "2.12.3"
 
-crossScalaVersions := Seq("2.12.3", "2.11.8")
+crossScalaVersions := Seq(scalaVersion.value, "2.11.8")
 
 scalacOptions ++= Seq(
   "-feature",
