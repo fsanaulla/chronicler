@@ -1,10 +1,10 @@
 name := "chronicler"
 
-version := "0.1"
-
 organization := "com.fsanaulla"
 
 scalaVersion := "2.12.3"
+
+crossScalaVersions := Seq("2.12.3", "2.11.8", "2.10.6")
 
 scalacOptions ++= Seq(
   "-feature",
@@ -12,16 +12,53 @@ scalacOptions ++= Seq(
   "-language:postfixOps"
 )
 
-libraryDependencies ++= Seq(
-  "com.typesafe.akka"   %%   "akka-http"              %   Versions.akkaHttp,
-  "com.typesafe.akka"   %%   "akka-http-spray-json"   %   Versions.akkaHttp,
-  "org.scalatest"       %%   "scalatest"              %   Versions.scalaTest   % "test",
-  "com.storm-enroute"   %%   "scalameter"             %   Versions.scalaMeter  % "test"
+// Developer section
+homepage := Some(url("https://github.com/fsanaulla/chronicler"))
+
+licenses += "MIT" -> url("https://opensource.org/licenses/MIT")
+
+scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/fsanaulla/chronicler"),
+    "https://github.com/fsanaulla/chronicler.git")
 )
 
-coverageMinimum := 90
+developers += Developer(
+  id = "fsanaulla",
+  name = "Faiaz Sanaulla",
+  email = "fayaz.sanaulla@gmail.com",
+  url = url("https://github.com/fsanaulla")
+)
 
-coverageExcludedPackages := "" +
-  "com\\.fsanaulla\\.utils.*;" +
-  "com\\.fsanaulla\\.model.*;" +
-  "com\\.fsanaulla\\.InfluxClient.*"
+// Dependencies section
+libraryDependencies ++= Dependencies.dep
+
+// Coverage section
+coverageMinimum := CoverageInfo.min
+coverageExcludedPackages := CoverageInfo.exclude
+
+// Publish section
+useGpg := true
+
+pgpReadOnly := false
+
+releaseCrossBuild := true
+
+publishMavenStyle := true
+
+import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
+
+releaseProcess := Seq[ReleaseStep](
+  checkSnapshotDependencies,
+  inquireVersions,
+  runClean,
+  runTest,
+  setReleaseVersion,
+  commitReleaseVersion,
+  tagRelease,
+  ReleaseStep(action = Command.process("publishSigned", _), enableCrossBuild = true),
+  setNextVersion,
+  commitNextVersion,
+  ReleaseStep(action = Command.process("sonatypeReleaseAll", _), enableCrossBuild = true),
+  pushChanges
+)
