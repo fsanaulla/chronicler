@@ -38,8 +38,6 @@ coverageMinimum := CoverageInfo.min
 coverageExcludedPackages := CoverageInfo.exclude
 
 // Publish section
-useGpg := true
-
 pgpReadOnly := false
 
 releaseCrossBuild := true
