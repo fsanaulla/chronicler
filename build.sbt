@@ -42,7 +42,8 @@ useGpg := true
 
 pgpReadOnly := false
 
-pgpSecretRing := file("/home/fayaz/.gnupg/secring.gpg")
+pgpSecretRing := file("/home/fayaz/.sbt/gpg/secring.asc")
+pgpPublicRing := file("/home/fayaz/.sbt/gpg/pubring.asc")
 
 releaseCrossBuild := true
 
