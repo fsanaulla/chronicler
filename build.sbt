@@ -1,16 +1,10 @@
 name := "chronicler"
 
-version := "0.1"
-
 organization := "com.fsanaulla"
 
 scalaVersion := "2.12.3"
 
-crossScalaVersions := Seq("2.12.3", "2.11.8")
-
-useGpg := true
-
-pgpReadOnly := false
+crossScalaVersions := Seq("2.12.3", "2.11.8", "2.10.6")
 
 scalacOptions ++= Seq(
   "-feature",
@@ -18,6 +12,7 @@ scalacOptions ++= Seq(
   "-language:postfixOps"
 )
 
+// Developer section
 homepage := Some(url("https://github.com/fsanaulla/chronicler"))
 
 licenses += "MIT" -> url("https://opensource.org/licenses/MIT")
@@ -35,18 +30,35 @@ developers += Developer(
   url = url("https://github.com/fsanaulla")
 )
 
-libraryDependencies ++= Seq(
-  "com.typesafe.akka"   %%   "akka-http"              %   Versions.akkaHttp,
-  "com.typesafe.akka"   %%   "akka-http-spray-json"   %   Versions.akkaHttp,
-  "org.scalatest"       %%   "scalatest"              %   Versions.scalaTest   % "test",
-  "com.storm-enroute"   %%   "scalameter"             %   Versions.scalaMeter  % "test"
-)
+// Dependencies section
+libraryDependencies ++= Dependencies.dep
 
-coverageMinimum := 90
+// Coverage section
+coverageMinimum := CoverageInfo.min
+coverageExcludedPackages := CoverageInfo.exclude
 
-coverageExcludedPackages := "" +
-  "com\\.fsanaulla\\.utils.*;" +
-  "com\\.fsanaulla\\.model.*;" +
-  "com\\.fsanaulla\\.InfluxClient.*"
+// Publish section
+useGpg := true
+
+pgpReadOnly := false
+
+releaseCrossBuild := true
 
 publishMavenStyle := true
+
+import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
+
+releaseProcess := Seq[ReleaseStep](
+  checkSnapshotDependencies,
+  inquireVersions,
+  runClean,
+  runTest,
+  setReleaseVersion,
+  commitReleaseVersion,
+  tagRelease,
+  ReleaseStep(action = Command.process("publishSigned", _), enableCrossBuild = true),
+  setNextVersion,
+  commitNextVersion,
+  ReleaseStep(action = Command.process("sonatypeReleaseAll", _), enableCrossBuild = true),
+  pushChanges
+)
