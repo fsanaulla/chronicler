@@ -274,6 +274,12 @@ every point must be on separate line in Line Protocol format. And then:
 db.writeFromFile("path/to/your/file")
 res0: Future[Result]
 ```
+The same methods able for `InfluxUdpClient`. Like:
+```
+updInflux.writeNative("cpu_load_short,host=server02,region=us-west value=0.55 1422568543702900257")
+res0: Unit
+```
+main difference in return type. All udp methods return unit result by [UDP Protocol](https://en.wikipedia.org/wiki/User_Datagram_Protocol) nature
 ## User management <a name="userManagement"></a>
 Main [User Management](https://docs.influxdata.com/influxdb/v1.3/query_language/authentication_and_authorization/#user-management-commands) operations
 
