@@ -1,6 +1,6 @@
 package com.fsanaulla.integration
 
-import com.fsanaulla.InfluxClient
+import com.fsanaulla.InfluxClientsFactory
 import com.fsanaulla.model.AuthorizationException
 import com.fsanaulla.utils.constants.Privileges
 import org.scalatest.concurrent.ScalaFutures
@@ -31,7 +31,7 @@ class NotAuthUserManagementSpec extends FlatSpec with Matchers with ScalaFutures
   "not auth user management operation" should "correctly work" in {
 
     // INIT INFLUX CLIENT
-    val influx = InfluxClient( influxHost)
+    val influx = InfluxClientsFactory.createHttpClient(influxHost)
 
     influx.createDatabase(userDB).futureValue.ex.value shouldBe a [AuthorizationException]
 
@@ -53,15 +53,15 @@ class NotAuthUserManagementSpec extends FlatSpec with Matchers with ScalaFutures
     influx.showUserPrivileges(userName).futureValue.ex.value shouldBe a [AuthorizationException]
 
     influx.disableAdmin(admin).futureValue.ex.value shouldBe a [AuthorizationException]
-    influx.showUsers.futureValue.ex.value shouldBe a [AuthorizationException]
+    influx.showUsers().futureValue.ex.value shouldBe a [AuthorizationException]
 
     influx.makeAdmin(admin).futureValue.ex.value shouldBe a [AuthorizationException]
-    influx.showUsers.futureValue.ex.value shouldBe a [AuthorizationException]
+    influx.showUsers().futureValue.ex.value shouldBe a [AuthorizationException]
 
     influx.dropUser(userName).futureValue.ex.value shouldBe a [AuthorizationException]
     influx.dropUser(admin).futureValue.ex.value shouldBe a [AuthorizationException]
 
-    influx.showUsers.futureValue.ex.value shouldBe a [AuthorizationException]
+    influx.showUsers().futureValue.ex.value shouldBe a [AuthorizationException]
 
     influx.close()
   }

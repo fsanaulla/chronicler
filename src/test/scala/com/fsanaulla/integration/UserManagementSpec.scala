@@ -1,6 +1,6 @@
 package com.fsanaulla.integration
 
-import com.fsanaulla.InfluxClient
+import com.fsanaulla.InfluxClientsFactory
 import com.fsanaulla.model.{UserInfo, UserPrivilegesInfo}
 import com.fsanaulla.utils.TestHelper.OkResult
 import com.fsanaulla.utils.TestSpec
@@ -26,15 +26,15 @@ class UserManagementSpec extends TestSpec {
   "User management operation" should "correctly work" in {
 
     // INIT INFLUX CLIENT
-    val influx = InfluxClient(host = influxHost, username = credentials.username, password = credentials.password)
+    val influx = InfluxClientsFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
 
     influx.createDatabase(userDB).futureValue shouldEqual OkResult
 
     influx.createUser(userName, userPass).futureValue shouldEqual OkResult
-    influx.showUsers.futureValue.queryResult.contains(UserInfo(userName, isAdmin = false)) shouldEqual true
+    influx.showUsers().futureValue.queryResult.contains(UserInfo(userName, isAdmin = false)) shouldEqual true
 
     influx.createAdmin(admin, adminPass).futureValue shouldEqual OkResult
-    influx.showUsers.futureValue.queryResult.contains(UserInfo(admin, isAdmin = true)) shouldEqual true
+    influx.showUsers().futureValue.queryResult.contains(UserInfo(admin, isAdmin = true)) shouldEqual true
 
     influx.showUserPrivileges(admin).futureValue.queryResult shouldEqual Nil
 
@@ -49,15 +49,15 @@ class UserManagementSpec extends TestSpec {
     influx.showUserPrivileges(userName).futureValue.queryResult shouldEqual Seq(UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES))
 
     influx.disableAdmin(admin).futureValue shouldEqual OkResult
-    influx.showUsers.futureValue.queryResult.contains(UserInfo(admin, isAdmin = false)) shouldEqual true
+    influx.showUsers().futureValue.queryResult.contains(UserInfo(admin, isAdmin = false)) shouldEqual true
 
     influx.makeAdmin(admin).futureValue shouldEqual OkResult
-    influx.showUsers.futureValue.queryResult.contains(UserInfo(admin, isAdmin = true)) shouldEqual true
+    influx.showUsers().futureValue.queryResult.contains(UserInfo(admin, isAdmin = true)) shouldEqual true
 
     influx.dropUser(userName).futureValue shouldEqual OkResult
     influx.dropUser(admin).futureValue shouldEqual OkResult
 
-    influx.showUsers.futureValue.queryResult shouldEqual Seq(UserInfo(credentials.username.get, isAdmin = true))
+    influx.showUsers().futureValue.queryResult shouldEqual Seq(UserInfo(credentials.username.get, isAdmin = true))
 
     influx.close()
   }

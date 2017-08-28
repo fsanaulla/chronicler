@@ -86,8 +86,6 @@ influx.setUserPassword("SomeUser", "newPassword") map {
 ## Connection <a name="connection"></a>
 ### Imports <a name="import"></a>
 ```
-import com.fsanaulla.InfluxClient
-
 // import executor
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -97,17 +95,21 @@ import scala.concurrent.ExecutionContext.Implicits.global
 implicit val ex: ExecutionContext = _
 ```
 ### Create connection <a name="createConn"></a>
-Creating simply connection based on `host` and default `port`
+Creating simply `HTTP` connection based on `host` and default `port`
 ```
-val influx = InfluxClient("host") // default port 8086
+val influx = InfluxClientsFactory.createHttpClient("host") // default port 8086
 ```
 or with `host` and custom `port`
 ```
-val influx = InfluxClient("host", 8087)
+val influx = InfluxClientsFactory.createHttpClient("host", 8087)
 ```
 or with user auth info
 ```
-val influx = InfluxClient("host", 8087, Some("username"), Some("password"))
+val influx = InfluxClientsFactory.createHttpClient("host", 8087, Some("username"), Some("password"))
+```
+TO create `UDP` connection you need simply define host address and port:
+```
+val udpInflux = InfluxClientsFactory.createUdpClient("host", 8089)
 ```
 
 ## Database management <a name="dbManagement"></a>
@@ -272,6 +274,12 @@ every point must be on separate line in Line Protocol format. And then:
 db.writeFromFile("path/to/your/file")
 res0: Future[Result]
 ```
+The same methods able for `InfluxUdpClient`. Like:
+```
+updInflux.writeNative("cpu_load_short,host=server02,region=us-west value=0.55 1422568543702900257")
+res0: Unit
+```
+main difference in return type. All udp methods return unit result by [UDP Protocol](https://en.wikipedia.org/wiki/User_Datagram_Protocol) nature
 ## User management <a name="userManagement"></a>
 Main [User Management](https://docs.influxdata.com/influxdb/v1.3/query_language/authentication_and_authorization/#user-management-commands) operations
 

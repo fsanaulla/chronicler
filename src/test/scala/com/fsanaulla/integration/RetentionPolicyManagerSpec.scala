@@ -1,6 +1,6 @@
 package com.fsanaulla.integration
 
-import com.fsanaulla.InfluxClient
+import com.fsanaulla.InfluxClientsFactory
 import com.fsanaulla.model.RetentionPolicyInfo
 import com.fsanaulla.utils.InfluxDuration._
 import com.fsanaulla.utils.TestHelper.OkResult
@@ -20,7 +20,7 @@ class RetentionPolicyManagerSpec extends TestSpec {
   "retention policy operation" should "correctly work" in {
 
     // INIT INFLUX CLIENT
-    val influx = InfluxClient(host = influxHost, username = credentials.username, password = credentials.password)
+    val influx = InfluxClientsFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
 
     // CREATING DB TEST
     influx.createDatabase(rpDB).futureValue shouldEqual OkResult

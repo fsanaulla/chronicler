@@ -1,6 +1,6 @@
 package com.fsanaulla.api
 
-import com.fsanaulla.InfluxClient
+import com.fsanaulla.clients.InfluxHttpClient
 import com.fsanaulla.model.InfluxImplicits._
 import com.fsanaulla.model.{QueryResult, Result, RetentionPolicyInfo}
 import com.fsanaulla.query.RetentionPolicyManagementQuery
@@ -8,7 +8,7 @@ import com.fsanaulla.utils.ResponseHandler.{toQueryResult, toResult}
 
 import scala.concurrent.Future
 
-private[fsanaulla] trait RetentionPolicyManagement extends RetentionPolicyManagementQuery { self: InfluxClient =>
+private[fsanaulla] trait RetentionPolicyManagement extends RetentionPolicyManagementQuery { self: InfluxHttpClient =>
 
   def createRetentionPolicy(rpName: String,
                             dbName: String,

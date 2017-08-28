@@ -1,6 +1,6 @@
 package com.fsanaulla.api
 
-import com.fsanaulla.InfluxClient
+import com.fsanaulla.clients.InfluxHttpClient
 import com.fsanaulla.model.InfluxImplicits._
 import com.fsanaulla.model.{ContinuousQuery, ContinuousQueryInfo, QueryResult, Result}
 import com.fsanaulla.query.ContinuousQuerys
@@ -13,7 +13,7 @@ import scala.concurrent.Future
   * Author: fayaz.sanaulla@gmail.com
   * Date: 08.08.17
   */
-private[fsanaulla] trait ContinuousQueryManagement extends ContinuousQuerys { self: InfluxClient =>
+private[fsanaulla] trait ContinuousQueryManagement extends ContinuousQuerys { self: InfluxHttpClient =>
 
   def showCQs(): Future[QueryResult[ContinuousQueryInfo]] = buildRequest(uri = showCQQuery()).flatMap(toCqQueryResult)
 
