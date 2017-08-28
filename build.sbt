@@ -42,6 +42,8 @@ useGpg := true
 
 pgpReadOnly := false
 
+pgpSecretRing := file("/home/fayaz/.gnupg/secring.gpg")
+
 releaseCrossBuild := true
 
 publishMavenStyle := true
