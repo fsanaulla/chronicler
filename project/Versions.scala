@@ -5,4 +5,6 @@
   */
 object Versions {
   final val akkaHttp = "10.0.9"
+  final val scalaMeter = "0.8.2"
+  final val scalaTest = "3.0.3"
 }

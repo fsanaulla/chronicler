@@ -1,6 +1,6 @@
 package com.fsanaulla.integration
 
-import com.fsanaulla.InfluxClient
+import com.fsanaulla.InfluxClientsFactory
 import com.fsanaulla.model.ContinuousQuery
 import com.fsanaulla.utils.TestHelper._
 import com.fsanaulla.utils.TestSpec
@@ -22,7 +22,7 @@ class ContinuousQueryManagementSpec extends TestSpec {
   "CQ management operation" should "work correctly" in {
 
     // INIT INFLUX CLIENT
-    val influx = InfluxClient(host = influxHost, username = credentials.username, password = credentials.password)
+    val influx = InfluxClientsFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
 
     influx.createDatabase(testDB).futureValue shouldEqual OkResult
 

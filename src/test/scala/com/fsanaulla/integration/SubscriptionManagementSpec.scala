@@ -1,6 +1,6 @@
 package com.fsanaulla.integration
 
-import com.fsanaulla.InfluxClient
+import com.fsanaulla.InfluxClientsFactory
 import com.fsanaulla.model.Subscription
 import com.fsanaulla.utils.InfluxDuration._
 import com.fsanaulla.utils.TestHelper._
@@ -30,7 +30,7 @@ class SubscriptionManagementSpec extends TestSpec {
   "subs operation" should "correctly work" in {
 
     // INIT INFLUX CLIENT
-    val influx = InfluxClient(host = influxHost, username = credentials.username, password = credentials.password)
+    val influx = InfluxClientsFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
 
     influx.createDatabase(dbName).futureValue shouldEqual OkResult
 

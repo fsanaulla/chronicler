@@ -1,6 +1,6 @@
 package com.fsanaulla.api
 
-import com.fsanaulla.InfluxClient
+import com.fsanaulla.clients.InfluxHttpClient
 import com.fsanaulla.model.InfluxImplicits._
 import com.fsanaulla.model._
 import com.fsanaulla.query.UserManagementQuery
@@ -9,7 +9,7 @@ import com.fsanaulla.utils.constants.Privileges._
 
 import scala.concurrent.Future
 
-private[fsanaulla] trait UserManagement extends UserManagementQuery { self: InfluxClient =>
+private[fsanaulla] trait UserManagement extends UserManagementQuery { self: InfluxHttpClient =>
 
   def createUser(username: String, password: String): Future[Result] = {
     buildRequest(createUserQuery(username, password)).flatMap(toResult)

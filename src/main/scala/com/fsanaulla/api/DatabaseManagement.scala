@@ -1,6 +1,6 @@
 package com.fsanaulla.api
 
-import com.fsanaulla.InfluxClient
+import com.fsanaulla.clients.InfluxHttpClient
 import com.fsanaulla.model.InfluxImplicits._
 import com.fsanaulla.model._
 import com.fsanaulla.query.DataManagementQuery
@@ -8,7 +8,7 @@ import com.fsanaulla.utils.ResponseHandler.{toQueryResult, toResult}
 
 import scala.concurrent.Future
 
-private[fsanaulla] trait DatabaseManagement extends DataManagementQuery { self: InfluxClient =>
+private[fsanaulla] trait DatabaseManagement extends DataManagementQuery { self: InfluxHttpClient =>
 
   def createDatabase(dbName: String,
                      duration: Option[String] = None,
