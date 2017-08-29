@@ -1,6 +1,6 @@
 name := "chronicler"
 
-organization := "com.fsanaulla"
+organization := "com.github.fsanaulla"
 
 scalaVersion := "2.12.3"
 
