@@ -44,6 +44,8 @@ pgpReadOnly := false
 
 releaseCrossBuild := true
 
+publishArtifact in Test := false
+
 publishMavenStyle := true
 
 pomIncludeRepository := (_ => false)
