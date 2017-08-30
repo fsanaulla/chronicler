@@ -5,8 +5,6 @@ import com.github.fsanaulla.model.ContinuousQuery
 import com.github.fsanaulla.utils.TestHelper._
 import com.github.fsanaulla.utils.TestSpec
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com

@@ -19,22 +19,22 @@ private[fsanaulla] class InfluxHttpClient(host: String,
                                           port: Int = 8086,
                                           username: Option[String] = None,
                                           password: Option[String] = None)
-                                         (implicit val ex: ExecutionContext)
-    extends DatabaseManagement
-      with UserManagement
-      with RetentionPolicyManagement
-      with ContinuousQueryManagement
-      with ShardManagement
-      with SubscriptionManagement
-      with RequestBuilder {
+                                         (implicit val ex: ExecutionContext,
+                                          val system: ActorSystem)
+  extends DatabaseManagement
+    with UserManagement
+    with RetentionPolicyManagement
+    with ContinuousQueryManagement
+    with ShardManagement
+    with SubscriptionManagement
+    with RequestBuilder {
 
-  protected implicit val credentials: InfluxCredentials = InfluxCredentials(username, password)
-  protected implicit val system: ActorSystem = ActorSystem()
-  protected implicit val materializer: ActorMaterializer = ActorMaterializer()
-  protected implicit val connection: Connection = Http().outgoingConnection(host, port) recover {
+  private[fsanaulla] implicit val credentials: InfluxCredentials = InfluxCredentials(username, password)
+  private[fsanaulla] implicit val connection: Connection = Http().outgoingConnection(host, port) recover {
     case ex: StreamTcpException => throw new ConnectionException(ex.getMessage)
     case unknown => throw new UnknownConnectionException(unknown.getMessage)
   }
+  private[fsanaulla] implicit val mat: ActorMaterializer = ActorMaterializer()
 
   def use(dbName: String): Database = new Database(dbName)
 
