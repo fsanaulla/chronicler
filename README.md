@@ -3,12 +3,14 @@
 Chronicler - asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](https://www.influxdata.com/) based on [Akka HTTP](http://doc.akka.io/docs/akka-http/current/scala/http/).
 
 # Table of content
+- [Versions](#version)
 - [Usage](#usage)
     - [Helper Tools](#helptools)
         - [Time](#time)
         - [Synchronize](#sync)
 - [Response Handling](#resp)
 - [Connection](#connection)
+    - [Integration](#integration)
     - [Imports](#import)
     - [Create connection](#createConn)
 - [Database management](#dbManagement)
@@ -20,7 +22,8 @@ Chronicler - asynchronous [Scala](https://www.scala-lang.org/) client library fo
 - [Subscription management](#subsManagement)
 - [Retention Policy management](#rpManagement)
 - [Shards management](#shardManagement)
-
+# Versions <a name="version"></a>
+There is avaible version for scala `2.11` and `2.12`. JDK 8 is required.
 # Usage <a name="usage"></a>
 ## Helper tools <a name="helptools"></a>
 ### Time <a name="time"></a>
@@ -84,6 +87,11 @@ influx.setUserPassword("SomeUser", "newPassword") map {
 }
 ```
 ## Connection <a name="connection"></a>
+### Integration <a name="integration"></a>
+Add to your dependencies list in `build.sbt`:
+```
+libraryDependencies += "com.github.fsanaulla" %% "chronicler" % "0.1"
+```
 ### Imports <a name="import"></a>
 ```
 // import executor
