@@ -26,8 +26,10 @@ class DatabaseManagementSpec extends TestSpec {
     influx.showDatabases().futureValue.queryResult.contains(dbName) shouldEqual true
 
     val db = influx.use(dbName)
+    val meas1 = db.measurement[FakeEntity]("meas1")
+    val meas2 = db.measurement[FakeEntity]("meas2")
 
-    db.bulkWrite[FakeEntity]("meas1", multiEntitys).futureValue shouldEqual NoContentResult
+    meas1.bulkWrite(multiEntitys).futureValue shouldEqual NoContentResult
     db.read[FakeEntity]("SELECT * FROM meas1").futureValue.queryResult shouldEqual multiEntitys
 
     influx.showFieldKeys(dbName, "meas1").futureValue.queryResult shouldEqual Seq(FieldInfo("age", "float"))
@@ -36,7 +38,7 @@ class DatabaseManagementSpec extends TestSpec {
 
     influx.showTagValues(dbName, "meas1", Seq("firstName")).futureValue.queryResult shouldEqual Seq(TagValue("firstName", "Harold"), TagValue("firstName", "Harry"))
 
-    db.write[FakeEntity]("meas2", singleEntity).futureValue shouldEqual NoContentResult
+    meas2.write(singleEntity).futureValue shouldEqual NoContentResult
     db.read[FakeEntity]("SELECT * FROM meas2").futureValue.queryResult shouldEqual Seq(singleEntity)
 
     influx.showMeasurement(dbName).futureValue.queryResult shouldEqual Seq("meas1", "meas2")

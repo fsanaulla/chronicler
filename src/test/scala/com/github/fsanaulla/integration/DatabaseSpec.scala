@@ -36,9 +36,10 @@ class DatabaseSpec extends TestSpec {
 
     // DATABASE
     val db = influx.use(testDB)
-    val notExistedDb = influx.use("unknown_db")
+    val notExistedMeas = influx.use("unknown_db").measurement[FakeEntity]("test")
+    val meas1 = db.measurement[FakeEntity]("test")
 
-    notExistedDb.write("test", singleEntity).futureValue.ex.value shouldBe a [ResourceNotFoundException]
+    notExistedMeas.write(singleEntity).futureValue.ex.value shouldBe a [ResourceNotFoundException]
 
     // WRITE - READ TEST
     db.writeFromFile("src/test/resources/points.txt").futureValue shouldEqual NoContentResult
@@ -50,12 +51,12 @@ class DatabaseSpec extends TestSpec {
     db.bulkWritePoints(Seq(point1, point2)).futureValue shouldEqual NoContentResult
     db.read[FakeEntity]("SELECT * FROM test2").futureValue.queryResult shouldEqual Seq(FakeEntity("Martin", "Odersky", 54), FakeEntity("Jame", "Franko", 36), FakeEntity("Martin", "Odersky", 54))
 
-    db.write("test", singleEntity).futureValue shouldEqual NoContentResult
+    meas1.write(singleEntity).futureValue shouldEqual NoContentResult
 
     db.read[FakeEntity]("SELECT * FROM test").futureValue.queryResult shouldEqual Seq(singleEntity)
     db.readJs("SELECT * FROM test").futureValue.queryResult shouldEqual Seq(singleJsonEntity)
 
-    db.bulkWrite("test", multiEntitys).futureValue shouldEqual NoContentResult
+    meas1.bulkWrite(multiEntitys).futureValue shouldEqual NoContentResult
     db.read[FakeEntity]("SELECT * FROM test").futureValue.queryResult.sortBy(_.age) shouldEqual (singleEntity +: multiEntitys).sortBy(_.age)
     db.readJs("SELECT * FROM test").futureValue.queryResult shouldEqual multiJsonEntity
 

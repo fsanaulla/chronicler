@@ -1,8 +1,8 @@
 package com.github.fsanaulla.integration
 
 import com.github.fsanaulla.InfluxClientsFactory
-import com.github.fsanaulla.api.Database
 import com.github.fsanaulla.clients.{InfluxHttpClient, InfluxUdpClient}
+import com.github.fsanaulla.db.Database
 import com.github.fsanaulla.model.Point
 import com.github.fsanaulla.utils.Synchronization._
 import com.github.fsanaulla.utils.TestHelper.{FakeEntity, _}
