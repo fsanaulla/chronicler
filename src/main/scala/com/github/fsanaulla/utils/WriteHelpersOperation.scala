@@ -5,6 +5,7 @@ import akka.stream.ActorMaterializer
 import com.github.fsanaulla.model.{InfluxCredentials, Result}
 import com.github.fsanaulla.query.DatabaseOperationQuery
 import com.github.fsanaulla.utils.ResponseHandler.toResult
+import com.github.fsanaulla.utils.TypeAlias.Connection
 import com.github.fsanaulla.utils.constants.Consistencys.Consistency
 import com.github.fsanaulla.utils.constants.Precisions.Precision
 
@@ -24,7 +25,8 @@ private[fsanaulla] trait WriteHelpersOperation extends DatabaseOperationQuery wi
             retentionPolicy: Option[String])
            (implicit credentials: InfluxCredentials,
             ex: ExecutionContext,
-            mat: ActorMaterializer): Future[Result] = {
+            mat: ActorMaterializer,
+            connection: Connection): Future[Result] = {
     buildRequest(
       uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy),
       entity = entity
