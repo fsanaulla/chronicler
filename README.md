@@ -5,14 +5,14 @@ Chronicler - asynchronous [Scala](https://www.scala-lang.org/) client library fo
 # Table of content
 - [Versions](#version)
 - [Usage](#usage)
-    - [Helper Tools](#helptools)
-        - [Time](#time)
-        - [Synchronize](#sync)
-- [Response Handling](#resp)
 - [Connection](#connection)
     - [Integration](#integration)
     - [Imports](#import)
     - [Create connection](#createConn)
+- [Helper Tools](#helptools)
+- [Time](#time)
+- [Synchronize](#sync)
+- [Response Handling](#resp)
 - [Database management](#dbManagement)
 - [Read and Write operation](#readWrite)
     - [Read operation](#read)
@@ -25,6 +25,39 @@ Chronicler - asynchronous [Scala](https://www.scala-lang.org/) client library fo
 # Versions <a name="version"></a>
 There is avaible version for scala `2.11` and `2.12`. JDK 8 is required.
 # Usage <a name="usage"></a>
+## Connection <a name="connection"></a>
+### Integration <a name="integration"></a>
+Add to your dependencies list in `build.sbt`:
+```
+libraryDependencies += "com.github.fsanaulla" %% "chronicler" % "0.1"
+```
+### Imports <a name="import"></a>
+```
+// import executor
+
+import scala.concurrent.ExecutionContext.Implicits.global
+
+// or define your own implicit executor for specific needs in the scope
+
+implicit val ex: ExecutionContext = _
+```
+### Create connection <a name="createConn"></a>
+Creating simply `HTTP` connection based on `host` and default `port`
+```
+val influx = InfluxClientsFactory.createHttpClient("host") // default port 8086
+```
+or with `host` and custom `port`
+```
+val influx = InfluxClientsFactory.createHttpClient("host", 8087)
+```
+or with user auth info
+```
+val influx = InfluxClientsFactory.createHttpClient("host", 8087, Some("username"), Some("password"))
+```
+TO create `UDP` connection you need simply define host address and port:
+```
+val udpInflux = InfluxClientsFactory.createUdpClient("host", 8089)
+```
 ## Helper tools <a name="helptools"></a>
 ### Time <a name="time"></a>
 In many place you need to specify special influx time format, like in `duration` related fields. In this case you can simply write string based time like, `1h30m45s` by hand according to [Duration Time Format](https://docs.influxdata.com/influxdb/v1.3/query_language/spec/#durations).
@@ -86,40 +119,6 @@ influx.setUserPassword("SomeUser", "newPassword") map {
         case _ => // handle error
 }
 ```
-## Connection <a name="connection"></a>
-### Integration <a name="integration"></a>
-Add to your dependencies list in `build.sbt`:
-```
-libraryDependencies += "com.github.fsanaulla" %% "chronicler" % "0.1"
-```
-### Imports <a name="import"></a>
-```
-// import executor
-
-import scala.concurrent.ExecutionContext.Implicits.global
-
-// or define your own implicit executor for specific needs in the scope
-
-implicit val ex: ExecutionContext = _
-```
-### Create connection <a name="createConn"></a>
-Creating simply `HTTP` connection based on `host` and default `port`
-```
-val influx = InfluxClientsFactory.createHttpClient("host") // default port 8086
-```
-or with `host` and custom `port`
-```
-val influx = InfluxClientsFactory.createHttpClient("host", 8087)
-```
-or with user auth info
-```
-val influx = InfluxClientsFactory.createHttpClient("host", 8087, Some("username"), Some("password"))
-```
-TO create `UDP` connection you need simply define host address and port:
-```
-val udpInflux = InfluxClientsFactory.createUdpClient("host", 8089)
-```
-
 ## Database management <a name="dbManagement"></a>
 Main [Database management](https://docs.influxdata.com/influxdb/v1.3/query_language/database_management/) operation:
 
