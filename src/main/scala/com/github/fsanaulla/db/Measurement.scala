@@ -39,7 +39,7 @@ class Measurement[A](dbName: String, measurementName: String)
     )
   }
 
-  def bulkWrite[T](entitys: Seq[A],
+  def bulkWrite(entitys: Seq[A],
                    consistency: Consistency = Consistencys.ONE,
                    precision: Precision = Precisions.NANOSECONDS,
                    retentionPolicy: Option[String] = None)(implicit writer: InfluxWriter[A]): Future[Result] = {
