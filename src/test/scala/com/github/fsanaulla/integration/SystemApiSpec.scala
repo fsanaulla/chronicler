@@ -1,6 +1,5 @@
 package com.github.fsanaulla.integration
 
-import akka.actor.Terminated
 import com.github.fsanaulla.InfluxClientsFactory
 import com.github.fsanaulla.utils.TestHelper._
 import com.github.fsanaulla.utils.TestSpec
@@ -11,16 +10,12 @@ import com.github.fsanaulla.utils.TestSpec
   * Date: 07.09.17
   */
 class SystemApiSpec extends TestSpec {
-
   "System api" should "correctly work" in {
     val influx = InfluxClientsFactory.createHttpClient(
       influxHost,
       username = credentials.username,
       password = credentials.password)
 
-    influx.ping().futureValue shouldEqual OkResult
-
-    influx.close().futureValue shouldEqual Terminated
+    influx.ping().futureValue shouldEqual NoContentResult
   }
-
 }

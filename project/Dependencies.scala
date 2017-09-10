@@ -6,11 +6,16 @@ import sbt._
   */
 object Dependencies {
 
+  final val projectResolvers = Seq(
+    Resolver.sonatypeRepo("releases"),
+    Resolver.bintrayRepo("scalameta", "maven")
+  )
+
   final val dep = Seq(
     "com.typesafe.akka"   %%   "akka-http"              %   Versions.akkaHttp,
     "com.typesafe.akka"   %%   "akka-http-spray-json"   %   Versions.akkaHttp,
+    "org.scalameta"       %%   "scalameta"              %   Versions.scalaMeta,
     "org.scalatest"       %%   "scalatest"              %   Versions.scalaTest   % "test",
     "com.storm-enroute"   %%   "scalameter"             %   Versions.scalaMeter  % "test"
   )
-
 }

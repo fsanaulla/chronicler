@@ -1,3 +1,5 @@
+import sbt.Keys.resolvers
+
 name := "chronicler"
 
 organization := "com.github.fsanaulla"
@@ -9,7 +11,8 @@ crossScalaVersions := Seq(scalaVersion.value, "2.11.8")
 scalacOptions ++= Seq(
   "-feature",
   "-language:implicitConversions",
-  "-language:postfixOps"
+  "-language:postfixOps",
+  "-Xplugin-require:macroparadise"
 )
 
 // Developer section
@@ -34,8 +37,8 @@ developers += Developer(
 libraryDependencies ++= Dependencies.dep
 
 // Coverage section
-coverageMinimum := CoverageInfo.min
-coverageExcludedPackages := CoverageInfo.exclude
+coverageMinimum := Coverage.min
+coverageExcludedPackages := Coverage.exclude
 
 // Publish section
 useGpg := true
@@ -50,19 +53,8 @@ publishMavenStyle := true
 
 pomIncludeRepository := (_ => false)
 
+releaseProcess := Release.releaseSteps
 
-import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
+resolvers ++= Dependencies.projectResolvers
 
-releaseProcess := Seq[ReleaseStep](
-  checkSnapshotDependencies,
-  inquireVersions,
-  runClean,
-  setReleaseVersion,
-  commitReleaseVersion,
-  tagRelease,
-  ReleaseStep(action = Command.process("publishSigned", _), enableCrossBuild = true),
-  setNextVersion,
-  commitNextVersion,
-  ReleaseStep(action = Command.process("sonatypeReleaseAll", _), enableCrossBuild = true),
-  pushChanges
-)
+addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-M10" cross CrossVersion.full)

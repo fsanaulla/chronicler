@@ -3,7 +3,7 @@
   * Author: fayaz.sanaulla@gmail.com
   * Date: 28.08.17
   */
-object CoverageInfo {
+object Coverage {
 
   final val min = 90
 
