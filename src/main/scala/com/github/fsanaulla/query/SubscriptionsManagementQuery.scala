@@ -13,10 +13,10 @@ import com.github.fsanaulla.utils.constants.Destinations.Destination
 private[fsanaulla] trait SubscriptionsManagementQuery extends QueryBuilder {
 
   protected def createSubscriptionQuery(subsName: String,
-                                   dbName: String,
-                                   rpName: String,
-                                   destinationType: Destination,
-                                   addresses: Seq[String])(implicit credentials: InfluxCredentials): Uri = {
+                                        dbName: String,
+                                        rpName: String,
+                                        destinationType: Destination,
+                                        addresses: Seq[String])(implicit credentials: InfluxCredentials): Uri = {
     val addressesStr = addresses.map(str => s"\'$str\'").mkString(", ")
     buildQuery("/query", buildQueryParams(s"CREATE SUBSCRIPTION $subsName ON $dbName.$rpName DESTINATIONS $destinationType $addressesStr"))
   }

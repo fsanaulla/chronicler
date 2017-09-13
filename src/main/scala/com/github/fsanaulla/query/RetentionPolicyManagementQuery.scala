@@ -14,10 +14,14 @@ private[fsanaulla] trait RetentionPolicyManagementQuery extends QueryBuilder {
                                            default: Boolean = false)(implicit credentials: InfluxCredentials): Uri = {
     val sb = StringBuilder.newBuilder
 
-    sb.append("CREATE RETENTION POLICY ").append(rpName)
-      .append(" ON ").append(dbName)
-      .append(" DURATION ").append(duration)
-      .append(" REPLICATION ").append(replication)
+    sb.append("CREATE RETENTION POLICY ")
+      .append(rpName)
+      .append(" ON ")
+      .append(dbName)
+      .append(" DURATION ")
+      .append(duration)
+      .append(" REPLICATION ")
+      .append(replication)
 
     for (sd <- shardDuration) {
       sb.append(" SHARD DURATION ").append(sd)
@@ -40,8 +44,10 @@ private[fsanaulla] trait RetentionPolicyManagementQuery extends QueryBuilder {
                                            default: Boolean = false)(implicit credentials: InfluxCredentials): Uri = {
     val sb = StringBuilder.newBuilder
 
-    sb.append("ALTER RETENTION POLICY ").append(rpName)
-      .append(" ON ").append(dbName)
+    sb.append("ALTER RETENTION POLICY ")
+      .append(rpName)
+      .append(" ON ")
+      .append(dbName)
 
     for (d <- duration) {
       sb.append(" DURATION ").append(d)

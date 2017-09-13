@@ -10,7 +10,16 @@ import spray.json.JsArray
 case class Result(code: Int, isSuccess: Boolean, ex: Option[Throwable] = None)
 
 object Result {
-  def successful(code: Int) = Result(code, isSuccess = true, None)
+
+  def successful(code: Int) =
+    Result(
+      code,
+      isSuccess = true,
+      None
+    )
 }
 
-case class QueryResult[T](code: Int, isSuccess: Boolean, queryResult: Seq[T] = Nil, ex: Option[Throwable] = None)
+case class QueryResult[T](code: Int,
+                          isSuccess: Boolean,
+                          queryResult: Seq[T] = Nil,
+                          ex: Option[Throwable] = None)

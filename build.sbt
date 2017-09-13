@@ -33,6 +33,13 @@ developers += Developer(
   url = url("https://github.com/fsanaulla")
 )
 
+credentials += Credentials(
+  "Sonatype Nexus Repository Manager",
+  "oss.sonatype.org",
+  sys.env.getOrElse("SONATYPE_LOGIN", ""),
+  sys.env.getOrElse("SONATYPE_PASS", "")
+)
+
 // Dependencies section
 libraryDependencies ++= Dependencies.dep
 
@@ -56,5 +63,3 @@ pomIncludeRepository := (_ => false)
 releaseProcess := Release.releaseSteps
 
 resolvers ++= Dependencies.projectResolvers
-
-addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-M10" cross CrossVersion.full)

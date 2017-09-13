@@ -10,7 +10,6 @@ import spray.json.DefaultJsonProtocol
 
 import scala.concurrent.Future
 
-
 /**
   * Created by fayaz on 12.07.17.
   */
@@ -22,16 +21,30 @@ private[fsanaulla] object JsonSupport extends SprayJsonSupport with DefaultJsonP
   }
 
   def getBulkInfluxValue(js: JsObject): Seq[Seq[JsArray]] = {
-    js.getFields("results").head.convertTo[Seq[JsObject]]
-      .map(_.getFields("series").head.convertTo[Seq[JsObject]].head)
-      .map(_.getFields("values").head.convertTo[Seq[JsArray]])
+    js.getFields("results")
+      .head
+      .convertTo[Seq[JsObject]]
+      .map(_
+        .getFields("series")
+        .head
+        .convertTo[Seq[JsObject]].head)
+      .map(_
+        .getFields("values")
+        .head
+        .convertTo[Seq[JsArray]])
   }
 
   def getInfluxValue(js: JsObject): Seq[JsArray] = {
-    js.getFields("results").head.convertTo[Seq[JsObject]].head
+    js.getFields("results")
+      .head
+      .convertTo[Seq[JsObject]]
+      .head
       .getFields("series") match {
       case seq: Seq[JsValue] if seq.nonEmpty =>
-        seq.head.convertTo[Seq[JsObject]].head
+        seq
+          .head
+          .convertTo[Seq[JsObject]]
+          .head
           .getFields("values") match {
           case seq: Seq[JsValue] if seq.nonEmpty =>
             seq.head.convertTo[Seq[JsArray]]
@@ -42,10 +55,14 @@ private[fsanaulla] object JsonSupport extends SprayJsonSupport with DefaultJsonP
   }
 
   def getInfluxInfo[T](js: JsObject)(implicit reader: InfluxReader[T]): Seq[(String, Seq[T])] = {
-    js.getFields("results").head.convertTo[Seq[JsObject]].head
+    js.getFields("results")
+      .head
+      .convertTo[Seq[JsObject]]
+      .head
       .getFields("series") match {
       case seq: Seq[JsValue] if seq.nonEmpty =>
-        seq.head.convertTo[Seq[JsObject]]
+        seq.head
+          .convertTo[Seq[JsObject]]
           .map { obj =>
             val dbName = obj.getFields("name").head.convertTo[String]
             val cqInfo = obj.getFields("values") match {

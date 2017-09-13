@@ -1,6 +1,6 @@
 package com.github.fsanaulla.unit
 
-import com.github.fsanaulla.annotations.{field, tag, writable}
+import com.github.fsanaulla.annotations.{field, format, tag}
 import com.github.fsanaulla.model.InfluxWriter
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -11,9 +11,9 @@ import org.scalatest.{FlatSpec, Matchers}
   */
 class MarcoSpec extends FlatSpec with Matchers {
 
-  "Writable annotation" should "generate implicit InfluxWriter[A] with correct write method" in {
+  "Format annotation" should "generate implicit InfluxWriter[A] with correct write method" in {
 
-    @writable
+    @format
     case class TestMacroClass(
                                @tag firstName: String,
                                @tag lastName: String,

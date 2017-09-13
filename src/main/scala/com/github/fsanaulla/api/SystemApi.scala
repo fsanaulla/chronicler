@@ -17,9 +17,13 @@ import scala.concurrent.Future
   */
 private[fsanaulla] trait SystemApi { self: InfluxHttpClient =>
 
-  def use(dbName: String): Database = new Database(dbName)
+  def use(dbName: String): Database = {
+    new Database(dbName)
+  }
 
-  def ping(): Future[Result] = buildRequest("/ping", GET).flatMap(toResult)
+  def ping(): Future[Result] = {
+    buildRequest("/ping", GET).flatMap(toResult)
+  }
 
   def close(): Future[Terminated] = {
     Http().shutdownAllConnectionPools()

@@ -31,7 +31,10 @@ class Database(dbName: String)
                protected implicit val ex: ExecutionContext,
                protected implicit val connection: Connection) extends WriteHelpersOperation {
 
-  def measurement[A](measurementName: String) = new Measurement[A](dbName, measurementName)
+  def measurement[A](measurementName: String): Measurement[A] = {
+    new Measurement[A](dbName, measurementName)
+  }
+
 
   def writeNative(point: String,
                   consistency: Consistency = Consistencys.ONE,
@@ -64,26 +67,25 @@ class Database(dbName: String)
                     consistency: Consistency = Consistencys.ONE,
                     precision: Precision = Precisions.NANOSECONDS,
                     retentionPolicy: Option[String] = None): Future[Result] = {
-    write(
-      dbName,
-      HttpEntity(octetStream, FileIO.fromPath(Paths.get(path), chunkSize = chunkSize)),
-      consistency,
-      precision,
-      retentionPolicy
+
+    val entity = HttpEntity(
+      octetStream,
+      FileIO.fromPath(Paths.get(path), chunkSize = chunkSize)
     )
+
+    write(dbName, entity, consistency, precision, retentionPolicy)
   }
 
   def writePoint(point: Point,
                  consistency: Consistency = Consistencys.ONE,
                  precision: Precision = Precisions.NANOSECONDS,
                  retentionPolicy: Option[String] = None): Future[Result] = {
-    write(
-      dbName,
-      HttpEntity(octetStream, ByteString(point.serialize)),
-      consistency,
-      precision,
-      retentionPolicy
+
+    val entity = HttpEntity(
+      octetStream,
+      ByteString(point.serialize)
     )
+    write(dbName, entity, consistency, precision, retentionPolicy)
   }
 
   def bulkWritePoints(points: Seq[Point],
@@ -92,7 +94,10 @@ class Database(dbName: String)
                       retentionPolicy: Option[String] = None): Future[Result] = {
     write(
       dbName,
-      HttpEntity(octetStream, ByteString(points.map(_.serialize).mkString("\n"))),
+      HttpEntity(
+        octetStream,
+        ByteString(points.map(_.serialize).mkString("\n"))
+      ),
       consistency,
       precision,
       retentionPolicy

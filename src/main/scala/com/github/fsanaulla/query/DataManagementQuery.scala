@@ -82,8 +82,10 @@ private[fsanaulla] trait DataManagementQuery extends QueryBuilder {
                                  offset: Option[Int])(implicit credentials: InfluxCredentials): Uri = {
     val sb = StringBuilder.newBuilder
 
-    sb.append("SHOW TAG KEYS ON ").append(dbName)
-      .append(" FROM ").append(measurementName)
+    sb.append("SHOW TAG KEYS ON ")
+      .append(dbName)
+      .append(" FROM ")
+      .append(measurementName)
 
     for (where <- whereClause) {
       sb.append(" WHERE ").append(where)
@@ -109,8 +111,10 @@ private[fsanaulla] trait DataManagementQuery extends QueryBuilder {
     require(withKey.nonEmpty, "Keys can't be empty")
     val sb = StringBuilder.newBuilder
 
-    sb.append("SHOW TAG VALUES ON ").append(dbName)
-      .append(" FROM ").append(measurementName)
+    sb.append("SHOW TAG VALUES ON ")
+      .append(dbName)
+      .append(" FROM ")
+      .append(measurementName)
 
     if (withKey.size == 1) {
       sb.append(" WITH KEY = ").append(withKey.head)

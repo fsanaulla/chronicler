@@ -17,7 +17,11 @@ object InfluxClientsFactory {
                        username: Option[String] = None,
                        password: Option[String] = None)
                       (implicit ex: ExecutionContext = ExecutionContext.Implicits.global,
-                       system: ActorSystem = ActorSystem()): InfluxHttpClient = new InfluxHttpClient(host, port, username, password)
+                       system: ActorSystem = ActorSystem()): InfluxHttpClient = {
+    new InfluxHttpClient(host, port, username, password)
+  }
 
-  def createUdpClient(host: String, port: Int = 8089): InfluxUdpClient = new InfluxUdpClient(host, port)
+  def createUdpClient(host: String, port: Int = 8089): InfluxUdpClient = {
+    new InfluxUdpClient(host, port)
+  }
 }

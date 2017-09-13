@@ -16,7 +16,9 @@ private[fsanaulla] class InfluxUdpClient(host: String, port: Int = 8089) extends
 
   private val socket = new DatagramSocket()
 
-  private implicit val conn: UdpConnection = UdpConnection(InetAddress.getByName(host), port)
+  private implicit val conn: UdpConnection = {
+    UdpConnection(InetAddress.getByName(host), port)
+  }
 
   def writeNative(point: String): Unit = {
     send(buildDatagram(point.getBytes()))
@@ -44,9 +46,13 @@ private[fsanaulla] class InfluxUdpClient(host: String, port: Int = 8089) extends
     send(buildDatagram(sendData))
   }
 
-  def writePoint(point: Point): Unit = socket.send(buildDatagram(point.serialize.getBytes()))
+  def writePoint(point: Point): Unit = {
+    socket.send(buildDatagram(point.serialize.getBytes()))
+  }
 
-  def bulkWritePoints(points: Seq[Point]): Unit = socket.send(buildDatagram(points.map(_.serialize).mkString("\n").getBytes()))
+  def bulkWritePoints(points: Seq[Point]): Unit = {
+    socket.send(buildDatagram(points.map(_.serialize).mkString("\n").getBytes()))
+  }
 
   def close(): Unit = socket.close()
 

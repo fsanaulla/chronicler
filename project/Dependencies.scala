@@ -16,6 +16,8 @@ object Dependencies {
     "com.typesafe.akka"   %%   "akka-http-spray-json"   %   Versions.akkaHttp,
     "org.scalameta"       %%   "scalameta"              %   Versions.scalaMeta,
     "org.scalatest"       %%   "scalatest"              %   Versions.scalaTest   % "test",
-    "com.storm-enroute"   %%   "scalameter"             %   Versions.scalaMeter  % "test"
+    "com.storm-enroute"   %%   "scalameter"             %   Versions.scalaMeter  % "test",
+    compilerPlugin(
+      "org.scalameta" % "paradise" % "3.0.0-M10" cross CrossVersion.full)
   )
 }
