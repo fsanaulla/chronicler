@@ -23,28 +23,22 @@ private[fsanaulla] object ResponseHandler {
       case code if isSuccessful(code) && code != 204 =>
         getErrorOpt(response) map {
           case Some(msg) =>
-            Result(
-              code,
-              isSuccess = false,
-              Some(new OperationException(msg))
-            )
-          case _ => Result.successful(code)
+            Result.failed(code, new OperationException(msg))
+          case _ =>
+            Result.successful(code)
         }
-      case 204 => Future.successful(Result.successful(204))
+      case 204 =>
+        Result.successfulFuture(204)
       case other =>
-        errorHandler(other, response).map(ex =>
-            Result(
-              other,
-              isSuccess = false,
-              Some(ex)
-          ))
+        errorHandler(other, response).map(ex => Result.failed(other, ex))
     }
   }
 
   def toQueryResult[T](response: HttpResponse)(implicit ex: ExecutionContext,
                                                mat: ActorMaterializer,
                                                reader: InfluxReader[T]): Future[QueryResult[T]] = {
-    toQueryJsResult(response).map(res =>
+    toQueryJsResult(response)
+      .map(res =>
         QueryResult[T](
           res.code,
           isSuccess = res.isSuccess,
@@ -98,21 +92,10 @@ private[fsanaulla] object ResponseHandler {
         unmarshalBody(response)
           .map(getInfluxInfo[A])
           .map(seq => seq.map(e => f(e._1, e._2)))
-          .map(seq =>
-              QueryResult[B](
-                code,
-                isSuccess = true,
-                seq
-            )
-          )
+          .map(seq => QueryResult.successful[B](code, seq))
       case other =>
-        errorHandler(other, response).map(ex =>
-            QueryResult[B](
-              other,
-              isSuccess = false,
-              ex = Some(ex)
-            )
-        )
+        errorHandler(other, response)
+          .map(ex => QueryResult.failed[B](other, ex))
     }
   }
 
@@ -123,21 +106,10 @@ private[fsanaulla] object ResponseHandler {
       case code if isSuccessful(code) =>
         unmarshalBody(response)
           .map(getInfluxValue)
-          .map(seq =>
-              QueryResult(
-                code,
-                isSuccess = true,
-                seq
-            )
-          )
+          .map(seq => QueryResult.successful[JsArray](code, seq))
       case other =>
-        errorHandler(other, response).map(ex =>
-            QueryResult(
-              other,
-              isSuccess = false,
-              ex = Some(ex)
-          )
-        )
+        errorHandler(other, response)
+          .map(ex => QueryResult.failed[JsArray](other, ex))
     }
   }
 
@@ -147,21 +119,10 @@ private[fsanaulla] object ResponseHandler {
       case code if isSuccessful(code) =>
         unmarshalBody(response)
           .map(getBulkInfluxValue)
-          .map(seq =>
-              QueryResult[Seq[JsArray]](
-                code,
-                isSuccess = true,
-                seq
-            )
-          )
+          .map(seq => QueryResult.successful[Seq[JsArray]](code, seq))
       case other =>
-        errorHandler(other, response).map(ex =>
-            QueryResult(
-              other,
-              isSuccess = false,
-              ex = Some(ex)
-          )
-        )
+        errorHandler(other, response)
+          .map(ex => QueryResult.failed[Seq[JsArray]](other, ex))
     }
   }
 

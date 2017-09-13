@@ -11,5 +11,6 @@ import scala.concurrent.Future
   * Created by fayaz on 04.07.17.
   */
 private[fsanaulla] object TypeAlias {
+
   type Connection = Flow[HttpRequest, HttpResponse, Future[Http.OutgoingConnection]]
 }

@@ -40,26 +40,20 @@ class Database(dbName: String)
                   consistency: Consistency = Consistencys.ONE,
                   precision: Precision = Precisions.NANOSECONDS,
                   retentionPolicy: Option[String] = None): Future[Result] = {
-    write(
-      dbName,
-      HttpEntity(ByteString(point)),
-      consistency,
-      precision,
-      retentionPolicy
-    )
+
+    val entity = HttpEntity(ByteString(point))
+
+    write(dbName, entity, consistency, precision, retentionPolicy)
   }
 
   def bulkWriteNative(points: Seq[String],
                       consistency: Consistency = Consistencys.ONE,
                       precision: Precision = Precisions.NANOSECONDS,
                       retentionPolicy: Option[String] = None): Future[Result] = {
-    write(
-      dbName,
-      HttpEntity(ByteString(points.mkString("\n"))),
-      consistency,
-      precision,
-      retentionPolicy
-    )
+
+    val entity = HttpEntity(ByteString(points.mkString("\n")))
+
+    write(dbName, entity, consistency, precision, retentionPolicy)
   }
 
   def writeFromFile(path: String,
@@ -85,6 +79,7 @@ class Database(dbName: String)
       octetStream,
       ByteString(point.serialize)
     )
+
     write(dbName, entity, consistency, precision, retentionPolicy)
   }
 
@@ -92,16 +87,13 @@ class Database(dbName: String)
                       consistency: Consistency = Consistencys.ONE,
                       precision: Precision = Precisions.NANOSECONDS,
                       retentionPolicy: Option[String] = None): Future[Result] = {
-    write(
-      dbName,
-      HttpEntity(
-        octetStream,
-        ByteString(points.map(_.serialize).mkString("\n"))
-      ),
-      consistency,
-      precision,
-      retentionPolicy
+
+    val entity = HttpEntity(
+      octetStream,
+      ByteString(points.map(_.serialize).mkString("\n"))
     )
+
+    write(dbName, entity, consistency, precision, retentionPolicy)
   }
 
   def read[T](query: String,
