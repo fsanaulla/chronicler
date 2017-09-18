@@ -5,7 +5,7 @@ import com.github.fsanaulla.model.{Point, ResourceNotFoundException}
 import com.github.fsanaulla.utils.SampleEntitys._
 import com.github.fsanaulla.utils.TestHelper.{FakeEntity, _}
 import com.github.fsanaulla.utils.TestSpec
-import spray.json.{JsArray, JsNumber, JsString}
+import spray.json.{JsArray, JsNumber, JsString, JsValue}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -54,7 +54,12 @@ class DatabaseSpec extends TestSpec {
     meas1.write(singleEntity).futureValue shouldEqual NoContentResult
 
     db.read[FakeEntity]("SELECT * FROM test").futureValue.queryResult shouldEqual Seq(singleEntity)
-    db.readJs("SELECT * FROM test").futureValue.queryResult shouldEqual Seq(singleJsonEntity)
+    db.readJs("SELECT * FROM test")
+      .futureValue
+      .queryResult
+      .headOption
+      .map(_.convertTo[Seq[JsValue]])
+      .map(_.tail) shouldEqual Some(singleJsonEntity.convertTo[Seq[JsValue]].tail)
 
     meas1.bulkWrite(multiEntitys).futureValue shouldEqual NoContentResult
     db.read[FakeEntity]("SELECT * FROM test").futureValue.queryResult.sortBy(_.age) shouldEqual (singleEntity +: multiEntitys).sortBy(_.age)

@@ -19,3 +19,6 @@ script:
 
 after_success:
   - sbt coverageReport coveralls
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    sbt release
+    fi
