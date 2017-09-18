@@ -2,6 +2,7 @@ package com.github.fsanaulla.integration
 
 import com.github.fsanaulla.InfluxClientsFactory
 import com.github.fsanaulla.model.{Point, ResourceNotFoundException}
+import com.github.fsanaulla.utils.JsonSupport._
 import com.github.fsanaulla.utils.SampleEntitys._
 import com.github.fsanaulla.utils.TestHelper.{FakeEntity, _}
 import com.github.fsanaulla.utils.TestSpec
