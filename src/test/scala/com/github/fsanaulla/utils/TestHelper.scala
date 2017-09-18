@@ -1,6 +1,7 @@
 package com.github.fsanaulla.utils
 
 import akka.http.scaladsl.model.Uri
+import com.github.fsanaulla.annotations.{field, formattable, tag}
 import com.github.fsanaulla.model._
 import spray.json.{DeserializationException, JsArray, JsNumber, JsString}
 /**
@@ -13,20 +14,10 @@ object TestHelper {
   final val NoContentResult = Result(204, isSuccess = true)
   final val AuthErrorResult = Result(401, isSuccess = false, Some(new AuthorizationException("unable to parse authentication credentials")))
 
-  case class FakeEntity(firstName: String, lastName: String, age: Int)
-
-  implicit object InfluxWriterFakeEntity extends InfluxWriter[FakeEntity] {
-    override def write(obj: FakeEntity): String = {
-      s"firstName=${obj.firstName},lastName=${obj.lastName} age=${obj.age} $currentNanoTime"
-    }
-  }
-
-  implicit object InfluxReaderFakeEntity extends InfluxReader[FakeEntity] {
-    override def read(js: JsArray): FakeEntity = js.elements match {
-      case Vector(_, JsNumber(age), JsString(name), JsString(lastName)) => FakeEntity(name, lastName, age.toInt)
-      case _ => throw DeserializationException("Can't deserialize FakeEntity object")
-    }
-  }
+  @formattable
+  case class FakeEntity(@tag firstName: String,
+                        @tag lastName: String,
+                        @field age: Int)
 
   def queryTesterAuth(query: String)(implicit credentials: InfluxCredentials): Uri = Uri("/query").withQuery(Uri.Query("q" -> query, "p" -> credentials.password.get, "u" -> credentials.username.get))
 

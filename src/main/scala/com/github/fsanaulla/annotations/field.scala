@@ -6,3 +6,4 @@ package com.github.fsanaulla.annotations
   * Date: 09.09.17
   */
 class field extends scala.annotation.StaticAnnotation
+
