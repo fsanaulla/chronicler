@@ -20,5 +20,6 @@ script:
 after_success:
   - sbt coverageReport coveralls
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
-    sbt release release-version $RELEASE_VERSION next-version $NEXT_RELEASE_VERSION
+  - chmod 777 $TRAVIS_BUILD_DIR/scripts/publish.sh
+  - $TRAVIS_BUILD_DIR/scripts/publish.sh
     fi
