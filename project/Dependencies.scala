@@ -18,6 +18,6 @@ object Dependencies {
     "org.scalatest"       %%   "scalatest"              %   Versions.scalaTest   % "test",
     "com.storm-enroute"   %%   "scalameter"             %   Versions.scalaMeter  % "test",
     compilerPlugin(
-      "org.scalameta" % "paradise" % "3.0.0-M10" cross CrossVersion.full)
+      "org.scalameta" % "paradise" % "3.0.0-M8" cross CrossVersion.full)
   )
 }
