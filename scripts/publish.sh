@@ -1,2 +1,4 @@
 #!/usr/bin/env bash
-sbt release release-version ${RELEASE_VERSION} next-version ${NEXT_RELEASE_VERSION}
+sbt
+pgp-cmd recv-key ${PGP_KEY} hkp://pool.sks-keyservers.net
+release release-version ${RELEASE_VERSION} next-version ${NEXT_RELEASE_VERSION}
