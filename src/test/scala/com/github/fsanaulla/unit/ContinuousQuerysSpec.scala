@@ -20,19 +20,19 @@ class ContinuousQuerysSpec
   val cq = "bee_cq"
   val query = "SELECT mean(bees) AS mean_bees INTO aggregate_bees FROM farm GROUP BY time(30m)"
 
-  "show CQ query" should "generate correct query" in {
+  "ContinuousQuerys operation" should "generate correct show query" in {
     showCQQuery() shouldEqual queryTesterAuth("SHOW CONTINUOUS QUERIES")
 
     showCQQuery()(emptyCredentials) shouldEqual queryTester("SHOW CONTINUOUS QUERIES")
   }
 
-  "drop CQ query" should "generate correct query" in {
+  it should "generate correct drop query" in {
     dropCQQuery(db, cq) shouldEqual queryTesterAuth(s"DROP CONTINUOUS QUERY $cq ON $db")
 
     dropCQQuery(db, cq)(emptyCredentials) shouldEqual queryTester(s"DROP CONTINUOUS QUERY $cq ON $db")
   }
 
-  "create CQ query" should "generate correct query" in {
+  it should "generate correct create query" in {
     createCQQuery(db, cq, query) shouldEqual queryTesterAuth(s"CREATE CONTINUOUS QUERY $cq ON $db BEGIN $query END")
 
     createCQQuery(db, cq, query)(emptyCredentials) shouldEqual queryTester(s"CREATE CONTINUOUS QUERY $cq ON $db BEGIN $query END")

@@ -21,14 +21,14 @@ object SampleEntitys {
   val multiJsonEntity = Seq(
     JsArray(
       JsNumber(currentNanoTime),
-      JsNumber(44),
-      JsString("Harold"),
-      JsString("Lois")),
-    JsArray(
-      JsNumber(currentNanoTime),
       JsNumber(58),
       JsString("Martin"),
       JsString("Odersky")),
+    JsArray(
+      JsNumber(currentNanoTime),
+      JsNumber(44),
+      JsString("Harold"),
+      JsString("Lois")),
     JsArray(
       JsNumber(currentNanoTime),
       JsNumber(21),
