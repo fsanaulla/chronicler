@@ -4,9 +4,9 @@ name := "chronicler"
 
 organization := "com.github.fsanaulla"
 
-scalaVersion := "2.12.3"
+scalaVersion := "2.12.2"
 
-crossScalaVersions := Seq(scalaVersion.value, "2.11.8")
+crossScalaVersions := Seq(scalaVersion.value, "2.11.10")
 
 scalacOptions ++= Seq(
   "-feature",
