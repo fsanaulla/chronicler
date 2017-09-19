@@ -1,6 +1,8 @@
+import sbt.Keys.resolvers
+
 name := "chronicler"
 
-organization := "com.fsanaulla"
+organization := "com.github.fsanaulla"
 
 scalaVersion := "2.12.3"
 
@@ -9,7 +11,8 @@ crossScalaVersions := Seq(scalaVersion.value, "2.11.8")
 scalacOptions ++= Seq(
   "-feature",
   "-language:implicitConversions",
-  "-language:postfixOps"
+  "-language:postfixOps",
+  "-Xplugin-require:macroparadise"
 )
 
 // Developer section
@@ -30,12 +33,19 @@ developers += Developer(
   url = url("https://github.com/fsanaulla")
 )
 
+credentials += Credentials(
+  "Sonatype Nexus Repository Manager",
+  "oss.sonatype.org",
+  sys.env.getOrElse("SONATYPE_LOGIN", ""),
+  sys.env.getOrElse("SONATYPE_PASS", "")
+)
+
 // Dependencies section
 libraryDependencies ++= Dependencies.dep
 
 // Coverage section
-coverageMinimum := CoverageInfo.min
-coverageExcludedPackages := CoverageInfo.exclude
+coverageMinimum := Coverage.min
+coverageExcludedPackages := Coverage.exclude
 
 // Publish section
 useGpg := true
@@ -44,23 +54,12 @@ pgpReadOnly := false
 
 releaseCrossBuild := true
 
+publishArtifact in Test := false
+
 publishMavenStyle := true
 
 pomIncludeRepository := (_ => false)
 
+releaseProcess := Release.releaseSteps
 
-import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
-
-releaseProcess := Seq[ReleaseStep](
-  checkSnapshotDependencies,
-  inquireVersions,
-  runClean,
-  setReleaseVersion,
-  commitReleaseVersion,
-  tagRelease,
-  ReleaseStep(action = Command.process("publishSigned", _), enableCrossBuild = true),
-  setNextVersion,
-  commitNextVersion,
-  ReleaseStep(action = Command.process("sonatypeReleaseAll", _), enableCrossBuild = true),
-  pushChanges
-)
+resolvers ++= Dependencies.projectResolvers

@@ -5,14 +5,14 @@ Chronicler - asynchronous [Scala](https://www.scala-lang.org/) client library fo
 # Table of content
 - [Versions](#version)
 - [Usage](#usage)
-    - [Helper Tools](#helptools)
-        - [Time](#time)
-        - [Synchronize](#sync)
-- [Response Handling](#resp)
 - [Connection](#connection)
     - [Integration](#integration)
     - [Imports](#import)
     - [Create connection](#createConn)
+- [Helper Tools](#helptools)
+- [Time](#time)
+- [Synchronize](#sync)
+- [Response Handling](#resp)
 - [Database management](#dbManagement)
 - [Read and Write operation](#readWrite)
     - [Read operation](#read)
@@ -25,6 +25,39 @@ Chronicler - asynchronous [Scala](https://www.scala-lang.org/) client library fo
 # Versions <a name="version"></a>
 There is avaible version for scala `2.11` and `2.12`. JDK 8 is required.
 # Usage <a name="usage"></a>
+## Connection <a name="connection"></a>
+### Integration <a name="integration"></a>
+Add to your dependencies list in `build.sbt`:
+```
+libraryDependencies += "com.github.fsanaulla" %% "chronicler" % "0.1"
+```
+### Imports <a name="import"></a>
+```
+// import executor
+
+import scala.concurrent.ExecutionContext.Implicits.global
+
+// or define your own implicit executor for specific needs in the scope
+
+implicit val ex: ExecutionContext = _
+```
+### Create connection <a name="createConn"></a>
+Creating simply `HTTP` connection based on `host` and default `port`
+```
+val influx = InfluxClientsFactory.createHttpClient("host") // default port 8086
+```
+or with `host` and custom `port`
+```
+val influx = InfluxClientsFactory.createHttpClient("host", 8087)
+```
+or with user auth info
+```
+val influx = InfluxClientsFactory.createHttpClient("host", 8087, Some("username"), Some("password"))
+```
+TO create `UDP` connection you need simply define host address and port:
+```
+val udpInflux = InfluxClientsFactory.createUdpClient("host", 8089)
+```
 ## Helper tools <a name="helptools"></a>
 ### Time <a name="time"></a>
 In many place you need to specify special influx time format, like in `duration` related fields. In this case you can simply write string based time like, `1h30m45s` by hand according to [Duration Time Format](https://docs.influxdata.com/influxdb/v1.3/query_language/spec/#durations).
@@ -86,40 +119,6 @@ influx.setUserPassword("SomeUser", "newPassword") map {
         case _ => // handle error
 }
 ```
-## Connection <a name="connection"></a>
-### Integration <a name="integration"></a>
-Add to your dependencies list in `build.sbt`:
-```
-libraryDependencies += "com.github.fsanaulla" %% "chronicler" % "0.1"
-```
-### Imports <a name="import"></a>
-```
-// import executor
-
-import scala.concurrent.ExecutionContext.Implicits.global
-
-// or define your own implicit executor for specific needs in the scope
-
-implicit val ex: ExecutionContext = _
-```
-### Create connection <a name="createConn"></a>
-Creating simply `HTTP` connection based on `host` and default `port`
-```
-val influx = InfluxClientsFactory.createHttpClient("host") // default port 8086
-```
-or with `host` and custom `port`
-```
-val influx = InfluxClientsFactory.createHttpClient("host", 8087)
-```
-or with user auth info
-```
-val influx = InfluxClientsFactory.createHttpClient("host", 8087, Some("username"), Some("password"))
-```
-TO create `UDP` connection you need simply define host address and port:
-```
-val udpInflux = InfluxClientsFactory.createUdpClient("host", 8089)
-```
-
 ## Database management <a name="dbManagement"></a>
 Main [Database management](https://docs.influxdata.com/influxdb/v1.3/query_language/database_management/) operation:
 
@@ -197,32 +196,25 @@ There is several read method exist. The base one is:
 db.readJs("SELEC * FROM measurement")
 res0: Future[QueryResult[JsArray]] // where JsArray it's influx point representation
 ```
-The next one it's typed method, for using it you need define your own `InfluxReader[T]` and add it implicitly to scope. There is example of one on that:
-```
-case class FakeEntity(firstName: String, lastName: String, age: Int)
-
-implicit object InfluxReaderFakeEntity extends InfluxReader[FakeEntity] {
-    override def read(js: JsArray): FakeEntity = js.elements match {
-      case Vector(_, JsNumber(age), JsString(name), JsString(lastName)) => FakeEntity(name, lastName, age.toInt)
-      case _ => throw DeserializationException("Can't deserialize FakeEntity object")
-    }
-  }
-
-```
-And then just use it
-```
-import implicits.reader.location._
-
-db.read[FakeEntity]("SELECT * FROM measurement")
-res0: Future[QueryResult[FakeEntity]]
-```
 You can execute multiple query's in one request:
 ```
 db.bulkReadJs(Seq("SELECT * FROM measurement", "SELECT * FROM measurement1"))
 res0: Future[QueryResult[Seq[JsArray]]]
 ```
+The next one it's typed method, for using it you need define your own `InfluxReader[T]` and add it implicitly to scope. There is example of one on that.
+Simply mark it with `readable` annotation to generate implicits at compile time
+```
+@readaable
+case class FakeEntity(firstName: String, lastName: String, age: Int)
+```
+And then just use it
+```
+db.read[FakeEntity]("SELECT * FROM measurement")
+res0: Future[QueryResult[FakeEntity]]
+```
 ### Write operation <a name="write"></a>
-There is much more opportunities to store data.
+There is much more opportunities to store data. They separated on 2 groups.
+First one is not a typesafe. You can used from `db` instance. Like below
 First one save point in pure [Line Protocol Format](https://docs.influxdata.com/influxdb/v1.3/write_protocols/line_protocol_reference/)
 ```
 // single
@@ -248,29 +240,6 @@ res0: Future[Result]
 db.bulkWritePoints(Seq(p1, ...))
 res0: Future[Result]
 ```
-Another one is typed method. That one can take any type that have implicit `InfluxWriter`object in the scope, that parse your object to [Line Protocol String](https://docs.influxdata.com/influxdb/v1.3/write_protocols/line_protocol_reference/). For example:
-```
-case class FakeEntity(firstName: String, lastName: String, age: Int)
-
-implicit object InfluxWriterFakeEntity extends InfluxWriter[FakeEntity] {
-  override def write(obj: FakeEntity): String = {
-    s"firstName=${obj.firstName},lastName=${obj.lastName} age=${obj.age} $currentNanoTime"
-  }
-}
-```
-Then you can simply:
-```
-val fe = FakeEntity("Name", "Surname", 54)
-
-// single
-db.write[FakeEntity](fe)
-res0: Future[Result]
-
-// bulk
-db.bulkWrite(Seq(fe, ...))
-res0: Future[Result]
-```
-
 Another option is to write from file. File format example:
 ```
 test1,host=server02 value=0.67
@@ -288,6 +257,42 @@ updInflux.writeNative("cpu_load_short,host=server02,region=us-west value=0.55 14
 res0: Unit
 ```
 main difference in return type. All udp methods return unit result by [UDP Protocol](https://en.wikipedia.org/wiki/User_Datagram_Protocol) nature
+
+The second group are typesafe operation. To use it:
+```
+val meas = db.measurement("meas_name")
+```
+That one can take any type that have implicit `InfluxWriter`object in the scope, that parse your object to [Line Protocol String](https://docs.influxdata.com/influxdb/v1.3/write_protocols/line_protocol_reference/). For example:
+To to object writable to influx, just mark it with annotation `writable`, and specify tag and field params in object.
+This annotation will generate implicit object for you at compile time. See [scalameta](#http://scalameta.org/)
+```
+import com.github.fsanaulla.annotation._
+
+@writable
+case class FakeEntity(@tag firstName: String,
+                      @tag lastName: String,
+                      @field age: Int)
+```
+Then you can simply:
+```
+val fe = FakeEntity("Name", "Surname", 54)
+
+// single
+meas.write[FakeEntity](fe)
+res0: Future[Result]
+
+// bulk
+meas.bulkWrite(Seq(fe, ...))
+res0: Future[Result]
+```
+Another one useful annotation exist called `formattable`, example below:
+```
+@formattable
+case class FakeEntity(@tag firstName: String,
+                      @tag lastName: String,
+                      @field age: Int)
+```
+It with generate both implicits like: InfluxReader[FakeEntity] and InfluxWriter[FakeEntity]
 ## User management <a name="userManagement"></a>
 Main [User Management](https://docs.influxdata.com/influxdb/v1.3/query_language/authentication_and_authorization/#user-management-commands) operations
 

@@ -18,4 +18,8 @@ script:
   - sbt clean coverage test
 
 after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
   - sbt coverageReport coveralls
+  - chmod 777 $TRAVIS_BUILD_DIR/scripts/publish.sh
+  - $TRAVIS_BUILD_DIR/scripts/publish.sh
+    fi
