@@ -64,7 +64,11 @@ class DatabaseSpec extends TestSpec {
 
     meas1.bulkWrite(multiEntitys).futureValue shouldEqual NoContentResult
     db.read[FakeEntity]("SELECT * FROM test").futureValue.queryResult.sortBy(_.age) shouldEqual (singleEntity +: multiEntitys).sortBy(_.age)
-    db.readJs("SELECT * FROM test").futureValue.queryResult shouldEqual multiJsonEntity
+    db.readJs("SELECT * FROM test")
+      .futureValue
+      .queryResult
+      .map(_.convertTo[Seq[JsValue]])
+      .map(_.tail) shouldEqual multiJsonEntity.map(_.convertTo[Seq[JsValue]].tail)
 
     val multiQuery = db.bulkReadJs(Seq("SELECT * FROM test", "SELECT * FROM test WHERE age > 25")).futureValue
 
