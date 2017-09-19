@@ -20,7 +20,7 @@ class DatabaseOperationQuerySpec
   val testDB = "db"
   val testQuery = "SELECT * FROM test"
 
-  "write query generator" should "return correct query" in {
+  "DatabaseOperationQuery" should "return correct write query" in {
     writeToInfluxQuery(testDB, Consistencys.ONE, Precisions.NANOSECONDS, None) shouldEqual
       writeTester(s"precision=ns&u=${credentials.username.get}&consistency=one&db=$testDB&p=${credentials.password.get}")
 
@@ -34,7 +34,7 @@ class DatabaseOperationQuerySpec
       writeTester(s"db=$testDB&precision=u&consistency=one")
   }
 
-  "read single query generator" should "return correct query" in {
+  it should "return correct single read query" in {
     val map = Map[String, String](
       "db" -> testDB,
       "u" -> credentials.username.get,
@@ -47,7 +47,7 @@ class DatabaseOperationQuerySpec
     readFromInfluxSingleQuery(testDB, testQuery, Epochs.NANOSECONDS, pretty = false, chunked = false) shouldEqual queryTesterSimple(map)
   }
 
-  "read bulk query generator" should "return correct query" in {
+  it should "return correct bulk read query" in {
     val map = Map[String, String](
       "db" -> testDB,
       "u" -> credentials.username.get,

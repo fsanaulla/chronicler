@@ -83,7 +83,9 @@ class DatabaseSpec extends TestSpec {
     multiQuery.queryResult.last shouldBe a [Seq[_]]
     multiQuery.queryResult.last.head shouldBe a [JsArray]
 
-    multiQuery.queryResult shouldEqual largeMultiJsonEntity
+    multiQuery
+      .queryResult
+      .map(_.map(_.convertTo[Seq[JsValue]].tail)) shouldEqual largeMultiJsonEntity.map(_.map(_.convertTo[Seq[JsValue]].tail))
 
     db.writeNative("meas3,firstName=Jame,lastName=Lannister age=48").futureValue shouldEqual NoContentResult
     db.read[FakeEntity]("SELECT * FROM meas3").futureValue.queryResult shouldEqual Seq(FakeEntity("Jame", "Lannister", 48))
