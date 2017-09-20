@@ -292,7 +292,7 @@ case class FakeEntity(@tag firstName: String,
                       @tag lastName: String,
                       @field age: Int)
 ```
-It with generate both implicits like: InfluxReader[FakeEntity] and InfluxWriter[FakeEntity]
+It with generate both implicits like: 'InfluxReader[FakeEntity]' and 'InfluxWriter[FakeEntity]'
 ## User management <a name="userManagement"></a>
 Main [User Management](https://docs.influxdata.com/influxdb/v1.3/query_language/authentication_and_authorization/#user-management-commands) operations
 
