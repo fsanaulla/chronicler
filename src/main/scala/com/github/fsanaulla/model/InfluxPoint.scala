@@ -8,6 +8,7 @@ package com.github.fsanaulla.model
 case class InfluxTag(key: String, value: String)
 
 sealed trait InfluxField {
+
   override def toString: String
 }
 

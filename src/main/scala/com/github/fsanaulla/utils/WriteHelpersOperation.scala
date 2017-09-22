@@ -1,5 +1,6 @@
 package com.github.fsanaulla.utils
 
+// format: off
 import akka.http.scaladsl.model.RequestEntity
 import akka.stream.ActorMaterializer
 import com.github.fsanaulla.model.{InfluxCredentials, Result}
