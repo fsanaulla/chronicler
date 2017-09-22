@@ -11,6 +11,7 @@ import scala.meta._
   * Date: 14.09.17
   */
 class formattable extends scala.annotation.StaticAnnotation {
+
   inline def apply(defn: Any): Any = meta {
 
     val modelImport = {

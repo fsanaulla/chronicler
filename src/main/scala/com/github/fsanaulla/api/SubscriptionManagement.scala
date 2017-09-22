@@ -5,6 +5,7 @@ import com.github.fsanaulla.model.InfluxImplicits._
 import com.github.fsanaulla.model.{QueryResult, Result, Subscription, SubscriptionInfo}
 import com.github.fsanaulla.query.SubscriptionsManagementQuery
 import com.github.fsanaulla.utils.ResponseHandler._
+import com.github.fsanaulla.utils.constants.Destinations
 import com.github.fsanaulla.utils.constants.Destinations.Destination
 
 import scala.concurrent.Future
@@ -21,10 +22,15 @@ private[fsanaulla] trait SubscriptionManagement extends SubscriptionsManagementQ
                          rpName: String = "autogen",
                          destinationType: Destination,
                          addresses: Seq[String]): Future[Result] = {
-    buildRequest(createSubscriptionQuery(subsName, dbName, rpName, destinationType, addresses)).flatMap(toResult)
+
+    buildRequest(createSubscriptionQuery(subsName, dbName, rpName, destinationType, addresses))
+      .flatMap(toResult)
   }
 
-  def dropSubscription(subName: String, dbName: String, rpName: String): Future[Result] = {
+  def dropSubscription(subName: String,
+                       dbName: String,
+                       rpName: String): Future[Result] = {
+
     buildRequest(dropSubscriptionQuery(subName, dbName, rpName)).flatMap(toResult)
   }
 
@@ -33,6 +39,7 @@ private[fsanaulla] trait SubscriptionManagement extends SubscriptionsManagementQ
   }
 
   def showSubscriptions(dbName: String): Future[QueryResult[Subscription]] = {
+
     showSubscriptionsInfo().map { queryRes =>
       val seq = queryRes.queryResult.find(_.dbName == dbName).map(_.subscriptions).getOrElse(Nil)
 
@@ -43,7 +50,7 @@ private[fsanaulla] trait SubscriptionManagement extends SubscriptionsManagementQ
   def updateSubscription(subsName: String,
                          dbName: String,
                          rpName: String,
-                         destination: Destination,
+                         destination: Destination = Destinations.ALL,
                          address: Seq[String]): Future[Result] = {
     for {
       dropRes <- dropSubscription(subsName, dbName, rpName) if dropRes.ex.isEmpty

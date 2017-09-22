@@ -11,7 +11,8 @@ import com.github.fsanaulla.utils.QueryBuilder
   */
 private[fsanaulla] trait ContinuousQuerys extends QueryBuilder {
 
-  protected def showCQQuery()(implicit credentials: InfluxCredentials): Uri = buildQuery("/query", buildQueryParams("SHOW CONTINUOUS QUERIES"))
+  protected def showCQQuery()(implicit credentials: InfluxCredentials): Uri =
+    buildQuery("/query", buildQueryParams("SHOW CONTINUOUS QUERIES"))
 
   protected def dropCQQuery(dbName: String, cqName: String)(implicit credentials: InfluxCredentials): Uri = {
     buildQuery("/query", buildQueryParams(s"DROP CONTINUOUS QUERY $cqName ON $dbName"))

@@ -17,8 +17,7 @@ import scala.concurrent.{ExecutionContext, Future}
 private[fsanaulla] object ResponseHandler {
 
   // Simply result's
-  def toResult(response: HttpResponse)(implicit ex: ExecutionContext,
-                                       mat: ActorMaterializer): Future[Result] = {
+  def toResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[Result] = {
     response.status.intValue() match {
       case code if isSuccessful(code) && code != 204 =>
         getErrorOpt(response) map {
@@ -34,29 +33,27 @@ private[fsanaulla] object ResponseHandler {
     }
   }
 
-  def toQueryResult[T](response: HttpResponse)(implicit ex: ExecutionContext,
-                                               mat: ActorMaterializer,
-                                               reader: InfluxReader[T]): Future[QueryResult[T]] = {
+  def toQueryResult[T](response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer, reader: InfluxReader[T]): Future[QueryResult[T]] = {
     toQueryJsResult(response)
-      .map(res =>
-        QueryResult[T](
-          res.code,
-          isSuccess = res.isSuccess,
-          res.queryResult.map(reader.read),
-          res.ex
-      ))
+      .map(
+        res =>
+          QueryResult[T](
+            res.code,
+            isSuccess = res.isSuccess,
+            res.queryResult.map(reader.read),
+            res.ex
+        ))
   }
 
   // Complex query result's
-  def toCqQueryResult(response: HttpResponse)(implicit ex: ExecutionContext,
-                                              mat: ActorMaterializer,
-                                              reader: InfluxReader[ContinuousQuery]): Future[QueryResult[ContinuousQueryInfo]] = {
+  def toCqQueryResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer, reader: InfluxReader[ContinuousQuery]): Future[QueryResult[ContinuousQueryInfo]] = {
     toComplexQueryResult[ContinuousQuery, ContinuousQueryInfo](
       response,
       (name: String, seq: Seq[ContinuousQuery]) => ContinuousQueryInfo(name, seq)
     )
   }
 
+  // format: off
   def toShardQueryResult(response: HttpResponse)(implicit ex: ExecutionContext,
                                                  mat: ActorMaterializer,
                                                  reader: InfluxReader[Shard]): Future[QueryResult[ShardInfo]] = {
@@ -113,8 +110,7 @@ private[fsanaulla] object ResponseHandler {
     }
   }
 
-  def toBulkQueryJsResult(response: HttpResponse)(implicit ex: ExecutionContext,
-                                                  mat: ActorMaterializer): Future[QueryResult[Seq[JsArray]]] = {
+  def toBulkQueryJsResult(response: HttpResponse)(implicit ex: ExecutionContext, mat: ActorMaterializer): Future[QueryResult[Seq[JsArray]]] = {
     response.status.intValue() match {
       case code if isSuccessful(code) =>
         unmarshalBody(response)
@@ -129,23 +125,21 @@ private[fsanaulla] object ResponseHandler {
   def getError(response: HttpResponse)(implicit ex: ExecutionContext,
                                        mat: ActorMaterializer): Future[String] = {
     unmarshalBody(response)
-      .map(_
-        .getFields("error")
-        .head
-        .convertTo[String])
+      .map(
+        _.getFields("error").head
+          .convertTo[String])
   }
 
   def getErrorOpt(response: HttpResponse)(implicit ex: ExecutionContext,
                                           mat: ActorMaterializer): Future[Option[String]] = {
     unmarshalBody(response)
-      .map(_
-        .getFields("results")
-        .head
-        .convertTo[Seq[JsObject]]
-        .head
-        .fields
-        .get("error")
-        .map(_.convertTo[String]))
+      .map(
+        _.getFields("results").head
+          .convertTo[Seq[JsObject]]
+          .head
+          .fields
+          .get("error")
+          .map(_.convertTo[String]))
   }
 
   private def isSuccessful(code: Int): Boolean = {

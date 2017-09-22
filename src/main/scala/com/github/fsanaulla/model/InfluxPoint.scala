@@ -75,6 +75,7 @@ case class Point(measurement: String,
   }
 
   def serialize: String = {
+
     val sb = StringBuilder.newBuilder
 
     sb.append(measurement).append(",")

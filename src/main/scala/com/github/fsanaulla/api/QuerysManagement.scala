@@ -13,7 +13,8 @@ import scala.concurrent.Future
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-private[fsanaulla] trait QuerysManagement extends QuerysManagementQuery { self: InfluxHttpClient =>
+private[fsanaulla] trait QuerysManagement extends QuerysManagementQuery {
+  self: InfluxHttpClient =>
 
   def showQueries(): Future[QueryResult[QueryInfo]] = {
     buildRequest(showQuerysQuery()).flatMap(toQueryResult[QueryInfo])

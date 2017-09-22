@@ -16,6 +16,7 @@ private[fsanaulla] trait DataManagementQuery extends QueryBuilder {
                                     replication: Option[Int],
                                     shardDuration: Option[String],
                                     rpName: Option[String])(implicit credentials: InfluxCredentials): Uri = {
+
     val sb = StringBuilder.newBuilder
 
     sb.append(s"CREATE DATABASE $dbName")
@@ -79,7 +80,8 @@ private[fsanaulla] trait DataManagementQuery extends QueryBuilder {
                                  measurementName: String,
                                  whereClause: Option[String],
                                  limit: Option[Int],
-                                 offset: Option[Int])(implicit credentials: InfluxCredentials): Uri = {
+                                 offset: Option[Int])
+                                (implicit credentials: InfluxCredentials): Uri = {
     val sb = StringBuilder.newBuilder
 
     sb.append("SHOW TAG KEYS ON ")
@@ -102,12 +104,8 @@ private[fsanaulla] trait DataManagementQuery extends QueryBuilder {
     buildQuery("/query", buildQueryParams(sb.toString()))
   }
 
-  protected def showTagValuesQuery(dbName: String,
-                                   measurementName: String,
-                                   withKey: Seq[String],
-                                   whereClause: Option[String],
-                                   limit: Option[Int],
-                                   offset: Option[Int])(implicit credentials: InfluxCredentials): Uri = {
+  protected def showTagValuesQuery(dbName: String, measurementName: String, withKey: Seq[String], whereClause: Option[String], limit: Option[Int], offset: Option[Int])(
+      implicit credentials: InfluxCredentials): Uri = {
     require(withKey.nonEmpty, "Keys can't be empty")
     val sb = StringBuilder.newBuilder
 

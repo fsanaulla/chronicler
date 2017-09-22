@@ -59,11 +59,7 @@ object InfluxImplicits {
   implicit object RetentionPolicyInfluxReader extends InfluxReader[RetentionPolicyInfo] {
 
     override def read(js: JsArray): RetentionPolicyInfo = js.elements match {
-      case Vector(JsString(name),
-                  JsString(duration),
-                  JsString(shardGroupdDuration),
-                  JsNumber(replication),
-                  JsBoolean(default)) =>
+      case Vector(JsString(name), JsString(duration), JsString(shardGroupdDuration), JsNumber(replication), JsBoolean(default)) =>
         RetentionPolicyInfo(
           name,
           duration,
@@ -109,14 +105,7 @@ object InfluxImplicits {
   implicit object ShardInfluxReader extends InfluxReader[Shard] {
 
     override def read(js: JsArray): Shard = js.elements match {
-      case Vector(JsNumber(shardId),
-                  JsString(dbName),
-                  JsString(rpName),
-                  JsNumber(shardGroupId),
-                  JsString(startTime),
-                  JsString(endTime),
-                  JsString(expiryTime),
-                  JsString(owners)) =>
+      case Vector(JsNumber(shardId), JsString(dbName), JsString(rpName), JsNumber(shardGroupId), JsString(startTime), JsString(endTime), JsString(expiryTime), JsString(owners)) =>
         Shard(
           shardId.toInt,
           dbName,
@@ -145,12 +134,7 @@ object InfluxImplicits {
   implicit object ShardGroupInfluxReader extends InfluxReader[ShardGroup] {
 
     override def read(js: JsArray): ShardGroup = js.elements match {
-      case Vector(JsNumber(shardId),
-                  JsString(dbName),
-                  JsString(rpName),
-                  JsString(startTime),
-                  JsString(endTime),
-                  JsString(expiryTime)) =>
+      case Vector(JsNumber(shardId), JsString(dbName), JsString(rpName), JsString(startTime), JsString(endTime), JsString(expiryTime)) =>
         ShardGroup(
           shardId,
           dbName,

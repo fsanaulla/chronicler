@@ -18,6 +18,7 @@ object InfluxClientsFactory {
                        password: Option[String] = None)
                       (implicit ex: ExecutionContext = ExecutionContext.Implicits.global,
                        system: ActorSystem = ActorSystem()): InfluxHttpClient = {
+
     new InfluxHttpClient(host, port, username, password)
   }
 

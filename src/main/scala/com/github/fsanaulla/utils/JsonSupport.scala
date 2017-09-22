@@ -5,7 +5,7 @@ import akka.http.scaladsl.model.HttpResponse
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import com.github.fsanaulla.model.InfluxReader
-import com.github.fsanaulla.utils.ContentTypes.appJson
+import com.github.fsanaulla.utils.ContentTypes.AppJson
 import spray.json.DefaultJsonProtocol
 
 import scala.concurrent.Future
@@ -17,20 +17,18 @@ private[fsanaulla] object JsonSupport extends SprayJsonSupport with DefaultJsonP
   import spray.json._
 
   def unmarshalBody(response: HttpResponse)(implicit mat: ActorMaterializer): Future[JsObject] = {
-    Unmarshal(response.entity.withContentType(appJson)).to[JsObject]
+    Unmarshal(response.entity.withContentType(AppJson)).to[JsObject]
   }
 
   def getBulkInfluxValue(js: JsObject): Seq[Seq[JsArray]] = {
     js.getFields("results")
       .head
       .convertTo[Seq[JsObject]]
-      .map(_
-        .getFields("series")
-        .head
-        .convertTo[Seq[JsObject]].head)
-      .map(_
-        .getFields("values")
-        .head
+      .map(
+        _.getFields("series").head
+          .convertTo[Seq[JsObject]]
+          .head)
+      .map(_.getFields("values").head
         .convertTo[Seq[JsArray]])
   }
 
@@ -41,8 +39,7 @@ private[fsanaulla] object JsonSupport extends SprayJsonSupport with DefaultJsonP
       .head
       .getFields("series") match {
       case seq: Seq[JsValue] if seq.nonEmpty =>
-        seq
-          .head
+        seq.head
           .convertTo[Seq[JsObject]]
           .head
           .getFields("values") match {

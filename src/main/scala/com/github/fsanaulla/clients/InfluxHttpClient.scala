@@ -11,15 +11,18 @@ import com.github.fsanaulla.utils.TypeAlias._
 import scala.concurrent.ExecutionContext
 
 /**
-  * Created by fayaz on 26.06.17.
+  * Created by
+  * Author: fayaz.sanaulla@gmail.com
+  * Date: 27.08.17
   */
+// format: off
 private[fsanaulla] class InfluxHttpClient(host: String,
-                                          port: Int = 8086,
-                                          username: Option[String] = None,
-                                          password: Option[String] = None)
-                                         (implicit val ex: ExecutionContext,
-                                          val system: ActorSystem)
-  extends SystemApi
+                       port: Int = 8086,
+                       username: Option[String] = None,
+                       password: Option[String] = None)
+                      (implicit val ex: ExecutionContext,
+                       val system: ActorSystem)
+    extends SystemApi
     with DatabaseManagement
     with UserManagement
     with RetentionPolicyManagement
@@ -28,9 +31,13 @@ private[fsanaulla] class InfluxHttpClient(host: String,
     with SubscriptionManagement
     with RequestBuilder {
 
-  private[fsanaulla] implicit val credentials: InfluxCredentials = InfluxCredentials(username, password)
+  private[fsanaulla] implicit val credentials: InfluxCredentials = {
+    InfluxCredentials(username, password)
+  }
   private[fsanaulla] implicit val mat: ActorMaterializer = ActorMaterializer()
-  private[fsanaulla] implicit val connection: Connection = Http().outgoingConnection(host, port) recover {
+
+  private[fsanaulla] implicit val connection: Connection = Http()
+    .outgoingConnection(host, port) recover {
     case ex: StreamTcpException => throw new ConnectionException(ex.getMessage)
     case unknown => throw new UnknownConnectionException(unknown.getMessage)
   }

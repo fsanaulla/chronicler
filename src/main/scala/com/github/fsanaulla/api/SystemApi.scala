@@ -15,7 +15,8 @@ import scala.concurrent.Future
   * Author: fayaz.sanaulla@gmail.com
   * Date: 03.09.17
   */
-private[fsanaulla] trait SystemApi { self: InfluxHttpClient =>
+private[fsanaulla] trait SystemApi {
+  self: InfluxHttpClient =>
 
   def use(dbName: String): Database = {
     new Database(dbName)

@@ -11,7 +11,8 @@ private[fsanaulla] trait RetentionPolicyManagementQuery extends QueryBuilder {
                                            duration: String,
                                            replication: Int,
                                            shardDuration: Option[String],
-                                           default: Boolean = false)(implicit credentials: InfluxCredentials): Uri = {
+                                           default: Boolean = false)
+                                          (implicit credentials: InfluxCredentials): Uri = {
     val sb = StringBuilder.newBuilder
 
     sb.append("CREATE RETENTION POLICY ")
@@ -32,7 +33,9 @@ private[fsanaulla] trait RetentionPolicyManagementQuery extends QueryBuilder {
     buildQuery("/query", buildQueryParams(sb.toString()))
   }
 
-  protected def dropRetentionPolicyQuery(rpName: String, dbName: String)(implicit credentials: InfluxCredentials) : Uri = {
+  protected def dropRetentionPolicyQuery(rpName: String,
+                                         dbName: String)
+                                        (implicit credentials: InfluxCredentials): Uri = {
     buildQuery("/query", buildQueryParams(s"DROP RETENTION POLICY $rpName ON $dbName"))
   }
 
@@ -58,7 +61,7 @@ private[fsanaulla] trait RetentionPolicyManagementQuery extends QueryBuilder {
     }
 
     for (sd <- shardDuration) {
-        sb.append(" SHARD DURATION ").append(sd)
+      sb.append(" SHARD DURATION ").append(sd)
     }
 
     if (default) sb.append(" DEFAULT")
