@@ -25,9 +25,9 @@ class DatabaseManagementSpec extends TestSpec {
 
     influx.showDatabases().futureValue.queryResult.contains(dbName) shouldEqual true
 
-    val db = influx.use(dbName)
-    val meas1 = db.measurement[FakeEntity]("meas1")
-    val meas2 = db.measurement[FakeEntity]("meas2")
+    val db = influx.unsafely(dbName)
+    val meas1 = influx.safely[FakeEntity](dbName, "meas1")
+    val meas2 = influx.safely[FakeEntity](dbName, "meas2")
 
     meas1.bulkWrite(multiEntitys).futureValue shouldEqual NoContentResult
     db.read[FakeEntity]("SELECT * FROM meas1").futureValue.queryResult shouldEqual multiEntitys

@@ -24,7 +24,7 @@ class DataManagementQuerySpec
   val testLimit = Some(4)
   val testOffset = Some(3)
 
-  "create database query" should "return correct query" in {
+  "DatabaseManagementQuerys" should "generate correct 'create database' query" in {
 
     createDatabaseQuery(testDb, None, None, None, None) shouldEqual queryTesterAuth(s"CREATE DATABASE $testDb")
 
@@ -35,44 +35,44 @@ class DataManagementQuerySpec
     createDatabaseQuery(testDb, Some("3d"), Some(2), Some("1d"), Some("testName"))(emptyCredentials) shouldEqual queryTester(s"CREATE DATABASE $testDb WITH DURATION 3d REPLICATION 2 SHARD DURATION 1d NAME testName")
   }
 
-  "drop database query" should "return correct query" in {
+  it should "generate correct 'drop database' query" in {
     dropDatabaseQuery(testDb) shouldEqual queryTesterAuth(s"DROP DATABASE $testDb")
 
     dropDatabaseQuery(testDb)(emptyCredentials) shouldEqual queryTester(s"DROP DATABASE $testDb")
   }
 
-  "drop series query" should "return correct query" in {
+  it should "generate correct 'drop series' query" in {
     dropSeriesQuery(testDb, testSeries) shouldEqual queryTesterAuth(testDb, s"DROP SERIES FROM $testSeries")
 
     dropSeriesQuery(testDb, testSeries)(emptyCredentials) shouldEqual queryTester(testDb, s"DROP SERIES FROM $testSeries")
   }
 
-  "drop measurement query" should "return correct query" in {
+  it should "generate correct 'drop measurement' query" in {
     dropMeasurementQuery(testDb, testMeasurement) shouldEqual queryTesterAuth(testDb, s"DROP MEASUREMENT $testMeasurement")
 
     dropMeasurementQuery(testDb, testMeasurement)(emptyCredentials) shouldEqual queryTester(testDb, s"DROP MEASUREMENT $testMeasurement")
   }
 
-  "delete series query" should "return correct query" in {
+  it should "generate correct 'drop all series' query" in {
     deleteAllSeriesQuery(testDb, testSeries) shouldEqual queryTesterAuth(testDb, s"DELETE FROM $testSeries")
 
     deleteAllSeriesQuery(testDb, testSeries)(emptyCredentials) shouldEqual queryTester(testDb, s"DELETE FROM $testSeries")
   }
 
 
-  "show measurements query" should "return correct query" in {
+  it should "generate correct 'show measurement' query" in {
     showMeasurementQuery(testDb) shouldEqual queryTesterAuth(testDb, "SHOW MEASUREMENTS")
 
     showMeasurementQuery(testDb)(emptyCredentials) shouldEqual queryTester(testDb, "SHOW MEASUREMENTS")
   }
 
-  "show databases query" should "return correct query" in {
+  it should "generate correct 'show database' query" in {
     showDatabasesQuery() shouldEqual queryTesterAuth(s"SHOW DATABASES")
 
     showDatabasesQuery()(emptyCredentials) shouldEqual queryTester(s"SHOW DATABASES")
   }
 
-  "show tag keys query" should "return correct query" in {
+  it should "generate correct 'show tag-key' query" in {
     showTagKeysQuery(testDb, testMeasurement, testWhereClause, testLimit, testOffset) shouldEqual queryTesterAuth(s"SHOW TAG KEYS ON $testDb FROM $testMeasurement WHERE ${testWhereClause.get} LIMIT ${testLimit.get} OFFSET ${testOffset.get}")
 
     showTagKeysQuery(testDb, testMeasurement, None, None, None)(emptyCredentials) shouldEqual queryTester(s"SHOW TAG KEYS ON $testDb FROM $testMeasurement")
@@ -82,7 +82,7 @@ class DataManagementQuerySpec
     showTagKeysQuery(testDb, testMeasurement, testWhereClause, testLimit, None)(emptyCredentials) shouldEqual queryTester(s"SHOW TAG KEYS ON $testDb FROM $testMeasurement WHERE ${testWhereClause.get} LIMIT ${testLimit.get}")
   }
 
-  "show tag value query" should "return correct query" in {
+  it should "generate correct 'show tag-value' query" in {
     showTagValuesQuery(testDb, testMeasurement, Seq("key"), testWhereClause, testLimit, testOffset) shouldEqual queryTesterAuth(s"SHOW TAG VALUES ON $testDb FROM $testMeasurement WITH KEY = key WHERE ${testWhereClause.get} LIMIT ${testLimit.get} OFFSET ${testOffset.get}")
 
     showTagValuesQuery(testDb, testMeasurement, Seq("key", "key1"), testWhereClause, testLimit, testOffset) shouldEqual queryTesterAuth(s"SHOW TAG VALUES ON $testDb FROM $testMeasurement WITH KEY IN (key,key1) WHERE ${testWhereClause.get} LIMIT ${testLimit.get} OFFSET ${testOffset.get}")
@@ -90,12 +90,9 @@ class DataManagementQuerySpec
     showTagValuesQuery(testDb, testMeasurement, Seq("key"), None, None, None)(emptyCredentials) shouldEqual queryTester(s"SHOW TAG VALUES ON $testDb FROM $testMeasurement WITH KEY = key")
 
     showTagValuesQuery(testDb, testMeasurement, Seq("key", "key1"), testWhereClause, None, None)(emptyCredentials) shouldEqual queryTester(s"SHOW TAG VALUES ON $testDb FROM $testMeasurement WITH KEY IN (key,key1) WHERE ${testWhereClause.get}")
-
-
-
   }
 
-  "show field keys query" should "return correct query" in {
+  it should "generate correct 'show field-key' query" in {
     showFieldKeysQuery(testDb, testMeasurement) shouldEqual queryTesterAuth(s"SHOW FIELD KEYS ON $testDb FROM $testMeasurement")
 
     showFieldKeysQuery(testDb, testMeasurement)(emptyCredentials) shouldEqual queryTester(s"SHOW FIELD KEYS ON $testDb FROM $testMeasurement")

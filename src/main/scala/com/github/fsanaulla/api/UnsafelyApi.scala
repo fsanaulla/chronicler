@@ -1,4 +1,4 @@
-package com.github.fsanaulla.db
+package com.github.fsanaulla.api
 
 import java.nio.file.Paths
 
@@ -26,14 +26,14 @@ import scala.concurrent.{ExecutionContext, Future}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-class Database(dbName: String)(protected implicit val credentials: InfluxCredentials,
-                               protected implicit val actorSystem: ActorSystem,
-                               protected implicit val mat: ActorMaterializer,
-                               protected implicit val ex: ExecutionContext,
-                               protected implicit val connection: Connection) extends WriteHelpersOperation {
+class UnsafelyApi(dbName: String)(protected implicit val credentials: InfluxCredentials,
+                                  protected implicit val actorSystem: ActorSystem,
+                                  protected implicit val mat: ActorMaterializer,
+                                  protected implicit val ex: ExecutionContext,
+                                  protected implicit val connection: Connection) extends WriteHelpersOperation {
 
-  def measurement[A](measurementName: String): Measurement[A] = {
-    new Measurement[A](dbName, measurementName)
+  def measurement[A](measurementName: String): SafelyApi[A] = {
+    new SafelyApi[A](dbName, measurementName)
   }
 
   def writeNative(point: String,

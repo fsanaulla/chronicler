@@ -4,7 +4,6 @@ import akka.actor.Terminated
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpMethods.GET
 import com.github.fsanaulla.clients.InfluxHttpClient
-import com.github.fsanaulla.db.Database
 import com.github.fsanaulla.model.Result
 import com.github.fsanaulla.utils.ResponseHandler.toResult
 
@@ -18,8 +17,12 @@ import scala.concurrent.Future
 private[fsanaulla] trait SystemApi {
   self: InfluxHttpClient =>
 
-  def use(dbName: String): Database = {
-    new Database(dbName)
+  def unsafely(dbName: String): UnsafelyApi = {
+    new UnsafelyApi(dbName)
+  }
+
+  def safely[A](dbName: String, measurementName: String): SafelyApi[A] = {
+    new SafelyApi[A](dbName, measurementName)
   }
 
   def ping(): Future[Result] = {
