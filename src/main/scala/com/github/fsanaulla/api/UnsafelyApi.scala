@@ -32,10 +32,6 @@ class UnsafelyApi(dbName: String)(protected implicit val credentials: InfluxCred
                                   protected implicit val ex: ExecutionContext,
                                   protected implicit val connection: Connection) extends WriteHelpersOperation {
 
-  def measurement[A](measurementName: String): SafelyApi[A] = {
-    new SafelyApi[A](dbName, measurementName)
-  }
-
   def writeNative(point: String,
                   consistency: Consistency = Consistencys.ONE,
                   precision: Precision = Precisions.NANOSECONDS,

@@ -24,12 +24,19 @@ private[fsanaulla] object JsonSupport extends SprayJsonSupport with DefaultJsonP
     js.getFields("results")
       .head
       .convertTo[Seq[JsObject]]
-      .map(
-        _.getFields("series").head
-          .convertTo[Seq[JsObject]]
-          .head)
-      .map(_.getFields("values").head
-        .convertTo[Seq[JsArray]])
+      .map(_
+        .getFields("series")
+        .headOption match {
+          case Some(jsVal) => jsVal.convertTo[Seq[JsObject]].head
+          case _ => JsObject.empty
+        })
+      .map(_
+        .getFields("values")
+        .headOption match {
+          case Some(jsVal) => jsVal.convertTo[Seq[JsArray]]
+          case _ => Nil
+        }
+      )
   }
 
   def getInfluxValue(js: JsObject): Seq[JsArray] = {

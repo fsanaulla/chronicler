@@ -28,7 +28,7 @@ class UnsafelyApiSpec extends TestSpec {
 
   lazy val nonTpSfApi: UnsafelyApi = influx.unsafely(testDB)
 
-  "NonTypeSafeApi" should "write from file" in {
+  "UnsafelyApi" should "write from file" in {
 
     // CREATING DB TEST
     influx.createDatabase(testDB).futureValue shouldEqual OkResult
@@ -59,7 +59,12 @@ class UnsafelyApiSpec extends TestSpec {
 
   it should "bulk read js" in {
 
-    val multiQuery = nonTpSfApi.bulkReadJs(Seq("SELECT * FROM test", "SELECT * FROM test WHERE age > 25")).futureValue
+    val multiQuery = nonTpSfApi.bulkReadJs(
+      Seq(
+        "SELECT * FROM test2",
+        "SELECT * FROM test2 WHERE age < 40"
+      )
+    ).futureValue
 
     multiQuery.queryResult.size shouldEqual 2
     multiQuery.queryResult shouldBe a[Seq[_]]
@@ -68,7 +73,7 @@ class UnsafelyApiSpec extends TestSpec {
     multiQuery.queryResult.head shouldBe a[Seq[_]]
     multiQuery.queryResult.head.head shouldBe a[JsArray]
 
-    multiQuery.queryResult.last.size shouldEqual 2
+    multiQuery.queryResult.last.size shouldEqual 1
     multiQuery.queryResult.last shouldBe a[Seq[_]]
     multiQuery.queryResult.last.head shouldBe a[JsArray]
 
@@ -79,11 +84,11 @@ class UnsafelyApiSpec extends TestSpec {
 
   it should "write native" in {
 
-    nonTpSfApi.writeNative("meas3,firstName=Jame,lastName=Lannister age=48").futureValue shouldEqual NoContentResult
-    nonTpSfApi.read[FakeEntity]("SELECT * FROM meas3").futureValue.queryResult shouldEqual Seq(FakeEntity("Jame", "Lannister", 48))
+    nonTpSfApi.writeNative("test3,firstName=Jame,lastName=Lannister age=48").futureValue shouldEqual NoContentResult
+    nonTpSfApi.read[FakeEntity]("SELECT * FROM test3").futureValue.queryResult shouldEqual Seq(FakeEntity("Jame", "Lannister", 48))
 
-    nonTpSfApi.bulkWriteNative(Seq("meas3,firstName=Jon,lastName=Snow age=24", "meas3,firstName=Deny,lastName=Targaryen age=25")).futureValue shouldEqual NoContentResult
-    nonTpSfApi.read[FakeEntity]("SELECT * FROM meas3").futureValue.queryResult shouldEqual Seq(FakeEntity("Jame", "Lannister", 48), FakeEntity("Jon", "Snow", 24), FakeEntity("Deny", "Targaryen", 25))
+    nonTpSfApi.bulkWriteNative(Seq("test4,firstName=Jon,lastName=Snow age=24", "test4,firstName=Deny,lastName=Targaryen age=25")).futureValue shouldEqual NoContentResult
+    nonTpSfApi.read[FakeEntity]("SELECT * FROM test4").futureValue.queryResult shouldEqual Seq(FakeEntity("Deny", "Targaryen", 25), FakeEntity("Jon", "Snow", 24))
   }
 
   it should "clear up after all" in {
