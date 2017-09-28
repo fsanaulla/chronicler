@@ -26,11 +26,11 @@ import scala.concurrent.{ExecutionContext, Future}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-class UnsafelyApi(dbName: String)(protected implicit val credentials: InfluxCredentials,
-                                  protected implicit val actorSystem: ActorSystem,
-                                  protected implicit val mat: ActorMaterializer,
-                                  protected implicit val ex: ExecutionContext,
-                                  protected implicit val connection: Connection) extends WriteHelpersOperation {
+private[fsanaulla] class UnsafelyApi(dbName: String)(protected implicit val credentials: InfluxCredentials,
+                                                     protected implicit val actorSystem: ActorSystem,
+                                                     protected implicit val mat: ActorMaterializer,
+                                                     protected implicit val ex: ExecutionContext,
+                                                     protected implicit val connection: Connection) extends WriteHelpersOperation {
 
   def writeNative(point: String,
                   consistency: Consistency = Consistencys.ONE,

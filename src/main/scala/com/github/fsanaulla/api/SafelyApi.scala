@@ -19,11 +19,13 @@ import scala.concurrent.{ExecutionContext, Future}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 03.09.17
   */
-class SafelyApi[A](dbName: String, measurementName: String)(protected implicit val credentials: InfluxCredentials,
-                                                            protected implicit val actorSystem: ActorSystem,
-                                                            protected implicit val mat: ActorMaterializer,
-                                                            protected implicit val ex: ExecutionContext,
-                                                            protected implicit val connection: Connection)
+//todo: implement typesafe read operation
+private[fsanaulla] class SafelyApi[A](dbName: String, measurementName: String)
+                                     (protected implicit val credentials: InfluxCredentials,
+                                      protected implicit val actorSystem: ActorSystem,
+                                      protected implicit val mat: ActorMaterializer,
+                                      protected implicit val ex: ExecutionContext,
+                                      protected implicit val connection: Connection)
     extends WriteHelpersOperation {
 
   def write(entity: A,
