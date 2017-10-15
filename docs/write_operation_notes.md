@@ -1,4 +1,8 @@
 # Write operation 
+First of all create database connection. In this situation we choose non type safe connection
+```
+val db = influx.unsafely("db")
+``` 
 There are many opportunities to store data. They separated on 2 groups.
 First one is non typesafe. You can used from `db` instance. Like below
 First one save point in pure [Line Protocol Format](https://docs.influxdata.com/influxdb/v1.3/write_protocols/line_protocol_reference/)
@@ -44,13 +48,13 @@ res0: Unit
 ```
 main difference in return type. All udp methods return unit result by [UDP Protocol](https://en.wikipedia.org/wiki/User_Datagram_Protocol) nature
 
-The second group are typesafe operation. To use it:
+The second group are typesafe operation. To use it create type safe connection:
 ```
-val meas = db.measurement("meas_name")
+val meas = influx.safely[FakeEntity]("db", "meas")
 ```
 That one can take any type that have implicit `InfluxWriter`object in the scope, that parse your object to [Line Protocol String](https://docs.influxdata.com/influxdb/v1.3/write_protocols/line_protocol_reference/). For example:
 To to object writable to influx, just mark it with annotation `writable`, and specify tag and field params in object.
-This annotation will generate implicit object for you at compile time. See [scalameta](#http://scalameta.org/)
+This annotation will generate implicit object for you at compile time. See [scalameta](http://scalameta.org/).
 ```
 import com.github.fsanaulla.annotation._
 

@@ -1,4 +1,4 @@
-package com.github.fsanaulla.api
+package com.github.fsanaulla.api.management
 
 import com.github.fsanaulla.clients.InfluxHttpClient
 import com.github.fsanaulla.model.InfluxImplicits._

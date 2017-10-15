@@ -1,6 +1,6 @@
 # Helper tools <a name="helptools"></a>
 ## Time <a name="time"></a>
-In many place you need to specify special influx time format, like in `duration` related fields. In this case you can simply write string based time like, `1h30m45s` by hand according to [Duration Time Format](https://docs.influxdata.com/influxdb/v1.3/query_language/spec/#durations).
+In many places you need to specify special influx time format, like in `duration` related fields. In this case you can simply write string based time like, `1h30m45s` by hand according to [Duration Time Format](https://docs.influxdata.com/influxdb/v1.3/query_language/spec/#durations).
 Or use `InfluxDuration` object.
 ```
 import com.fsanaulla.utils.InfluxDuration._

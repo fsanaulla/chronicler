@@ -27,11 +27,11 @@ class SafelyApiSpec extends TestSpec with BeforeAndAfterAll {
   val safeMeas = "safe_meas"
 
   // INIT INFLUX CLIENT
-  lazy val influx: InfluxHttpClient = InfluxClientsFactory
-    .createHttpClient(
+  lazy val influx: InfluxHttpClient = InfluxClientsFactory.createHttpClient(
       host = influxHost,
       username = credentials.username,
-      password = credentials.password)
+      password = credentials.password
+  )
 
   lazy val safeApi: SafelyApi[FakeEntity] = influx.safely[FakeEntity](safeDB, safeMeas)
 

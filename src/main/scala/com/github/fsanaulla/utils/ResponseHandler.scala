@@ -53,7 +53,6 @@ private[fsanaulla] object ResponseHandler {
     )
   }
 
-  // format: off
   def toShardQueryResult(response: HttpResponse)(implicit ex: ExecutionContext,
                                                  mat: ActorMaterializer,
                                                  reader: InfluxReader[Shard]): Future[QueryResult[ShardInfo]] = {

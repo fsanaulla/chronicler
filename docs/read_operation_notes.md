@@ -1,5 +1,5 @@
 # Read operations
-There is several read method exist. The base one is:
+At the moment only unsafe method exist. The base one is:
 ```
 db.readJs("SELEC * FROM measurement")
 res0: Future[QueryResult[JsArray]] // where JsArray it's influx point representation

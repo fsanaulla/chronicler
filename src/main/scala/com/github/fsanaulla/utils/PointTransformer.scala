@@ -7,11 +7,11 @@ package com.github.fsanaulla.utils
   */
 private[fsanaulla] trait PointTransformer {
 
-  def toPoint(measurement: String, serializedEntity: String): String = {
+  protected def toPoint(measurement: String, serializedEntity: String): String = {
     measurement + "," + serializedEntity
   }
 
-  def toPoints(measurement: String, serializedEntitys: Seq[String]): String = {
+  protected def toPoints(measurement: String, serializedEntitys: Seq[String]): String = {
     serializedEntitys.map(s => measurement + "," + s).mkString("\n")
   }
 

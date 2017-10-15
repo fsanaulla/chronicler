@@ -15,7 +15,6 @@ private[fsanaulla] trait QueryBuilder {
     Uri(path).withQuery(Uri.Query(queryParams))
   }
 
-  // format: off
   protected def buildQueryParams(query: String)(implicit credentials: InfluxCredentials): Map[String, String] = {
     val queryMap = scala.collection.mutable.Map("q" -> query)
 
