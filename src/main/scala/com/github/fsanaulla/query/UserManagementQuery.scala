@@ -37,25 +37,14 @@ private[fsanaulla] trait UserManagementQuery extends QueryBuilder {
   }
 
   protected def dropUserQuery(username: String)(implicit credentials: InfluxCredentials): Uri = {
-    buildQuery(
-      "/query",
-      buildQueryParams(s"DROP USER $username")
-    )
+    buildQuery("/query", buildQueryParams(s"DROP USER $username"))
   }
 
-  protected def setPrivilegesQuery(dbName: String, username: String, privileges: String)(
-      implicit credentials: InfluxCredentials): Uri = {
-    buildQuery(
-      "/query",
-      buildQueryParams(s"GRANT $privileges ON $dbName TO $username")
-    )
+  protected def setPrivilegesQuery(dbName: String, username: String, privileges: String)(implicit credentials: InfluxCredentials): Uri = {
+    buildQuery("/query", buildQueryParams(s"GRANT $privileges ON $dbName TO $username"))
   }
 
-  protected def revokePrivilegesQuery(dbName: String, username: String, privileges: String)(
-      implicit credentials: InfluxCredentials): Uri = {
-    buildQuery(
-      "/query",
-      buildQueryParams(s"REVOKE $privileges ON $dbName FROM $username")
-    )
+  protected def revokePrivilegesQuery(dbName: String, username: String, privileges: String)(implicit credentials: InfluxCredentials): Uri = {
+    buildQuery("/query", buildQueryParams(s"REVOKE $privileges ON $dbName FROM $username"))
   }
 }

@@ -9,7 +9,9 @@ import scala.concurrent.Future
   * Author: fayaz.sanaulla@gmail.com
   * Date: 30.07.17
   */
-case class Result(code: Int, isSuccess: Boolean, ex: Option[Throwable] = None)
+case class Result(code: Int,
+                  isSuccess: Boolean,
+                  ex: Option[Throwable] = None)
 
 object Result {
 

@@ -41,31 +41,26 @@ object SampleEntitys {
     Seq(
       JsArray(
         JsNumber(currentNanoTime),
-        JsNumber(58),
+        JsNumber(54),
         JsString("Martin"),
         JsString("Odersky")),
       JsArray(
         JsNumber(currentNanoTime),
-        JsNumber(44),
-        JsString("Harold"),
-        JsString("Lois")),
+        JsNumber(36),
+        JsString("Jame"),
+        JsString("Franko")),
       JsArray(
         JsNumber(currentNanoTime),
-        JsNumber(21),
-        JsString("Harry"),
-        JsString("Potter"))
+        JsNumber(54),
+        JsString("Martin"),
+        JsString("Odersky"))
     ),
     Seq(
       JsArray(
         JsNumber(currentNanoTime),
-        JsNumber(58),
-        JsString("Martin"),
-        JsString("Odersky")),
-      JsArray(
-        JsNumber(currentNanoTime),
-        JsNumber(44),
-        JsString("Harold"),
-        JsString("Lois"))
+        JsNumber(36),
+        JsString("Jame"),
+        JsString("Franko"))
     )
   )
 

@@ -9,29 +9,13 @@ case class UserInfo(username: String, isAdmin: Boolean)
 
 case class UserPrivilegesInfo(database: String, privilege: String)
 
-case class RetentionPolicyInfo(name: String,
-                               duration: String,
-                               shardGroupDuration: String,
-                               replication: Int,
-                               default: Boolean)
+case class RetentionPolicyInfo(name: String, duration: String, shardGroupDuration: String, replication: Int, default: Boolean)
 
 case class ContinuousQuery(cqName: String, query: String)
 
-case class ShardGroup(id: Int,
-                      dbName: String,
-                      rpName: String,
-                      startTime: String,
-                      endTime: String,
-                      expiryTime: String)
+case class ShardGroup(id: Int, dbName: String, rpName: String, startTime: String, endTime: String, expiryTime: String)
 
-case class Shard(id: Int,
-                 dbName: String,
-                 rpName: String,
-                 shardGroup: Int,
-                 startTime: String,
-                 endTime: String,
-                 expiryTime: String,
-                 owners: String)
+case class Shard(id: Int, dbName: String, rpName: String, shardGroup: Int, startTime: String, endTime: String, expiryTime: String, owners: String)
 
 case class Subscription(rpName: String, subsName: String, destType: String, addresses: Seq[String])
 

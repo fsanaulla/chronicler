@@ -85,8 +85,14 @@ object AnnotationHelper {
 
     val defaultMessage = Lit.String(s"Can't deserialize ${Term.Name(clsName.syntax)} object")
 
-    val successCase: Case = s"case Vector(_, ${jsParamsArray.mkString(", ")}) => ${clsName.syntax}($paramsNames)".parse[Case].get
-    val defaultCase: Case = s"case _ => throw DeserializationException($defaultMessage)".parse[Case].get
+    val successCase: Case =
+      s"case Vector(_, ${jsParamsArray.mkString(", ")}) => ${clsName.syntax}($paramsNames)"
+        .parse[Case]
+        .get
+    val defaultCase: Case =
+      s"case _ => throw DeserializationException($defaultMessage)"
+        .parse[Case]
+        .get
 
     val cases = q"""js.elements match {..case { ${successCase :: defaultCase :: Nil} } }"""
 

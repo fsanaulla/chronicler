@@ -8,6 +8,7 @@ package com.github.fsanaulla.model
 case class InfluxTag(key: String, value: String)
 
 sealed trait InfluxField {
+
   override def toString: String
 }
 
@@ -75,6 +76,7 @@ case class Point(measurement: String,
   }
 
   def serialize: String = {
+
     val sb = StringBuilder.newBuilder
 
     sb.append(measurement).append(",")

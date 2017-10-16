@@ -12,8 +12,9 @@ private[fsanaulla] trait RequestBuilder {
 
   protected def buildRequest(uri: Uri,
                              method: HttpMethod = POST,
-                             entity: RequestEntity = HttpEntity.Empty)(implicit mat: ActorMaterializer,
-                                                                       connection: Connection): Future[HttpResponse] = {
+                             entity: RequestEntity = HttpEntity.Empty)
+                            (implicit mat: ActorMaterializer,
+                             connection: Connection): Future[HttpResponse] = {
     Source
       .single(
         HttpRequest(

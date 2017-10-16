@@ -11,7 +11,7 @@ import scala.meta._
   * Author: fayaz.sanaulla@gmail.com
   * Date: 14.09.17
   */
-class readable extends scala.annotation.StaticAnnotation {
+final class readable extends scala.annotation.StaticAnnotation {
 
   inline def apply(defn: Any): Any = meta {
 

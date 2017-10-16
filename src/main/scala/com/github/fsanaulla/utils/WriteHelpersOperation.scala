@@ -16,19 +16,17 @@ import scala.concurrent.{ExecutionContext, Future}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 03.09.17
   */
-private[fsanaulla] trait WriteHelpersOperation
-    extends DatabaseOperationQuery
-      with RequestBuilder
-      with PointTransformer {
+private[fsanaulla] trait WriteHelpersOperation extends DatabaseOperationQuery with RequestBuilder with PointTransformer {
 
-  def write(dbName: String,
-            entity: RequestEntity,
-            consistency: Consistency,
-            precision: Precision,
-            retentionPolicy: Option[String])(implicit credentials: InfluxCredentials,
-                                             ex: ExecutionContext,
-                                             mat: ActorMaterializer,
-                                             connection: Connection): Future[Result] = {
+  protected def write(dbName: String,
+                      entity: RequestEntity,
+                      consistency: Consistency,
+                      precision: Precision,
+                      retentionPolicy: Option[String])(implicit credentials: InfluxCredentials,
+                                                       ex: ExecutionContext,
+                                                       mat: ActorMaterializer,
+                                                       connection: Connection): Future[Result] = {
+
     buildRequest(
       uri = writeToInfluxQuery(
         dbName,

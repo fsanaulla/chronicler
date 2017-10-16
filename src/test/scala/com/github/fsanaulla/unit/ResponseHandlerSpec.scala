@@ -5,7 +5,7 @@ import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import akka.stream.ActorMaterializer
 import com.github.fsanaulla.model.InfluxImplicits._
 import com.github.fsanaulla.model.{ContinuousQuery, ContinuousQueryInfo}
-import com.github.fsanaulla.utils.ContentTypes.appJson
+import com.github.fsanaulla.utils.ContentTypes.AppJson
 import com.github.fsanaulla.utils.ResponseHandler._
 import com.github.fsanaulla.utils.SampleEntitys.singleResult
 import com.github.fsanaulla.utils.TestSpec
@@ -124,9 +124,9 @@ class ResponseHandlerSpec extends TestSpec with BeforeAndAfterAll {
     }
   """
 
-  val singleHttpResponse: HttpResponse = HttpResponse(entity = HttpEntity(appJson, singleStrJson))
-  val cqHttpResponse: HttpResponse = HttpResponse(entity = HttpEntity(appJson, cqStrJson))
-  val errHttpResponse = HttpResponse(entity = HttpEntity(appJson, errJson))
+  val singleHttpResponse: HttpResponse = HttpResponse(entity = HttpEntity(AppJson, singleStrJson))
+  val cqHttpResponse: HttpResponse = HttpResponse(entity = HttpEntity(AppJson, cqStrJson))
+  val errHttpResponse = HttpResponse(entity = HttpEntity(AppJson, errJson))
 
   "single query result function" should "correctly work" in {
     toQueryJsResult(singleHttpResponse).futureValue.queryResult shouldEqual singleResult

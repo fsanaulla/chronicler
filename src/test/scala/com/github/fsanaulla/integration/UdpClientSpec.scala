@@ -1,8 +1,8 @@
 package com.github.fsanaulla.integration
 
 import com.github.fsanaulla.InfluxClientsFactory
+import com.github.fsanaulla.api.UnsafelyApi
 import com.github.fsanaulla.clients.{InfluxHttpClient, InfluxUdpClient}
-import com.github.fsanaulla.db.Database
 import com.github.fsanaulla.model.Point
 import com.github.fsanaulla.utils.Synchronization._
 import com.github.fsanaulla.utils.TestHelper.{FakeEntity, _}
@@ -23,7 +23,7 @@ class UdpClientSpec extends TestSpec with BeforeAndAfterAll {
 
   val influx: InfluxHttpClient = InfluxClientsFactory.createHttpClient(influxHost, username = Some("admin"), password = Some("admin"))
 
-  val db: Database = influx.use("udp")
+  val db: UnsafelyApi = influx.unsafely("udp")
 
   implicit val timeout: FiniteDuration = 5 seconds
 

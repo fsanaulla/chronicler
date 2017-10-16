@@ -1,4 +1,4 @@
-package com.github.fsanaulla.api
+package com.github.fsanaulla.api.management
 
 import com.github.fsanaulla.clients.InfluxHttpClient
 import com.github.fsanaulla.model.InfluxImplicits._
@@ -9,7 +9,8 @@ import com.github.fsanaulla.utils.constants.Privileges.Privilege
 
 import scala.concurrent.Future
 
-private[fsanaulla] trait UserManagement extends UserManagementQuery { self: InfluxHttpClient =>
+private[fsanaulla] trait UserManagement extends UserManagementQuery {
+  self: InfluxHttpClient =>
 
   def createUser(username: String, password: String): Future[Result] = {
     buildRequest(createUserQuery(username, password)).flatMap(toResult)
@@ -27,11 +28,17 @@ private[fsanaulla] trait UserManagement extends UserManagementQuery { self: Infl
     buildRequest(setUserPasswordQuery(username, password)).flatMap(toResult)
   }
 
-  def setPrivileges(username: String, dbName: String, privilege: Privilege): Future[Result] = {
+  def setPrivileges(username: String,
+                    dbName: String,
+                    privilege: Privilege): Future[Result] = {
+
     buildRequest(setPrivilegesQuery(dbName, username, privilege)).flatMap(toResult)
   }
 
-  def revokePrivileges(username: String, dbName: String, privilege: Privilege): Future[Result] = {
+  def revokePrivileges(username: String,
+                       dbName: String,
+                       privilege: Privilege): Future[Result] = {
+
     buildRequest(revokePrivilegesQuery(dbName, username, privilege)).flatMap(toResult)
   }
 

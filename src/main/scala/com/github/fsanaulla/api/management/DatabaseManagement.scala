@@ -1,4 +1,4 @@
-package com.github.fsanaulla.api
+package com.github.fsanaulla.api.management
 
 import com.github.fsanaulla.clients.InfluxHttpClient
 import com.github.fsanaulla.model.InfluxImplicits._
@@ -10,12 +10,9 @@ import scala.concurrent.Future
 
 private[fsanaulla] trait DatabaseManagement extends DataManagementQuery { self: InfluxHttpClient =>
 
-  def createDatabase(dbName: String,
-                     duration: Option[String] = None,
-                     replication: Option[Int] = None,
-                     shardDuration: Option[String] = None,
-                     rpName: Option[String] = None): Future[Result] = {
-    buildRequest(createDatabaseQuery(dbName, duration, replication, shardDuration, rpName)).flatMap(toResult)
+  def createDatabase(dbName: String, duration: Option[String] = None, replication: Option[Int] = None, shardDuration: Option[String] = None, rpName: Option[String] = None): Future[Result] = {
+    buildRequest(createDatabaseQuery(dbName, duration, replication, shardDuration, rpName))
+      .flatMap(toResult)
   }
 
   def dropDatabase(dbName: String): Future[Result] = {
@@ -40,12 +37,9 @@ private[fsanaulla] trait DatabaseManagement extends DataManagementQuery { self: 
     buildRequest(showFieldKeysQuery(dbName, measurementName)).flatMap(toQueryResult[FieldInfo])
   }
 
-  def showTagKeys(dbName: String,
-                  measurementName: String,
-                  whereClause: Option[String] = None,
-                  limit: Option[Int] = None,
-                  offset: Option[Int] = None): Future[QueryResult[String]] = {
-    buildRequest(showTagKeysQuery(dbName, measurementName, whereClause, limit, offset)).flatMap(toQueryResult[String])
+  def showTagKeys(dbName: String, measurementName: String, whereClause: Option[String] = None, limit: Option[Int] = None, offset: Option[Int] = None): Future[QueryResult[String]] = {
+    buildRequest(showTagKeysQuery(dbName, measurementName, whereClause, limit, offset))
+      .flatMap(toQueryResult[String])
   }
 
   def showTagValues(dbName: String,
@@ -54,6 +48,7 @@ private[fsanaulla] trait DatabaseManagement extends DataManagementQuery { self: 
                     whereClause: Option[String] = None,
                     limit: Option[Int] = None,
                     offset: Option[Int] = None): Future[QueryResult[TagValue]] = {
-    buildRequest(showTagValuesQuery(dbName, measurementName, withKey, whereClause, limit, offset)).flatMap(toQueryResult[TagValue])
+    buildRequest(showTagValuesQuery(dbName, measurementName, withKey, whereClause, limit, offset))
+      .flatMap(toQueryResult[TagValue])
   }
 }

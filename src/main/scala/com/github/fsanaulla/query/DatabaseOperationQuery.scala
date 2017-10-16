@@ -1,5 +1,6 @@
 package com.github.fsanaulla.query
 
+// format: off
 import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.model.InfluxCredentials
 import com.github.fsanaulla.utils.QueryBuilder
@@ -10,14 +11,17 @@ import com.github.fsanaulla.utils.constants.Precisions._
 import scala.collection.mutable
 
 /**
-  * Created by fayaz on 04.07.17.
+  * Created by
+  * Author: fayaz.sanaulla@gmail.com
+  * Date: 27.08.17
   */
 private[fsanaulla] trait DatabaseOperationQuery extends QueryBuilder {
 
   protected def writeToInfluxQuery(dbName: String,
                                    consistency: Consistency,
                                    precision: Precision,
-                                   retentionPolicy: Option[String])(implicit credentials: InfluxCredentials): Uri = {
+                                   retentionPolicy: Option[String])
+                                  (implicit credentials: InfluxCredentials): Uri = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
       "db" -> dbName,
@@ -36,7 +40,8 @@ private[fsanaulla] trait DatabaseOperationQuery extends QueryBuilder {
                                           query: String,
                                           epoch: Epoch,
                                           pretty: Boolean,
-                                          chunked: Boolean)(implicit credentials: InfluxCredentials): Uri = {
+                                          chunked: Boolean)
+                                         (implicit credentials: InfluxCredentials): Uri = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
       "db" -> dbName,
@@ -53,7 +58,8 @@ private[fsanaulla] trait DatabaseOperationQuery extends QueryBuilder {
                                         querys: Seq[String],
                                         epoch: Epoch,
                                         pretty: Boolean,
-                                        chunked: Boolean)(implicit credentials: InfluxCredentials): Uri = {
+                                        chunked: Boolean)
+                                       (implicit credentials: InfluxCredentials): Uri = {
 
     val queryParams = mutable.Map[String, String](
       "db" -> dbName,

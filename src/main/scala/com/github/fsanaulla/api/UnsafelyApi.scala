@@ -1,4 +1,4 @@
-package com.github.fsanaulla.db
+package com.github.fsanaulla.api
 
 import java.nio.file.Paths
 
@@ -9,7 +9,7 @@ import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.FileIO
 import akka.util.ByteString
 import com.github.fsanaulla.model._
-import com.github.fsanaulla.utils.ContentTypes.octetStream
+import com.github.fsanaulla.utils.ContentTypes.OctetStream
 import com.github.fsanaulla.utils.ResponseHandler.{toBulkQueryJsResult, toQueryJsResult, toQueryResult}
 import com.github.fsanaulla.utils.TypeAlias._
 import com.github.fsanaulla.utils.WriteHelpersOperation
@@ -22,19 +22,16 @@ import spray.json.JsArray
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
-  * Created by fayaz on 04.07.17.
+  * Created by
+  * Author: fayaz.sanaulla@gmail.com
+  * Date: 27.08.17
   */
-class Database(dbName: String)
-              (protected implicit val credentials: InfluxCredentials,
-               protected implicit val actorSystem: ActorSystem,
-               protected implicit val mat: ActorMaterializer,
-               protected implicit val ex: ExecutionContext,
-               protected implicit val connection: Connection) extends WriteHelpersOperation {
-
-  def measurement[A](measurementName: String): Measurement[A] = {
-    new Measurement[A](dbName, measurementName)
-  }
-
+private[fsanaulla] class UnsafelyApi(dbName: String)
+                                    (protected implicit val credentials: InfluxCredentials,
+                                     protected implicit val actorSystem: ActorSystem,
+                                     protected implicit val mat: ActorMaterializer,
+                                     protected implicit val ex: ExecutionContext,
+                                     protected implicit val connection: Connection) extends WriteHelpersOperation {
 
   def writeNative(point: String,
                   consistency: Consistency = Consistencys.ONE,
@@ -63,7 +60,7 @@ class Database(dbName: String)
                     retentionPolicy: Option[String] = None): Future[Result] = {
 
     val entity = HttpEntity(
-      octetStream,
+      OctetStream,
       FileIO.fromPath(Paths.get(path), chunkSize = chunkSize)
     )
 
@@ -76,7 +73,7 @@ class Database(dbName: String)
                  retentionPolicy: Option[String] = None): Future[Result] = {
 
     val entity = HttpEntity(
-      octetStream,
+      OctetStream,
       ByteString(point.serialize)
     )
 
@@ -89,7 +86,7 @@ class Database(dbName: String)
                       retentionPolicy: Option[String] = None): Future[Result] = {
 
     val entity = HttpEntity(
-      octetStream,
+      OctetStream,
       ByteString(points.map(_.serialize).mkString("\n"))
     )
 
@@ -99,21 +96,27 @@ class Database(dbName: String)
   def read[T](query: String,
               epoch: Epoch = Epochs.NANOSECONDS,
               pretty: Boolean = false,
-              chunked: Boolean = false)(implicit reader: InfluxReader[T]): Future[QueryResult[T]] = {
-    buildRequest(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked), GET).flatMap(toQueryResult[T])
+              chunked: Boolean = false)
+             (implicit reader: InfluxReader[T]): Future[QueryResult[T]] = {
+
+    buildRequest(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked), GET)
+      .flatMap(toQueryResult[T])
   }
 
   def readJs(query: String,
              epoch: Epoch = Epochs.NANOSECONDS,
              pretty: Boolean = false,
              chunked: Boolean = false): Future[QueryResult[JsArray]] = {
-    buildRequest(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked), GET).flatMap(toQueryJsResult)
+
+    buildRequest(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked), GET)
+      .flatMap(toQueryJsResult)
   }
 
   def bulkReadJs(querys: Seq[String],
                  epoch: Epoch = Epochs.NANOSECONDS,
                  pretty: Boolean = false,
                  chunked: Boolean = false): Future[QueryResult[Seq[JsArray]]] = {
-    buildRequest(readFromInfluxBulkQuery(dbName, querys, epoch, pretty, chunked), GET).flatMap(toBulkQueryJsResult)
+    buildRequest(readFromInfluxBulkQuery(dbName, querys, epoch, pretty, chunked), GET)
+      .flatMap(toBulkQueryJsResult)
   }
 }

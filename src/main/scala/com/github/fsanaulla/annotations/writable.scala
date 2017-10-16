@@ -10,7 +10,7 @@ import scala.meta._
   * Author: fayaz.sanaulla@gmail.com
   * Date: 08.09.17
   */
-class writable extends scala.annotation.StaticAnnotation {
+final class writable extends scala.annotation.StaticAnnotation {
 
   inline def apply(defn: Any): Any = meta {
 

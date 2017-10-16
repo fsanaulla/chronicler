@@ -7,7 +7,7 @@ import akka.http.scaladsl.model.{MediaType, MediaTypes}
   */
 private[fsanaulla] object ContentTypes {
 
-  final val appJson: MediaType.WithFixedCharset = MediaTypes.`application/json`
+  final val AppJson: MediaType.WithFixedCharset = MediaTypes.`application/json`
 
-  final val octetStream: MediaType.Binary = MediaTypes.`application/octet-stream`
+  final val OctetStream: MediaType.Binary = MediaTypes.`application/octet-stream`
 }

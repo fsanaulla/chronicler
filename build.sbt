@@ -2,6 +2,8 @@ import sbt.Keys.resolvers
 
 name := "chronicler"
 
+version := "0.3"
+
 organization := "com.github.fsanaulla"
 
 scalaVersion := "2.12.2"
@@ -52,14 +54,18 @@ useGpg := true
 
 pgpReadOnly := false
 
-releaseCrossBuild := true
-
 publishArtifact in Test := false
 
 publishMavenStyle := true
 
-pomIncludeRepository := (_ => false)
+publishTo := {
+  val nexus = "https://oss.sonatype.org/"
+  if (isSnapshot.value)
+    Some("snapshots" at nexus + "content/repositories/snapshots")
+  else
+    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+}
 
-releaseProcess := Release.releaseSteps
+pomIncludeRepository := (_ => false)
 
 resolvers ++= Dependencies.projectResolvers
