@@ -2,6 +2,8 @@ import sbt.Keys.resolvers
 
 name := "chronicler"
 
+version := "0.3"
+
 organization := "com.github.fsanaulla"
 
 scalaVersion := "2.12.2"
@@ -52,7 +54,7 @@ useGpg := true
 
 pgpReadOnly := false
 
-releaseCrossBuild := true
+//releaseCrossBuild := true
 
 publishArtifact in Test := false
 
@@ -60,6 +62,6 @@ publishMavenStyle := true
 
 pomIncludeRepository := (_ => false)
 
-releaseProcess := Release.releaseSteps
+//releaseProcess := Release.releaseSteps
 
 resolvers ++= Dependencies.projectResolvers
