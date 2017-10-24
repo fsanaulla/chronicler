@@ -26,8 +26,8 @@ import scala.concurrent.{ExecutionContext, Future}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-private[fsanaulla] class UnsafelyApi(dbName: String)
-                                    (protected implicit val credentials: InfluxCredentials,
+private[fsanaulla] class Database(dbName: String)
+                                 (protected implicit val credentials: InfluxCredentials,
                                      protected implicit val actorSystem: ActorSystem,
                                      protected implicit val mat: ActorMaterializer,
                                      protected implicit val ex: ExecutionContext,

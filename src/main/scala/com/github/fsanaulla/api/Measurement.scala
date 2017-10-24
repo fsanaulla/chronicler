@@ -20,8 +20,8 @@ import scala.concurrent.{ExecutionContext, Future}
   * Date: 03.09.17
   */
 //todo: implement typesafe read operation
-private[fsanaulla] class SafelyApi[A](dbName: String, measurementName: String)
-                                     (private implicit val credentials: InfluxCredentials,
+private[fsanaulla] class Measurement[A](dbName: String, measurementName: String)
+                                       (private implicit val credentials: InfluxCredentials,
                                       private implicit val actorSystem: ActorSystem,
                                       private implicit val mat: ActorMaterializer,
                                       private implicit val ex: ExecutionContext,

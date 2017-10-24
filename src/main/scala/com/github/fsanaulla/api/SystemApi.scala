@@ -17,12 +17,12 @@ import scala.concurrent.Future
 private[fsanaulla] trait SystemApi {
   self: InfluxHttpClient =>
 
-  def unsafely(dbName: String): UnsafelyApi = {
-    new UnsafelyApi(dbName)
+  def database(dbName: String): Database = {
+    new Database(dbName)
   }
 
-  def safely[A](dbName: String, measurementName: String): SafelyApi[A] = {
-    new SafelyApi[A](dbName, measurementName)
+  def measurement[A](dbName: String, measurementName: String): Measurement[A] = {
+    new Measurement[A](dbName, measurementName)
   }
 
   def ping(): Future[Result] = {

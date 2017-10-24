@@ -12,7 +12,6 @@ object Dependencies {
   final val sprayJson = "com.typesafe.akka" %% "akka-http-spray-json" % Versions.akkaHttp
   final val akkaHttp = "com.typesafe.akka" %% "akka-http" % Versions.akkaHttp
   final val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalaTest % "test"
-  final val scalaMeter = "com.storm-enroute" %% "scalameter" % Versions.scalaMeter % "test"
 
 
   final val projectResolvers = Seq(
@@ -22,5 +21,5 @@ object Dependencies {
 
   final val macrosDependencies = Seq(scalaMeta, sprayJson)
 
-  final val rootDependencies = Seq(akkaHttp, scalaTest, scalaMeter)
+  final val rootDependencies = Seq(akkaHttp, scalaTest)
 }
