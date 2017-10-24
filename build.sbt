@@ -1,55 +1,56 @@
-import sbt.Keys.resolvers
+import com.typesafe.sbt.SbtPgp.autoImportImpl.pgpReadOnly
+import sbt.Keys.{resolvers, version}
+import sbt.url
+import scoverage.ScoverageKeys.coverageMinimum
 
 name := "chronicler"
 
-version := "0.3"
+scalaVersion in ThisBuild := "2.12.2"
 
-organization := "com.github.fsanaulla"
-
-scalaVersion := "2.12.2"
-
-crossScalaVersions := Seq(scalaVersion.value, "2.11.10")
-
-scalacOptions ++= Seq(
-  "-feature",
-  "-language:implicitConversions",
-  "-language:postfixOps",
-  "-Xplugin-require:macroparadise"
+lazy val generalSettings = Seq(
+  version := "0.3.3",
+  organization := "com.github.fsanaulla",
+  scalacOptions ++= Seq(
+    "-feature",
+    "-language:implicitConversions",
+    "-language:postfixOps")
 )
 
-// Developer section
-homepage := Some(url("https://github.com/fsanaulla/chronicler"))
-
-licenses += "MIT" -> url("https://opensource.org/licenses/MIT")
-
-scmInfo := Some(
-  ScmInfo(
-    url("https://github.com/fsanaulla/chronicler"),
-    "https://github.com/fsanaulla/chronicler.git")
+lazy val macroSettings = Seq(
+  libraryDependencies ++= Dependencies.macrosDependencies,
+  addCompilerPlugin(Dependencies.paradise),
+  scalacOptions += "-Xplugin-require:macroparadise"
 )
 
-developers += Developer(
-  id = "fsanaulla",
-  name = "Faiaz Sanaulla",
-  email = "fayaz.sanaulla@gmail.com",
-  url = url("https://github.com/fsanaulla")
+lazy val rootSettings = Seq(
+  resolvers ++= Dependencies.projectResolvers,
+  // Dependencies section
+  libraryDependencies ++= Dependencies.rootDependencies,
+  coverageMinimum := Coverage.min,
+  coverageExcludedPackages := Coverage.exclude
 )
 
-credentials += Credentials(
-  "Sonatype Nexus Repository Manager",
-  "oss.sonatype.org",
-  sys.env.getOrElse("SONATYPE_LOGIN", ""),
-  sys.env.getOrElse("SONATYPE_PASS", "")
-)
+lazy val macros = project.settings(macroSettings)
 
-// Dependencies section
-libraryDependencies ++= Dependencies.dep
+lazy val chronicler = (project in file("."))
+  .settings(
+    generalSettings,
+    rootSettings,
+    macroSettings
+  )
+  .dependsOn(macros)
 
-// Coverage section
-coverageMinimum := Coverage.min
-coverageExcludedPackages := Coverage.exclude
+inThisBuild(List(
+  // These are normal sbt settings to configure for release, skip if already defined
+  licenses += "MIT" -> url("https://opensource.org/licenses/MIT"),
+  homepage := Some(url("https://github.com/fsanaulla/chronicler")),
+  developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla")),
+  // These are the sbt-release-early settings to configure
+  pgpPublicRing := file("/home/fayaz/.gnupg/pubring.gpg"),
+  pgpSecretRing := file("/home/fayaz/.gnupg/pubring.gpg"),
+  releaseEarlyWith := SonatypePublisher
+))
 
-// Publish section
 useGpg := true
 
 pgpReadOnly := false
@@ -58,14 +59,16 @@ publishArtifact in Test := false
 
 publishMavenStyle := true
 
-publishTo := {
-  val nexus = "https://oss.sonatype.org/"
-  if (isSnapshot.value)
-    Some("snapshots" at nexus + "content/repositories/snapshots")
-  else
-    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-}
-
 pomIncludeRepository := (_ => false)
 
-resolvers ++= Dependencies.projectResolvers
+scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/fsanaulla/chronicler"),
+    "https://github.com/fsanaulla/chronicler.git")
+)
+//credentials += Credentials(
+//  "Sonatype Nexus Repository Manager",
+//  "oss.sonatype.org",
+//  sys.env.getOrElse("SONATYPE_LOGIN", ""),
+//  sys.env.getOrElse("SONATYPE_PASS", "")
+//)

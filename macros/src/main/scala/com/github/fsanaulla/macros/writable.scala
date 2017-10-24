@@ -1,6 +1,6 @@
-package com.github.fsanaulla.annotations
+package com.github.fsanaulla.macros
 
-import com.github.fsanaulla.annotations.AnnotationHelper._
+import com.github.fsanaulla.macros.AnnotationHelper._
 
 import scala.collection.immutable._
 import scala.meta._

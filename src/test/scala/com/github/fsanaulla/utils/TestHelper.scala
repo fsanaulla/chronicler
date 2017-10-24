@@ -1,9 +1,10 @@
 package com.github.fsanaulla.utils
 
 import akka.http.scaladsl.model.Uri
-import com.github.fsanaulla.annotations.{field, formattable, tag}
+import com.github.fsanaulla.macros.{field, formattable, tag}
 import com.github.fsanaulla.model._
 import spray.json.{DeserializationException, JsArray, JsNumber, JsString}
+
 /**
   * Created by fayaz on 11.07.17.
   */

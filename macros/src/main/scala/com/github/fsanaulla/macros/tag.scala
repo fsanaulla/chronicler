@@ -1,4 +1,4 @@
-package com.github.fsanaulla.annotations
+package com.github.fsanaulla.macros
 
 /**
   * Created by
