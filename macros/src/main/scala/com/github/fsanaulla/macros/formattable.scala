@@ -2,6 +2,7 @@ package com.github.fsanaulla.macros
 
 import com.github.fsanaulla.macros.AnnotationHelper._
 
+import scala.annotation.compileTimeOnly
 import scala.collection.immutable.Seq
 import scala.meta._
 
@@ -10,6 +11,7 @@ import scala.meta._
   * Author: fayaz.sanaulla@gmail.com
   * Date: 14.09.17
   */
+@compileTimeOnly("Required macro paradise plugin")
 final class formattable extends scala.annotation.StaticAnnotation {
 
   inline def apply(defn: Any): Any = meta {

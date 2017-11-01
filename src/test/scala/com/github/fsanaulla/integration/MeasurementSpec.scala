@@ -22,9 +22,9 @@ class MeasurementSpec extends TestSpec with BeforeAndAfterAll {
     influx.close()
   }
 
-  val safeDB = "safe_db_spec"
+  val safeDB = "meas_db"
 
-  val safeMeas = "safe_meas"
+  val measName = "meas"
 
   // INIT INFLUX CLIENT
   lazy val influx: InfluxHttpClient = InfluxClientsFactory.createHttpClient(
@@ -33,7 +33,7 @@ class MeasurementSpec extends TestSpec with BeforeAndAfterAll {
       password = credentials.password
   )
 
-  lazy val safeApi: Measurement[FakeEntity] = influx.measurement[FakeEntity](safeDB, safeMeas)
+  lazy val meas: Measurement[FakeEntity] = influx.measurement[FakeEntity](safeDB, measName)
 
 
   "Safe entity" should "init env" in {
@@ -43,12 +43,11 @@ class MeasurementSpec extends TestSpec with BeforeAndAfterAll {
 
   it should "make safe single write" in {
 
-    safeApi.write(singleEntity).futureValue shouldEqual NoContentResult
+    meas.write(singleEntity).futureValue shouldEqual NoContentResult
   }
 
   it should "make safe bulk write" in {
 
-    safeApi.bulkWrite(multiEntitys).futureValue shouldEqual NoContentResult
+    meas.bulkWrite(multiEntitys).futureValue shouldEqual NoContentResult
   }
-
 }

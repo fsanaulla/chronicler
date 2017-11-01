@@ -1,6 +1,5 @@
 package com.github.fsanaulla.api
 
-import akka.actor.Terminated
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpMethods.GET
 import com.github.fsanaulla.clients.InfluxHttpClient
@@ -17,20 +16,41 @@ import scala.concurrent.Future
 private[fsanaulla] trait SystemApi {
   self: InfluxHttpClient =>
 
-  def database(dbName: String): Database = {
-    new Database(dbName)
-  }
+  /**
+    *
+    * @param dbName - database name
+    * @return Database instance that provide non type safe operations
+    */
+  def database(dbName: String): Database = new Database(dbName)
 
+  /**
+    *
+    * @param dbName - database name
+    * @param measurementName - measurement name
+    * @tparam A - Measurement's time series type
+    * @return - Measurement instance of type [A]
+    */
   def measurement[A](dbName: String, measurementName: String): Measurement[A] = {
     new Measurement[A](dbName, measurementName)
   }
 
+  /**
+    * Ping InfluxDB
+    */
   def ping(): Future[Result] = {
     buildRequest("/ping", GET).flatMap(toResult)
   }
 
-  def close(): Future[Terminated] = {
-    Http().shutdownAllConnectionPools()
-    system.terminate()
-  }
+  /**
+    * Close HTTP connection
+    */
+  def close(): Future[Unit] = Http().shutdownAllConnectionPools()
+
+  /**
+    * Close HTTP connection  and  shut down actor system
+    */
+  def closeAll(): Future[Unit] = for {
+      _ <- Http().shutdownAllConnectionPools()
+      _ <- system.terminate()
+  } yield ()
 }

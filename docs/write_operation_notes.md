@@ -1,7 +1,7 @@
 # Write operation 
 First of all create database connection. In this situation we choose non type safe connection
 ```
-val db = influx.unsafely("db")
+val db = influx.database("db")
 ``` 
 There are many opportunities to store data. They separated on 2 groups.
 First one is non typesafe. You can used from `db` instance. Like below
@@ -50,7 +50,7 @@ main difference in return type. All udp methods return unit result by [UDP Proto
 
 The second group are typesafe operation. To use it create type safe connection:
 ```
-val meas = influx.safely[FakeEntity]("db", "meas")
+val meas = influx.measurement[FakeEntity]("db", "meas")
 ```
 That one can take any type that have implicit `InfluxWriter`object in the scope, that parse your object to [Line Protocol String](https://docs.influxdata.com/influxdb/v1.3/write_protocols/line_protocol_reference/). For example:
 To to object writable to influx, just mark it with annotation `writable`, and specify tag and field params in object.

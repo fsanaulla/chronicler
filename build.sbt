@@ -4,11 +4,12 @@ import scoverage.ScoverageKeys.coverageMinimum
 
 name := "chronicler"
 
+// used 2.12.2 instead of last one, because of macros paradise plugin supported version
 scalaVersion in ThisBuild := "2.12.2"
 crossScalaVersions in ThisBuild := Seq(scalaVersion.value, "2.11.11")
 
 lazy val generalSettings = Seq(
-  version := "0.3",
+  version := "0.3.4",
   organization := "com.github.fsanaulla",
   scalacOptions ++= Seq(
     "-feature",
@@ -23,8 +24,8 @@ lazy val macroSettings = Seq(
 )
 
 lazy val chroniclerSettings = Seq(
-  resolvers ++= Dependencies.projectResolvers,
   // Dependencies section
+  resolvers ++= Dependencies.projectResolvers,
   libraryDependencies ++= Dependencies.rootDependencies,
   coverageMinimum := Coverage.min,
   coverageExcludedPackages := Coverage.exclude
@@ -38,6 +39,7 @@ lazy val chronicler = (project in file("."))
     chroniclerSettings,
     macroSettings
   )
+  .aggregate(macros)
   .dependsOn(macros)
 
 useGpg := true

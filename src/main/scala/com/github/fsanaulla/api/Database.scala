@@ -28,10 +28,10 @@ import scala.concurrent.{ExecutionContext, Future}
   */
 private[fsanaulla] class Database(dbName: String)
                                  (protected implicit val credentials: InfluxCredentials,
-                                     protected implicit val actorSystem: ActorSystem,
-                                     protected implicit val mat: ActorMaterializer,
-                                     protected implicit val ex: ExecutionContext,
-                                     protected implicit val connection: Connection) extends WriteHelpersOperation {
+                                  protected implicit val actorSystem: ActorSystem,
+                                  protected implicit val mat: ActorMaterializer,
+                                  protected implicit val ex: ExecutionContext,
+                                  protected implicit val connection: Connection) extends WriteHelpersOperation {
 
   def writeNative(point: String,
                   consistency: Consistency = Consistencys.ONE,
