@@ -1,4 +1,4 @@
-package com.github.fsanaulla.macros
+package com.github.fsanaulla.`macro`
 
 import scala.annotation.compileTimeOnly
 
@@ -8,4 +8,4 @@ import scala.annotation.compileTimeOnly
   * Date: 09.09.17
   */
 @compileTimeOnly("Required macro paradise plugin")
-final class tag extends scala.annotation.StaticAnnotation
+final class field extends scala.annotation.StaticAnnotation

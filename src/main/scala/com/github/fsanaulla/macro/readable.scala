@@ -1,6 +1,6 @@
-package com.github.fsanaulla.macros
+package com.github.fsanaulla.`macro`
 
-import com.github.fsanaulla.macros.AnnotationHelper._
+import com.github.fsanaulla.`macro`.AnnotationHelper._
 import spray.json.{DeserializationException, JsArray, JsNumber, JsString}
 
 import scala.annotation.compileTimeOnly

@@ -1,6 +1,7 @@
 package com.github.fsanaulla.integration
 
 import com.github.fsanaulla.InfluxClientsFactory
+import com.github.fsanaulla.clients.InfluxHttpClient
 import com.github.fsanaulla.model.ContinuousQuery
 import com.github.fsanaulla.utils.TestHelper._
 import com.github.fsanaulla.utils.TestSpec
@@ -17,10 +18,12 @@ class ContinuousQueryManagementSpec extends TestSpec {
   val query = "SELECT mean(\"value\") AS \"mean_value\" INTO \"aggregate\" FROM \"cpu_load_short\" GROUP BY time(30m)"
   val updateQuery = "SELECT mean(\"value\") AS \"mean_value\" INTO \"new_aggregate\" FROM \"cpu_load_short\" GROUP BY time(30m)"
 
-  "CQ management operation" should "work correctly" in {
+  // INIT INFLUX CLIENT
 
-    // INIT INFLUX CLIENT
-    val influx = InfluxClientsFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
+  lazy val influx: InfluxHttpClient = InfluxClientsFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
+
+
+  "CQ management operation" should "create CQ" in {
 
     influx.createDatabase(testDB).futureValue shouldEqual OkResult
 
@@ -30,9 +33,16 @@ class ContinuousQueryManagementSpec extends TestSpec {
 
     influx.showCQ(testDB).futureValue.queryResult shouldEqual Seq(ContinuousQuery(testCQ, s"CREATE CONTINUOUS QUERY $testCQ ON $testDB BEGIN SELECT mean(value) AS mean_value INTO $testDB.autogen.aggregate FROM $testDB.autogen.cpu_load_short GROUP BY time(30m) END"))
 
+  }
+
+  it should "update CQ" in {
+
     influx.updateCQ(testDB, testCQ, updateQuery).futureValue shouldEqual OkResult
 
     influx.showCQ(testDB).futureValue.queryResult.contains(ContinuousQuery(testCQ, s"CREATE CONTINUOUS QUERY $testCQ ON $testDB BEGIN SELECT mean(value) AS mean_value INTO $testDB.autogen.new_aggregate FROM $testDB.autogen.cpu_load_short GROUP BY time(30m) END")) shouldEqual true
+  }
+
+  it should "drop CQ" in {
 
     influx.dropCQ(testDB, testCQ).futureValue shouldEqual OkResult
 
@@ -40,6 +50,7 @@ class ContinuousQueryManagementSpec extends TestSpec {
 
     influx.dropDatabase(testDB).futureValue shouldEqual OkResult
 
-    influx.close()
   }
+
+  influx.close()
 }

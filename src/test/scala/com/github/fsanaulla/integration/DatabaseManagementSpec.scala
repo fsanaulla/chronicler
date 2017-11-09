@@ -17,10 +17,12 @@ class DatabaseManagementSpec extends TestSpec {
 
   final val dbName = "data_management_spec_db"
 
-  "Data management operation" should "correctly work" in {
+  lazy val influx = InfluxClientsFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
+
+
+  "Data management operation" should "create database" in {
 
     // INIT INFLUX CLIENT
-    val influx = InfluxClientsFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
     influx.createDatabase(dbName).futureValue shouldEqual OkResult
 
     influx.showDatabases().futureValue.queryResult.contains(dbName) shouldEqual true

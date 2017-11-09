@@ -1,6 +1,6 @@
 package com.github.fsanaulla.unit
 
-import com.github.fsanaulla.macros._
+import com.github.fsanaulla.`macro`._
 import com.github.fsanaulla.model.{InfluxReader, InfluxWriter}
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json.{JsArray, JsNumber, JsString}
