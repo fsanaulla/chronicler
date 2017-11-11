@@ -6,7 +6,7 @@ There is avaible version for scala `2.11` and `2.12`. JDK 8 is required.
 # Integration
 Add to your dependencies list in `build.sbt`:
 ```
-libraryDependencies += "com.github.fsanaulla" %% "chronicler" % "0.3"
+libraryDependencies += "com.github.fsanaulla" %% "chronicler" % "0.3.4"
 ```
 # Table of content
 - [Helper Tools](docs/helper_tools.md)
