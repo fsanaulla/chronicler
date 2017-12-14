@@ -1,7 +1,7 @@
 package com.github.fsanaulla.integration
 
 import com.github.fsanaulla.InfluxClientsFactory
-import com.github.fsanaulla.api.UnsafelyApi
+import com.github.fsanaulla.api.Database
 import com.github.fsanaulla.clients.InfluxHttpClient
 import com.github.fsanaulla.model.Point
 import com.github.fsanaulla.utils.JsonSupport._
@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /**
   * Created by fayaz on 06.07.17.
   */
-class UnsafelyApiSpec extends TestSpec {
+class DatabaseSpec extends TestSpec {
 
   val testDB = "database_spec_db"
 
@@ -26,7 +26,7 @@ class UnsafelyApiSpec extends TestSpec {
       username = credentials.username,
       password = credentials.password)
 
-  lazy val nonTpSfApi: UnsafelyApi = influx.unsafely(testDB)
+  lazy val nonTpSfApi: Database = influx.database(testDB)
 
   "UnsafelyApi" should "write from file" in {
 

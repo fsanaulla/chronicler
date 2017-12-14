@@ -1,71 +1,58 @@
-import sbt.Keys.resolvers
+import sbt.Keys.{publishArtifact, resolvers, version}
+import sbt.url
+import scoverage.ScoverageKeys.coverageMinimum
 
 name := "chronicler"
-
-version := "0.3"
-
+version := "0.3.4"
 organization := "com.github.fsanaulla"
+homepage := Some(url("https://github.com/fsanaulla/chronicler"))
+licenses += "MIT" -> url("https://opensource.org/licenses/MIT")
 
-scalaVersion := "2.12.2"
 
-crossScalaVersions := Seq(scalaVersion.value, "2.11.10")
-
+// used 2.12.2 instead of last one, because of macros paradise plugin supported version
+scalaVersion in ThisBuild := "2.12.2"
+crossScalaVersions in ThisBuild := Seq(scalaVersion.value, "2.11.11")
 scalacOptions ++= Seq(
   "-feature",
   "-language:implicitConversions",
   "-language:postfixOps",
-  "-Xplugin-require:macroparadise"
-)
-
-// Developer section
-homepage := Some(url("https://github.com/fsanaulla/chronicler"))
-
-licenses += "MIT" -> url("https://opensource.org/licenses/MIT")
-
-scmInfo := Some(
-  ScmInfo(
-    url("https://github.com/fsanaulla/chronicler"),
-    "https://github.com/fsanaulla/chronicler.git")
-)
-
-developers += Developer(
-  id = "fsanaulla",
-  name = "Faiaz Sanaulla",
-  email = "fayaz.sanaulla@gmail.com",
-  url = url("https://github.com/fsanaulla")
-)
-
-credentials += Credentials(
-  "Sonatype Nexus Repository Manager",
-  "oss.sonatype.org",
-  sys.env.getOrElse("SONATYPE_LOGIN", ""),
-  sys.env.getOrElse("SONATYPE_PASS", "")
-)
+  "-Xplugin-require:macroparadise")
 
 // Dependencies section
-libraryDependencies ++= Dependencies.dep
+resolvers ++= Dependencies.projectResolvers
+libraryDependencies ++= Dependencies.rootDependencies
 
-// Coverage section
 coverageMinimum := Coverage.min
 coverageExcludedPackages := Coverage.exclude
+
 
 // Publish section
 useGpg := true
 
-pgpReadOnly := false
-
 publishArtifact in Test := false
 
-publishMavenStyle := true
+scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/fsanaulla/chronicler"),
+    "https://github.com/fsanaulla/chronicler.git"
+  )
+)
 
-publishTo := {
-  val nexus = "https://oss.sonatype.org/"
-  if (isSnapshot.value)
-    Some("snapshots" at nexus + "content/repositories/snapshots")
-  else
-    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-}
+developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla"))
 
 pomIncludeRepository := (_ => false)
 
-resolvers ++= Dependencies.projectResolvers
+publishTo := Some(
+  if (isSnapshot.value)
+    Opts.resolver.sonatypeSnapshots
+  else
+    Opts.resolver.sonatypeStaging
+)
+
+
+//credentials += Credentials(
+//  "Sonatype Nexus Repository Manager",
+//  "oss.sonatype.org",
+//  sys.env.getOrElse("SONATYPE_LOGIN", ""),
+//  sys.env.getOrElse("SONATYPE_PASS", "")
+//)

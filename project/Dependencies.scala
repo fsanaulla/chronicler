@@ -7,18 +7,25 @@ import sbt._
   */
 object Dependencies {
 
+  final val scalaMeta = "org.scalameta" %% "scalameta" % Versions.scalaMeta
+  final val paradise = "org.scalameta" % "paradise" % "3.0.0-M8" cross CrossVersion.full
+  final val sprayJson = "com.typesafe.akka" %% "akka-http-spray-json" % Versions.akkaHttp
+  final val akkaHttp = "com.typesafe.akka" %% "akka-http" % Versions.akkaHttp
+  final val nameOf = "com.github.dwickern" %% "scala-nameof" % "1.0.3"
+  final val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalaTest % "test"
+
+
   final val projectResolvers = Seq(
     Resolver.sonatypeRepo("releases"),
     Resolver.bintrayRepo("scalameta", "maven")
   )
 
-  final val dep = Seq(
-    "com.typesafe.akka"   %%   "akka-http"              %   Versions.akkaHttp,
-    "com.typesafe.akka"   %%   "akka-http-spray-json"   %   Versions.akkaHttp,
-    "org.scalameta"       %%   "scalameta"              %   Versions.scalaMeta,
-    "org.scalatest"       %%   "scalatest"              %   Versions.scalaTest   % "test",
-    "com.storm-enroute" %%   "scalameter"             %   Versions.scalaMeter  % "test",
-    compilerPlugin(
-      "org.scalameta" % "paradise" % "3.0.0-M8" cross CrossVersion.full)
+  final val rootDependencies = Seq(
+    akkaHttp,
+    sprayJson,
+    scalaMeta,
+    scalaTest,
+//    nameOf,
+    compilerPlugin(paradise)
   )
 }

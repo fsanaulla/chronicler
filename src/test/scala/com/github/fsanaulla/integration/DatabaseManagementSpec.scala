@@ -17,17 +17,19 @@ class DatabaseManagementSpec extends TestSpec {
 
   final val dbName = "data_management_spec_db"
 
-  "Data management operation" should "correctly work" in {
+  lazy val influx = InfluxClientsFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
+
+
+  "Data management operation" should "create database" in {
 
     // INIT INFLUX CLIENT
-    val influx = InfluxClientsFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
     influx.createDatabase(dbName).futureValue shouldEqual OkResult
 
     influx.showDatabases().futureValue.queryResult.contains(dbName) shouldEqual true
 
-    val db = influx.unsafely(dbName)
-    val meas1 = influx.safely[FakeEntity](dbName, "meas1")
-    val meas2 = influx.safely[FakeEntity](dbName, "meas2")
+    val db = influx.database(dbName)
+    val meas1 = influx.measurement[FakeEntity](dbName, "meas1")
+    val meas2 = influx.measurement[FakeEntity](dbName, "meas2")
 
     meas1.bulkWrite(multiEntitys).futureValue shouldEqual NoContentResult
     db.read[FakeEntity]("SELECT * FROM meas1").futureValue.queryResult shouldEqual multiEntitys

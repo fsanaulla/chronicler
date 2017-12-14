@@ -1,7 +1,8 @@
-package com.github.fsanaulla.annotations
+package com.github.fsanaulla.`macro`
 
-import com.github.fsanaulla.annotations.AnnotationHelper._
+import com.github.fsanaulla.`macro`.AnnotationHelper._
 
+import scala.annotation.compileTimeOnly
 import scala.collection.immutable._
 import scala.meta._
 
@@ -10,6 +11,7 @@ import scala.meta._
   * Author: fayaz.sanaulla@gmail.com
   * Date: 08.09.17
   */
+@compileTimeOnly("Required macro paradise plugin")
 final class writable extends scala.annotation.StaticAnnotation {
 
   inline def apply(defn: Any): Any = meta {

@@ -1,4 +1,4 @@
-package com.github.fsanaulla.annotations
+package com.github.fsanaulla.`macro`
 
 import scala.collection.immutable.{Nil, Seq}
 import scala.meta._

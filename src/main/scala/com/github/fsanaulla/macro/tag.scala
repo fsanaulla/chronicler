@@ -1,8 +1,11 @@
-package com.github.fsanaulla.annotations
+package com.github.fsanaulla.`macro`
+
+import scala.annotation.compileTimeOnly
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 09.09.17
   */
+@compileTimeOnly("Required macro paradise plugin")
 final class tag extends scala.annotation.StaticAnnotation
