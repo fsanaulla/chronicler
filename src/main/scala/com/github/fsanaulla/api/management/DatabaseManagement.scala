@@ -1,16 +1,20 @@
 package com.github.fsanaulla.api.management
 
-import com.github.fsanaulla.clients.InfluxHttpClient
+import com.github.fsanaulla.handlers.{QueryHandler, RequestHandler, ResponseHandler}
 import com.github.fsanaulla.model.InfluxImplicits._
 import com.github.fsanaulla.model.{FieldInfo, QueryResult, Result, TagValue}
 import com.github.fsanaulla.query.DataManagementQuery
-import com.github.fsanaulla.utils.ResponseHandler._
 
 import scala.concurrent.Future
 
-private[fsanaulla] trait DatabaseManagement extends DataManagementQuery { self: InfluxHttpClient =>
+private[fsanaulla] trait DatabaseManagement[R, U, M, E] extends DataManagementQuery[U] {
+  self: RequestHandler[R, U, M, E] with ResponseHandler[R] with QueryHandler[U] =>
 
-  def createDatabase(dbName: String, duration: Option[String] = None, replication: Option[Int] = None, shardDuration: Option[String] = None, rpName: Option[String] = None): Future[Result] = {
+  def createDatabase(dbName: String,
+                     duration: Option[String] = None,
+                     replication: Option[Int] = None,
+                     shardDuration: Option[String] = None,
+                     rpName: Option[String] = None): Future[Result] = {
     buildRequest(createDatabaseQuery(dbName, duration, replication, shardDuration, rpName))
       .flatMap(toResult)
   }
@@ -37,7 +41,11 @@ private[fsanaulla] trait DatabaseManagement extends DataManagementQuery { self: 
     buildRequest(showFieldKeysQuery(dbName, measurementName)).flatMap(toQueryResult[FieldInfo])
   }
 
-  def showTagKeys(dbName: String, measurementName: String, whereClause: Option[String] = None, limit: Option[Int] = None, offset: Option[Int] = None): Future[QueryResult[String]] = {
+  def showTagKeys(dbName: String,
+                  measurementName: String,
+                  whereClause: Option[String] = None,
+                  limit: Option[Int] = None,
+                  offset: Option[Int] = None): Future[QueryResult[String]] = {
     buildRequest(showTagKeysQuery(dbName, measurementName, whereClause, limit, offset))
       .flatMap(toQueryResult[String])
   }

@@ -2,7 +2,7 @@ package com.github.fsanaulla.integration
 
 import com.github.fsanaulla.InfluxClientsFactory
 import com.github.fsanaulla.api.Measurement
-import com.github.fsanaulla.clients.InfluxHttpClient
+import com.github.fsanaulla.clients.InfluxAkkaHttpClient
 import com.github.fsanaulla.utils.SampleEntitys._
 import com.github.fsanaulla.utils.TestHelper.{FakeEntity, _}
 import com.github.fsanaulla.utils.TestSpec
@@ -27,7 +27,7 @@ class MeasurementSpec extends TestSpec with BeforeAndAfterAll {
   val measName = "meas"
 
   // INIT INFLUX CLIENT
-  lazy val influx: InfluxHttpClient = InfluxClientsFactory.createHttpClient(
+  lazy val influx: InfluxAkkaHttpClient = InfluxClientsFactory.createHttpClient(
       host = influxHost,
       username = credentials.username,
       password = credentials.password

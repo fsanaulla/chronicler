@@ -1,10 +1,9 @@
 package com.github.fsanaulla.api.management
 
-import com.github.fsanaulla.clients.InfluxHttpClient
+import com.github.fsanaulla.clients.InfluxAkkaHttpClient
 import com.github.fsanaulla.model.InfluxImplicits._
 import com.github.fsanaulla.model._
 import com.github.fsanaulla.query.ShardManagementQuery
-import com.github.fsanaulla.utils.ResponseHandler._
 
 import scala.concurrent.Future
 
@@ -13,7 +12,7 @@ import scala.concurrent.Future
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-private[fsanaulla] trait ShardManagement extends ShardManagementQuery { self: InfluxHttpClient =>
+private[fsanaulla] trait ShardManagement extends ShardManagementQuery { self: InfluxAkkaHttpClient =>
 
   def dropShard(shardId: Int): Future[Result] = {
     buildRequest(dropShardQuery(shardId)).flatMap(toResult)

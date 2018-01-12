@@ -2,12 +2,13 @@ package com.github.fsanaulla.clients
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.model.{HttpMethod, HttpResponse, RequestEntity, Uri}
 import akka.stream.{ActorMaterializer, StreamTcpException}
 import com.github.fsanaulla.api._
 import com.github.fsanaulla.api.management._
 import com.github.fsanaulla.model.{ConnectionException, InfluxCredentials, UnknownConnectionException}
-import com.github.fsanaulla.utils.RequestBuilder
 import com.github.fsanaulla.utils.TypeAlias._
+import com.github.fsanaulla.utils.{AkkaQueryHandler, AkkaRequestHandler, AkkaResponseHandler}
 
 import scala.concurrent.ExecutionContext
 
@@ -16,19 +17,22 @@ import scala.concurrent.ExecutionContext
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-private[fsanaulla] class InfluxHttpClient(host: String,
-                                          port: Int = 8086,
-                                          username: Option[String] = None,
-                                          password: Option[String] = None)
-                                         (implicit val ex: ExecutionContext, val system: ActorSystem)
-    extends SystemApi
+private[fsanaulla] class InfluxAkkaHttpClient(host: String,
+                                              port: Int = 8086,
+                                              username: Option[String] = None,
+                                              password: Option[String] = None)
+                                             (implicit val ex: ExecutionContext, val system: ActorSystem)
+
+    extends AkkaRequestHandler
+      with AkkaResponseHandler
+      with AkkaQueryHandler
+      with SystemApi
       with DatabaseManagement
       with UserManagement
       with RetentionPolicyManagement
-      with ContinuousQueryManagement
+      with ContinuousQueryManagement[HttpResponse, Uri, HttpMethod, RequestEntity]
       with ShardManagement
-      with SubscriptionManagement
-      with RequestBuilder {
+      with SubscriptionManagement {
 
   private[fsanaulla] implicit val credentials: InfluxCredentials = InfluxCredentials(username, password)
   private[fsanaulla] implicit val mat: ActorMaterializer = ActorMaterializer()

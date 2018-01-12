@@ -1,7 +1,7 @@
 package com.github.fsanaulla
 
 import akka.actor.ActorSystem
-import com.github.fsanaulla.clients.{InfluxHttpClient, InfluxUdpClient}
+import com.github.fsanaulla.clients.{InfluxAkkaHttpClient, InfluxUdpClient}
 
 import scala.concurrent.ExecutionContext
 
@@ -17,9 +17,9 @@ object InfluxClientsFactory {
                        username: Option[String] = None,
                        password: Option[String] = None)
                       (implicit ex: ExecutionContext = ExecutionContext.Implicits.global,
-                       system: ActorSystem = ActorSystem()): InfluxHttpClient = {
+                       system: ActorSystem = ActorSystem("chronicler-actorsystem")): InfluxAkkaHttpClient = {
 
-    new InfluxHttpClient(host, port, username, password)
+    new InfluxAkkaHttpClient(host, port, username, password)
   }
 
   def createUdpClient(host: String, port: Int = 8089): InfluxUdpClient = {

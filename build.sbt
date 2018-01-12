@@ -8,7 +8,6 @@ organization := "com.github.fsanaulla"
 homepage := Some(url("https://github.com/fsanaulla/chronicler"))
 licenses += "MIT" -> url("https://opensource.org/licenses/MIT")
 
-
 // used 2.12.2 instead of last one, because of macros paradise plugin supported version
 scalaVersion in ThisBuild := "2.12.2"
 crossScalaVersions in ThisBuild := Seq(scalaVersion.value, "2.11.11")

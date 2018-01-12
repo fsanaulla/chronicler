@@ -1,7 +1,7 @@
 package com.github.fsanaulla.integration
 
 import com.github.fsanaulla.InfluxClientsFactory
-import com.github.fsanaulla.clients.InfluxHttpClient
+import com.github.fsanaulla.clients.InfluxAkkaHttpClient
 import com.github.fsanaulla.model.ContinuousQuery
 import com.github.fsanaulla.utils.TestHelper._
 import com.github.fsanaulla.utils.TestSpec
@@ -20,7 +20,7 @@ class ContinuousQueryManagementSpec extends TestSpec {
 
   // INIT INFLUX CLIENT
 
-  lazy val influx: InfluxHttpClient = InfluxClientsFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
+  lazy val influx: InfluxAkkaHttpClient = InfluxClientsFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
 
 
   "CQ management operation" should "create CQ" in {

@@ -12,6 +12,8 @@ object Dependencies {
   final val sprayJson = "com.typesafe.akka" %% "akka-http-spray-json" % Versions.akkaHttp
   final val akkaHttp = "com.typesafe.akka" %% "akka-http" % Versions.akkaHttp
   final val nameOf = "com.github.dwickern" %% "scala-nameof" % "1.0.3"
+  final val netty = "io.netty" % "netty-all" % "4.1.19.Final"
+
   final val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalaTest % "test"
 
 
@@ -25,7 +27,6 @@ object Dependencies {
     sprayJson,
     scalaMeta,
     scalaTest,
-//    nameOf,
     compilerPlugin(paradise)
   )
 }

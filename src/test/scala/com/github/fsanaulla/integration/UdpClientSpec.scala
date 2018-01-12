@@ -2,7 +2,7 @@ package com.github.fsanaulla.integration
 
 import com.github.fsanaulla.InfluxClientsFactory
 import com.github.fsanaulla.api.Database
-import com.github.fsanaulla.clients.{InfluxHttpClient, InfluxUdpClient}
+import com.github.fsanaulla.clients.{InfluxAkkaHttpClient, InfluxUdpClient}
 import com.github.fsanaulla.model.Point
 import com.github.fsanaulla.utils.Synchronization._
 import com.github.fsanaulla.utils.TestHelper.{FakeEntity, _}
@@ -21,7 +21,7 @@ class UdpClientSpec extends TestSpec with BeforeAndAfterAll {
 
   override def afterAll(): Unit = influx.close()
 
-  val influx: InfluxHttpClient = InfluxClientsFactory.createHttpClient(influxHost, username = Some("admin"), password = Some("admin"))
+  val influx: InfluxAkkaHttpClient = InfluxClientsFactory.createHttpClient(influxHost, username = Some("admin"), password = Some("admin"))
 
   val db: Database = influx.database("udp")
 

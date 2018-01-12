@@ -1,10 +1,9 @@
 package com.github.fsanaulla.query
 
-import akka.http.scaladsl.model.Uri
+import com.github.fsanaulla.handlers.QueryHandler
 import com.github.fsanaulla.model.InfluxCredentials
-import com.github.fsanaulla.utils.QueryBuilder
 
-private[fsanaulla] trait RetentionPolicyManagementQuery extends QueryBuilder {
+private[fsanaulla] trait RetentionPolicyManagementQuery[U]  { self: QueryHandler[U] =>
 
   protected def createRetentionPolicyQuery(rpName: String,
                                            dbName: String,
@@ -12,7 +11,7 @@ private[fsanaulla] trait RetentionPolicyManagementQuery extends QueryBuilder {
                                            replication: Int,
                                            shardDuration: Option[String],
                                            default: Boolean = false)
-                                          (implicit credentials: InfluxCredentials): Uri = {
+                                          (implicit credentials: InfluxCredentials): U = {
     val sb = StringBuilder.newBuilder
 
     sb.append("CREATE RETENTION POLICY ")
@@ -35,7 +34,7 @@ private[fsanaulla] trait RetentionPolicyManagementQuery extends QueryBuilder {
 
   protected def dropRetentionPolicyQuery(rpName: String,
                                          dbName: String)
-                                        (implicit credentials: InfluxCredentials): Uri = {
+                                        (implicit credentials: InfluxCredentials): U = {
     buildQuery("/query", buildQueryParams(s"DROP RETENTION POLICY $rpName ON $dbName"))
   }
 
@@ -44,7 +43,8 @@ private[fsanaulla] trait RetentionPolicyManagementQuery extends QueryBuilder {
                                            duration: Option[String],
                                            replication: Option[Int],
                                            shardDuration: Option[String],
-                                           default: Boolean = false)(implicit credentials: InfluxCredentials): Uri = {
+                                           default: Boolean = false)
+                                          (implicit credentials: InfluxCredentials): U = {
     val sb = StringBuilder.newBuilder
 
     sb.append("ALTER RETENTION POLICY ")

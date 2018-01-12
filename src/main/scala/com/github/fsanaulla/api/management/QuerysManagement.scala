@@ -1,10 +1,8 @@
 package com.github.fsanaulla.api.management
 
-import com.github.fsanaulla.clients.InfluxHttpClient
-import com.github.fsanaulla.model.InfluxImplicits._
+import com.github.fsanaulla.handlers.{QueryHandler, RequestHandler, ResponseHandler}
 import com.github.fsanaulla.model.{QueryInfo, QueryResult, Result}
 import com.github.fsanaulla.query.QuerysManagementQuery
-import com.github.fsanaulla.utils.ResponseHandler._
 
 import scala.concurrent.Future
 
@@ -13,8 +11,8 @@ import scala.concurrent.Future
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-private[fsanaulla] trait QuerysManagement extends QuerysManagementQuery {
-  self: InfluxHttpClient =>
+private[fsanaulla] trait QuerysManagement[R, U, M, E] extends QuerysManagementQuery[U] {
+  self: RequestHandler[R, U, M, E] with ResponseHandler[R] with QueryHandler[U] =>
 
   def showQueries(): Future[QueryResult[QueryInfo]] = {
     buildRequest(showQuerysQuery()).flatMap(toQueryResult[QueryInfo])

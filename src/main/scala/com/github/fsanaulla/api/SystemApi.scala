@@ -1,10 +1,10 @@
 package com.github.fsanaulla.api
 
+import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpMethods.GET
-import com.github.fsanaulla.clients.InfluxHttpClient
+import com.github.fsanaulla.handlers.{RequestHandler, ResponseHandler}
 import com.github.fsanaulla.model.Result
-import com.github.fsanaulla.utils.ResponseHandler.toResult
 
 import scala.concurrent.Future
 
@@ -13,8 +13,8 @@ import scala.concurrent.Future
   * Author: fayaz.sanaulla@gmail.com
   * Date: 03.09.17
   */
-private[fsanaulla] trait SystemApi {
-  self: InfluxHttpClient =>
+private[fsanaulla] trait SystemApi[R, U, M, E] {
+  self: RequestHandler[R, U, M, E] with ResponseHandler[U] =>
 
   /**
     *
@@ -49,7 +49,7 @@ private[fsanaulla] trait SystemApi {
   /**
     * Close HTTP connection  and  shut down actor system
     */
-  def closeAll(): Future[Unit] = for {
+  def closeAll()(implicit system: ActorSystem): Future[Unit] = for {
       _ <- Http().shutdownAllConnectionPools()
       _ <- system.terminate()
   } yield ()

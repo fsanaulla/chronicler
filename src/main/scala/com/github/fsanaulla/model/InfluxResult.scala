@@ -1,7 +1,5 @@
 package com.github.fsanaulla.model
 
-import spray.json.JsArray
-
 import scala.concurrent.Future
 
 /**

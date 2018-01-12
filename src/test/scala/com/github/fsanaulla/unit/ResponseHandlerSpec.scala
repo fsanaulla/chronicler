@@ -3,14 +3,11 @@ package com.github.fsanaulla.unit
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import akka.stream.ActorMaterializer
-import com.github.fsanaulla.model.InfluxImplicits._
 import com.github.fsanaulla.model.{ContinuousQuery, ContinuousQueryInfo}
 import com.github.fsanaulla.utils.ContentTypes.AppJson
-import com.github.fsanaulla.utils.ResponseHandler._
 import com.github.fsanaulla.utils.SampleEntitys.singleResult
 import com.github.fsanaulla.utils.TestSpec
 import org.scalatest.BeforeAndAfterAll
-import spray.json.{JsArray, JsNumber, JsObject, JsString, JsonParser}
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._

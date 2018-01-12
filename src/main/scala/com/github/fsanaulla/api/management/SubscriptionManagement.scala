@@ -1,10 +1,9 @@
 package com.github.fsanaulla.api.management
 
-import com.github.fsanaulla.clients.InfluxHttpClient
+import com.github.fsanaulla.clients.InfluxAkkaHttpClient
 import com.github.fsanaulla.model.InfluxImplicits._
 import com.github.fsanaulla.model.{QueryResult, Result, Subscription, SubscriptionInfo}
 import com.github.fsanaulla.query.SubscriptionsManagementQuery
-import com.github.fsanaulla.utils.ResponseHandler._
 import com.github.fsanaulla.utils.constants.Destinations
 import com.github.fsanaulla.utils.constants.Destinations.Destination
 
@@ -15,7 +14,7 @@ import scala.concurrent.Future
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-private[fsanaulla] trait SubscriptionManagement extends SubscriptionsManagementQuery { self: InfluxHttpClient =>
+private[fsanaulla] trait SubscriptionManagement extends SubscriptionsManagementQuery { self: InfluxAkkaHttpClient =>
 
   def createSubscription(subsName: String,
                          dbName: String,

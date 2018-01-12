@@ -19,3 +19,4 @@ script:
 
 after_success:
   - sbt coverageReport coveralls
+#  - "[[ $TRAVIS_BRANCH == \"master\" ]] && { sbt publish; };"
