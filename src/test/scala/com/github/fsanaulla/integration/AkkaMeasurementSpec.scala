@@ -1,7 +1,7 @@
 package com.github.fsanaulla.integration
 
 import com.github.fsanaulla.InfluxClientsFactory
-import com.github.fsanaulla.api.Measurement
+import com.github.fsanaulla.api.AkkaMeasurement
 import com.github.fsanaulla.clients.InfluxAkkaHttpClient
 import com.github.fsanaulla.utils.SampleEntitys._
 import com.github.fsanaulla.utils.TestHelper.{FakeEntity, _}
@@ -13,7 +13,7 @@ import org.scalatest.BeforeAndAfterAll
   * Author: fayaz.sanaulla@gmail.com
   * Date: 28.09.17
   */
-class MeasurementSpec extends TestSpec with BeforeAndAfterAll {
+class AkkaMeasurementSpec extends TestSpec with BeforeAndAfterAll {
 
   override def afterAll: Unit = {
 
@@ -27,13 +27,13 @@ class MeasurementSpec extends TestSpec with BeforeAndAfterAll {
   val measName = "meas"
 
   // INIT INFLUX CLIENT
-  lazy val influx: InfluxAkkaHttpClient = InfluxClientsFactory.createHttpClient(
+  lazy val influx: InfluxAkkaHttpClient = InfluxClientsFactory.createAkkaHttpClient(
       host = influxHost,
       username = credentials.username,
       password = credentials.password
   )
 
-  lazy val meas: Measurement[FakeEntity] = influx.measurement[FakeEntity](safeDB, measName)
+  lazy val meas: AkkaMeasurement[FakeEntity] = influx.measurement[FakeEntity](safeDB, measName)
 
 
   "Safe entity" should "init env" in {

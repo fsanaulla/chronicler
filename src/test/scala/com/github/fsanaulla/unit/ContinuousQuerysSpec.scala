@@ -1,8 +1,9 @@
 package com.github.fsanaulla.unit
 
+import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.query.ContinuousQuerys
-import com.github.fsanaulla.utils.TestCredentials
 import com.github.fsanaulla.utils.TestHelper._
+import com.github.fsanaulla.utils.{AkkaQueryHandler, TestCredentials}
 import org.scalatest.{FlatSpec, Matchers}
 
 /**
@@ -13,7 +14,8 @@ import org.scalatest.{FlatSpec, Matchers}
 class ContinuousQuerysSpec
   extends FlatSpec
     with Matchers
-    with ContinuousQuerys
+    with AkkaQueryHandler
+    with ContinuousQuerys[Uri]
     with TestCredentials {
 
   val db = "mydb"

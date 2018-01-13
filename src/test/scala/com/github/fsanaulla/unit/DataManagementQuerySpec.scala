@@ -1,8 +1,9 @@
 package com.github.fsanaulla.unit
 
+import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.query.DataManagementQuery
-import com.github.fsanaulla.utils.TestCredentials
 import com.github.fsanaulla.utils.TestHelper._
+import com.github.fsanaulla.utils.{AkkaQueryHandler, TestCredentials}
 import org.scalatest.{FlatSpecLike, Matchers}
 
 /**
@@ -11,7 +12,8 @@ import org.scalatest.{FlatSpecLike, Matchers}
   * Date: 27.07.17
   */
 class DataManagementQuerySpec
-  extends DataManagementQuery
+  extends AkkaQueryHandler
+    with DataManagementQuery[Uri]
     with FlatSpecLike
     with Matchers
     with TestCredentials {

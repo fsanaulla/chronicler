@@ -24,12 +24,12 @@ import scala.concurrent.{ExecutionContext, Future}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-private[fsanaulla] class Database(dbName: String)
-                                 (protected implicit val credentials: InfluxCredentials,
-                                  protected implicit val actorSystem: ActorSystem,
-                                  protected implicit val mat: ActorMaterializer,
-                                  protected implicit val ex: ExecutionContext,
-                                  protected implicit val connection: Connection)
+private[fsanaulla] class AkkaDatabase(dbName: String)
+                                     (protected implicit val credentials: InfluxCredentials,
+                                      protected implicit val actorSystem: ActorSystem,
+                                      protected implicit val mat: ActorMaterializer,
+                                      protected implicit val ex: ExecutionContext,
+                                      protected implicit val connection: Connection)
   extends AkkaWriter with AkkaReader {
 
   def writeNative(point: String,
@@ -37,7 +37,7 @@ private[fsanaulla] class Database(dbName: String)
                   precision: Precision = Precisions.NANOSECONDS,
                   retentionPolicy: Option[String] = None): Future[Result] = {
 
-    write(dbName, point, consistency, precision, retentionPolicy)
+    write0(dbName, point, consistency, precision, retentionPolicy)
   }
 
   def bulkWriteNative(points: Seq[String],
@@ -45,7 +45,7 @@ private[fsanaulla] class Database(dbName: String)
                       precision: Precision = Precisions.NANOSECONDS,
                       retentionPolicy: Option[String] = None): Future[Result] = {
 
-    write(dbName, points, consistency, precision, retentionPolicy)
+    write0(dbName, points, consistency, precision, retentionPolicy)
   }
 
   def writeFromFile(path: String,
@@ -59,7 +59,7 @@ private[fsanaulla] class Database(dbName: String)
       FileIO.fromPath(Paths.get(path), chunkSize = chunkSize)
     )
 
-    write(dbName, entity, consistency, precision, retentionPolicy)
+    write0(dbName, entity, consistency, precision, retentionPolicy)
   }
 
   def writePoint(point: Point,
@@ -67,7 +67,7 @@ private[fsanaulla] class Database(dbName: String)
                  precision: Precision = Precisions.NANOSECONDS,
                  retentionPolicy: Option[String] = None): Future[Result] = {
 
-    write(dbName, point, consistency, precision, retentionPolicy)
+    write0(dbName, point, consistency, precision, retentionPolicy)
   }
 
   def bulkWritePoints(points: Seq[Point],
@@ -75,7 +75,7 @@ private[fsanaulla] class Database(dbName: String)
                       precision: Precision = Precisions.NANOSECONDS,
                       retentionPolicy: Option[String] = None): Future[Result] = {
 
-    write(dbName, points, consistency, precision, retentionPolicy)
+    write0(dbName, points, consistency, precision, retentionPolicy)
   }
 
   def read[A](query: String,
@@ -84,7 +84,7 @@ private[fsanaulla] class Database(dbName: String)
               chunked: Boolean = false)
              (implicit reader: InfluxReader[A]): Future[QueryResult[A]] = {
 
-    readJs(dbName, query, epoch, pretty, chunked) map { res =>
+    readJs0(dbName, query, epoch, pretty, chunked) map { res =>
       QueryResult[A](
         res.code,
         isSuccess = res.isSuccess,
@@ -97,6 +97,6 @@ private[fsanaulla] class Database(dbName: String)
                  epoch: Epoch = Epochs.NANOSECONDS,
                  pretty: Boolean = false,
                  chunked: Boolean = false): Future[QueryResult[Seq[JsArray]]] = {
-    bulkReadJs(dbName, querys, epoch, pretty, chunked)
+    bulkReadJs0(dbName, querys, epoch, pretty, chunked)
   }
 }

@@ -1,6 +1,6 @@
 package com.github.fsanaulla.utils
 
-import akka.http.scaladsl.model.RequestEntity
+import akka.http.scaladsl.model.{RequestEntity, Uri}
 import akka.stream.ActorMaterializer
 import com.github.fsanaulla.api.WriteOperations
 import com.github.fsanaulla.model.{InfluxCredentials, Result}
@@ -17,22 +17,23 @@ import scala.concurrent.{ExecutionContext, Future}
   * Date: 03.09.17
   */
 private[fsanaulla] trait AkkaWriter
-  extends DatabaseOperationQuery
+  extends DatabaseOperationQuery[Uri]
     with AkkaRequestHandler
     with AkkaResponseHandler
+    with AkkaQueryHandler
     with WriteOperations[RequestEntity]
     with PointTransformer {
 
-  implicit val credentials: InfluxCredentials
-  implicit val ex: ExecutionContext
-  implicit val mat: ActorMaterializer
-  implicit val connection: Connection
+  protected implicit val credentials: InfluxCredentials
+  protected implicit val ex: ExecutionContext
+  protected implicit val mat: ActorMaterializer
+  protected implicit val connection: Connection
 
-  protected def write(dbName: String,
-                      entity: RequestEntity,
-                      consistency: Consistency,
-                      precision: Precision,
-                      retentionPolicy: Option[String]): Future[Result] = {
+  protected def write0(dbName: String,
+                       entity: RequestEntity,
+                       consistency: Consistency,
+                       precision: Precision,
+                       retentionPolicy: Option[String]): Future[Result] = {
 
     buildRequest(
       uri = writeToInfluxQuery(

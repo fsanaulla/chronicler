@@ -26,7 +26,7 @@ class UserManagementSpec extends TestSpec {
   "User management operation" should "correctly work" in {
 
     // INIT INFLUX CLIENT
-    val influx = InfluxClientsFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
+    val influx = InfluxClientsFactory.createAkkaHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
 
     influx.createDatabase(userDB).futureValue shouldEqual OkResult
 

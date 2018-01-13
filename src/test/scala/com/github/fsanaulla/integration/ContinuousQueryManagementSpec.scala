@@ -20,7 +20,7 @@ class ContinuousQueryManagementSpec extends TestSpec {
 
   // INIT INFLUX CLIENT
 
-  lazy val influx: InfluxAkkaHttpClient = InfluxClientsFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
+  lazy val influx: InfluxAkkaHttpClient = InfluxClientsFactory.createAkkaHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
 
 
   "CQ management operation" should "create CQ" in {

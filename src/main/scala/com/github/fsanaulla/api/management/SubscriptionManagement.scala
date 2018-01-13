@@ -1,20 +1,24 @@
 package com.github.fsanaulla.api.management
 
-import com.github.fsanaulla.clients.InfluxAkkaHttpClient
+import com.github.fsanaulla.handlers.{QueryHandler, RequestHandler, ResponseHandler}
 import com.github.fsanaulla.model.InfluxImplicits._
-import com.github.fsanaulla.model.{QueryResult, Result, Subscription, SubscriptionInfo}
+import com.github.fsanaulla.model._
 import com.github.fsanaulla.query.SubscriptionsManagementQuery
 import com.github.fsanaulla.utils.constants.Destinations
 import com.github.fsanaulla.utils.constants.Destinations.Destination
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-private[fsanaulla] trait SubscriptionManagement extends SubscriptionsManagementQuery { self: InfluxAkkaHttpClient =>
+private[fsanaulla] trait SubscriptionManagement[R, U, M, E] extends SubscriptionsManagementQuery[U] {
+  self: RequestHandler[R, U, M, E] with ResponseHandler[R] with QueryHandler[U] with HasCredentials =>
+
+  implicit val ex: ExecutionContext
+
 
   def createSubscription(subsName: String,
                          dbName: String,

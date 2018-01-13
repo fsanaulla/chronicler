@@ -30,7 +30,7 @@ class SubscriptionManagementSpec extends TestSpec {
   "subs operation" should "correctly work" in {
 
     // INIT INFLUX CLIENT
-    val influx = InfluxClientsFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
+    val influx = InfluxClientsFactory.createAkkaHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
 
     influx.createDatabase(dbName).futureValue shouldEqual OkResult
 

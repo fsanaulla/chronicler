@@ -1,9 +1,10 @@
 package com.github.fsanaulla.unit
 
+import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.query.RetentionPolicyManagementQuery
 import com.github.fsanaulla.utils.InfluxDuration._
-import com.github.fsanaulla.utils.TestCredentials
 import com.github.fsanaulla.utils.TestHelper._
+import com.github.fsanaulla.utils.{AkkaQueryHandler, TestCredentials}
 import org.scalatest.{FlatSpecLike, Matchers}
 
 /**
@@ -12,7 +13,8 @@ import org.scalatest.{FlatSpecLike, Matchers}
   * Date: 27.07.17
   */
 class RetentionPolicyManagementQuerySpec
-  extends RetentionPolicyManagementQuery
+  extends RetentionPolicyManagementQuery[Uri]
+    with AkkaQueryHandler
     with FlatSpecLike
     with Matchers
     with TestCredentials {

@@ -16,8 +16,8 @@ import scala.concurrent.{ExecutionContext, Future}
   */
 private[fsanaulla] trait AkkaResponseHandler extends ResponseHandler[HttpResponse] {
 
-  implicit val ex: ExecutionContext
-  implicit val mat: ActorMaterializer
+//  implicit val ex: ExecutionContext
+  protected implicit val mat: ActorMaterializer
 
   // Simply result's
   def toResult(response: HttpResponse): Future[Result] = {

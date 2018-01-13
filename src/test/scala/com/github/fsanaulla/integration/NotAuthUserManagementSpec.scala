@@ -31,7 +31,7 @@ class NotAuthUserManagementSpec extends FlatSpec with Matchers with ScalaFutures
   "not auth user management operation" should "correctly work" in {
 
     // INIT INFLUX CLIENT
-    val influx = InfluxClientsFactory.createHttpClient(influxHost)
+    val influx = InfluxClientsFactory.createAkkaHttpClient(influxHost)
 
     influx.createDatabase(userDB).futureValue.ex.value shouldBe a [AuthorizationException]
 

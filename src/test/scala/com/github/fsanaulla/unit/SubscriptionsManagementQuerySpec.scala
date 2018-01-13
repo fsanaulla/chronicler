@@ -1,16 +1,20 @@
 package com.github.fsanaulla.unit
 
+import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.query.SubscriptionsManagementQuery
 import com.github.fsanaulla.utils.TestHelper._
-import com.github.fsanaulla.utils.TestSpec
 import com.github.fsanaulla.utils.constants.Destinations
+import com.github.fsanaulla.utils.{AkkaQueryHandler, TestSpec}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 21.08.17
   */
-class SubscriptionsManagementQuerySpec extends TestSpec with SubscriptionsManagementQuery {
+class SubscriptionsManagementQuerySpec
+  extends TestSpec
+    with AkkaQueryHandler
+    with SubscriptionsManagementQuery[Uri] {
 
   val subName = "subs"
   val dbName = "db"

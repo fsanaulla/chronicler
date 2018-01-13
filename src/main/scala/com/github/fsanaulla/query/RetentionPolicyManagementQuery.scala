@@ -3,6 +3,8 @@ package com.github.fsanaulla.query
 import com.github.fsanaulla.handlers.QueryHandler
 import com.github.fsanaulla.model.InfluxCredentials
 
+import scala.collection.mutable
+
 private[fsanaulla] trait RetentionPolicyManagementQuery[U]  { self: QueryHandler[U] =>
 
   protected def createRetentionPolicyQuery(rpName: String,
@@ -67,5 +69,9 @@ private[fsanaulla] trait RetentionPolicyManagementQuery[U]  { self: QueryHandler
     if (default) sb.append(" DEFAULT")
 
     buildQuery("/query", buildQueryParams(sb.toString()))
+  }
+
+  protected def showRetentionPoliciesQuery(dbName: String)(implicit credentials: InfluxCredentials): U = {
+    buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> "SHOW RETENTION POLICIES")))
   }
 }

@@ -1,15 +1,17 @@
 package com.github.fsanaulla.api.management
 
-import com.github.fsanaulla.clients.InfluxAkkaHttpClient
+import com.github.fsanaulla.handlers.{QueryHandler, RequestHandler, ResponseHandler}
 import com.github.fsanaulla.model.InfluxImplicits._
-import com.github.fsanaulla.model.{QueryResult, Result, UserInfo, UserPrivilegesInfo}
+import com.github.fsanaulla.model._
 import com.github.fsanaulla.query.UserManagementQuery
 import com.github.fsanaulla.utils.constants.Privileges.Privilege
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-private[fsanaulla] trait UserManagement extends UserManagementQuery {
-  self: InfluxAkkaHttpClient =>
+private[fsanaulla] trait UserManagement[R, U, M, E] extends UserManagementQuery[U] {
+  self: RequestHandler[R, U, M, E] with ResponseHandler[R] with QueryHandler[U] with HasCredentials =>
+
+  implicit val ex: ExecutionContext
 
   def createUser(username: String, password: String): Future[Result] = {
     buildRequest(createUserQuery(username, password)).flatMap(toResult)

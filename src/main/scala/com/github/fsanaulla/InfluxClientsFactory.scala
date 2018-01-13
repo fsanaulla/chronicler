@@ -12,12 +12,12 @@ import scala.concurrent.ExecutionContext
   */
 object InfluxClientsFactory {
 
-  def createHttpClient(host: String,
-                       port: Int = 8086,
-                       username: Option[String] = None,
-                       password: Option[String] = None)
-                      (implicit ex: ExecutionContext = ExecutionContext.Implicits.global,
-                       system: ActorSystem = ActorSystem("chronicler-actorsystem")): InfluxAkkaHttpClient = {
+  def createAkkaHttpClient(host: String,
+                           port: Int = 8086,
+                           username: Option[String] = None,
+                           password: Option[String] = None)
+                          (implicit ex: ExecutionContext = ExecutionContext.Implicits.global,
+                           system: ActorSystem = ActorSystem("chronicler-actorsystem")): InfluxAkkaHttpClient = {
 
     new InfluxAkkaHttpClient(host, port, username, password)
   }

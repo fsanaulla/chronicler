@@ -8,10 +8,10 @@ import scala.concurrent.Future
 
 trait WriteOperations[A] {
 
-  def write(dbName: String,
-            entity: A,
-            consistency: Consistency,
-            precision: Precision,
-            retentionPolicy: Option[String]): Future[Result]
+  protected def write0(dbName: String,
+                       entity: A,
+                       consistency: Consistency,
+                       precision: Precision,
+                       retentionPolicy: Option[String]): Future[Result]
 
 }

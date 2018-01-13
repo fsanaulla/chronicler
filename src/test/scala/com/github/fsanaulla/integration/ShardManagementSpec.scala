@@ -19,7 +19,7 @@ class ShardManagementSpec extends TestSpec {
   "shard operations" should "correctly work" in {
 
     // INIT INFLUX CLIENT
-    val influx = InfluxClientsFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
+    val influx = InfluxClientsFactory.createAkkaHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
 
     val shards = influx.getShards(testDb).futureValue.queryResult
 

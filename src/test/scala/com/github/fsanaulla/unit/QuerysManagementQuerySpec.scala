@@ -1,15 +1,19 @@
 package com.github.fsanaulla.unit
 
+import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.query.QuerysManagementQuery
 import com.github.fsanaulla.utils.TestHelper._
-import com.github.fsanaulla.utils.TestSpec
+import com.github.fsanaulla.utils.{AkkaQueryHandler, TestSpec}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
-class QuerysManagementQuerySpec extends TestSpec with QuerysManagementQuery {
+class QuerysManagementQuerySpec
+  extends TestSpec
+    with AkkaQueryHandler
+    with QuerysManagementQuery[Uri] {
 
   "show query" should "correctly work" in {
     showQuerysQuery() shouldEqual queryTesterAuth("SHOW QUERIES")

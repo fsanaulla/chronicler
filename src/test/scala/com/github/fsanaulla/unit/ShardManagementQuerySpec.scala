@@ -1,15 +1,19 @@
 package com.github.fsanaulla.unit
 
+import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.query.ShardManagementQuery
 import com.github.fsanaulla.utils.TestHelper._
-import com.github.fsanaulla.utils.TestSpec
+import com.github.fsanaulla.utils.{AkkaQueryHandler, TestSpec}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-class ShardManagementQuerySpec extends TestSpec with ShardManagementQuery{
+class ShardManagementQuerySpec
+  extends TestSpec
+    with AkkaQueryHandler
+    with ShardManagementQuery[Uri] {
 
   "drop shard by id" should "correctly work" in {
     dropShardQuery(5) shouldEqual queryTesterAuth("DROP SHARD 5")

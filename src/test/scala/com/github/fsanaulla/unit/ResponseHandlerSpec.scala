@@ -3,10 +3,11 @@ package com.github.fsanaulla.unit
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import akka.stream.ActorMaterializer
+import com.github.fsanaulla.model.InfluxImplicits._
 import com.github.fsanaulla.model.{ContinuousQuery, ContinuousQueryInfo}
 import com.github.fsanaulla.utils.ContentTypes.AppJson
 import com.github.fsanaulla.utils.SampleEntitys.singleResult
-import com.github.fsanaulla.utils.TestSpec
+import com.github.fsanaulla.utils.{AkkaResponseHandler, TestSpec}
 import org.scalatest.BeforeAndAfterAll
 
 import scala.concurrent.ExecutionContext
@@ -15,7 +16,10 @@ import scala.concurrent.duration._
 /**
   * Created by fayaz on 12.07.17.
   */
-class ResponseHandlerSpec extends TestSpec with BeforeAndAfterAll {
+class ResponseHandlerSpec
+  extends TestSpec
+    with BeforeAndAfterAll
+    with AkkaResponseHandler {
 
   implicit val actorSystem: ActorSystem = ActorSystem("TestActorSystem")
   implicit val mat: ActorMaterializer = ActorMaterializer()

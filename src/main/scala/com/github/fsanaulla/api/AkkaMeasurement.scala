@@ -20,23 +20,23 @@ import scala.concurrent.{ExecutionContext, Future}
   * Date: 03.09.17
   */
 //todo: implement typesafe read operation
-private[fsanaulla] class Measurement[A](dbName: String, measurementName: String)
-                                       (protected implicit val credentials: InfluxCredentials,
-                                        protected implicit val actorSystem: ActorSystem,
-                                        protected implicit val mat: ActorMaterializer,
-                                        protected implicit val ex: ExecutionContext,
-                                        protected implicit val connection: Connection)
+private[fsanaulla] class AkkaMeasurement[E](dbName: String, measurementName: String)
+                                           (protected implicit val credentials: InfluxCredentials,
+                                            protected implicit val actorSystem: ActorSystem,
+                                            protected implicit val mat: ActorMaterializer,
+                                            protected implicit val ex: ExecutionContext,
+                                            protected implicit val connection: Connection)
     extends AkkaWriter {
 
-  def write(entity: A,
+  def write(entity: E,
             consistency: Consistency = Consistencys.ONE,
             precision: Precision = Precisions.NANOSECONDS,
-            retentionPolicy: Option[String] = None)(implicit writer: InfluxWriter[A]): Future[Result] = {
+            retentionPolicy: Option[String] = None)(implicit writer: InfluxWriter[E]): Future[Result] = {
 
     // make http entity serializer
     val serializedEntity = HttpEntity(OctetStream, ByteString(toPoint(measurementName, writer.write(entity))))
 
-    write(
+    write0(
       dbName,
       serializedEntity,
       consistency,
@@ -45,14 +45,14 @@ private[fsanaulla] class Measurement[A](dbName: String, measurementName: String)
     )
   }
 
-  def bulkWrite(entitys: Seq[A],
+  def bulkWrite(entitys: Seq[E],
                 consistency: Consistency = Consistencys.ONE,
                 precision: Precision = Precisions.NANOSECONDS,
-                retentionPolicy: Option[String] = None)(implicit writer: InfluxWriter[A]): Future[Result] = {
+                retentionPolicy: Option[String] = None)(implicit writer: InfluxWriter[E]): Future[Result] = {
 
     val entity = HttpEntity(OctetStream, ByteString(toPoints(measurementName, entitys.map(writer.write))))
 
-    write(
+    write0(
       dbName,
       entity,
       consistency,

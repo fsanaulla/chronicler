@@ -64,10 +64,6 @@ private[fsanaulla] trait DataManagementQuery[U] {
     buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"SHOW MEASUREMENTS")))
   }
 
-  protected def showRetentionPoliciesQuery(dbName: String)(implicit credentials: InfluxCredentials): U = {
-    buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> "SHOW RETENTION POLICIES")))
-  }
-
   protected def showDatabasesQuery()(implicit credentials: InfluxCredentials): U = {
     buildQuery("/query", buildQueryParams(s"SHOW DATABASES"))
   }

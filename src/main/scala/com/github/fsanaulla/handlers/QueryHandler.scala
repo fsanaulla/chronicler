@@ -17,7 +17,7 @@ trait QueryHandler[A] {
     * @param queryParams - query parameters that will be embedded into request
     * @return - resulr URI object
     */
-  def buildQuery(uri: String, queryParams: Map[String, String]): A
+  protected def buildQuery(uri: String, queryParams: Map[String, String]): A
 
   /**
     * Method that embed credentials to already created query parameters map
@@ -25,7 +25,7 @@ trait QueryHandler[A] {
     * @param credentials - implicit credentials
     * @return - updated query parameters map with embedded credentials
     */
-  def buildQueryParams(queryMap: mutable.Map[String, String])(implicit credentials: InfluxCredentials): Map[String, String]
+  protected def buildQueryParams(queryMap: mutable.Map[String, String])(implicit credentials: InfluxCredentials): Map[String, String]
 
   /**
     * Produce query parameters map for string parameter, with embedding credentials
@@ -33,5 +33,5 @@ trait QueryHandler[A] {
     * @param credentials - implicit user's credentials
     * @return - query parameters
     */
-  def buildQueryParams(query: String)(implicit credentials: InfluxCredentials): Map[String, String]
+  protected def buildQueryParams(query: String)(implicit credentials: InfluxCredentials): Map[String, String]
 }

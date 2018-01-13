@@ -11,8 +11,8 @@ import scala.concurrent.Future
 private[fsanaulla] trait AkkaRequestHandler
   extends RequestHandler[HttpResponse, Uri, HttpMethod, RequestEntity] {
 
-  implicit val mat: ActorMaterializer
-  implicit val connection: Connection
+  protected implicit val mat: ActorMaterializer
+  protected implicit val connection: Connection
 
   override val defaultMethod: HttpMethod = HttpMethods.POST
   override val defaultEntity: RequestEntity = HttpEntity.Empty

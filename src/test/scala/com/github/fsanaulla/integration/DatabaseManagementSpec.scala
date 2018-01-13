@@ -17,7 +17,7 @@ class DatabaseManagementSpec extends TestSpec {
 
   final val dbName = "data_management_spec_db"
 
-  lazy val influx = InfluxClientsFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
+  lazy val influx = InfluxClientsFactory.createAkkaHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
 
 
   "Data management operation" should "create database" in {

@@ -2,13 +2,19 @@ package com.github.fsanaulla.api.management
 
 import com.github.fsanaulla.handlers.{QueryHandler, RequestHandler, ResponseHandler}
 import com.github.fsanaulla.model.InfluxImplicits._
-import com.github.fsanaulla.model.{FieldInfo, QueryResult, Result, TagValue}
+import com.github.fsanaulla.model._
 import com.github.fsanaulla.query.DataManagementQuery
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 private[fsanaulla] trait DatabaseManagement[R, U, M, E] extends DataManagementQuery[U] {
-  self: RequestHandler[R, U, M, E] with ResponseHandler[R] with QueryHandler[U] =>
+  self: RequestHandler[R, U, M, E]
+    with ResponseHandler[R]
+    with QueryHandler[U]
+    with HasCredentials =>
+
+  implicit val ex: ExecutionContext
+
 
   def createDatabase(dbName: String,
                      duration: Option[String] = None,

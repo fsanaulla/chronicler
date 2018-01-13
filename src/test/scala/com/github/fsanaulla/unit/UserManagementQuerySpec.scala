@@ -1,16 +1,18 @@
 package com.github.fsanaulla.unit
 
+import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.query.UserManagementQuery
-import com.github.fsanaulla.utils.TestCredentials
 import com.github.fsanaulla.utils.TestHelper._
 import com.github.fsanaulla.utils.constants.Privileges
+import com.github.fsanaulla.utils.{AkkaQueryHandler, TestCredentials}
 import org.scalatest.{FlatSpecLike, Matchers}
 
 class UserManagementQuerySpec
-  extends UserManagementQuery
-  with FlatSpecLike
-  with Matchers
-  with TestCredentials {
+  extends UserManagementQuery[Uri]
+    with AkkaQueryHandler
+    with FlatSpecLike
+    with Matchers
+    with TestCredentials {
 
   private val testUsername = "TEST_USER_NAME"
   private val testPassword = "TEST_PASSWORD"

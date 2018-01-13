@@ -11,7 +11,7 @@ import scala.annotation.implicitNotFound
   * @tparam A
   */
 @implicitNotFound(
-  "No HttpWriter found for type ${T}. Try to implement an implicit HttpWriter for this type."
+  "No HttpWriter found for type ${A}. Try to implement an implicit HttpWriter for this type."
 )
 trait HttpWriter[A] {
   def write(obj: A): RequestEntity

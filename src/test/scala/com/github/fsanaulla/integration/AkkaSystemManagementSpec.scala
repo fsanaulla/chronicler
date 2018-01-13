@@ -9,9 +9,9 @@ import com.github.fsanaulla.utils.TestSpec
   * Author: fayaz.sanaulla@gmail.com
   * Date: 07.09.17
   */
-class SystemApiSpec extends TestSpec {
+class AkkaSystemManagementSpec extends TestSpec {
   "System api" should "correctly work" in {
-    val influx = InfluxClientsFactory.createHttpClient(
+    val influx = InfluxClientsFactory.createAkkaHttpClient(
       influxHost,
       username = credentials.username,
       password = credentials.password)
