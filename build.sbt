@@ -1,4 +1,4 @@
-import sbt.Keys.{organization, publishArtifact, resolvers, version}
+import sbt.Keys.{crossScalaVersions, organization, publishArtifact, resolvers, version}
 import sbt.url
 import scoverage.ScoverageKeys.coverageMinimum
 
@@ -10,30 +10,50 @@ lazy val commonSettings = Seq(
   developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla"))
 )
 
-lazy val akkaHttp = project
-  .settings(commonSettings)
-  .dependsOn(core)
-  .aggregate(core)
+lazy val root = (project in file("."))
+  .settings(commonSettings:  _*)
+  .aggregate(
+    akkaHttp,
+    asyncHttp,
+    core
+  )
 
-lazy val asyncHttp = project
+lazy val akkaHttp = (project in file("akka-http"))
+  .settings(commonSettings: _*)
+  .settings(
+    name := "chronicler-akka-http",
+    scalaVersion := "2.12.4",
+    crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
+    libraryDependencies ++= Dependencies.akkaHttpDep
+  ) dependsOn core
+
+lazy val asyncHttp = (project in file("async-http"))
+  .settings(commonSettings: _*)
+  .settings(
+    name := "chronicler-async-http",
+    scalaVersion := "2.12.4",
+    crossScalaVersions := Seq(scalaVersion.value, "2.11.11")
+  ) dependsOn core
 
 lazy val core = project
-  .settings(commonSettings)
+  .settings(commonSettings: _*)
+  .settings(
+    name := "chronicler-core",
 
-name := "chronicler"
+    scalaVersion := "2.12.2",
 
-// used 2.12.2 instead of last one, because of macros paradise plugin supported version
-scalaVersion in ThisBuild := "2.12.2"
-crossScalaVersions in ThisBuild := Seq(scalaVersion.value, "2.11.11")
-scalacOptions ++= Seq(
-  "-feature",
-  "-language:implicitConversions",
-  "-language:postfixOps",
-  "-Xplugin-require:macroparadise")
+    crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
 
-// Dependencies section
-resolvers ++= Dependencies.projectResolvers
-libraryDependencies ++= Dependencies.rootDependencies
+    scalacOptions ++= Seq(
+    "-feature",
+    "-language:implicitConversions",
+    "-language:postfixOps",
+    "-Xplugin-require:macroparadise"),
+
+    resolvers ++= Dependencies.projectResolvers,
+
+    libraryDependencies ++= Dependencies.coreDep
+  )
 
 coverageMinimum := Coverage.min
 coverageExcludedPackages := Coverage.exclude
