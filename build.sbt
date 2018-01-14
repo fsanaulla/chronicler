@@ -1,12 +1,26 @@
-import sbt.Keys.{publishArtifact, resolvers, version}
+import sbt.Keys.{organization, publishArtifact, resolvers, version}
 import sbt.url
 import scoverage.ScoverageKeys.coverageMinimum
 
+lazy val commonSettings = Seq(
+  version := "0.3.4",
+  organization := "com.github.fsanaulla",
+  homepage := Some(url("https://github.com/fsanaulla/chronicler")),
+  licenses += "MIT" -> url("https://opensource.org/licenses/MIT"),
+  developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla"))
+)
+
+lazy val akkaHttp = project
+  .settings(commonSettings)
+  .dependsOn(core)
+  .aggregate(core)
+
+lazy val asyncHttp = project
+
+lazy val core = project
+  .settings(commonSettings)
+
 name := "chronicler"
-version := "0.3.4"
-organization := "com.github.fsanaulla"
-homepage := Some(url("https://github.com/fsanaulla/chronicler"))
-licenses += "MIT" -> url("https://opensource.org/licenses/MIT")
 
 // used 2.12.2 instead of last one, because of macros paradise plugin supported version
 scalaVersion in ThisBuild := "2.12.2"
@@ -36,9 +50,6 @@ scmInfo := Some(
     "https://github.com/fsanaulla/chronicler.git"
   )
 )
-
-developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla"))
-
 pomIncludeRepository := (_ => false)
 
 publishTo := Some(
