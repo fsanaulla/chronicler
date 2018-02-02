@@ -65,7 +65,7 @@ private[fsanaulla] class InfluxAkkaHttpClient(host: String,
     * Ping InfluxDB
     */
   def ping(): Future[Result] = {
-    buildRequest("/ping", GET).flatMap(toResult)
+    readRequest("/ping", GET).flatMap(toResult)
   }
 
   /**

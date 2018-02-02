@@ -9,10 +9,7 @@ import scala.concurrent.Future
   * @tparam M - HTTP method type
   * @tparam E - HTTP entity type
   */
-trait RequestHandler[R, U, M, E] {
-
-  protected val defaultMethod: M
-  protected val defaultEntity: E
+private[fsanaulla] trait RequestHandler[R, U, M, E] {
 
   /**
     * Build and execute HTTP request
@@ -21,5 +18,6 @@ trait RequestHandler[R, U, M, E] {
     * @param entity - request body
     * @return - response in future container
     */
-  def buildRequest(uri: U, method: M = defaultMethod, entity: E = defaultEntity): Future[R]
+  def readRequest(uri: U, method: M, entity: Option[E] = None): Future[R]
+  def writeRequest(uri: U, method: M, entity: E): Future[R]
 }

@@ -21,10 +21,10 @@ private[fsanaulla] trait QuerysManagement[R, U, M, E] extends QuerysManagementQu
   protected implicit val ex: ExecutionContext
 
   def showQueries(): Future[QueryResult[QueryInfo]] = {
-    buildRequest(showQuerysQuery()).flatMap(toQueryResult[QueryInfo])
+    readRequest(showQuerysQuery()).flatMap(toQueryResult[QueryInfo])
   }
 
   def killQuery(queryId: Int): Future[Result] = {
-    buildRequest(killQueryQuery(queryId)).flatMap(toResult)
+    readRequest(killQueryQuery(queryId)).flatMap(toResult)
   }
 }

@@ -28,7 +28,7 @@ private[fsanaulla] trait SubscriptionManagement[R, U, M, E] extends Subscription
                          destinationType: Destination,
                          addresses: Seq[String]): Future[Result] = {
 
-    buildRequest(createSubscriptionQuery(subsName, dbName, rpName, destinationType, addresses))
+    readRequest(createSubscriptionQuery(subsName, dbName, rpName, destinationType, addresses))
       .flatMap(toResult)
   }
 
@@ -36,11 +36,11 @@ private[fsanaulla] trait SubscriptionManagement[R, U, M, E] extends Subscription
                        dbName: String,
                        rpName: String): Future[Result] = {
 
-    buildRequest(dropSubscriptionQuery(subName, dbName, rpName)).flatMap(toResult)
+    readRequest(dropSubscriptionQuery(subName, dbName, rpName)).flatMap(toResult)
   }
 
   def showSubscriptionsInfo(): Future[QueryResult[SubscriptionInfo]] = {
-    buildRequest(showSubscriptionsQuery()).flatMap(toSubscriptionQueryResult)
+    readRequest(showSubscriptionsQuery()).flatMap(toSubscriptionQueryResult)
   }
 
   def showSubscriptions(dbName: String): Future[QueryResult[Subscription]] = {

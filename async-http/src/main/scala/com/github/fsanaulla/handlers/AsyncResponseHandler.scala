@@ -1,25 +1,16 @@
 package com.github.fsanaulla.handlers
 
-import akka.http.scaladsl.model.HttpResponse
-import akka.stream.ActorMaterializer
 import com.github.fsanaulla.model._
+import com.softwaremill.sttp.Response
 import spray.json.{JsArray, JsObject}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 31.07.17
-  */
-private[fsanaulla] trait AkkaResponseHandler extends ResponseHandler[HttpResponse] with AkkaJsonHandler {
-
-  protected implicit val ex: ExecutionContext
-  protected implicit val mat: ActorMaterializer
+private[fsanaulla] trait AsyncResponseHandler extends ResponseHandler[Response[JsObject]] with AsyncJsonHandler {
 
   // Simply result's
-  def toResult(response: HttpResponse): Future[Result] = {
-    response.status.intValue() match {
+  def toResult(response: Response[JsObject]): Future[Result] = {
+    response.code match {
       case code if isSuccessful(code) && code != 204 =>
         getErrorOpt(response) map {
           case Some(msg) =>
@@ -34,9 +25,10 @@ private[fsanaulla] trait AkkaResponseHandler extends ResponseHandler[HttpRespons
     }
   }
 
-  def toComplexQueryResult[A, B](response: HttpResponse,
-                                 f: (String, Seq[A]) => B)(implicit reader: InfluxReader[A]): Future[QueryResult[B]] = {
-    response.status.intValue() match {
+  def toComplexQueryResult[A, B](response: Response[JsObject],
+                                 f: (String, Seq[A]) => B)
+                                (implicit reader: InfluxReader[A]): Future[QueryResult[B]] = {
+    response.code match {
       case code if isSuccessful(code) =>
         getJsBody(response)
           .map(getInfluxInfo[A])
@@ -49,8 +41,8 @@ private[fsanaulla] trait AkkaResponseHandler extends ResponseHandler[HttpRespons
   }
 
   // QUERY RESULT
-  def toQueryJsResult(response: HttpResponse): Future[QueryResult[JsArray]] = {
-    response.status.intValue() match {
+  def toQueryJsResult(response: Response[JsObject]): Future[QueryResult[JsArray]] = {
+    response.code.intValue() match {
       case code if isSuccessful(code) =>
         getJsBody(response)
           .map(getInfluxPoints)
@@ -61,8 +53,8 @@ private[fsanaulla] trait AkkaResponseHandler extends ResponseHandler[HttpRespons
     }
   }
 
-  def toBulkQueryJsResult(response: HttpResponse): Future[QueryResult[Seq[JsArray]]] = {
-    response.status.intValue() match {
+  def toBulkQueryJsResult(response: Response[JsObject]): Future[QueryResult[Seq[JsArray]]] = {
+    response.code.intValue() match {
       case code if isSuccessful(code) =>
         getJsBody(response)
           .map(getBulkInfluxValue)
@@ -73,19 +65,20 @@ private[fsanaulla] trait AkkaResponseHandler extends ResponseHandler[HttpRespons
     }
   }
 
-  def getError(response: HttpResponse): Future[String] = {
+  def getError(response: Response[JsObject]): Future[String] = {
     getJsBody(response)
       .map(_.getFields("error").head.convertTo[String])
   }
 
-  def getErrorOpt(response: HttpResponse): Future[Option[String]] = {
+  def getErrorOpt(response: Response[JsObject]): Future[Option[String]] = {
     getJsBody(response)
-      .map(
-        _.getFields("results").head
-          .convertTo[Seq[JsObject]]
-          .head
-          .fields
-          .get("error")
-          .map(_.convertTo[String]))
+      .map(_.getFields("results")
+        .head
+        .convertTo[Seq[JsObject]]
+        .head
+        .fields
+        .get("error")
+        .map(_.convertTo[String])
+      )
   }
 }

@@ -13,12 +13,24 @@ private[fsanaulla] trait AkkaRequestHandler
   protected implicit val mat: ActorMaterializer
   protected implicit val connection: Connection
 
-  override val defaultMethod: HttpMethod = HttpMethods.POST
-  override val defaultEntity: RequestEntity = HttpEntity.Empty
+  override def readRequest(uri: Uri,
+                           method: HttpMethod = HttpMethods.POST,
+                           entity: Option[RequestEntity] = None): Future[HttpResponse] = {
+    Source
+      .single(
+        HttpRequest(
+          method = method,
+          uri = uri,
+          entity = entity.getOrElse(HttpEntity.Empty)
+        )
+      )
+      .via(connection)
+      .runWith(Sink.head)
+  }
 
-  def buildRequest(uri: Uri,
-                   method: HttpMethod = HttpMethods.POST,
-                   entity: RequestEntity = HttpEntity.Empty): Future[HttpResponse] = {
+  override def writeRequest(uri: Uri,
+                            method: HttpMethod = HttpMethods.POST,
+                            entity: MessageEntity): Future[HttpResponse] = {
     Source
       .single(
         HttpRequest(

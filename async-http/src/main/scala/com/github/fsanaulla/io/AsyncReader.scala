@@ -1,24 +1,20 @@
 package com.github.fsanaulla.io
 
-import akka.http.scaladsl.model.HttpMethods.GET
-import akka.http.scaladsl.model.Uri
-import com.github.fsanaulla.handlers.{AkkaQueryHandler, AkkaRequestHandler, AkkaResponseHandler}
-import com.github.fsanaulla.model.{InfluxCredentials, QueryResult}
+import com.github.fsanaulla.handlers.{AsyncQueryHandler, AsyncRequestHandler, AsyncResponseHandler}
+import com.github.fsanaulla.model.QueryResult
 import com.github.fsanaulla.query.DatabaseOperationQuery
 import com.github.fsanaulla.utils.constants.Epochs
 import com.github.fsanaulla.utils.constants.Epochs.Epoch
+import com.softwaremill.sttp.{Method, Uri}
 import spray.json.JsArray
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-protected[fsanaulla] trait AkkaReader
-  extends AkkaRequestHandler
-    with AkkaResponseHandler
-    with AkkaQueryHandler
+private[fsanaulla] trait AsyncReader
+  extends AsyncQueryHandler
+    with AsyncRequestHandler
+    with AsyncResponseHandler
     with DatabaseOperationQuery[Uri] { self: ReadOperations =>
-
-  protected implicit val ex: ExecutionContext
-  protected implicit val credentials: InfluxCredentials
 
   override def readJs0(dbName: String,
                        query: String,
@@ -26,7 +22,7 @@ protected[fsanaulla] trait AkkaReader
                        pretty: Boolean = false,
                        chunked: Boolean = false): Future[QueryResult[JsArray]] = {
 
-    readRequest(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked), GET)
+    readRequest(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked), Method.GET)
       .flatMap(toQueryJsResult)
   }
 
@@ -35,7 +31,9 @@ protected[fsanaulla] trait AkkaReader
                            epoch: Epoch = Epochs.NANOSECONDS,
                            pretty: Boolean = false,
                            chunked: Boolean = false): Future[QueryResult[Seq[JsArray]]] = {
-    readRequest(readFromInfluxBulkQuery(dbName, querys, epoch, pretty, chunked), GET)
+    readRequest(readFromInfluxBulkQuery(dbName, querys, epoch, pretty, chunked), Method.GET)
       .flatMap(toBulkQueryJsResult)
   }
+
+
 }

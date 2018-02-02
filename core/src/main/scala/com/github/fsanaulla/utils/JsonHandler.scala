@@ -1,11 +1,7 @@
 package com.github.fsanaulla.utils
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import akka.http.scaladsl.model.HttpResponse
-import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.stream.ActorMaterializer
 import com.github.fsanaulla.model.InfluxReader
-import com.github.fsanaulla.utils.AkkaContentTypes.AppJson
 import spray.json.{DefaultJsonProtocol, JsArray, JsObject, JsValue}
 
 import scala.concurrent.Future
@@ -13,15 +9,9 @@ import scala.concurrent.Future
 /**
   * Created by fayaz on 12.07.17.
   */
-private[fsanaulla] object JsonSupport
-  extends SprayJsonSupport
-    with DefaultJsonProtocol {
+private[fsanaulla] trait JsonHandler[R] extends SprayJsonSupport with DefaultJsonProtocol {
 
-  type Point = JsArray
-
-  def getJsBody(response: HttpResponse)(implicit mat: ActorMaterializer): Future[JsObject] = {
-    Unmarshal(response.entity.withContentType(AppJson)).to[JsObject]
-  }
+  def getJsBody(response: R): Future[JsObject]
 
   def getBulkInfluxValue(js: JsObject): Seq[Seq[JsArray]] = {
     js.getFields("results")
@@ -42,7 +32,7 @@ private[fsanaulla] object JsonSupport
       )
   }
 
-  def getInfluxPoints(js: JsObject): Seq[Point] = {
+  def getInfluxPoints(js: JsObject): Seq[JsArray] = {
     js.getFields("results")
       .head
       .convertTo[Seq[JsObject]]

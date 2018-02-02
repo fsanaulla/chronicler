@@ -35,7 +35,7 @@ private[fsanaulla] trait AkkaWriter
                        precision: Precision,
                        retentionPolicy: Option[String]): Future[Result] = {
 
-    buildRequest(
+    writeRequest(
       uri = writeToInfluxQuery(
         dbName,
         consistency,

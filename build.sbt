@@ -32,7 +32,8 @@ lazy val asyncHttp = (project in file("async-http"))
   .settings(
     name := "chronicler-async-http",
     scalaVersion := "2.12.4",
-    crossScalaVersions := Seq(scalaVersion.value, "2.11.11")
+    crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
+    libraryDependencies ++= Dependencies.asyncHttpDep
   ) dependsOn core
 
 lazy val core = project

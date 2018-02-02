@@ -25,7 +25,14 @@ trait QueryHandler[A] {
     * @param credentials - implicit credentials
     * @return - updated query parameters map with embedded credentials
     */
-  protected def buildQueryParams(queryMap: mutable.Map[String, String])(implicit credentials: InfluxCredentials): Map[String, String]
+  protected def buildQueryParams(queryMap: mutable.Map[String, String])(implicit credentials: InfluxCredentials): Map[String, String] = {
+    for {
+      u <- credentials.username
+      p <- credentials.password
+    } yield queryMap += ("u" -> u, "p" -> p)
+
+    queryMap.toMap
+  }
 
   /**
     * Produce query parameters map for string parameter, with embedding credentials
@@ -33,5 +40,7 @@ trait QueryHandler[A] {
     * @param credentials - implicit user's credentials
     * @return - query parameters
     */
-  protected def buildQueryParams(query: String)(implicit credentials: InfluxCredentials): Map[String, String]
+  protected def buildQueryParams(query: String)(implicit credentials: InfluxCredentials): Map[String, String] = {
+    buildQueryParams(scala.collection.mutable.Map("q" -> query))
+  }
 }
