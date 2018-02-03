@@ -3,6 +3,7 @@ package com.github.fsanaulla.handlers
 import akka.http.scaladsl.model._
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Sink, Source}
+import com.github.fsanaulla.core.handlers.RequestHandler
 import com.github.fsanaulla.utils.AkkaTypeAlias.Connection
 
 import scala.concurrent.Future

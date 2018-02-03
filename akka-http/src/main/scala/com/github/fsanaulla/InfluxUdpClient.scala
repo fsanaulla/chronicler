@@ -2,8 +2,8 @@ package com.github.fsanaulla
 
 import java.net._
 
-import com.github.fsanaulla.model.{InfluxWriter, Point, UdpConnection}
-import com.github.fsanaulla.utils.PointTransformer
+import com.github.fsanaulla.core.model.{InfluxWriter, Point, UdpConnection}
+import com.github.fsanaulla.core.utils.PointTransformer
 
 import scala.io.Source
 

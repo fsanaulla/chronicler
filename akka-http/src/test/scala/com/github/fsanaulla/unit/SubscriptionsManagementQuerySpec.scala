@@ -1,11 +1,11 @@
 package com.github.fsanaulla.unit
 
 import akka.http.scaladsl.model.Uri
+import com.github.fsanaulla.TestSpec
 import com.github.fsanaulla.handlers.AkkaQueryHandler
-import com.github.fsanaulla.query.SubscriptionsManagementQuery
+import com.github.fsanaulla.core.query.SubscriptionsManagementQuery
 import com.github.fsanaulla.utils.TestHelper._
-import com.github.fsanaulla.utils.TestSpec
-import com.github.fsanaulla.utils.constants.Destinations
+import com.github.fsanaulla.core.utils.constants.Destinations
 
 /**
   * Created by

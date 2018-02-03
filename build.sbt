@@ -1,43 +1,38 @@
+import Dependencies.paradise
 import sbt.Keys.{crossScalaVersions, organization, publishArtifact, resolvers, version}
-import sbt.url
+import sbt.{compilerPlugin, url}
 import scoverage.ScoverageKeys.coverageMinimum
 
 lazy val commonSettings = Seq(
-  version := "0.3.4",
+  version := "0.4.0",
   organization := "com.github.fsanaulla",
   homepage := Some(url("https://github.com/fsanaulla/chronicler")),
   licenses += "MIT" -> url("https://opensource.org/licenses/MIT"),
   developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla"))
 )
 
-lazy val root = (project in file("."))
-  .settings(commonSettings:  _*)
-  .aggregate(
-    akkaHttp,
-    asyncHttp,
-    core
+lazy val publishSettings = Seq(
+  // Publish section
+  useGpg := true,
+  publishArtifact in Test := false,
+  scmInfo := Some(
+    ScmInfo(
+      url("https://github.com/fsanaulla/chronicler"),
+      "https://github.com/fsanaulla/chronicler.git"
+    )
+  ),
+  pomIncludeRepository := (_ => false),
+  publishTo := Some(
+    if (isSnapshot.value)
+      Opts.resolver.sonatypeSnapshots
+    else
+      Opts.resolver.sonatypeStaging
   )
-
-lazy val akkaHttp = (project in file("akka-http"))
-  .settings(commonSettings: _*)
-  .settings(
-    name := "chronicler-akka-http",
-    scalaVersion := "2.12.4",
-    crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
-    libraryDependencies ++= Dependencies.akkaHttpDep
-  ) dependsOn core
-
-lazy val asyncHttp = (project in file("async-http"))
-  .settings(commonSettings: _*)
-  .settings(
-    name := "chronicler-async-http",
-    scalaVersion := "2.12.4",
-    crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
-    libraryDependencies ++= Dependencies.asyncHttpDep
-  ) dependsOn core
+)
 
 lazy val core = project
   .settings(commonSettings: _*)
+  .settings(publishSettings: _*)
   .settings(
     name := "chronicler-core",
 
@@ -46,40 +41,42 @@ lazy val core = project
     crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
 
     scalacOptions ++= Seq(
-    "-feature",
-    "-language:implicitConversions",
-    "-language:postfixOps",
-    "-Xplugin-require:macroparadise"),
+      "-feature",
+      "-language:implicitConversions",
+      "-language:postfixOps",
+      "-Xplugin-require:macroparadise"),
 
     resolvers ++= Dependencies.projectResolvers,
 
     libraryDependencies ++= Dependencies.coreDep
   )
 
-coverageMinimum := Coverage.min
-coverageExcludedPackages := Coverage.exclude
+lazy val akkaHttp = (project in file("akka-http"))
+  .settings(commonSettings: _*)
+  .settings(publishSettings: _*)
+  .settings(
+    name := "chronicler-akka-http",
 
+    scalaVersion := "2.12.4",
 
-// Publish section
-useGpg := true
+    crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
 
-publishArtifact in Test := false
+    libraryDependencies ++= Dependencies.akkaHttpDep,
 
-scmInfo := Some(
-  ScmInfo(
-    url("https://github.com/fsanaulla/chronicler"),
-    "https://github.com/fsanaulla/chronicler.git"
-  )
-)
-pomIncludeRepository := (_ => false)
+    coverageMinimum := Coverage.min,
 
-publishTo := Some(
-  if (isSnapshot.value)
-    Opts.resolver.sonatypeSnapshots
-  else
-    Opts.resolver.sonatypeStaging
-)
+    coverageExcludedPackages := Coverage.exclude
 
+  ).dependsOn(core)
+
+lazy val asyncHttp = (project in file("async-http"))
+  .settings(commonSettings: _*)
+  .settings(publishSettings: _*)
+  .settings(
+    name := "chronicler-async-http",
+    scalaVersion := "2.12.4",
+    crossScalaVersions := Seq(scalaVersion.value, "2.11.11")
+  ).dependsOn(core)
 
 //credentials += Credentials(
 //  "Sonatype Nexus Repository Manager",

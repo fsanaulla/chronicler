@@ -1,10 +1,10 @@
 package com.github.fsanaulla.unit
 
 import akka.http.scaladsl.model.Uri
+import com.github.fsanaulla.TestSpec
+import com.github.fsanaulla.core.query.DataManagementQuery
 import com.github.fsanaulla.handlers.AkkaQueryHandler
-import com.github.fsanaulla.query.DataManagementQuery
 import com.github.fsanaulla.utils.TestHelper._
-import com.github.fsanaulla.utils.TestSpec
 
 /**
   * Created by

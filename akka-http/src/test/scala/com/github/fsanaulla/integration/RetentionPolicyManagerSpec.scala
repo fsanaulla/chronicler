@@ -1,10 +1,11 @@
 package com.github.fsanaulla.integration
 
-import com.github.fsanaulla.InfluxAkkaHttpClient
-import com.github.fsanaulla.model.RetentionPolicyInfo
-import com.github.fsanaulla.utils.InfluxDuration._
+import java.sql.ClientInfoStatus
+
+import com.github.fsanaulla.{InfluxAkkaHttpClient, InfluxClientFactory, TestSpec}
+import com.github.fsanaulla.core.model.RetentionPolicyInfo
+import com.github.fsanaulla.core.utils.InfluxDuration._
 import com.github.fsanaulla.utils.TestHelper.OkResult
-import com.github.fsanaulla.utils.TestSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -20,7 +21,7 @@ class RetentionPolicyManagerSpec extends TestSpec {
   "retention policy operation" should "correctly work" in {
 
     // INIT INFLUX CLIENT
-    val influx = new InfluxAkkaHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
+    val influx = InfluxClientFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
 
     // CREATING DB TEST
     influx.createDatabase(rpDB).futureValue shouldEqual OkResult

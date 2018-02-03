@@ -1,7 +1,7 @@
 package com.github.fsanaulla.unit
 
-import com.github.fsanaulla.utils.InfluxDuration._
-import com.github.fsanaulla.utils.TestSpec
+import com.github.fsanaulla.TestSpec
+import com.github.fsanaulla.core.utils.InfluxDuration._
 
 /**
   * Created by

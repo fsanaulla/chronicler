@@ -1,6 +1,6 @@
-package com.github.fsanaulla.utils
+package com.github.fsanaulla
 
-import com.github.fsanaulla.utils.TestHelper.{FakeEntity, currentNanoTime}
+import TestHelper.{FakeEntity, currentNanoTime}
 import spray.json.{JsArray, JsNumber, JsString}
 
 object SampleEntitys {

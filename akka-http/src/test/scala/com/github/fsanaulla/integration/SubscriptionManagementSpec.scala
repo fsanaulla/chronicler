@@ -1,11 +1,10 @@
 package com.github.fsanaulla.integration
 
-import com.github.fsanaulla.InfluxAkkaHttpClient
-import com.github.fsanaulla.model.Subscription
-import com.github.fsanaulla.utils.InfluxDuration._
+import com.github.fsanaulla.{InfluxAkkaHttpClient, InfluxClientFactory, TestSpec}
+import com.github.fsanaulla.core.model.Subscription
+import com.github.fsanaulla.core.utils.InfluxDuration._
+import com.github.fsanaulla.core.utils.constants.Destinations
 import com.github.fsanaulla.utils.TestHelper._
-import com.github.fsanaulla.utils.TestSpec
-import com.github.fsanaulla.utils.constants.Destinations
 
 /**
   * Created by
@@ -28,7 +27,7 @@ class SubscriptionManagementSpec extends TestSpec {
   "subs operation" should "correctly work" in {
 
     // INIT INFLUX CLIENT
-    val influx = new InfluxAkkaHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
+    val influx = InfluxClientFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
 
     influx.createDatabase(dbName).futureValue shouldEqual OkResult
 

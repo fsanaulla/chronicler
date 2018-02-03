@@ -2,7 +2,8 @@ package com.github.fsanaulla.handlers
 
 import akka.http.scaladsl.model.HttpResponse
 import akka.stream.ActorMaterializer
-import com.github.fsanaulla.model._
+import com.github.fsanaulla.core.handlers.ResponseHandler
+import com.github.fsanaulla.core.model._
 import spray.json.{JsArray, JsObject}
 
 import scala.concurrent.{ExecutionContext, Future}

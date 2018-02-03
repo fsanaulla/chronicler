@@ -1,13 +1,11 @@
 package com.github.fsanaulla.integration
 
-import com.github.fsanaulla.utils.TestSpec
-
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
-class QueryManagementSpec extends TestSpec {
+class QueryManagementSpec {
 
 //  val testDb = "query_db"
 //

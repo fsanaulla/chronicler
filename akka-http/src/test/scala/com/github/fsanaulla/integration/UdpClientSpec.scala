@@ -1,10 +1,9 @@
 package com.github.fsanaulla.integration
 
 import com.github.fsanaulla.api.Database
-import com.github.fsanaulla.model.Point
+import com.github.fsanaulla.{InfluxAkkaHttpClient, InfluxClientFactory, InfluxUdpClient, TestSpec}
+import com.github.fsanaulla.core.model.Point
 import com.github.fsanaulla.utils.TestHelper.{FakeEntity, _}
-import com.github.fsanaulla.utils.TestSpec
-import com.github.fsanaulla.{InfluxAkkaHttpClient, InfluxUdpClient}
 
 import scala.concurrent.duration._
 
@@ -13,10 +12,9 @@ import scala.concurrent.duration._
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-class UdpClientSpec
-  extends TestSpec {
+class UdpClientSpec extends TestSpec {
 
-  val influx: InfluxAkkaHttpClient = new InfluxAkkaHttpClient(influxHost, username = Some("admin"), password = Some("admin"))
+  val influx: InfluxAkkaHttpClient = InfluxClientFactory.createHttpClient(influxHost, username = Some("admin"), password = Some("admin"))
 
   val db: Database = influx.database("udp")
 

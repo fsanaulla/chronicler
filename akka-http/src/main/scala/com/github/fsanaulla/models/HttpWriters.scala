@@ -2,8 +2,8 @@ package com.github.fsanaulla.models
 
 import akka.http.scaladsl.model.{HttpEntity, RequestEntity}
 import akka.util.ByteString
-import com.github.fsanaulla.model.Point
-import com.github.fsanaulla.utils.AkkaContentTypes.OctetStream
+import com.github.fsanaulla.core.model.Point
+import com.github.fsanaulla.core.utils.AkkaContentTypes.OctetStream
 
 /**
   * This object contains main implicit transformations for preparing request's HTTP body.

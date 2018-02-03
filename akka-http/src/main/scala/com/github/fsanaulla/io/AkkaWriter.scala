@@ -2,13 +2,14 @@ package com.github.fsanaulla.io
 
 import akka.http.scaladsl.model.{RequestEntity, Uri}
 import akka.stream.ActorMaterializer
+import com.github.fsanaulla.core.io.WriteOperations
+import com.github.fsanaulla.core.model.{InfluxCredentials, Result}
+import com.github.fsanaulla.core.query.DatabaseOperationQuery
+import com.github.fsanaulla.core.utils.PointTransformer
+import com.github.fsanaulla.core.utils.constants.Consistencys.Consistency
+import com.github.fsanaulla.core.utils.constants.Precisions.Precision
 import com.github.fsanaulla.handlers.{AkkaQueryHandler, AkkaRequestHandler, AkkaResponseHandler}
-import com.github.fsanaulla.model.{InfluxCredentials, Result}
-import com.github.fsanaulla.query.DatabaseOperationQuery
 import com.github.fsanaulla.utils.AkkaTypeAlias.Connection
-import com.github.fsanaulla.utils.PointTransformer
-import com.github.fsanaulla.utils.constants.Consistencys.Consistency
-import com.github.fsanaulla.utils.constants.Precisions.Precision
 
 import scala.concurrent.{ExecutionContext, Future}
 

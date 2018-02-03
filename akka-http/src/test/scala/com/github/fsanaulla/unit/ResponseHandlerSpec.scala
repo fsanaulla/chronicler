@@ -3,11 +3,12 @@ package com.github.fsanaulla.unit
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import akka.stream.ActorMaterializer
+import com.github.fsanaulla.TestSpec
 import com.github.fsanaulla.handlers.AkkaResponseHandler
-import com.github.fsanaulla.model.{ContinuousQuery, ContinuousQueryInfo}
+import com.github.fsanaulla.core.model.{ContinuousQuery, ContinuousQueryInfo}
 import com.github.fsanaulla.utils.AkkaContentTypes.AppJson
 import com.github.fsanaulla.utils.SampleEntitys.singleResult
-import com.github.fsanaulla.utils.TestSpec
+import com.github.fsanaulla.core.model.InfluxImplicits._
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._

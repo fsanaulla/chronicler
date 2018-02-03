@@ -4,13 +4,14 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpEntity, RequestEntity}
 import akka.stream.ActorMaterializer
 import akka.util.ByteString
+import com.github.fsanaulla.core.api.MeasurementApi
+import com.github.fsanaulla.core.model.{InfluxCredentials, InfluxWriter, Result}
+import com.github.fsanaulla.core.utils.constants.{Consistencys, Precisions}
+import com.github.fsanaulla.core.utils.constants.Consistencys.Consistency
+import com.github.fsanaulla.core.utils.constants.Precisions.Precision
 import com.github.fsanaulla.io.AkkaWriter
-import com.github.fsanaulla.model.{InfluxCredentials, InfluxWriter, Result}
 import com.github.fsanaulla.utils.AkkaContentTypes.OctetStream
 import com.github.fsanaulla.utils.AkkaTypeAlias.Connection
-import com.github.fsanaulla.utils.constants.Consistencys.Consistency
-import com.github.fsanaulla.utils.constants.Precisions.Precision
-import com.github.fsanaulla.utils.constants.{Consistencys, Precisions}
 
 import scala.concurrent.{ExecutionContext, Future}
 

@@ -6,15 +6,16 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpEntity, RequestEntity}
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.FileIO
+import com.github.fsanaulla.core.api.DatabaseApi
+import com.github.fsanaulla.core.model._
+import com.github.fsanaulla.core.utils.constants.Consistencys.Consistency
+import com.github.fsanaulla.core.utils.constants.Epochs.Epoch
+import com.github.fsanaulla.core.utils.constants.Precisions.Precision
+import com.github.fsanaulla.core.utils.constants.{Consistencys, Epochs, Precisions}
 import com.github.fsanaulla.io.{AkkaReader, AkkaWriter}
-import com.github.fsanaulla.model._
 import com.github.fsanaulla.models.HttpWriters._
 import com.github.fsanaulla.utils.AkkaContentTypes.OctetStream
 import com.github.fsanaulla.utils.AkkaTypeAlias.Connection
-import com.github.fsanaulla.utils.constants.Consistencys.Consistency
-import com.github.fsanaulla.utils.constants.Epochs.Epoch
-import com.github.fsanaulla.utils.constants.Precisions.Precision
-import com.github.fsanaulla.utils.constants.{Consistencys, Epochs, Precisions}
 import spray.json.JsArray
 
 import scala.concurrent.{ExecutionContext, Future}

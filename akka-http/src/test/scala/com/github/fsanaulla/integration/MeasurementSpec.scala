@@ -1,10 +1,9 @@
 package com.github.fsanaulla.integration
 
-import com.github.fsanaulla.InfluxAkkaHttpClient
 import com.github.fsanaulla.api.Measurement
 import com.github.fsanaulla.utils.SampleEntitys._
 import com.github.fsanaulla.utils.TestHelper.{FakeEntity, _}
-import com.github.fsanaulla.utils.TestSpec
+import com.github.fsanaulla.{InfluxAkkaHttpClient, InfluxClientFactory, TestSpec}
 
 /**
   * Created by
@@ -18,7 +17,7 @@ class MeasurementSpec extends TestSpec {
   val measName = "meas"
 
   // INIT INFLUX CLIENT
-  lazy val influx: InfluxAkkaHttpClient = new InfluxAkkaHttpClient(
+  lazy val influx: InfluxAkkaHttpClient = InfluxClientFactory.createHttpClient(
       host = influxHost,
       username = credentials.username,
       password = credentials.password

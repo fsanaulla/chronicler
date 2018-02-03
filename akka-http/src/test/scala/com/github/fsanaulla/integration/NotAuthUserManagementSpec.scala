@@ -1,9 +1,8 @@
 package com.github.fsanaulla.integration
 
-import com.github.fsanaulla.InfluxAkkaHttpClient
-import com.github.fsanaulla.model.AuthorizationException
-import com.github.fsanaulla.utils.TestSpec
-import com.github.fsanaulla.utils.constants.Privileges
+import com.github.fsanaulla.core.model.AuthorizationException
+import com.github.fsanaulla.core.utils.constants.Privileges
+import com.github.fsanaulla.{InfluxAkkaHttpClient, InfluxClientFactory, TestSpec}
 
 /**
   * Created by
@@ -23,7 +22,7 @@ class NotAuthUserManagementSpec extends TestSpec {
   "not auth user management operation" should "correctly work" in {
 
     // INIT INFLUX CLIENT
-    val influx = new InfluxAkkaHttpClient(influxHost)
+    val influx = InfluxClientFactory.createHttpClient(influxHost)
 
     influx.createDatabase(userDB).futureValue.ex.value shouldBe a [AuthorizationException]
 

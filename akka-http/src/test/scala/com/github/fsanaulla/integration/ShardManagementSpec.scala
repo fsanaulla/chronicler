@@ -1,9 +1,8 @@
 package com.github.fsanaulla.integration
 
-import com.github.fsanaulla.InfluxAkkaHttpClient
-import com.github.fsanaulla.model.ShardGroupsInfo
+import com.github.fsanaulla.{InfluxAkkaHttpClient, InfluxClientFactory, TestSpec}
+import com.github.fsanaulla.core.model.ShardGroupsInfo
 import com.github.fsanaulla.utils.TestHelper._
-import com.github.fsanaulla.utils.TestSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -19,7 +18,7 @@ class ShardManagementSpec extends TestSpec {
   "shard operations" should "correctly work" in {
 
     // INIT INFLUX CLIENT
-    val influx = new InfluxAkkaHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
+    val influx = InfluxClientFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
 
     val shards = influx.getShards(testDb).futureValue.queryResult
 
