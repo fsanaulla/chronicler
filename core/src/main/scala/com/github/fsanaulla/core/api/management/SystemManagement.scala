@@ -23,7 +23,7 @@ trait SystemManagement[E] {
     * @tparam A - Measurement's time series type
     * @return - Measurement instance of type [A]
     */
-  def measurement[A](dbName: String, measurementName: String): MeasurementApi[E]
+  def measurement[A](dbName: String, measurementName: String): MeasurementApi[A, E]
 
   /**
     * Ping InfluxDB

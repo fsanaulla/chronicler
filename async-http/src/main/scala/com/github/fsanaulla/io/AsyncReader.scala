@@ -17,7 +17,7 @@ private[fsanaulla] trait AsyncReader
     with AsyncResponseHandler
     with DatabaseOperationQuery[Uri] { self: ReadOperations =>
 
-  implicit val credentials: InfluxCredentials
+  protected implicit val credentials: InfluxCredentials
 
   override def readJs0(dbName: String,
                        query: String,

@@ -11,7 +11,7 @@ import scala.concurrent.Future
 private[fsanaulla] trait AsyncRequestHandler
   extends RequestHandler[Response[JsObject], Uri, Method, String] {
 
-  implicit val backend: SttpBackend[Future, Nothing]
+  protected implicit val backend: SttpBackend[Future, Nothing]
   override val defaultMethod: Method = Method.POST
 
   private val asJson: ResponseAs[JsObject, Nothing] = asString.map(JsonParser(_)).map(_.asJsObject)

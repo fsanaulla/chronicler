@@ -9,9 +9,9 @@ import scala.concurrent.Future
   * @tparam M - HTTP method type
   * @tparam E - HTTP entity type
   */
-trait RequestHandler[R, U, M, E] {
+private[fsanaulla] trait RequestHandler[R, U, M, E] {
 
-  val defaultMethod: M
+  protected val defaultMethod: M
   /**
     * Build and execute HTTP request
     * @param uri - uri path

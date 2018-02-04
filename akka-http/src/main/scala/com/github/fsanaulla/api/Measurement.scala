@@ -6,9 +6,9 @@ import akka.stream.ActorMaterializer
 import akka.util.ByteString
 import com.github.fsanaulla.core.api.MeasurementApi
 import com.github.fsanaulla.core.model.{InfluxCredentials, InfluxWriter, Result}
-import com.github.fsanaulla.core.utils.constants.{Consistencys, Precisions}
 import com.github.fsanaulla.core.utils.constants.Consistencys.Consistency
 import com.github.fsanaulla.core.utils.constants.Precisions.Precision
+import com.github.fsanaulla.core.utils.constants.{Consistencys, Precisions}
 import com.github.fsanaulla.io.AkkaWriter
 import com.github.fsanaulla.utils.AkkaContentTypes.OctetStream
 import com.github.fsanaulla.utils.AkkaTypeAlias.Connection
@@ -23,11 +23,11 @@ import scala.concurrent.{ExecutionContext, Future}
 //todo: implement typesafe read operation
 private[fsanaulla] class Measurement[E](dbName: String, measurementName: String)
                                        (protected implicit val credentials: InfluxCredentials,
-                                            protected implicit val actorSystem: ActorSystem,
-                                            protected implicit val mat: ActorMaterializer,
-                                            protected implicit val ex: ExecutionContext,
-                                            protected implicit val connection: Connection)
-    extends MeasurementApi[RequestEntity] with AkkaWriter {
+                                        protected implicit val actorSystem: ActorSystem,
+                                        protected implicit val mat: ActorMaterializer,
+                                        protected implicit val ex: ExecutionContext,
+                                        protected implicit val connection: Connection)
+    extends MeasurementApi[E, RequestEntity] with AkkaWriter {
 
   def write(entity: E,
             consistency: Consistency = Consistencys.ONE,
