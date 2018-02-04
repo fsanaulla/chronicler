@@ -21,15 +21,15 @@ private[fsanaulla] trait ShardManagement[R, U, M, E] extends ShardManagementQuer
   protected implicit val ex: ExecutionContext
 
   def dropShard(shardId: Int): Future[Result] = {
-    buildRequest(dropShardQuery(shardId)).flatMap(toResult)
+    readRequest(dropShardQuery(shardId)).flatMap(toResult)
   }
 
   def showShardGroups(): Future[QueryResult[ShardGroupsInfo]] = {
-    buildRequest(showShardGroups()).flatMap(toShardGroupQueryResult)
+    readRequest(showShardGroups()).flatMap(toShardGroupQueryResult)
   }
 
   def showShards(): Future[QueryResult[ShardInfo]] = {
-    buildRequest(showShards()).flatMap(toShardQueryResult)
+    readRequest(showShards()).flatMap(toShardQueryResult)
   }
 
   def getShards(dbName: String): Future[QueryResult[Shard]] = {

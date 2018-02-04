@@ -1,10 +1,11 @@
 package com.github.fsanaulla.io
 
+import com.github.fsanaulla.core.io.ReadOperations
+import com.github.fsanaulla.core.model.{InfluxCredentials, QueryResult}
+import com.github.fsanaulla.core.query.DatabaseOperationQuery
+import com.github.fsanaulla.core.utils.constants.Epochs
+import com.github.fsanaulla.core.utils.constants.Epochs.Epoch
 import com.github.fsanaulla.handlers.{AsyncQueryHandler, AsyncRequestHandler, AsyncResponseHandler}
-import com.github.fsanaulla.model.QueryResult
-import com.github.fsanaulla.query.DatabaseOperationQuery
-import com.github.fsanaulla.utils.constants.Epochs
-import com.github.fsanaulla.utils.constants.Epochs.Epoch
 import com.softwaremill.sttp.{Method, Uri}
 import spray.json.JsArray
 
@@ -15,6 +16,8 @@ private[fsanaulla] trait AsyncReader
     with AsyncRequestHandler
     with AsyncResponseHandler
     with DatabaseOperationQuery[Uri] { self: ReadOperations =>
+
+  implicit val credentials: InfluxCredentials
 
   override def readJs0(dbName: String,
                        query: String,

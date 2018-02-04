@@ -25,7 +25,7 @@ private[fsanaulla] trait RetentionPolicyManagement[R, U, M, E] extends Retention
 
     require(replication > 0, "Replication must greater that 0")
 
-    buildRequest(createRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default))
+    readRequest(createRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default))
       .flatMap(toResult)
   }
 
@@ -35,15 +35,15 @@ private[fsanaulla] trait RetentionPolicyManagement[R, U, M, E] extends Retention
                             replication: Option[Int] = None,
                             shardDuration: Option[String] = None,
                             default: Boolean = false): Future[Result] = {
-    buildRequest(updateRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default))
+    readRequest(updateRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default))
       .flatMap(toResult)
   }
 
   def dropRetentionPolicy(rpName: String, dbName: String): Future[Result] = {
-    buildRequest(dropRetentionPolicyQuery(rpName, dbName)).flatMap(toResult)
+    readRequest(dropRetentionPolicyQuery(rpName, dbName)).flatMap(toResult)
   }
 
   def showRetentionPolicies(dbName: String): Future[QueryResult[RetentionPolicyInfo]] = {
-    buildRequest(showRetentionPoliciesQuery(dbName)).flatMap(toQueryResult[RetentionPolicyInfo])
+    readRequest(showRetentionPoliciesQuery(dbName)).flatMap(toQueryResult[RetentionPolicyInfo])
   }
 }

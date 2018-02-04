@@ -21,7 +21,7 @@ private[fsanaulla] trait ContinuousQueryManagement[R, U, M, E] extends Continuou
   protected implicit val ex: ExecutionContext
 
   def showCQs(): Future[QueryResult[ContinuousQueryInfo]] = {
-    buildRequest(uri = showCQQuery())
+    readRequest(uri = showCQQuery())
       .flatMap(toCqQueryResult)
   }
 
@@ -37,12 +37,12 @@ private[fsanaulla] trait ContinuousQueryManagement[R, U, M, E] extends Continuou
   }
 
   def dropCQ(dbName: String, cqName: String): Future[Result] = {
-    buildRequest(uri = dropCQQuery(dbName, cqName)).flatMap(toResult)
+    readRequest(uri = dropCQQuery(dbName, cqName)).flatMap(toResult)
   }
 
   def createCQ(dbName: String, cqName: String, query: String): Future[Result] = {
     require(validCQQuery(query), "Query required INTO and GROUP BY clause")
-    buildRequest(uri = createCQQuery(dbName, cqName, query)).flatMap(toResult)
+    readRequest(uri = createCQQuery(dbName, cqName, query)).flatMap(toResult)
   }
 
   def updateCQ(dbName: String, cqName: String, query: String): Future[Result] = {

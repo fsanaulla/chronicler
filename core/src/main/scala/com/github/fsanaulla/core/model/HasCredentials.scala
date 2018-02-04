@@ -1,6 +1,6 @@
 package com.github.fsanaulla.core.model
 
-trait HasCredentials {
+private[fsanaulla] trait HasCredentials {
 
   protected implicit val credentials: InfluxCredentials
 }

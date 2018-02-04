@@ -1,10 +1,10 @@
 package com.github.fsanaulla.core.api.management
 
 import com.github.fsanaulla.core.handlers.{QueryHandler, RequestHandler, ResponseHandler}
+import com.github.fsanaulla.core.model.InfluxImplicits._
 import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.core.query.UserManagementQuery
 import com.github.fsanaulla.core.utils.constants.Privileges.Privilege
-import com.github.fsanaulla.core.model.InfluxImplicits._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -17,48 +17,48 @@ private[fsanaulla] trait UserManagement[R, U, M, E] extends UserManagementQuery[
   protected implicit val ex: ExecutionContext
 
   def createUser(username: String, password: String): Future[Result] = {
-    buildRequest(createUserQuery(username, password)).flatMap(toResult)
+    readRequest(createUserQuery(username, password)).flatMap(toResult)
   }
 
   def createAdmin(username: String, password: String): Future[Result] = {
-    buildRequest(createAdminQuery(username, password)).flatMap(toResult)
+    readRequest(createAdminQuery(username, password)).flatMap(toResult)
   }
 
   def dropUser(username: String): Future[Result] = {
-    buildRequest(dropUserQuery(username)).flatMap(toResult)
+    readRequest(dropUserQuery(username)).flatMap(toResult)
   }
 
   def setUserPassword(username: String, password: String): Future[Result] = {
-    buildRequest(setUserPasswordQuery(username, password)).flatMap(toResult)
+    readRequest(setUserPasswordQuery(username, password)).flatMap(toResult)
   }
 
   def setPrivileges(username: String,
                     dbName: String,
                     privilege: Privilege): Future[Result] = {
 
-    buildRequest(setPrivilegesQuery(dbName, username, privilege)).flatMap(toResult)
+    readRequest(setPrivilegesQuery(dbName, username, privilege)).flatMap(toResult)
   }
 
   def revokePrivileges(username: String,
                        dbName: String,
                        privilege: Privilege): Future[Result] = {
 
-    buildRequest(revokePrivilegesQuery(dbName, username, privilege)).flatMap(toResult)
+    readRequest(revokePrivilegesQuery(dbName, username, privilege)).flatMap(toResult)
   }
 
   def makeAdmin(username: String): Future[Result] = {
-    buildRequest(makeAdminQuery(username)).flatMap(toResult)
+    readRequest(makeAdminQuery(username)).flatMap(toResult)
   }
 
   def disableAdmin(username: String): Future[Result] = {
-    buildRequest(disableAdminQuery(username)).flatMap(toResult)
+    readRequest(disableAdminQuery(username)).flatMap(toResult)
   }
 
   def showUsers(): Future[QueryResult[UserInfo]] = {
-    buildRequest(showUsersQuery).flatMap(toQueryResult[UserInfo])
+    readRequest(showUsersQuery).flatMap(toQueryResult[UserInfo])
   }
 
   def showUserPrivileges(username: String): Future[QueryResult[UserPrivilegesInfo]] = {
-    buildRequest(showUserPrivilegesQuery(username)).flatMap(toQueryResult[UserPrivilegesInfo])
+    readRequest(showUserPrivilegesQuery(username)).flatMap(toQueryResult[UserPrivilegesInfo])
   }
 }

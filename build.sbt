@@ -1,6 +1,5 @@
-import Dependencies.paradise
 import sbt.Keys.{crossScalaVersions, organization, publishArtifact, resolvers, version}
-import sbt.{compilerPlugin, url}
+import sbt.url
 import scoverage.ScoverageKeys.coverageMinimum
 
 lazy val commonSettings = Seq(
@@ -30,24 +29,22 @@ lazy val publishSettings = Seq(
   )
 )
 
+lazy val root = (project in file("."))
+  .aggregate(core, akkaHttp, asyncHttp)
+
 lazy val core = project
   .settings(commonSettings: _*)
   .settings(publishSettings: _*)
   .settings(
     name := "chronicler-core",
-
     scalaVersion := "2.12.2",
-
     crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
-
     scalacOptions ++= Seq(
       "-feature",
       "-language:implicitConversions",
       "-language:postfixOps",
       "-Xplugin-require:macroparadise"),
-
     resolvers ++= Dependencies.projectResolvers,
-
     libraryDependencies ++= Dependencies.coreDep
   )
 
@@ -56,17 +53,11 @@ lazy val akkaHttp = (project in file("akka-http"))
   .settings(publishSettings: _*)
   .settings(
     name := "chronicler-akka-http",
-
     scalaVersion := "2.12.4",
-
     crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
-
     libraryDependencies ++= Dependencies.akkaHttpDep,
-
     coverageMinimum := Coverage.min,
-
-    coverageExcludedPackages := Coverage.exclude
-
+    coverageExcludedPackages := Coverage.exclude // todo: change
   ).dependsOn(core)
 
 lazy val asyncHttp = (project in file("async-http"))
@@ -75,7 +66,8 @@ lazy val asyncHttp = (project in file("async-http"))
   .settings(
     name := "chronicler-async-http",
     scalaVersion := "2.12.4",
-    crossScalaVersions := Seq(scalaVersion.value, "2.11.11")
+    crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
+    libraryDependencies ++= Dependencies.asyncHttpDep
   ).dependsOn(core)
 
 //credentials += Credentials(

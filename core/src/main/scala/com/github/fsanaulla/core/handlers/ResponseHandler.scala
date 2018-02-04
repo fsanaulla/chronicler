@@ -11,7 +11,7 @@ import scala.concurrent.{ExecutionContext, Future}
   * response handle flow, for every backend implementation
   * @tparam R - Backend HTTP response type, for example for Akka HTTP backend - HttpResponse
   */
-trait ResponseHandler[R] {
+private[fsanaulla] trait ResponseHandler[R] {
 
   protected implicit val ex: ExecutionContext
 
@@ -97,5 +97,20 @@ trait ResponseHandler[R] {
       response,
       (name: String, seq: Seq[ShardGroup]) => ShardGroupsInfo(name, seq)
     )
+  }
+
+  def isSuccessful(code: Int): Boolean = if (code >= 200 && code < 300) true else false
+
+  def errorHandler(code: Int, response: R): Future[InfluxException] = code match {
+    case 400 =>
+      getError(response).map(errMsg => new BadRequestException(errMsg))
+    case 401 =>
+      getError(response).map(errMsg => new AuthorizationException(errMsg))
+    case 404 =>
+      getError(response).map(errMsg => new ResourceNotFoundException(errMsg))
+    case code: Int if code < 599 && code >= 500 =>
+      getError(response).map(errMsg => new InternalServerError(errMsg))
+    case _ =>
+      getError(response).map(errMsg => new UnknownResponseException(errMsg))
   }
 }

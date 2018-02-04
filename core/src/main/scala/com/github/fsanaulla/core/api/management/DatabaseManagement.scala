@@ -20,30 +20,30 @@ private[fsanaulla] trait DatabaseManagement[R, U, M, E] extends DataManagementQu
                      replication: Option[Int] = None,
                      shardDuration: Option[String] = None,
                      rpName: Option[String] = None): Future[Result] = {
-    buildRequest(createDatabaseQuery(dbName, duration, replication, shardDuration, rpName))
+    readRequest(createDatabaseQuery(dbName, duration, replication, shardDuration, rpName))
       .flatMap(toResult)
   }
 
   def dropDatabase(dbName: String): Future[Result] = {
-    buildRequest(dropDatabaseQuery(dbName)).flatMap(toResult)
+    readRequest(dropDatabaseQuery(dbName)).flatMap(toResult)
   }
 
   def dropMeasurement(dbName: String, measurementName: String): Future[Result] = {
-    buildRequest(dropMeasurementQuery(dbName, measurementName)).flatMap(toResult)
+    readRequest(dropMeasurementQuery(dbName, measurementName)).flatMap(toResult)
   }
 
   def showMeasurement(dbName: String): Future[QueryResult[String]] = {
-    buildRequest(showMeasurementQuery(dbName)).flatMap(toQueryResult[String])
+    readRequest(showMeasurementQuery(dbName)).flatMap(toQueryResult[String])
   }
 
   def showDatabases(): Future[QueryResult[String]] = {
-    buildRequest(showDatabasesQuery())
+    readRequest(showDatabasesQuery())
       .flatMap(toQueryResult[String])
       .map(res => res.copy(queryResult = res.queryResult))
   }
 
   def showFieldKeys(dbName: String, measurementName: String): Future[QueryResult[FieldInfo]] = {
-    buildRequest(showFieldKeysQuery(dbName, measurementName)).flatMap(toQueryResult[FieldInfo])
+    readRequest(showFieldKeysQuery(dbName, measurementName)).flatMap(toQueryResult[FieldInfo])
   }
 
   def showTagKeys(dbName: String,
@@ -51,7 +51,7 @@ private[fsanaulla] trait DatabaseManagement[R, U, M, E] extends DataManagementQu
                   whereClause: Option[String] = None,
                   limit: Option[Int] = None,
                   offset: Option[Int] = None): Future[QueryResult[String]] = {
-    buildRequest(showTagKeysQuery(dbName, measurementName, whereClause, limit, offset))
+    readRequest(showTagKeysQuery(dbName, measurementName, whereClause, limit, offset))
       .flatMap(toQueryResult[String])
   }
 
@@ -61,7 +61,7 @@ private[fsanaulla] trait DatabaseManagement[R, U, M, E] extends DataManagementQu
                     whereClause: Option[String] = None,
                     limit: Option[Int] = None,
                     offset: Option[Int] = None): Future[QueryResult[TagValue]] = {
-    buildRequest(showTagValuesQuery(dbName, measurementName, withKey, whereClause, limit, offset))
+    readRequest(showTagValuesQuery(dbName, measurementName, withKey, whereClause, limit, offset))
       .flatMap(toQueryResult[TagValue])
   }
 }

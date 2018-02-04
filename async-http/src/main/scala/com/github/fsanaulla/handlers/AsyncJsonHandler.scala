@@ -1,7 +1,7 @@
 package com.github.fsanaulla.handlers
 
+import com.github.fsanaulla.core.handlers.JsonHandler
 import com.github.fsanaulla.utils.Extensions.RichEither
-import com.github.fsanaulla.utils.JsonHandler
 import com.softwaremill.sttp.Response
 import spray.json.{DeserializationException, JsObject}
 

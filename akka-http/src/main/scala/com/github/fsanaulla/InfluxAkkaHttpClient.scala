@@ -5,11 +5,11 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpMethods.GET
 import akka.http.scaladsl.model.{HttpMethod, HttpResponse, RequestEntity, Uri}
 import akka.stream.{ActorMaterializer, StreamTcpException}
-import com.github.fsanaulla.AkkaTypeAlias.Connection
 import com.github.fsanaulla.api._
 import com.github.fsanaulla.core.api.management._
 import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.handlers.{AkkaQueryHandler, AkkaRequestHandler, AkkaResponseHandler}
+import com.github.fsanaulla.utils.AkkaTypeAlias.Connection
 
 import scala.concurrent.{ExecutionContext, Future}
 

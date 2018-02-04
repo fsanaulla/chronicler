@@ -13,9 +13,10 @@ private[fsanaulla] trait AkkaRequestHandler
 
   protected implicit val mat: ActorMaterializer
   protected implicit val connection: Connection
+  override val defaultMethod: HttpMethod = HttpMethods.POST
 
   override def readRequest(uri: Uri,
-                           method: HttpMethod = HttpMethods.POST,
+                           method: HttpMethod,
                            entity: Option[RequestEntity] = None): Future[HttpResponse] = {
     Source
       .single(
@@ -30,8 +31,8 @@ private[fsanaulla] trait AkkaRequestHandler
   }
 
   override def writeRequest(uri: Uri,
-                            method: HttpMethod = HttpMethods.POST,
-                            entity: MessageEntity): Future[HttpResponse] = {
+                            method: HttpMethod,
+                            entity: RequestEntity): Future[HttpResponse] = {
     Source
       .single(
         HttpRequest(

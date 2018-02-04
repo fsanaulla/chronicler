@@ -1,7 +1,6 @@
 package com.github.fsanaulla.handlers
 
 import akka.http.scaladsl.model.HttpResponse
-import akka.stream.ActorMaterializer
 import com.github.fsanaulla.core.handlers.ResponseHandler
 import com.github.fsanaulla.core.model._
 import spray.json.{JsArray, JsObject}
@@ -16,7 +15,6 @@ import scala.concurrent.{ExecutionContext, Future}
 private[fsanaulla] trait AkkaResponseHandler extends ResponseHandler[HttpResponse] with AkkaJsonHandler {
 
   protected implicit val ex: ExecutionContext
-  protected implicit val mat: ActorMaterializer
 
   // Simply result's
   def toResult(response: HttpResponse): Future[Result] = {

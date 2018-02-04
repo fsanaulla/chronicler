@@ -1,7 +1,7 @@
-package com.github.fsanaulla.utils
+package com.github.fsanaulla.core.handlers
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import com.github.fsanaulla.model.InfluxReader
+import com.github.fsanaulla.core.model.InfluxReader
 import spray.json.{DefaultJsonProtocol, JsArray, JsObject, JsValue}
 
 import scala.concurrent.Future

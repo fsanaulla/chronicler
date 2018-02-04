@@ -1,6 +1,7 @@
 package com.github.fsanaulla.handlers
 
-import com.github.fsanaulla.model._
+import com.github.fsanaulla.core.handlers.ResponseHandler
+import com.github.fsanaulla.core.model._
 import com.softwaremill.sttp.Response
 import spray.json.{JsArray, JsObject}
 
