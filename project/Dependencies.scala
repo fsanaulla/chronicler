@@ -10,7 +10,7 @@ object Dependencies {
   final val scalaMeta = "org.scalameta" %% "scalameta" % Versions.scalaMeta
   final val paradise = "org.scalameta" % "paradise" % "3.0.0-M8" cross CrossVersion.full
   final val sprayJson = "com.typesafe.akka" %% "akka-http-spray-json" % Versions.akkaHttp
-  final val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalaTest % "test"
+  final val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalaTest % Test
 
   final val asyncHttp = "com.softwaremill.sttp" %% "async-http-client-backend-future" % "1.1.4"
 

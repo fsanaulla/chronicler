@@ -1,4 +1,4 @@
-package com.github.fsanaulla.core.model
+package com.github.fsanaulla.models
 
 import java.net.InetAddress
 

@@ -30,7 +30,7 @@ lazy val publishSettings = Seq(
 )
 
 lazy val root = (project in file("."))
-  .aggregate(core, akkaHttp, asyncHttp)
+  .aggregate(core, akkaHttp, asyncHttp, udp)
 
 lazy val core = project
   .settings(commonSettings: _*)
@@ -68,6 +68,15 @@ lazy val asyncHttp = (project in file("async-http"))
     scalaVersion := "2.12.4",
     crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
     libraryDependencies ++= Dependencies.asyncHttpDep
+  ).dependsOn(core)
+
+lazy val udp = (project in file("udp-client"))
+  .settings(commonSettings: _*)
+  .settings(publishSettings: _*)
+  .settings(
+    name := "chronicler-udp",
+    scalaVersion := "2.12.4",
+    crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
   ).dependsOn(core)
 
 //credentials += Credentials(
