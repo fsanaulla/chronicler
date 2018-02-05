@@ -31,7 +31,7 @@ class DatabaseSpec extends TestSpec {
     influx.createDatabase(testDB).futureValue shouldEqual OkResult
 
     // WRITE - READ TEST
-    nonTpSfApi.writeFromFile("points.txt").futureValue shouldEqual NoContentResult
+    nonTpSfApi.writeFromFile("akkaHttp/src/test/resources/points.txt").futureValue shouldEqual NoContentResult
 //    nonTpSfApi.readJs("SELECT * FROM test1").futureValue.queryResult.size shouldEqual 3
   }
 
