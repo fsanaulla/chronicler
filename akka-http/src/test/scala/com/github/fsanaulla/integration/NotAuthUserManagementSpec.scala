@@ -33,7 +33,6 @@ class NotAuthUserManagementSpec
   lazy val influx: InfluxAkkaHttpClient = InfluxClientFactory.createHttpClient(influxHost)
 
   "Not authorized user" should  "not create database" in {
-    // INIT INFLUX CLIEN
     influx.createDatabase(userDB).futureValue.ex.value shouldBe a[AuthorizationException]
   }
 

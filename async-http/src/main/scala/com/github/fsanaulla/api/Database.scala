@@ -1,35 +1,60 @@
 package com.github.fsanaulla.api
 
+import java.io.File
+
 import com.github.fsanaulla.core.api.DatabaseApi
 import com.github.fsanaulla.core.model._
-import com.github.fsanaulla.core.utils.constants.{Consistencys, Epochs, Precisions}
+import com.github.fsanaulla.core.utils.constants.Consistencys.Consistency
+import com.github.fsanaulla.core.utils.constants.Precisions.Precision
+import com.github.fsanaulla.core.utils.constants.{Consistencys, Precisions}
 import com.github.fsanaulla.io.{AsyncReader, AsyncWriter}
 import com.softwaremill.sttp.SttpBackend
-import spray.json.JsArray
 
 import scala.concurrent.{ExecutionContext, Future}
 
-private[fsanaulla] class Database(dbNamae: String)
-                                 (override protected implicit val credentials: InfluxCredentials,
-                                  override protected implicit val backend: SttpBackend[Future, Nothing],
-                                  override protected implicit val ex: ExecutionContext)
-  extends DatabaseApi[String]
+private[fsanaulla] class Database(dbName: String)
+                                 (protected implicit val credentials: InfluxCredentials,
+                                  protected implicit val backend: SttpBackend[Future, Nothing],
+                                  protected implicit val ex: ExecutionContext)
+  extends DatabaseApi[String](dbName)
     with AsyncWriter
     with AsyncReader {
 
-  override def writeNative(point: String, consistency: Consistencys.Consistency, precision: Precisions.Precision, retentionPolicy: Option[String]): Future[Result] = ???
+  import com.github.fsanaulla.models.StringDeserializers._
 
-  override def bulkWriteNative(points: Seq[String], consistency: Consistencys.Consistency, precision: Precisions.Precision, retentionPolicy: Option[String]): Future[Result] = ???
+  def writeFromFile(file: File,
+                    chunkSize: Int = 8192,
+                    consistency: Consistency = Consistencys.ONE,
+                    precision: Precision = Precisions.NANOSECONDS,
+                    retentionPolicy: Option[String] = None): Future[Result] = {
+    writeFromFile0(file, chunkSize, consistency, precision, retentionPolicy)
+  }
 
-  override def writeFromFile(path: String, chunkSize: Int, consistency: Consistencys.Consistency, precision: Precisions.Precision, retentionPolicy: Option[String]): Future[Result] = ???
+  def writeNative(point: String,
+                  consistency: Consistency = Consistencys.ONE,
+                  precision: Precision = Precisions.NANOSECONDS,
+                  retentionPolicy: Option[String] = None): Future[Result] = {
+    writeNative0(point, consistency, precision, retentionPolicy)
+  }
 
-  override def writePoint(point: Point, consistency: Consistencys.Consistency, precision: Precisions.Precision, retentionPolicy: Option[String]): Future[Result] = ???
+  def bulkWriteNative(points: Seq[String],
+                      consistency: Consistency = Consistencys.ONE,
+                      precision: Precision = Precisions.NANOSECONDS,
+                      retentionPolicy: Option[String] = None): Future[Result] = {
+    bulkWriteNative0(points, consistency, precision, retentionPolicy)
+  }
 
-  override def bulkWritePoints(points: Seq[Point], consistency: Consistencys.Consistency, precision: Precisions.Precision, retentionPolicy: Option[String]): Future[Result] = ???
+  def writePoint(point: Point,
+                 consistency: Consistency = Consistencys.ONE,
+                 precision: Precision = Precisions.NANOSECONDS,
+                 retentionPolicy: Option[String] = None): Future[Result] = {
+    writePoint0(point, consistency, precision, retentionPolicy)
+  }
 
-  override def read[A](query: String, epoch: Epochs.Epoch, pretty: Boolean, chunked: Boolean)(implicit reader: InfluxReader[A]): Future[QueryResult[A]] = ???
-
-  override def bulkReadJs(querys: Seq[String], epoch: Epochs.Epoch, pretty: Boolean, chunked: Boolean): Future[QueryResult[Seq[JsArray]]] = ???
-
-  override def write0(dbName: String, entity: String, consistency: Consistencys.Consistency, precision: Precisions.Precision, retentionPolicy: Option[String]): Future[Result] = ???
+  def bulkWritePoints(points: Seq[Point],
+                      consistency: Consistency = Consistencys.ONE,
+                      precision: Precision = Precisions.NANOSECONDS,
+                      retentionPolicy: Option[String] = None): Future[Result] = {
+    bulkWritePoints0(points, consistency, precision, retentionPolicy)
+  }
 }

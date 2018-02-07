@@ -35,9 +35,4 @@ trait SystemManagement[E] {
     */
   def close(): Future[Unit]
 
-  /**
-    * Close HTTP connection  and  shut down actor system
-    */
-  def closeAll(): Future[Unit]
-
 }

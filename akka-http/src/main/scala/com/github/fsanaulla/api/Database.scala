@@ -1,22 +1,17 @@
 package com.github.fsanaulla.api
 
-import java.nio.file.Paths
+import java.io.File
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl.model.{HttpEntity, RequestEntity}
+import akka.http.scaladsl.model.RequestEntity
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.FileIO
 import com.github.fsanaulla.core.api.DatabaseApi
 import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.core.utils.constants.Consistencys.Consistency
-import com.github.fsanaulla.core.utils.constants.Epochs.Epoch
 import com.github.fsanaulla.core.utils.constants.Precisions.Precision
-import com.github.fsanaulla.core.utils.constants.{Consistencys, Epochs, Precisions}
+import com.github.fsanaulla.core.utils.constants.{Consistencys, Precisions}
 import com.github.fsanaulla.io.{AkkaReader, AkkaWriter}
-import com.github.fsanaulla.models.HttpWriters._
-import com.github.fsanaulla.utils.AkkaContentTypes.OctetStream
 import com.github.fsanaulla.utils.AkkaTypeAlias.Connection
-import spray.json.JsArray
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -31,75 +26,45 @@ private[fsanaulla] class Database(dbName: String)
                                   override protected implicit val mat: ActorMaterializer,
                                   override protected implicit val ex: ExecutionContext,
                                   override protected implicit val connection: Connection)
-  extends DatabaseApi[RequestEntity]
+  extends DatabaseApi[RequestEntity](dbName)
     with AkkaWriter
     with AkkaReader {
 
-  override def writeNative(point: String,
-                           consistency: Consistency = Consistencys.ONE,
-                           precision: Precision = Precisions.NANOSECONDS,
-                           retentionPolicy: Option[String] = None): Future[Result] = {
+  import com.github.fsanaulla.models.HttpDeserializers._
 
-    write0(dbName, point, consistency, precision, retentionPolicy)
-  }
-
-  override def bulkWriteNative(points: Seq[String],
-                      consistency: Consistency = Consistencys.ONE,
-                      precision: Precision = Precisions.NANOSECONDS,
-                      retentionPolicy: Option[String] = None): Future[Result] = {
-
-    write0(dbName, points, consistency, precision, retentionPolicy)
-  }
-
-  override def writeFromFile(path: String,
+  def writeFromFile(file: File,
                     chunkSize: Int = 8192,
                     consistency: Consistency = Consistencys.ONE,
                     precision: Precision = Precisions.NANOSECONDS,
                     retentionPolicy: Option[String] = None): Future[Result] = {
-
-    val entity = HttpEntity(
-      OctetStream,
-      FileIO.fromPath(Paths.get(path), chunkSize = chunkSize)
-    )
-
-    write0(dbName, entity, consistency, precision, retentionPolicy)
+    writeFromFile0(file, chunkSize, consistency, precision, retentionPolicy)
   }
 
-  override def writePoint(point: Point,
-                 consistency: Consistency = Consistencys.ONE,
-                 precision: Precision = Precisions.NANOSECONDS,
-                 retentionPolicy: Option[String] = None): Future[Result] = {
-
-    write0(dbName, point, consistency, precision, retentionPolicy)
+  def writeNative(point: String,
+                         consistency: Consistency = Consistencys.ONE,
+                         precision: Precision = Precisions.NANOSECONDS,
+                         retentionPolicy: Option[String] = None): Future[Result] = {
+    writeNative0(point, consistency, precision, retentionPolicy)
   }
 
-  override def bulkWritePoints(points: Seq[Point],
-                      consistency: Consistency = Consistencys.ONE,
-                      precision: Precision = Precisions.NANOSECONDS,
-                      retentionPolicy: Option[String] = None): Future[Result] = {
-
-    write0(dbName, points, consistency, precision, retentionPolicy)
+  def bulkWriteNative(points: Seq[String],
+                             consistency: Consistency = Consistencys.ONE,
+                             precision: Precision = Precisions.NANOSECONDS,
+                             retentionPolicy: Option[String] = None): Future[Result] = {
+    bulkWriteNative0(points, consistency, precision, retentionPolicy)
   }
 
-  override def read[A](query: String,
-              epoch: Epoch = Epochs.NANOSECONDS,
-              pretty: Boolean = false,
-              chunked: Boolean = false)
-             (implicit reader: InfluxReader[A]): Future[QueryResult[A]] = {
-
-    readJs0(dbName, query, epoch, pretty, chunked) map { res =>
-      QueryResult[A](
-        res.code,
-        isSuccess = res.isSuccess,
-        res.queryResult.map(reader.read),
-        res.ex)
-    }
+  def writePoint(point: Point,
+                        consistency: Consistency = Consistencys.ONE,
+                        precision: Precision = Precisions.NANOSECONDS,
+                        retentionPolicy: Option[String] = None): Future[Result] = {
+    writePoint0(point, consistency, precision, retentionPolicy)
   }
 
-  override def bulkReadJs(querys: Seq[String],
-                 epoch: Epoch = Epochs.NANOSECONDS,
-                 pretty: Boolean = false,
-                 chunked: Boolean = false): Future[QueryResult[Seq[JsArray]]] = {
-    bulkReadJs0(dbName, querys, epoch, pretty, chunked)
+  def bulkWritePoints(points: Seq[Point],
+                             consistency: Consistency = Consistencys.ONE,
+                             precision: Precision = Precisions.NANOSECONDS,
+                             retentionPolicy: Option[String] = None): Future[Result] = {
+    bulkWritePoints0(points, consistency, precision, retentionPolicy)
   }
 }

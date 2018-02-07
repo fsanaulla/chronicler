@@ -30,11 +30,11 @@ private[fsanaulla] trait AkkaWriter
   protected implicit val mat: ActorMaterializer
   protected implicit val connection: Connection
 
-  protected def write0(dbName: String,
-                       entity: RequestEntity,
-                       consistency: Consistency,
-                       precision: Precision,
-                       retentionPolicy: Option[String]): Future[Result] = {
+  def write0(dbName: String,
+             entity: RequestEntity,
+             consistency: Consistency,
+             precision: Precision,
+             retentionPolicy: Option[String]): Future[Result] = {
 
     writeRequest(
       uri = writeToInfluxQuery(

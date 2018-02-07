@@ -9,15 +9,15 @@ import com.github.fsanaulla.utils.AkkaTypeAlias.Connection
 import scala.concurrent.Future
 
 private[fsanaulla] trait AkkaRequestHandler
-  extends RequestHandler[HttpResponse, Uri, HttpMethod, RequestEntity] {
+  extends RequestHandler[HttpResponse, Uri, HttpMethod, MessageEntity] {
 
   protected implicit val mat: ActorMaterializer
   protected implicit val connection: Connection
-  override val defaultMethod: HttpMethod = HttpMethods.POST
+  protected val defaultMethod: HttpMethod = HttpMethods.POST
 
   override def readRequest(uri: Uri,
                            method: HttpMethod,
-                           entity: Option[RequestEntity] = None): Future[HttpResponse] = {
+                           entity: Option[MessageEntity] = None): Future[HttpResponse] = {
     Source
       .single(
         HttpRequest(
@@ -31,8 +31,8 @@ private[fsanaulla] trait AkkaRequestHandler
   }
 
   override def writeRequest(uri: Uri,
-                            method: HttpMethod,
-                            entity: RequestEntity): Future[HttpResponse] = {
+                            method: HttpMethod = HttpMethods.POST,
+                            entity: MessageEntity): Future[HttpResponse] = {
     Source
       .single(
         HttpRequest(

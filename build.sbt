@@ -42,8 +42,7 @@ lazy val core = project
     scalacOptions ++= Seq(
       "-feature",
       "-language:implicitConversions",
-      "-language:postfixOps",
-      "-Xplugin-require:macroparadise"),
+      "-language:postfixOps"),
     resolvers ++= Dependencies.projectResolvers,
     libraryDependencies ++= Dependencies.coreDep
   )

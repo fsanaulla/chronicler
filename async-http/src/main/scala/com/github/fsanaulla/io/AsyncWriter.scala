@@ -1,7 +1,7 @@
 package com.github.fsanaulla.io
 
 import com.github.fsanaulla.core.io.WriteOperations
-import com.github.fsanaulla.core.model.Result
+import com.github.fsanaulla.core.model.{InfluxCredentials, Result}
 import com.github.fsanaulla.core.query.DatabaseOperationQuery
 import com.github.fsanaulla.core.utils.PointTransformer
 import com.github.fsanaulla.core.utils.constants.Consistencys.Consistency
@@ -18,10 +18,22 @@ private[fsanaulla] trait AsyncWriter
     with AsyncQueryHandler
     with PointTransformer { self: WriteOperations[String] =>
 
+  protected implicit val credentials: InfluxCredentials
+
   override def write0(dbName: String,
                       entity: String,
                       consistency: Consistency,
                       precision: Precision,
-                      retentionPolicy: Option[String]): Future[Result]
+                      retentionPolicy: Option[String]): Future[Result] = {
+    writeRequest(
+      uri = writeToInfluxQuery(
+        dbName,
+        consistency,
+        precision,
+        retentionPolicy
+      ),
+      entity = entity
+    ).flatMap(toResult)
+  }
 
 }

@@ -12,6 +12,7 @@ import scala.concurrent.Future
 private[fsanaulla] trait RequestHandler[R, U, M, E] {
 
   protected val defaultMethod: M
+
   /**
     * Build and execute HTTP request
     * @param uri - uri path
@@ -21,5 +22,5 @@ private[fsanaulla] trait RequestHandler[R, U, M, E] {
     */
   def readRequest(uri: U, method: M = defaultMethod, entity: Option[E] = None): Future[R]
 
-  def writeRequest(uri: U, method: M = defaultMethod, entity: E): Future[R]
+  def writeRequest(uri: U, method: M, entity: E): Future[R]
 }

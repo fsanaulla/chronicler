@@ -12,7 +12,7 @@ private[fsanaulla] trait AsyncRequestHandler
   extends RequestHandler[Response[JsObject], Uri, Method, String] {
 
   protected implicit val backend: SttpBackend[Future, Nothing]
-  override val defaultMethod: Method = Method.POST
+  protected val defaultMethod: Method = Method.POST
 
   private val asJson: ResponseAs[JsObject, Nothing] = asString.map(JsonParser(_)).map(_.asJsObject)
 
@@ -24,7 +24,7 @@ private[fsanaulla] trait AsyncRequestHandler
     }
   }
 
-  override def writeRequest(uri: Uri, method: Method, entity: String): Future[Response[JsObject]] = {
+  override def writeRequest(uri: Uri, method: Method = Method.POST, entity: String): Future[Response[JsObject]] = {
     method match {
       // todo: expanse methods list
       case Method.POST => sttp.post(uri).body(entity).response(asJson).send()
