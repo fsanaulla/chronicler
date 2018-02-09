@@ -1,4 +1,5 @@
-# Chronicler [![Build Status](https://travis-ci.org/fsanaulla/chronicler.svg?branch=master)](https://travis-ci.org/fsanaulla/chronicler) [![Coverage Status](https://coveralls.com.github.fsanaulla.io/repos/github/fsanaulla/chronicler/badge.svg?branch=master)](https://coveralls.com.github.fsanaulla.io/github/fsanaulla/chronicler?branch=master)
+# Chronicler
+[![Build Status](https://travis-ci.org/fsanaulla/chronicler.svg?branch=master)](https://travis-ci.org/fsanaulla/chronicler)  [![Coverage Status](https://coveralls.com.github.fsanaulla.io/repos/github/fsanaulla/chronicler/badge.svg?branch=master)](https://coveralls.com.github.fsanaulla.io/github/fsanaulla/chronicler?branch=master)
 
 Chronicler - asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](https://www.influxdata.com/).
 # Versions
