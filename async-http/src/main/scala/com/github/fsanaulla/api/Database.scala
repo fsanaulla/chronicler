@@ -12,7 +12,7 @@ import com.softwaremill.sttp.SttpBackend
 
 import scala.concurrent.{ExecutionContext, Future}
 
-private[fsanaulla] class Database(dbName: String)
+private[fsanaulla] class Database(val host: String, val port: Int, dbName: String)
                                  (protected implicit val credentials: InfluxCredentials,
                                   protected implicit val backend: SttpBackend[Future, Nothing],
                                   protected implicit val ex: ExecutionContext)
@@ -20,7 +20,7 @@ private[fsanaulla] class Database(dbName: String)
     with AsyncWriter
     with AsyncReader {
 
-  import com.github.fsanaulla.models.StringDeserializers._
+  import com.github.fsanaulla.models.StringDeserializer._
 
   def writeFromFile(file: File,
                     chunkSize: Int = 8192,

@@ -7,7 +7,7 @@ import com.github.fsanaulla.core.model.InfluxImplicits._
 import com.github.fsanaulla.core.model.Point
 import com.github.fsanaulla.utils.SampleEntitys._
 import com.github.fsanaulla.utils.TestHelper._
-import com.github.fsanaulla.{InfluxAkkaHttpClient, InfluxClientFactory, TestSpec}
+import com.github.fsanaulla.{InfluxAsyncHttpClient, InfluxClientFactory, TestSpec}
 import spray.json.{JsArray, JsValue}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -20,7 +20,7 @@ class DatabaseSpec extends TestSpec {
   val testDB = "database_spec_db"
 
   // INIT INFLUX CLIENT
-  lazy val influx: InfluxAkkaHttpClient = InfluxClientFactory.createHttpClient(
+  lazy val influx: InfluxAsyncHttpClient = InfluxClientFactory.createHttpClient(
       host = influxHost,
       username = credentials.username,
       password = credentials.password)

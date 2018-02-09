@@ -1,7 +1,5 @@
 package com.github.fsanaulla
 
-import akka.actor.ActorSystem
-
 import scala.concurrent.ExecutionContext
 
 object InfluxClientFactory {
@@ -9,7 +7,6 @@ object InfluxClientFactory {
                        port: Int = 8086,
                        username: Option[String] = None,
                        password: Option[String] = None)
-                      (implicit ex: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global, system: ActorSystem = ActorSystem()) =
+                      (implicit ex: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global) =
     new InfluxAsyncHttpClient(host, port, username, password)
-
 }

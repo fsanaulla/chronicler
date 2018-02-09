@@ -12,8 +12,8 @@ import spray.json.JsArray
 
 import scala.concurrent.{ExecutionContext, Future}
 
-abstract class DatabaseApi[E](dbName: String)
-                             (implicit ex: ExecutionContext)
+private[fsanaulla] abstract class DatabaseApi[E](dbName: String)
+                                                (implicit ex: ExecutionContext)
   extends ReadOperations
     with WriteOperations[E] {
 

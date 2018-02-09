@@ -2,7 +2,6 @@ package com.github.fsanaulla
 
 import com.github.fsanaulla.api.{Database, Measurement}
 import com.github.fsanaulla.core.api.management._
-import com.github.fsanaulla.core.api.{DatabaseApi, MeasurementApi}
 import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials, Result}
 import com.github.fsanaulla.handlers._
 import com.softwaremill.sttp.asynchttpclient.future.AsyncHttpClientFutureBackend
@@ -11,8 +10,8 @@ import spray.json.JsObject
 
 import scala.concurrent.{ExecutionContext, Future}
 
-private[fsanaulla] class InfluxAsyncHttpClient(host: String,
-                                               port: Int,
+private[fsanaulla] class InfluxAsyncHttpClient(val host: String,
+                                               val port: Int,
                                                username: Option[String],
                                                password: Option[String])(implicit val ex: ExecutionContext)
   extends AsyncRequestHandler
@@ -35,7 +34,7 @@ private[fsanaulla] class InfluxAsyncHttpClient(host: String,
     * @param dbName - database name
     * @return Database instance that provide non type safe operations
     */
-  override def database(dbName: String): DatabaseApi[String] = new Database(dbName)
+  override def database(dbName: String): Database = new Database(host, port, dbName)
 
   /**
     *
@@ -45,8 +44,8 @@ private[fsanaulla] class InfluxAsyncHttpClient(host: String,
     * @return - Measurement instance of type [A]
     */
   override def measurement[A](dbName: String,
-                              measurementName: String): MeasurementApi[A, String] =
-    new Measurement[A](dbName, measurementName)
+                              measurementName: String): Measurement[A] =
+    new Measurement[A](host, port, dbName, measurementName)
 
   /**
     * Ping InfluxDB
