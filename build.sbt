@@ -37,7 +37,7 @@ lazy val core = project
   .settings(publishSettings: _*)
   .settings(
     name := "chronicler-core",
-    scalaVersion := "2.12.2",
+    scalaVersion := "2.12.4",
     crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
     scalacOptions ++= Seq(
       "-feature",

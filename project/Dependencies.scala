@@ -17,11 +17,11 @@ object Dependencies {
   final val akkaHttp = "com.typesafe.akka" %% "akka-http" % Versions.akkaHttp
 
   final val projectResolvers = Seq(
-    Resolver.sonatypeRepo("releases"),
-    Resolver.bintrayRepo("scalameta", "maven")
+    Resolver.sonatypeRepo("releases")
+//    Resolver.bintrayRepo("scalameta", "maven")
   )
 
-  final val coreDep = Seq(sprayJson, scalaMeta, compilerPlugin(paradise))
+  final val coreDep = Seq(sprayJson /*,scalaMeta, compilerPlugin(paradise)*/)
   final val akkaHttpDep = Seq(akkaHttp, scalaTest)
   final val asyncHttpDep = Seq(asyncHttp, scalaTest)
 }
