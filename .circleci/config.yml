@@ -33,11 +33,11 @@ jobs:
         - run:
             name: Run coveralls
             command: sbt coverageReport coveralls
-  workflows:
-    version: 2
-    test:
-      jobs:
-        - build
-        - test:
-            requires:
-              - build
+workflows:
+  version: 2
+  test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
