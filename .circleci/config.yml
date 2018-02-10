@@ -8,10 +8,8 @@ jobs:
          - run:
              name: Insatll sbt
              command: |
-                echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
-                sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
-                sudo apt-get update
-                sudo apt-get install sbt
+                - wget -q https://dl.bintray.com/sbt/debian/sbt-1.1.0.deb
+                - sudo dpkg -i sbt-1.1.0.deb
   test:
       docker:
         - image: circleci/openjdk:8-jdk
