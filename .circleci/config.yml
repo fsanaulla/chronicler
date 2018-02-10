@@ -8,8 +8,8 @@ jobs:
          - run:
              name: Insatll sbt
              command: |
-                - wget -q https://dl.bintray.com/sbt/debian/sbt-1.1.0.deb
-                - sudo dpkg -i sbt-1.1.0.deb
+                wget -q https://dl.bintray.com/sbt/debian/sbt-1.1.0.deb
+                sudo dpkg -i sbt-1.1.0.deb
   test:
       docker:
         - image: circleci/openjdk:8-jdk
