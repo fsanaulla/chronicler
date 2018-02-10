@@ -33,7 +33,7 @@ object TestHelper {
   }
 
   def queryTesterAuth(db: String, query: String)(implicit credentials: InfluxCredentials): Uri = {
-    uri"http://localhost:8086/query?q=$query&p=${credentials.password.get}&u=${credentials.username.get}&db=$db"
+    uri"http://localhost:8086/query?q=$query&p=${credentials.password.get}&db=$db&u=${credentials.username.get}"
   }
 
   def queryTester(query: String): Uri = {
@@ -44,11 +44,11 @@ object TestHelper {
     uri"http://localhost:8086/query?q=$query&db=$db"
   }
 
-  def writeTester(query: String): Uri = {
-    uri"http://localhost:8086/write?q=$query"
+  def writeTester(mp: Map[String, String]): Uri = {
+    uri"http://localhost:8086/write?$mp"
   }
 
   def queryTesterSimple(query: Map[String, String]): Uri = {
-    uri"http://localhost:8086/query?q=$query"
+    uri"http://localhost:8086/query?$query"
   }
 }

@@ -24,17 +24,23 @@ class DatabaseOperationQuerySpec
   val testQuery = "SELECT * FROM test"
 
   "DatabaseOperationQuery" should "return correct write query" in {
-    writeToInfluxQuery(testDB, Consistencys.ONE, Precisions.NANOSECONDS, None) shouldEqual
-      writeTester(s"precision=ns&u=${credentials.username.get}&consistency=one&db=$testDB&p=${credentials.password.get}")
+    val tm = Map(
+      "precision" -> "ns",
+      "u" -> credentials.username.get,
+      "consistency" -> "one",
+      "db" -> testDB,
+      "p" -> credentials.password.get
+    )
+    writeToInfluxQuery(testDB, Consistencys.ONE, Precisions.NANOSECONDS, None) shouldEqual writeTester(tm)
 
     writeToInfluxQuery(testDB, Consistencys.ONE, Precisions.NANOSECONDS, None)(emptyCredentials) shouldEqual
-      writeTester(s"db=$testDB&precision=ns&consistency=one")
+      writeTester(Map("db" -> testDB, "precision" -> "ns", "consistency" -> "one"))
 
     writeToInfluxQuery(testDB, Consistencys.ALL, Precisions.NANOSECONDS, None) shouldEqual
-      writeTester(s"precision=ns&u=${credentials.username.get}&consistency=all&db=$testDB&p=${credentials.password.get}")
+      writeTester(Map("precision" -> "ns", "u" -> credentials.username.get, "consistency" -> "all", "db" -> testDB, "p" -> credentials.password.get))
 
     writeToInfluxQuery(testDB, Consistencys.ONE, Precisions.MICROSECONDS, None)(emptyCredentials) shouldEqual
-      writeTester(s"db=$testDB&precision=u&consistency=one")
+      writeTester(Map("db" -> testDB, "precision" -> "u", "consistency" -> "one"))
   }
 
   it should "return correct single read query" in {

@@ -1,7 +1,6 @@
 package com.github.fsanaulla.utils
 
 import akka.http.scaladsl.model.Uri
-import com.github.fsanaulla.core.macros.{field, formattable, tag}
 import com.github.fsanaulla.core.model._
 import spray.json.{DeserializationException, JsArray, JsNumber, JsString}
 

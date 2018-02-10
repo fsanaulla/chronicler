@@ -21,7 +21,7 @@ object Dependencies {
 //    Resolver.bintrayRepo("scalameta", "maven")
   )
 
-  final val coreDep = Seq(sprayJson /*,scalaMeta, compilerPlugin(paradise)*/)
+  final val coreDep = Seq(sprayJson /*,scalaMeta, compilerPlugin(paradise)*/, scalaTest)
   final val akkaHttpDep = Seq(akkaHttp, scalaTest)
   final val asyncHttpDep = Seq(asyncHttp, scalaTest)
 }

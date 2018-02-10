@@ -1,10 +1,6 @@
 package com.github.fsanaulla.unit
 
 import com.github.fsanaulla.TestSpec
-import com.github.fsanaulla.core.macros._
-import com.github.fsanaulla.core.model.{InfluxReader, InfluxWriter}
-import org.scalatest.Ignore
-import spray.json.{JsArray, JsNumber, JsString}
 
 /**
   * Created by
