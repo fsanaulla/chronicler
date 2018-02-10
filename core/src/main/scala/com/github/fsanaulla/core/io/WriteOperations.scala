@@ -8,7 +8,7 @@ import scala.concurrent.Future
 
 private[fsanaulla] trait WriteOperations[E] {
 
-  def write0(dbName: String,
+  def _write(dbName: String,
              entity: E,
              consistency: Consistency,
              precision: Precision,

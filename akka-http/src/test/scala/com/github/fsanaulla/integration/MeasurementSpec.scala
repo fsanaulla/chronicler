@@ -12,9 +12,9 @@ import com.github.fsanaulla.{InfluxAkkaHttpClient, InfluxClientFactory, TestSpec
   */
 class MeasurementSpec extends TestSpec {
 
-  val safeDB = "meas_db"
+  val safeDB = "akka_meas_db"
 
-  val measName = "meas"
+  val measName = "akka_meas"
 
   // INIT INFLUX CLIENT
   lazy val influx: InfluxAkkaHttpClient = InfluxClientFactory.createHttpClient(
@@ -23,21 +23,17 @@ class MeasurementSpec extends TestSpec {
       password = credentials.password
   )
 
-  lazy val meas: Measurement[FakeEntity] = influx.measurement[FakeEntity](safeDB, measName)
+  lazy val meas: Measurement[FakeEntity] =
+    influx.measurement[FakeEntity](safeDB, measName)
 
 
-  "Safe entity" should "init env" in {
-
+  "Safe entity" should "write typed entity" in {
     influx.createDatabase(safeDB).futureValue shouldEqual OkResult
-  }
-
-  it should "make safe single write" in {
-
+    
     meas.write(singleEntity).futureValue shouldEqual NoContentResult
   }
 
   it should "make safe bulk write" in {
-
     meas.bulkWrite(multiEntitys).futureValue shouldEqual NoContentResult
   }
 }

@@ -29,7 +29,7 @@ lazy val publishSettings = Seq(
   )
 )
 
-lazy val root = (project in file("."))
+lazy val chronicler = (project in file("."))
   .aggregate(core, akkaHttp, asyncHttp, udp)
 
 lazy val core = project

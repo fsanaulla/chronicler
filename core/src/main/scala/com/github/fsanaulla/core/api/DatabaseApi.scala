@@ -23,7 +23,7 @@ private[fsanaulla] abstract class DatabaseApi[E](dbName: String)
                            precision: Precision = Precisions.NANOSECONDS,
                            retentionPolicy: Option[String] = None)
                           (implicit ds: Deserializer[File, E]): Future[Result] = {
-    write0(dbName, ds.deserialize(file), consistency, precision, retentionPolicy)
+    _write(dbName, ds.deserialize(file), consistency, precision, retentionPolicy)
   }
 
   final def writeNative0(point: String,
@@ -31,7 +31,7 @@ private[fsanaulla] abstract class DatabaseApi[E](dbName: String)
                          precision: Precision = Precisions.NANOSECONDS,
                          retentionPolicy: Option[String] = None)
                         (implicit ds: Deserializer[String, E]): Future[Result] = {
-    write0(dbName, ds.deserialize(point), consistency, precision, retentionPolicy)
+    _write(dbName, ds.deserialize(point), consistency, precision, retentionPolicy)
   }
 
   final def bulkWriteNative0(points: Seq[String],
@@ -39,7 +39,7 @@ private[fsanaulla] abstract class DatabaseApi[E](dbName: String)
                              precision: Precision = Precisions.NANOSECONDS,
                              retentionPolicy: Option[String] = None)
                             (implicit ds: Deserializer[Seq[String], E]): Future[Result] = {
-    write0(dbName, ds.deserialize(points), consistency, precision, retentionPolicy)
+    _write(dbName, ds.deserialize(points), consistency, precision, retentionPolicy)
   }
 
   final def writePoint0(point: Point,
@@ -47,7 +47,7 @@ private[fsanaulla] abstract class DatabaseApi[E](dbName: String)
                         precision: Precision = Precisions.NANOSECONDS,
                         retentionPolicy: Option[String] = None)
                        (implicit ds: Deserializer[Point, E]): Future[Result] = {
-    write0(dbName, ds.deserialize(point), consistency, precision, retentionPolicy)
+    _write(dbName, ds.deserialize(point), consistency, precision, retentionPolicy)
   }
 
   final def bulkWritePoints0(points: Seq[Point],
@@ -55,7 +55,7 @@ private[fsanaulla] abstract class DatabaseApi[E](dbName: String)
                              precision: Precision = Precisions.NANOSECONDS,
                              retentionPolicy: Option[String] = None)
                             (implicit ds: Deserializer[Seq[Point], E]): Future[Result] = {
-    write0(dbName, ds.deserialize(points), consistency, precision, retentionPolicy)
+    _write(dbName, ds.deserialize(points), consistency, precision, retentionPolicy)
   }
 
   final def read[A](query: String,

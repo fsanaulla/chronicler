@@ -8,7 +8,6 @@ import com.github.fsanaulla.core.utils.constants.Precisions.Precision
 
 import scala.concurrent.Future
 
-
 //todo: implement typesafe read operation
 private[fsanaulla] abstract class MeasurementApi[E, R](dbName: String,
                                                        measurementName: String)
@@ -20,7 +19,7 @@ private[fsanaulla] abstract class MeasurementApi[E, R](dbName: String,
                    retentionPolicy: Option[String] = None)
                   (implicit writer: InfluxWriter[E], ds: Deserializer[String, R]): Future[Result] = {
 
-    write0(
+    _write(
       dbName,
       ds.deserialize(toPoint(measurementName, writer.write(entity))),
       consistency,
@@ -35,7 +34,7 @@ private[fsanaulla] abstract class MeasurementApi[E, R](dbName: String,
                        retentionPolicy: Option[String] = None)
                       (implicit writer: InfluxWriter[E], ds: Deserializer[String, R]): Future[Result] = {
 
-    write0(
+    _write(
       dbName,
       ds.deserialize(toPoints(measurementName, entitys.map(writer.write))),
       consistency,
