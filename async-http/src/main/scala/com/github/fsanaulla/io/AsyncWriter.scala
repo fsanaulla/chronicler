@@ -20,7 +20,7 @@ private[fsanaulla] trait AsyncWriter
 
   protected implicit val credentials: InfluxCredentials
 
-  override def write0(dbName: String,
+  override def _write(dbName: String,
                       entity: String,
                       consistency: Consistency,
                       precision: Precision,
