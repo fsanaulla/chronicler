@@ -21,7 +21,7 @@ jobs:
         - image: circleci/openjdk:8-jdk
         - image: influxdb:1.3.9
           environment:
-            INFLUXDB_CONFIG_PATH: /conf/influxdb.conf
+            INFLUXDB_CONFIG_PATH: conf/influxdb.conf
       steps:
         - checkout
         - run:
