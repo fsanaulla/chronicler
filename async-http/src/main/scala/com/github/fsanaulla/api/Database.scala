@@ -20,7 +20,7 @@ private[fsanaulla] class Database(val host: String, val port: Int, dbName: Strin
     with AsyncWriter
     with AsyncReader {
 
-  import com.github.fsanaulla.models.StringDeserializer._
+  import com.github.fsanaulla.models.AsyncDeserializers._
 
   def writeFromFile(file: File,
                     chunkSize: Int = 8192,

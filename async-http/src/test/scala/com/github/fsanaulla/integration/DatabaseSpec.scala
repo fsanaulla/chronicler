@@ -17,7 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class DatabaseSpec extends TestSpec {
 
-  val testDB = "database_spec_db"
+  val testDB = "async_database_spec_db"
 
   // INIT INFLUX CLIENT
   lazy val influx: InfluxAsyncHttpClient = InfluxClientFactory.createHttpClient(

@@ -32,7 +32,7 @@ lazy val publishSettings = Seq(
 lazy val chronicler = (project in file("."))
   .aggregate(core, akkaHttp, asyncHttp, udp)
 
-lazy val core = project
+lazy val core = (project in file("core"))
   .settings(commonSettings: _*)
   .settings(publishSettings: _*)
   .settings(

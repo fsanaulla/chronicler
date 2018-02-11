@@ -16,7 +16,7 @@ private[fsanaulla] class Measurement[E](val host: String, val port: Int, dbName:
                                         protected implicit val backend: SttpBackend[Future, Nothing])
   extends MeasurementApi[E, String](dbName, measurementName) with AsyncWriter {
 
-  import com.github.fsanaulla.models.StringDeserializer.str2Influx
+  import com.github.fsanaulla.models.AsyncDeserializers._
 
   def write(entity: E,
             consistency: Consistency = Consistencys.ONE,

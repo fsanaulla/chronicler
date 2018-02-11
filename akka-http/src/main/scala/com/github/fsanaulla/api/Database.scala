@@ -30,7 +30,7 @@ private[fsanaulla] class Database(dbName: String)
     with AkkaWriter
     with AkkaReader {
 
-  import com.github.fsanaulla.models.HttpDeserializer._
+  import com.github.fsanaulla.models.AkkaDeserializers._
 
   def writeFromFile(file: File,
                     chunkSize: Int = 8192,

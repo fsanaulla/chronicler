@@ -26,7 +26,6 @@ jobs:
         - run:
             name: Create admin user for InfluxDB
             command: "curl -G http://localhost:8086/query --data-urlencode \"q=CREATE USER admin WITH PASSWORD 'admin' WITH ALL PRIVILEGES\""
-
         - run:
             name: Compile sources
             command: sbt compile

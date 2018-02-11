@@ -17,7 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class DatabaseSpec extends TestSpec {
 
-  val testDB = "database_spec_db"
+  val testDB = "akka_database_spec_db"
 
   // INIT INFLUX CLIENT
   lazy val influx: InfluxAkkaHttpClient = InfluxClientFactory.createHttpClient(
@@ -33,7 +33,7 @@ class DatabaseSpec extends TestSpec {
     influx.createDatabase(testDB).futureValue shouldEqual OkResult
 
     // WRITE - READ TEST
-    nonTpSfApi.writeFromFile(new File(getClass.getResource("points.txt").getPath)).futureValue shouldEqual NoContentResult
+    nonTpSfApi.writeFromFile(new File("points.txt")).futureValue shouldEqual NoContentResult
 //    nonTpSfApi.readJs("SELECT * FROM test1").futureValue.queryResult.size shouldEqual 3
   }
 

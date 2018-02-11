@@ -26,7 +26,7 @@ private[fsanaulla] class Measurement[E](dbName: String, measurementName: String)
                                         protected implicit val connection: Connection)
     extends MeasurementApi[E, RequestEntity](dbName, measurementName) with AkkaWriter {
 
-  import com.github.fsanaulla.models.HttpDeserializer.str2Http
+  import com.github.fsanaulla.models.AkkaDeserializers.str2Http
 
   def write(entity: E,
             consistency: Consistency = Consistencys.ONE,
