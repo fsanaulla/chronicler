@@ -2,20 +2,20 @@ package com.github.fsanaulla.integration
 
 import java.io.File
 
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import com.github.fsanaulla.api.Database
-import com.github.fsanaulla.core.model.InfluxImplicits._
 import com.github.fsanaulla.core.model.Point
 import com.github.fsanaulla.utils.SampleEntitys._
 import com.github.fsanaulla.utils.TestHelper._
 import com.github.fsanaulla.{InfluxAkkaHttpClient, InfluxClientFactory, TestSpec}
-import spray.json.{JsArray, JsValue}
+import spray.json.{DefaultJsonProtocol, JsArray, JsValue}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * Created by fayaz on 06.07.17.
   */
-class DatabaseSpec extends TestSpec {
+class DatabaseSpec extends TestSpec with SprayJsonSupport with DefaultJsonProtocol {
 
   val testDB = "akka_database_spec_db"
 
