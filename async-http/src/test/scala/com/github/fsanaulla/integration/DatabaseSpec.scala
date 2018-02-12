@@ -25,16 +25,11 @@ class DatabaseSpec extends TestSpec {
       username = credentials.username,
       password = credentials.password)
 
-  lazy val nonTpSfApi: Database = influx.database(testDB)
+  lazy val db: Database = influx.database(testDB)
 
   "UnsafelyApi" should "write from file" in {
-
-    // CREATING DB TEST
     influx.createDatabase(testDB).futureValue shouldEqual OkResult
-
-    // WRITE - READ TEST
-    nonTpSfApi.writeFromFile(new File(getClass.getResource("points.txt").getPath)).futureValue shouldEqual NoContentResult
-//    nonTpSfApi.readJs("SELECT * FROM test1").futureValue.queryResult.size shouldEqual 3
+    db.writeFromFile(new File(getClass.getResource("/points.txt").getPath)).futureValue shouldEqual NoContentResult
   }
 
   it should "write points" in {
@@ -49,16 +44,16 @@ class DatabaseSpec extends TestSpec {
       .addTag("lastName", "Franko")
       .addField("age", 36)
 
-    nonTpSfApi.writePoint(point1).futureValue shouldEqual NoContentResult
-    nonTpSfApi.read[FakeEntity]("SELECT * FROM test2").futureValue.queryResult shouldEqual Seq(FakeEntity("Martin", "Odersky", 54))
+    db.writePoint(point1).futureValue shouldEqual NoContentResult
+    db.read[FakeEntity]("SELECT * FROM test2").futureValue.queryResult shouldEqual Seq(FakeEntity("Martin", "Odersky", 54))
 
-    nonTpSfApi.bulkWritePoints(Seq(point1, point2)).futureValue shouldEqual NoContentResult
-    nonTpSfApi.read[FakeEntity]("SELECT * FROM test2").futureValue.queryResult shouldEqual Seq(FakeEntity("Martin", "Odersky", 54), FakeEntity("Jame", "Franko", 36), FakeEntity("Martin", "Odersky", 54))
+    db.bulkWritePoints(Seq(point1, point2)).futureValue shouldEqual NoContentResult
+    db.read[FakeEntity]("SELECT * FROM test2").futureValue.queryResult shouldEqual Seq(FakeEntity("Martin", "Odersky", 54), FakeEntity("Jame", "Franko", 36), FakeEntity("Martin", "Odersky", 54))
   }
 
   it should "bulk read js" in {
 
-    val multiQuery = nonTpSfApi.bulkReadJs(
+    val multiQuery = db.bulkReadJs(
       Seq(
         "SELECT * FROM test2",
         "SELECT * FROM test2 WHERE age < 40"
@@ -83,11 +78,11 @@ class DatabaseSpec extends TestSpec {
 
   it should "write native" in {
 
-    nonTpSfApi.writeNative("test3,firstName=Jame,lastName=Lannister age=48").futureValue shouldEqual NoContentResult
-    nonTpSfApi.read[FakeEntity]("SELECT * FROM test3").futureValue.queryResult shouldEqual Seq(FakeEntity("Jame", "Lannister", 48))
+    db.writeNative("test3,firstName=Jame,lastName=Lannister age=48").futureValue shouldEqual NoContentResult
+    db.read[FakeEntity]("SELECT * FROM test3").futureValue.queryResult shouldEqual Seq(FakeEntity("Jame", "Lannister", 48))
 
-    nonTpSfApi.bulkWriteNative(Seq("test4,firstName=Jon,lastName=Snow age=24", "test4,firstName=Deny,lastName=Targaryen age=25")).futureValue shouldEqual NoContentResult
-    nonTpSfApi.read[FakeEntity]("SELECT * FROM test4").futureValue.queryResult shouldEqual Seq(FakeEntity("Deny", "Targaryen", 25), FakeEntity("Jon", "Snow", 24))
+    db.bulkWriteNative(Seq("test4,firstName=Jon,lastName=Snow age=24", "test4,firstName=Deny,lastName=Targaryen age=25")).futureValue shouldEqual NoContentResult
+    db.read[FakeEntity]("SELECT * FROM test4").futureValue.queryResult shouldEqual Seq(FakeEntity("Deny", "Targaryen", 25), FakeEntity("Jon", "Snow", 24))
   }
 
   it should "clear up after all" in {
