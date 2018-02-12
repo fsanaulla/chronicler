@@ -1,28 +1,25 @@
-package com.github.fsanaulla.unit
+package com.github.fsanaulla.handlers
 
-import akka.actor.ActorSystem
-import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
-import akka.stream.ActorMaterializer
 import com.github.fsanaulla.TestSpec
-import com.github.fsanaulla.handlers.AkkaResponseHandler
-import com.github.fsanaulla.core.model.{ContinuousQuery, ContinuousQueryInfo}
-import com.github.fsanaulla.utils.AkkaContentTypes.AppJson
-import com.github.fsanaulla.utils.SampleEntitys.singleResult
 import com.github.fsanaulla.core.model.InfluxImplicits._
+import com.github.fsanaulla.core.model.{ContinuousQuery, ContinuousQueryInfo}
+import com.github.fsanaulla.utils.SampleEntitys.singleResult
+import com.softwaremill.sttp.Response
+import spray.json.JsonParser
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
 /**
   * Created by fayaz on 12.07.17.
   */
-class ResponseHandlerSpec
+class AsyncResponseHandlerSpec
   extends TestSpec
-    with AkkaResponseHandler {
+    with AsyncResponseHandler {
 
-  implicit val actorSystem: ActorSystem = ActorSystem("TestActorSystem")
-  implicit val mat: ActorMaterializer = ActorMaterializer()
-  implicit val ex: ExecutionContext = actorSystem.dispatcher
+  protected val ex: ExecutionContext = ExecutionContext.Implicits.global
+
   implicit val timeout: FiniteDuration = 1 second
 
   val singleStrJson = """{
@@ -120,9 +117,9 @@ class ResponseHandlerSpec
     }
   """
 
-  val singleHttpResponse: HttpResponse = HttpResponse(entity = HttpEntity(AppJson, singleStrJson))
-  val cqHttpResponse: HttpResponse = HttpResponse(entity = HttpEntity(AppJson, cqStrJson))
-  val errHttpResponse = HttpResponse(entity = HttpEntity(AppJson, errJson))
+  val singleHttpResponse = Response(body = Right(JsonParser(singleStrJson).asJsObject), 200, "", Nil, Nil)
+  val cqHttpResponse = Response(Right(JsonParser(cqStrJson).asJsObject), 200, "", Nil, Nil)
+  val errHttpResponse = Response(Right(JsonParser(errJson).asJsObject), 200, "", Nil, Nil)
 
   "single query result function" should "correctly work" in {
     toQueryJsResult(singleHttpResponse).futureValue.queryResult shouldEqual singleResult
@@ -133,6 +130,7 @@ class ResponseHandlerSpec
   }
 
   "optError handler" should "correct work" in {
+
     getErrorOpt(errHttpResponse).futureValue shouldEqual Some("user not found")
   }
 }

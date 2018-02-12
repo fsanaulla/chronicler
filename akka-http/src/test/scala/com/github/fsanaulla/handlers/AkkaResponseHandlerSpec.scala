@@ -1,25 +1,28 @@
-package com.github.fsanaulla.unit
+package com.github.fsanaulla.handlers
 
+import akka.actor.ActorSystem
+import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
+import akka.stream.ActorMaterializer
 import com.github.fsanaulla.TestSpec
 import com.github.fsanaulla.core.model.InfluxImplicits._
 import com.github.fsanaulla.core.model.{ContinuousQuery, ContinuousQueryInfo}
-import com.github.fsanaulla.handlers.AsyncResponseHandler
+import com.github.fsanaulla.utils.AkkaContentTypes.AppJson
 import com.github.fsanaulla.utils.SampleEntitys.singleResult
-import com.softwaremill.sttp.Response
-import spray.json.JsonParser
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
 /**
   * Created by fayaz on 12.07.17.
   */
-class ResponseHandlerSpec
+class AkkaResponseHandlerSpec
   extends TestSpec
-    with AsyncResponseHandler {
+    with AkkaResponseHandler {
 
-  protected val ex: ExecutionContext = ExecutionContext.Implicits.global
-
+  implicit val actorSystem: ActorSystem = ActorSystem("TestActorSystem")
+  implicit val mat: ActorMaterializer = ActorMaterializer()
+  implicit val ex: ExecutionContext = actorSystem.dispatcher
   implicit val timeout: FiniteDuration = 1 second
 
   val singleStrJson = """{
@@ -53,7 +56,7 @@ class ResponseHandlerSpec
                       ]
                   }"""
 
-  val cqStrJson = """{
+  val cqStr = """{
       "results": [
         {
           "statement_id": 0,
@@ -105,7 +108,7 @@ class ResponseHandlerSpec
     }
   """
 
-  val errJson =
+  val errStr =
     """
     {
       "results": [
@@ -117,19 +120,19 @@ class ResponseHandlerSpec
     }
   """
 
-  val singleHttpResponse = Response(body = Right(JsonParser(singleStrJson).asJsObject), 200, "", Nil, Nil)
-  val cqHttpResponse = Response(Right(JsonParser(cqStrJson).asJsObject), 200, "", Nil, Nil)
-  val errHttpResponse = Response(Right(JsonParser(cqStrJson).asJsObject), 200, "", Nil, Nil)
+  val singleHttpResponse: HttpResponse = HttpResponse(entity = HttpEntity(AppJson, singleStrJson))
+  val cqHttpResponse: HttpResponse = HttpResponse(entity = HttpEntity(AppJson, cqStr))
+  val errHttpResponse = HttpResponse(entity = HttpEntity(AppJson, errStr))
 
-  "single query result function" should "correctly work" in {
+  "Response handler" should "extract query result" in {
     toQueryJsResult(singleHttpResponse).futureValue.queryResult shouldEqual singleResult
   }
 
-  "cq unpacking" should "correctly work" in {
+  it should "extract CQ information result" in {
     toCqQueryResult(cqHttpResponse).futureValue.queryResult.filter(_.querys.nonEmpty).head shouldEqual ContinuousQueryInfo("mydb", Seq(ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")))
   }
 
-  "optError handler" should "correct work" in {
+  it should "extract error message" in {
     getErrorOpt(errHttpResponse).futureValue shouldEqual Some("user not found")
   }
 }

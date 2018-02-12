@@ -80,11 +80,10 @@ private[fsanaulla] trait AkkaResponseHandler extends ResponseHandler[HttpRespons
   def getErrorOpt(response: HttpResponse): Future[Option[String]] = {
     getJsBody(response)
       .map(
-        _.getFields("results").head
-          .convertTo[Seq[JsObject]]
-          .head
-          .fields
-          .get("error")
+        _.getFields("results")
+          .headOption
+          .flatMap(_.convertTo[Seq[JsObject]].headOption)
+          .flatMap(_.fields.get("error"))
           .map(_.convertTo[String]))
   }
 }
