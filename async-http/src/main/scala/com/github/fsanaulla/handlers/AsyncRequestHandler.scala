@@ -4,7 +4,7 @@ import com.github.fsanaulla.core.handlers.RequestHandler
 import com.github.fsanaulla.utils.AsyncImplicits.str2strbody
 import com.github.fsanaulla.utils.Extensions.RichRequest
 import com.softwaremill.sttp._
-import spray.json.{JsObject, JsonParser}
+import spray.json.{DeserializationException, JsObject, JsonParser}
 
 import scala.concurrent.Future
 
@@ -14,7 +14,13 @@ private[fsanaulla] trait AsyncRequestHandler
   protected implicit val backend: SttpBackend[Future, Nothing]
   protected val defaultMethod: Method = Method.POST
 
-  private val asJson: ResponseAs[JsObject, Nothing] = asString.map(JsonParser(_)).map(_.asJsObject)
+  private val asJson: ResponseAs[JsObject, Nothing] = {
+    asString.map {
+      case str: String if str.nonEmpty => JsonParser(str).asJsObject
+      case _: String => JsObject.empty
+      case _ => throw DeserializationException("")
+    }
+  }
 
   override def readRequest(uri: Uri, method: Method, entity: Option[String] = None): Future[Response[JsObject]] = {
     method match {

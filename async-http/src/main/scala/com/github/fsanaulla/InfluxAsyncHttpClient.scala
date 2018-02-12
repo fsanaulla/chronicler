@@ -5,7 +5,7 @@ import com.github.fsanaulla.core.api.management._
 import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials, Result}
 import com.github.fsanaulla.handlers._
 import com.softwaremill.sttp.asynchttpclient.future.AsyncHttpClientFutureBackend
-import com.softwaremill.sttp.{Method, Response, SttpBackend, Uri, _}
+import com.softwaremill.sttp.{Method, Response, SttpBackend, Uri}
 import spray.json.JsObject
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -51,7 +51,7 @@ private[fsanaulla] class InfluxAsyncHttpClient(val host: String,
     * Ping InfluxDB
     */
   override def ping(): Future[Result] =
-    readRequest(uri"$host:$port/ping", Method.GET).flatMap(toResult)
+    readRequest(buildQuery("/ping", Map.empty[String, String]), Method.GET).flatMap(toResult)
 
   /**
     * Close HTTP connection
