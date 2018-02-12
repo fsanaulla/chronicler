@@ -23,7 +23,7 @@ object TestHelper {
       s"firstName=${obj.firstName},lastName=${obj.lastName} age=${obj.age}"
 
     override def read(js: JsArray): FakeEntity = js.elements match {
-      case Vector(JsNumber(age), JsString(fname), JsString(lname)) => FakeEntity(fname, lname, age.toInt)
+      case Vector(_, JsNumber(age), JsString(fname), JsString(lname)) => FakeEntity(fname, lname, age.toInt)
       case _ => throw DeserializationException(s"Can't deserialize $RetentionPolicyInfo object")
     }
   }
