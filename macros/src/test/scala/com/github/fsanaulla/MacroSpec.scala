@@ -1,11 +1,13 @@
-package com.github.fsanaulla.macros
+package com.github.fsanaulla
 
 import com.github.fsanaulla.core.model.InfluxWriter
+import com.github.fsanaulla.macros.InfluxFormatter
+import com.github.fsanaulla.macros.annotations.{field, tag}
 import org.scalatest.{FlatSpec, Matchers}
 
 class MacroSpec extends FlatSpec with Matchers {
 
-  case class Test(name: String, age: Int)
+  case class Test(@tag name: String, @field age: Int)
 
   "Macros" should "generate writer" in {
     implicit val wr: InfluxWriter[Test] = InfluxFormatter.writer[Test]
