@@ -78,6 +78,16 @@ lazy val udp = (project in file("udp-client"))
     crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
   ).dependsOn(core)
 
+lazy val macros = (project in file("macros"))
+  .settings(commonSettings: _*)
+  .settings(publishSettings: _*)
+  .settings(
+    name := "chronicler-macros",
+    scalaVersion := "2.12.4",
+    crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
+    libraryDependencies ++= Dependencies.macrosDep
+  ).dependsOn(core)
+
 //credentials += Credentials(
 //  "Sonatype Nexus Repository Manager",
 //  "oss.sonatype.org",
