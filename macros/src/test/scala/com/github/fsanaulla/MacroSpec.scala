@@ -12,9 +12,7 @@ class MacroSpec extends FlatSpec with Matchers {
   "Macros" should "generate writer" in {
     implicit val wr: InfluxWriter[Test] = InfluxFormatter.writer[Test]
 
-    def test(t: Test)(implicit wr: InfluxWriter[Test]) = {
-      wr.write(t)
-    }
+    def test(t: Test)(implicit wr: InfluxWriter[Test]) = wr.write(t)
 
     test(Test("tName", 65)) shouldEqual "name=tName age=65"
   }

@@ -22,13 +22,14 @@ object InfluxFormatterImpl {
     def isField(m: MethodSymbol): Boolean =
       m.accessed.annotations.exists(_.tree.tpe =:= typeOf[field])
 
+    // getting type information
     val tpe = c.weakTypeOf[T]
 
     val tpeDecls = tpe.decls.toList collect {
-      case m: MethodSymbol if m.isAccessor =>
-        println(m + ", " + m.typeSignature + " -> " + m.accessed.annotations.foreach(a => println(a.tree.tpe)))
-        m
+      case m: MethodSymbol if m.isCaseAccessor => m
     }
+
+    tpeDecls.foreach(m => println(m + ", " + m.typeSignature + " -> " + m.asTerm.accessed.annotations.foreach(a => println(a.tree.tpe))))
 
     val tags = tpeDecls collect {
       case m: MethodSymbol if isTag(m) =>
