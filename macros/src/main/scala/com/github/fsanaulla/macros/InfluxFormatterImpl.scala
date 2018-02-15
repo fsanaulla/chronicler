@@ -25,18 +25,21 @@ object InfluxFormatterImpl {
     // getting type information
     val tpe = c.weakTypeOf[T]
 
-    val tpeDecls = tpe.decls.toList collect {
+    val methods: List[MethodSymbol] = tpe.decls.toList collect {
       case m: MethodSymbol if m.isCaseAccessor => m
     }
 
-    tpeDecls.foreach(m => println(m + ", " + m.typeSignature + " -> " + m.asTerm.accessed.annotations.foreach(a => println(a.tree.tpe))))
+    // If `methods` comes up empty we raise a compilation error:
+    if (methods.lengthCompare(1) < 0) {
+      c.abort(c.enclosingPosition, "Type parameter must be a case class with more then 1 fields")
+    }
 
-    val tags = tpeDecls collect {
+    val tags = methods collect {
       case m: MethodSymbol if isTag(m) =>
         q"${m.name.decodedName.toString} -> obj.${m.name}"
     }
 
-    val fields = tpeDecls collect {
+    val fields = methods collect {
       case m: MethodSymbol if isField(m) =>
         q"${m.name.decodedName.toString} -> obj.${m.name}"
     }

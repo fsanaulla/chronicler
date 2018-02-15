@@ -1,6 +1,6 @@
 package com.github.fsanaulla.macros
 
-import com.github.fsanaulla.core.model.InfluxWriter
+import com.github.fsanaulla.core.model.{InfluxFormatter, InfluxReader, InfluxWriter}
 
 import scala.language.experimental.macros
 
@@ -15,4 +15,14 @@ object InfluxFormatter {
     * Generate InfluxWriter for type ${A}
     */
   def writer[A]: InfluxWriter[A] = macro InfluxFormatterImpl.writer_impl[A]
+
+  /**
+    * Generate InfluxReader for type ${A}
+    */
+  def reader[A]: InfluxReader[A] = ???
+
+  /**
+    * Generate InfluxFormatter for type ${A}
+    */
+  def format[A]: InfluxFormatter[A] = ???
 }

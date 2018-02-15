@@ -1,4 +1,4 @@
-import sbt.Keys.{crossScalaVersions, organization, publishArtifact, resolvers, version}
+import sbt.Keys.{crossScalaVersions, organization, publishArtifact, version}
 import sbt.url
 import scoverage.ScoverageKeys.coverageMinimum
 
@@ -43,7 +43,6 @@ lazy val core = (project in file("core"))
       "-feature",
       "-language:implicitConversions",
       "-language:postfixOps"),
-    resolvers ++= Dependencies.projectResolvers,
     libraryDependencies ++= Dependencies.coreDep
   )
 
@@ -84,6 +83,7 @@ lazy val macros = (project in file("macros"))
   .settings(
     name := "chronicler-macros",
     scalaVersion := "2.12.4",
+    scalacOptions ++= Seq("-deprecation", "-feature"),
     crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
     libraryDependencies ++= Dependencies.macrosDep
   ).dependsOn(core)
