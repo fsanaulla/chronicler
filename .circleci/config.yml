@@ -21,22 +21,22 @@ jobs:
         - checkout
         - run:
             name: Create admin user for InfluxDB
-            command: "curl -G http://localhost:8086/query --data-urlencode \"q=CREATE USER admin WITH PASSWORD 'admin' WITH ALL PRIVILEGES\""
+            command: 'curl -G http://localhost:8086/query --data-urlencode \'q=CREATE USER admin WITH PASSWORD 'admin' WITH ALL PRIVILEGES\''
         - run:
             name: Compile sources
-            command: sbt ++$SCALA_VERSION "project akkaHttp" compile
+            command: sbt ++$SCALA_VERSION 'project akkaHttp' compile
         - run:
             name: Compile test sources
-            command: sbt ++$SCALA_VERSION "project akkaHttp" test:compile
+            command: sbt ++$SCALA_VERSION 'project akkaHttp' test:compile
         - run:
             name: Run coverage
-            command: sbt ++$SCALA_VERSION "project akkaHttp" coverage
+            command: sbt ++$SCALA_VERSION 'project akkaHttp' coverage
         - run:
             name: Run tests
-            command: sbt ++$SCALA_VERSION "project akkaHttp" test
+            command: sbt ++$SCALA_VERSION 'project akkaHttp' test
         - run:
             name: Run coveralls
-            command: sbt ++$SCALA_VERSION "project akkaHttp" coverageReport coveralls
+            command: sbt ++$SCALA_VERSION 'project akkaHttp' coverageReport coveralls
   test_akka_2.11.11:
         docker:
           - image: circleci/openjdk:8-jdk
@@ -48,22 +48,22 @@ jobs:
           - checkout
           - run:
               name: Create admin user for InfluxDB
-              command: "curl -G http://localhost:8086/query --data-urlencode \"q=CREATE USER admin WITH PASSWORD 'admin' WITH ALL PRIVILEGES\""
+              command: 'curl -G http://localhost:8086/query --data-urlencode \'q=CREATE USER admin WITH PASSWORD 'admin' WITH ALL PRIVILEGES\''
           - run:
               name: Compile sources
-              command: sbt ++$SCALA_VERSION "project akkaHttp" compile
+              command: sbt ++$SCALA_VERSION 'project akkaHttp' compile
           - run:
               name: Compile test sources
-              command: sbt ++$SCALA_VERSION "project akkaHttp" test:compile
+              command: sbt ++$SCALA_VERSION 'project akkaHttp' test:compile
           - run:
               name: Run coverage
-              command: sbt ++$SCALA_VERSION "project akkaHttp" coverage
+              command: sbt ++$SCALA_VERSION 'project akkaHttp' coverage
           - run:
               name: Run tests
-              command: sbt ++$SCALA_VERSION "project akkaHttp" test
+              command: sbt ++$SCALA_VERSION 'project akkaHttp' test
           - run:
               name: Run coveralls
-              command: sbt ++$SCALA_VERSION "project akkaHttp" coverageReport coveralls
+              command: sbt ++$SCALA_VERSION 'project akkaHttp' coverageReport coveralls
   test_async_2.12.4:
       docker:
         - image: circleci/openjdk:8-jdk
@@ -75,22 +75,22 @@ jobs:
         - checkout
         - run:
             name: Create admin user for InfluxDB
-            command: "curl -G http://localhost:8086/query --data-urlencode \"q=CREATE USER admin WITH PASSWORD 'admin' WITH ALL PRIVILEGES\""
+            command: 'curl -G http://localhost:8086/query --data-urlencode \'q=CREATE USER admin WITH PASSWORD 'admin' WITH ALL PRIVILEGES\''
         - run:
             name: Compile sources
-            command: sbt ++$SCALA_VERSION "project asyncHttp" compile
+            command: sbt ++$SCALA_VERSION 'project asyncHttp' compile
         - run:
             name: Compile test sources
-            command: sbt ++$SCALA_VERSION "project asyncHttp" test:compile
+            command: sbt ++$SCALA_VERSION 'project asyncHttp' test:compile
         - run:
             name: Run coverage
-            command: sbt ++$SCALA_VERSION "project asyncHttp" coverage
+            command: sbt ++$SCALA_VERSION 'project asyncHttp' coverage
         - run:
             name: Run tests
-            command: sbt ++$SCALA_VERSION "project asyncHttp" test
+            command: sbt ++$SCALA_VERSION 'project asyncHttp' test
         - run:
             name: Run coveralls
-            command: sbt ++$SCALA_VERSION "project asyncHttp" coverageReport coveralls
+            command: sbt ++$SCALA_VERSION 'project asyncHttp' coverageReport coveralls
   test_async_2.11.11:
       docker:
         - image: circleci/openjdk:8-jdk
@@ -102,22 +102,22 @@ jobs:
         - checkout
         - run:
             name: Create admin user for InfluxDB
-            command: "curl -G http://localhost:8086/query --data-urlencode \"q=CREATE USER admin WITH PASSWORD 'admin' WITH ALL PRIVILEGES\""
+            command: 'curl -G http://localhost:8086/query --data-urlencode \'q=CREATE USER admin WITH PASSWORD 'admin' WITH ALL PRIVILEGES\''
         - run:
             name: Compile sources
-            command: sbt ++$SCALA_VERSION "project asyncHttp" compile
+            command: sbt ++$SCALA_VERSION 'project asyncHttp' compile
         - run:
             name: Compile test sources
-            command: sbt ++$SCALA_VERSION "project asyncHttp" test:compile
+            command: sbt ++$SCALA_VERSION 'project asyncHttp' test:compile
         - run:
             name: Run coverage
-            command: sbt ++$SCALA_VERSION "project asyncHttp" coverage
+            command: sbt ++$SCALA_VERSION 'project asyncHttp' coverage
         - run:
             name: Run tests
-            command: sbt ++$SCALA_VERSION "project asyncHttp" test
+            command: sbt ++$SCALA_VERSION 'project asyncHttp' test
         - run:
             name: Run coveralls
-            command: sbt ++$SCALA_VERSION "project asyncHttp" coverageReport coveralls
+            command: sbt ++$SCALA_VERSION 'project asyncHttp' coverageReport coveralls
 workflows:
   version: 2
   test:
