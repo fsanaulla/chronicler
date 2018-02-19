@@ -50,8 +50,7 @@ private[fsanaulla] class InfluxAsyncHttpClient(val host: String,
   /**
     * Close HTTP connection
     */
-  override def close(): Future[Unit] = {
+  override def close(): Unit = {
     backend.close()
-    Future.unit
   }
 }

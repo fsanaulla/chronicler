@@ -37,6 +37,6 @@ class MeasurementSpec extends TestSpec {
   it should "clean up everything" in {
     influx.dropMeasurement(safeDB, measName).futureValue shouldEqual OkResult
     influx.dropDatabase(safeDB).futureValue shouldEqual OkResult
-    influx.close().futureValue shouldEqual {}
+    influx.close() shouldEqual {}
   }
 }

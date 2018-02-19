@@ -12,6 +12,7 @@ import com.github.fsanaulla.core.client.InfluxClient
 import com.github.fsanaulla.core.model._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 
 /**
   * Created by
@@ -19,9 +20,9 @@ import scala.concurrent.{ExecutionContext, Future}
   * Date: 27.08.17
   */
 private[fsanaulla] class InfluxAkkaHttpClient(host: String,
-                                              port: Int = 8086,
-                                              username: Option[String] = None,
-                                              password: Option[String] = None)
+                                              port: Int,
+                                              username: Option[String],
+                                              password: Option[String])
                                              (implicit val ex: ExecutionContext, val system: ActorSystem)
     extends InfluxClient[HttpResponse, Uri, HttpMethod, RequestEntity]
       with AkkaRequestHandler
@@ -64,7 +65,14 @@ private[fsanaulla] class InfluxAkkaHttpClient(host: String,
   /**
     * Close HTTP connection
     */
-  def close(): Future[Unit] = Http().shutdownAllConnectionPools()
+  def close(): Unit = {
+    Http()
+      .shutdownAllConnectionPools()
+      .onComplete {
+        case Success(_) => println("Successfully stopped")
+        case Failure(exc) => println(s"Failure when closing ${exc.getCause}")
+      }
+  }
 
   /**
     * Close HTTP connection  and  shut down actor system

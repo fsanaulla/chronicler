@@ -29,10 +29,4 @@ trait SystemManagement[E] {
     * Ping InfluxDB
     */
   def ping(): Future[Result]
-
-  /**
-    * Close HTTP connection
-    */
-  def close(): Future[Unit]
-
 }

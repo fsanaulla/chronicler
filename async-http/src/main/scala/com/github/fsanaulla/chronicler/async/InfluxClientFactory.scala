@@ -3,6 +3,7 @@ package com.github.fsanaulla.chronicler.async
 import scala.concurrent.ExecutionContext
 
 object InfluxClientFactory {
+
   def createHttpClient(host: String,
                        port: Int = 8086,
                        username: Option[String] = None,
