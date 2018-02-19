@@ -1,6 +1,7 @@
 package com.github.fsanaulla.integration
 
-import com.github.fsanaulla.{InfluxAkkaHttpClient, InfluxClientFactory, TestSpec}
+import com.github.fsanaulla.InfluxClientFactory
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.utils.TestHelper._
 
 /**

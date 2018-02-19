@@ -1,12 +1,17 @@
 package com.github.fsanaulla.unit
 
 import akka.http.scaladsl.model.Uri
-import com.github.fsanaulla.TestSpec
-import com.github.fsanaulla.handlers.AkkaQueryHandler
 import com.github.fsanaulla.core.query.UserManagementQuery
-import com.github.fsanaulla.utils.TestHelper._
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.core.utils.constants.Privileges
+import com.github.fsanaulla.handlers.AkkaQueryHandler
+import com.github.fsanaulla.utils.TestHelper._
 
+/**
+  * Created by
+  * Author: fayaz.sanaulla@gmail.com
+  * Date: 21.08.17
+  */
 class UserManagementQuerySpec
   extends TestSpec
     with UserManagementQuery[Uri]

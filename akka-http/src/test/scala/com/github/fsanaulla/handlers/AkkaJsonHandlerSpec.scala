@@ -3,7 +3,7 @@ package com.github.fsanaulla.handlers
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import akka.stream.ActorMaterializer
-import com.github.fsanaulla.TestSpec
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.utils.AkkaContentTypes.AppJson
 import spray.json.{JsObject, JsonParser}
 

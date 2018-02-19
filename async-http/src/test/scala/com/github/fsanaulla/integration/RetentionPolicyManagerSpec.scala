@@ -1,9 +1,10 @@
 package com.github.fsanaulla.integration
 
 import com.github.fsanaulla.core.model.RetentionPolicyInfo
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.core.utils.InfluxDuration._
 import com.github.fsanaulla.utils.TestHelper.OkResult
-import com.github.fsanaulla.{InfluxAsyncHttpClient, InfluxClientFactory, TestSpec}
+import com.github.fsanaulla.{InfluxAsyncHttpClient, InfluxClientFactory}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.postfixOps
@@ -15,7 +16,8 @@ import scala.language.postfixOps
   */
 class RetentionPolicyManagerSpec extends TestSpec {
 
-  val rpDB = "rp_spec_db"
+  val rpDB = "async_rp_spec_db"
+
   lazy val influx: InfluxAsyncHttpClient = InfluxClientFactory.createHttpClient(
     host = influxHost,
     username = credentials.username,

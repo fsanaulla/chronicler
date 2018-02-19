@@ -1,9 +1,10 @@
 package com.github.fsanaulla.integration
 
 import com.github.fsanaulla.api.Measurement
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.utils.SampleEntitys._
 import com.github.fsanaulla.utils.TestHelper._
-import com.github.fsanaulla.{InfluxAsyncHttpClient, InfluxClientFactory, TestSpec}
+import com.github.fsanaulla.{InfluxAsyncHttpClient, InfluxClientFactory}
 
 /**
   * Created by

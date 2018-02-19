@@ -39,7 +39,8 @@ lazy val core = (project in file("core"))
     name := "chronicler-core",
     scalaVersion := "2.12.4",
     crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
-    scalacOptions ++= Seq(
+    publishArtifact in (Test, packageBin) := true,
+      scalacOptions ++= Seq(
       "-feature",
       "-language:implicitConversions",
       "-language:postfixOps"),
@@ -56,7 +57,7 @@ lazy val akkaHttp = (project in file("akka-http"))
     libraryDependencies ++= Dependencies.akkaHttpDep,
     coverageMinimum := Coverage.min,
     coverageExcludedPackages := Coverage.exclude // todo: change
-  ).dependsOn(core)
+  ).dependsOn(core % "compile->compile;test->test")
 
 lazy val asyncHttp = (project in file("async-http"))
   .settings(commonSettings: _*)
@@ -66,7 +67,7 @@ lazy val asyncHttp = (project in file("async-http"))
     scalaVersion := "2.12.4",
     crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
     libraryDependencies ++= Dependencies.asyncHttpDep
-  ).dependsOn(core)
+  ).dependsOn(core % "compile->compile;test->test")
 
 lazy val udp = (project in file("udp-client"))
   .settings(commonSettings: _*)
@@ -83,7 +84,7 @@ lazy val macros = (project in file("macros"))
   .settings(
     name := "chronicler-macros",
     scalaVersion := "2.12.4",
-    scalacOptions ++= Seq("-deprecation", "-feature"),
+    scalacOptions ++= Seq("-deprecation", "-feature", "-print"),
     crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
     libraryDependencies ++= Dependencies.macrosDep
   ).dependsOn(core)

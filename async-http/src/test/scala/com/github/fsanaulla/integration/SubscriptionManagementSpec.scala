@@ -1,10 +1,12 @@
 package com.github.fsanaulla.integration
 
 import com.github.fsanaulla.core.model.Subscription
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.core.utils.InfluxDuration._
 import com.github.fsanaulla.core.utils.constants.Destinations
+import com.github.fsanaulla.core.utils.constants.Destinations.Destination
 import com.github.fsanaulla.utils.TestHelper._
-import com.github.fsanaulla.{InfluxAsyncHttpClient, InfluxClientFactory, TestSpec}
+import com.github.fsanaulla.{InfluxAsyncHttpClient, InfluxClientFactory}
 
 /**
   * Created by
@@ -14,10 +16,10 @@ import com.github.fsanaulla.{InfluxAsyncHttpClient, InfluxClientFactory, TestSpe
 class SubscriptionManagementSpec extends TestSpec {
 
   val subName = "subs"
-  val dbName = "subs_spec_db"
+  val dbName = "async_subs_spec_db"
   val rpName = "subs_rp"
-  val destType: Destinations.ANY.type = Destinations.ANY
-  val newDestType: Destinations.ALL.type = Destinations.ALL
+  val destType: Destination = Destinations.ANY
+  val newDestType: Destination = Destinations.ALL
   val hosts = Seq("udp://h1.example.com:9090", "udp://h2.example.com:9090")
   val subscription = Subscription(rpName, subName, destType, hosts)
   val newSubscription: Subscription = subscription.copy(destType = newDestType)

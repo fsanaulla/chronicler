@@ -1,9 +1,10 @@
 package com.github.fsanaulla.integration
 
 import com.github.fsanaulla.core.model.{UserInfo, UserPrivilegesInfo}
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.core.utils.constants.Privileges
 import com.github.fsanaulla.utils.TestHelper.OkResult
-import com.github.fsanaulla.{InfluxAsyncHttpClient, InfluxClientFactory, TestSpec}
+import com.github.fsanaulla.{InfluxAsyncHttpClient, InfluxClientFactory}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -14,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class UserManagementSpec extends TestSpec {
 
-  val userDB = "user_management_spec_db"
+  val userDB = "async_user_management_spec_db"
   val userName = "Martin"
   val userPass = "pass"
   val userNPass = "new_pass"

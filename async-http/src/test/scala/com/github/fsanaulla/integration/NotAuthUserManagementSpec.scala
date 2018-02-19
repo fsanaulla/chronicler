@@ -18,7 +18,7 @@ class NotAuthUserManagementSpec
     with ScalaFutures
     with OptionValues {
 
-  val userDB = "not_auth_user_spec_db"
+  val userDB = "async_not_auth_user_spec_db"
   val userName = "Martin"
   val userPass = "pass"
   val userNPass = "new_pass"
@@ -81,6 +81,4 @@ class NotAuthUserManagementSpec
     influx.dropUser(userName).futureValue.ex.value shouldBe a[AuthorizationException]
     influx.dropUser(admin).futureValue.ex.value shouldBe a[AuthorizationException]
   }
-
-  influx.close()
 }

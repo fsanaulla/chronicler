@@ -1,7 +1,8 @@
 package com.github.fsanaulla.integration
 
-import com.github.fsanaulla.{InfluxAkkaHttpClient, InfluxClientFactory, TestSpec}
+import com.github.fsanaulla.InfluxClientFactory
 import com.github.fsanaulla.core.model.Subscription
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.core.utils.InfluxDuration._
 import com.github.fsanaulla.core.utils.constants.Destinations
 import com.github.fsanaulla.utils.TestHelper._

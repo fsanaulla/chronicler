@@ -1,7 +1,7 @@
 package com.github.fsanaulla.unit
 
-import com.github.fsanaulla.TestSpec
 import com.github.fsanaulla.core.query.DatabaseOperationQuery
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.core.utils.constants.{Consistencys, Epochs, Precisions}
 import com.github.fsanaulla.handlers.AsyncQueryHandler
 import com.github.fsanaulla.utils.TestHelper._

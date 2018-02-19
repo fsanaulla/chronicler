@@ -1,8 +1,9 @@
 package com.github.fsanaulla.integration
 
 import com.github.fsanaulla.core.model.ShardGroupsInfo
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.utils.TestHelper._
-import com.github.fsanaulla.{InfluxAsyncHttpClient, InfluxClientFactory, TestSpec}
+import com.github.fsanaulla.{InfluxAsyncHttpClient, InfluxClientFactory}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

@@ -1,8 +1,8 @@
 package com.github.fsanaulla.handlers
 
-import com.github.fsanaulla.TestSpec
 import com.github.fsanaulla.core.model.InfluxImplicits._
 import com.github.fsanaulla.core.model.{ContinuousQuery, ContinuousQueryInfo}
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.utils.SampleEntitys.singleResult
 import com.softwaremill.sttp.Response
 import spray.json.JsonParser
@@ -12,7 +12,9 @@ import scala.concurrent.duration._
 import scala.language.postfixOps
 
 /**
-  * Created by fayaz on 12.07.17.
+  * Created by
+  * Author: fayaz.sanaulla@gmail.com
+  * Date: 10.08.17
   */
 class AsyncResponseHandlerSpec
   extends TestSpec

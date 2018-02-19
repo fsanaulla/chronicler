@@ -1,7 +1,7 @@
 package com.github.fsanaulla.unit
 
-import com.github.fsanaulla.TestSpec
 import com.github.fsanaulla.core.query.RetentionPolicyManagementQuery
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.core.utils.InfluxDuration._
 import com.github.fsanaulla.handlers.AsyncQueryHandler
 import com.github.fsanaulla.utils.TestHelper._

@@ -1,4 +1,4 @@
-package com.github.fsanaulla
+package com.github.fsanaulla.core.test
 
 import com.github.fsanaulla.core.utils.InfluxDuration._
 import org.scalatest.{FlatSpec, Matchers}

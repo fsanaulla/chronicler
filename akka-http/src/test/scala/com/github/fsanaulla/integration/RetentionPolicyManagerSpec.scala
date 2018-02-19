@@ -1,9 +1,8 @@
 package com.github.fsanaulla.integration
 
-import java.sql.ClientInfoStatus
-
-import com.github.fsanaulla.{InfluxAkkaHttpClient, InfluxClientFactory, TestSpec}
+import com.github.fsanaulla.InfluxClientFactory
 import com.github.fsanaulla.core.model.RetentionPolicyInfo
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.core.utils.InfluxDuration._
 import com.github.fsanaulla.utils.TestHelper.OkResult
 

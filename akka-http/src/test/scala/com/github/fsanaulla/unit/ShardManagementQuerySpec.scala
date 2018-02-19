@@ -1,8 +1,8 @@
 package com.github.fsanaulla.unit
 
 import akka.http.scaladsl.model.Uri
-import com.github.fsanaulla.TestSpec
 import com.github.fsanaulla.core.query.ShardManagementQuery
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.handlers.AkkaQueryHandler
 import com.github.fsanaulla.utils.TestHelper._
 

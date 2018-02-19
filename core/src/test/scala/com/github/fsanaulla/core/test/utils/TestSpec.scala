@@ -1,4 +1,4 @@
-package com.github.fsanaulla
+package com.github.fsanaulla.core.test.utils
 
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Second, Seconds, Span}

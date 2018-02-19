@@ -1,4 +1,4 @@
-package com.github.fsanaulla
+package com.github.fsanaulla.core.test.utils
 
 import com.github.fsanaulla.core.model.InfluxCredentials
 

@@ -5,9 +5,10 @@ import java.io.File
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import com.github.fsanaulla.api.Database
 import com.github.fsanaulla.core.model.Point
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.utils.SampleEntitys._
 import com.github.fsanaulla.utils.TestHelper._
-import com.github.fsanaulla.{InfluxAkkaHttpClient, InfluxClientFactory, TestSpec}
+import com.github.fsanaulla.{InfluxAkkaHttpClient, InfluxClientFactory}
 import spray.json.{DefaultJsonProtocol, JsArray, JsValue}
 
 import scala.concurrent.ExecutionContext.Implicits.global

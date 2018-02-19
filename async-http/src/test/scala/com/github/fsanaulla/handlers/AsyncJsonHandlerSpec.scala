@@ -1,9 +1,14 @@
 package com.github.fsanaulla.handlers
 
-import com.github.fsanaulla.TestSpec
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.softwaremill.sttp.Response
 import spray.json.{JsObject, JsonParser}
 
+/**
+  * Created by
+  * Author: fayaz.sanaulla@gmail.com
+  * Date: 10.08.17
+  */
 class AsyncJsonHandlerSpec extends TestSpec with AsyncJsonHandler {
 
   val singleStrJson = """{

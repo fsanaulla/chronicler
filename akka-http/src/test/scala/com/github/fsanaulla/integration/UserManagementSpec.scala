@@ -1,9 +1,10 @@
 package com.github.fsanaulla.integration
 
-import com.github.fsanaulla.{InfluxAkkaHttpClient, InfluxClientFactory, TestSpec}
+import com.github.fsanaulla.InfluxClientFactory
 import com.github.fsanaulla.core.model.{UserInfo, UserPrivilegesInfo}
-import com.github.fsanaulla.utils.TestHelper.OkResult
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.core.utils.constants.Privileges
+import com.github.fsanaulla.utils.TestHelper.OkResult
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
