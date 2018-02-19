@@ -11,18 +11,23 @@ import com.github.fsanaulla.core.model.{Deserializer, Point}
 
 private[fsanaulla] object AkkaDeserializers {
 
-  implicit val str2Http: Deserializer[String, RequestEntity] = (obj: String) =>
-    HttpEntity(ByteString(obj))
+  implicit val str2Http: Deserializer[String, RequestEntity] = new Deserializer[String, RequestEntity] {
+    def deserialize(obj: String) = HttpEntity(ByteString(obj))
+  }
 
-  implicit val seq2Http: Deserializer[Seq[String], RequestEntity] = (obj: Seq[String]) =>
-    HttpEntity(ByteString(obj.mkString("\n")))
+  implicit val seq2Http: Deserializer[Seq[String], RequestEntity] = new Deserializer[Seq[String], RequestEntity] {
+    def deserialize(obj: Seq[String]) = HttpEntity(ByteString(obj.mkString("\n")))
+  }
 
-  implicit val point2Http: Deserializer[Point, RequestEntity] = (obj: Point) =>
-    HttpEntity(OctetStream, ByteString(obj.serialize))
+  implicit val point2Http: Deserializer[Point, RequestEntity] = new Deserializer[Point, RequestEntity] {
+    def deserialize(obj: Point) = HttpEntity(OctetStream, ByteString(obj.serialize))
+  }
 
-  implicit val seqPoint2Http: Deserializer[Seq[Point], RequestEntity] = (obj: Seq[Point]) =>
-    HttpEntity(OctetStream, ByteString(obj.map(_.serialize).mkString("\n")))
+  implicit val seqPoint2Http: Deserializer[Seq[Point], RequestEntity] = new Deserializer[Seq[Point], RequestEntity] {
+    def deserialize(obj: Seq[Point]) = HttpEntity(OctetStream, ByteString(obj.map(_.serialize).mkString("\n")))
+  }
 
-  implicit val file2Http: Deserializer[File, RequestEntity] = (obj: File) =>
-    HttpEntity(OctetStream, FileIO.fromPath(obj.toPath, chunkSize = 1024))
+  implicit val file2Http: Deserializer[File, RequestEntity] = new Deserializer[File, RequestEntity] {
+    def deserialize(obj: File) = HttpEntity(OctetStream, FileIO.fromPath(obj.toPath, chunkSize = 1024))
+  }
 }
