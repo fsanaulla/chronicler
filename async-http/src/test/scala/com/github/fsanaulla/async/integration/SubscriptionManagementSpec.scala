@@ -60,5 +60,10 @@ class SubscriptionManagementSpec extends TestSpec {
     influx.dropDatabase(dbName).futureValue shouldEqual OkResult
 
   }
-  influx.close()
+
+  it should "clear up after all" in {
+    influx.dropDatabase(dbName).futureValue shouldEqual OkResult
+
+    influx.close() shouldEqual {}
+  }
 }

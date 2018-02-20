@@ -79,5 +79,9 @@ class UserManagementSpec extends TestSpec {
     influx.showUsers().futureValue.queryResult shouldEqual Seq(UserInfo(credentials.username.get, isAdmin = true))
   }
 
-  influx.close()
+  it should "clear up after all" in {
+    influx.dropDatabase(userDB).futureValue shouldEqual OkResult
+
+    influx.close() shouldEqual {}
+  }
 }

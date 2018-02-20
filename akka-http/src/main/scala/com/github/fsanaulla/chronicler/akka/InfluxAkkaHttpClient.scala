@@ -42,7 +42,7 @@ private[fsanaulla] class InfluxAkkaHttpClient(host: String,
     * @param dbName - database name
     * @return Database instance that provide non type safe operations
     */
-  def database(dbName: String): Database = new Database(dbName)
+  override def database(dbName: String): Database = new Database(dbName)
 
   /**
     *
@@ -51,21 +51,21 @@ private[fsanaulla] class InfluxAkkaHttpClient(host: String,
     * @tparam A - Measurement's time series type
     * @return - Measurement instance of type [A]
     */
-  def measurement[A](dbName: String, measurementName: String): Measurement[A] = {
+  override def measurement[A](dbName: String, measurementName: String): Measurement[A] = {
     new Measurement[A](dbName, measurementName)
   }
 
   /**
     * Ping InfluxDB
     */
-  def ping(): Future[Result] = {
+  override def ping(): Future[Result] = {
     readRequest("/ping", GET).flatMap(toResult)
   }
 
   /**
     * Close HTTP connection
     */
-  def close(): Unit = {
+  override def close(): Unit = {
     Http()
       .shutdownAllConnectionPools()
       .onComplete {
@@ -77,8 +77,13 @@ private[fsanaulla] class InfluxAkkaHttpClient(host: String,
   /**
     * Close HTTP connection  and  shut down actor system
     */
-  def closeAll(): Future[Unit] = for {
-    _ <- Http().shutdownAllConnectionPools()
-    _ <- system.terminate()
-  } yield ()
+  def closeAll(): Unit = {
+    close()
+    system
+      .terminate()
+      .onComplete {
+        case Success(_) => println("ActorSystem was successfully terminated")
+        case Failure(exc) => println(s"Failure while closing ${exc.getCause}")
+    }
+  }
 }

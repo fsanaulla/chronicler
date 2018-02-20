@@ -15,6 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class ShardManagementSpec extends TestSpec {
 
   val testDb = "_internal"
+
   lazy val influx: InfluxAsyncHttpClient = InfluxClientFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
 
   "shard operations" should "get/drop shards" in {
@@ -39,5 +40,7 @@ class ShardManagementSpec extends TestSpec {
     shardGroups.head shouldBe a[ShardGroupsInfo]
   }
 
-  influx.close()
+  it should "clear up after all" in {
+    influx.close() shouldEqual {}
+  }
 }

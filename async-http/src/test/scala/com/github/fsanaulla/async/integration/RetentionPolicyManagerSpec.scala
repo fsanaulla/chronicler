@@ -57,5 +57,7 @@ class RetentionPolicyManagerSpec extends TestSpec {
     influx.showDatabases().futureValue.queryResult.contains(rpDB) shouldEqual false
   }
 
-  influx.close()
+  it should "clear up after all" in {
+    influx.close() shouldEqual {}
+  }
 }

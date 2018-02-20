@@ -11,11 +11,7 @@ private[fsanaulla] trait InfluxClient[R, U, M, E]
     with RetentionPolicyManagement[R, U, M, E]
     with ContinuousQueryManagement[R, U, M, E]
     with ShardManagement[R, U, M, E]
-    with SubscriptionManagement[R, U, M, E] {
+    with SubscriptionManagement[R, U, M, E]
+    with AutoCloseable {
   self: RequestHandler[R, U, M, E] with ResponseHandler[R] with QueryHandler[U] with HasCredentials =>
-
-  /**
-    * Close HTTP connection
-    */
-  def close(): Unit
 }
