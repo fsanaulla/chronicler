@@ -27,8 +27,7 @@ private[fsanaulla] class InfluxAkkaHttpClient(host: String,
     extends InfluxClient[HttpResponse, Uri, HttpMethod, RequestEntity]
       with AkkaRequestHandler
       with AkkaResponseHandler
-      with AkkaQueryHandler
-      with HasCredentials {
+      with AkkaQueryHandler {
 
   protected implicit val credentials: InfluxCredentials = InfluxCredentials(username, password)
   protected implicit val mat: ActorMaterializer = ActorMaterializer()

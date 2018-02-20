@@ -99,7 +99,7 @@ private[fsanaulla] trait ResponseHandler[R] {
     )
   }
 
-  def isSuccessful(code: Int): Boolean = if (code >= 200 && code < 300) true else false
+  def isSuccessful(code: Int): Boolean = code >= 200 && code < 300
 
   def errorHandler(code: Int, response: R): Future[InfluxException] = code match {
     case 400 =>

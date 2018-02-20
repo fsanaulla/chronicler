@@ -3,7 +3,7 @@ package com.github.fsanaulla.chronicler.async
 import com.github.fsanaulla.chronicler.async.api.{Database, Measurement}
 import com.github.fsanaulla.chronicler.async.handlers._
 import com.github.fsanaulla.core.client.InfluxClient
-import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials, Result}
+import com.github.fsanaulla.core.model.{InfluxCredentials, Result}
 import com.softwaremill.sttp.asynchttpclient.future.AsyncHttpClientFutureBackend
 import com.softwaremill.sttp.{Method, Response, SttpBackend, Uri}
 import spray.json.JsObject
@@ -17,8 +17,7 @@ private[fsanaulla] class InfluxAsyncHttpClient(val host: String,
   extends InfluxClient[Response[JsObject], Uri, Method, String]
     with AsyncRequestHandler
     with AsyncResponseHandler
-    with AsyncQueryHandler
-    with HasCredentials {
+    with AsyncQueryHandler {
 
   protected implicit val backend: SttpBackend[Future, Nothing] = AsyncHttpClientFutureBackend()
   protected implicit val credentials: InfluxCredentials = InfluxCredentials(username, password)
