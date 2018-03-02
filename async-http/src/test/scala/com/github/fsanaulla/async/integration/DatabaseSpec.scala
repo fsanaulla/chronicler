@@ -8,7 +8,8 @@ import com.github.fsanaulla.async.utils.TestHelper._
 import com.github.fsanaulla.chronicler.async.api.Database
 import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxClientFactory}
 import com.github.fsanaulla.core.model.Point
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
+import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 import spray.json.{DefaultJsonProtocol, JsArray, JsValue}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -18,13 +19,21 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 28.09.17
   */
-class DatabaseSpec extends TestSpec with SprayJsonSupport with DefaultJsonProtocol {
+class DatabaseSpec
+  extends TestSpec
+    with SprayJsonSupport
+    with DefaultJsonProtocol
+    with EmptyCredentials
+    with EmbeddedInfluxDB {
 
-  val testDB = "async_database_spec_db"
+  val testDB = "db"
 
-  // INIT INFLUX CLIENT
+  override def httpPort = 9001
+  override def backUpPort: Int = httpPort + 1
+
   lazy val influx: InfluxAsyncHttpClient = InfluxClientFactory.createHttpClient(
       host = influxHost,
+      port = httpPort,
       username = credentials.username,
       password = credentials.password)
 

@@ -63,13 +63,20 @@ private[fsanaulla] abstract class DatabaseApi[E](dbName: String)
                     pretty: Boolean = false,
                     chunked: Boolean = false)
                    (implicit reader: InfluxReader[A]): Future[QueryResult[A]] = {
-    readJs0(dbName, query, epoch, pretty, chunked) map { res =>
+    readJs(query, epoch, pretty, chunked) map { res =>
       QueryResult[A](
         res.code,
         isSuccess = res.isSuccess,
         res.queryResult.map(reader.read),
         res.ex)
     }
+  }
+
+  final def readJs(query: String,
+                   epoch: Epoch = Epochs.NANOSECONDS,
+                   pretty: Boolean = false,
+                   chunked: Boolean = false): Future[QueryResult[JsArray]] = {
+    readJs0(dbName, query, epoch, pretty, chunked)
   }
 
   final def bulkReadJs(querys: Seq[String],

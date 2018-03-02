@@ -1,18 +1,25 @@
 package com.github.fsanaulla.chronicler.akka.integration
 
 import com.github.fsanaulla.chronicler.akka.InfluxClientFactory
-import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
 import com.github.fsanaulla.core.model.Subscription
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.utils.ResultMatchers._
+import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
 import com.github.fsanaulla.core.utils.InfluxDuration._
 import com.github.fsanaulla.core.utils.constants.Destinations
+import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 21.08.17
   */
-class SubscriptionManagementSpec extends TestSpec {
+class SubscriptionManagementSpec
+  extends TestSpec
+    with EmptyCredentials
+    with EmbeddedInfluxDB {
+
+  override def httpPort = 9001
+  override def backUpPort: Int = httpPort + 1
 
   val subName = "subs"
   val dbName = "subs_spec_db"
@@ -25,10 +32,13 @@ class SubscriptionManagementSpec extends TestSpec {
 
   val duration: String = 1.hours + 30.minutes
 
-  "subs operation" should "correctly work" in {
+  lazy val influx = InfluxClientFactory.createHttpClient(
+    host = influxHost,
+    port = httpPort,
+    username = credentials.username,
+    password = credentials.password)
 
-    // INIT INFLUX CLIENT
-    val influx = InfluxClientFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
+  "Subs operation" should "create subscription" in {
 
     influx.createDatabase(dbName).futureValue shouldEqual OkResult
 
@@ -40,20 +50,21 @@ class SubscriptionManagementSpec extends TestSpec {
 
     influx.showSubscriptions(dbName).futureValue.queryResult shouldEqual Seq(subscription)
 
+  }
+
+  it should "update subscription" in {
     influx.updateSubscription(subName, dbName, rpName, newDestType, hosts).futureValue shouldEqual OkResult
 
     influx.showSubscriptions(dbName).futureValue.queryResult shouldEqual Seq(newSubscription)
+  }
+
+  it should "drop subscription" in {
 
     influx.dropSubscription(subName, dbName, rpName).futureValue shouldEqual OkResult
 
     influx.showSubscriptions(dbName).futureValue.queryResult shouldEqual Nil
 
-    influx.dropRetentionPolicy(rpName, dbName).futureValue shouldEqual OkResult
-
-    influx.dropDatabase(dbName).futureValue shouldEqual OkResult
-
-    influx.close()
-
+    influx.close() shouldEqual {}
   }
 
 }

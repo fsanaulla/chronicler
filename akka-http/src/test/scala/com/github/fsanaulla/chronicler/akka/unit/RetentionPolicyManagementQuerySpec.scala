@@ -4,7 +4,7 @@ import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryHandler
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
 import com.github.fsanaulla.core.query.RetentionPolicyManagementQuery
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.utils.{BothCredentials, TestSpec}
 import com.github.fsanaulla.core.utils.InfluxDuration._
 
 /**
@@ -14,6 +14,7 @@ import com.github.fsanaulla.core.utils.InfluxDuration._
   */
 class RetentionPolicyManagementQuerySpec
   extends TestSpec
+    with BothCredentials
     with RetentionPolicyManagementQuery[Uri]
     with AkkaQueryHandler {
 

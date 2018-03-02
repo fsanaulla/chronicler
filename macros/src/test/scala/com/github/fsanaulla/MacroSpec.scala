@@ -9,9 +9,8 @@ import org.scalatest.{FlatSpec, Matchers}
 class MacroSpec extends FlatSpec with Matchers {
 
   "Macros" should "generate writer with fully annotated fields" in {
-    case class Test(
-                     @tag name: String,
-                     @field age: Int)
+    case class Test(@tag name: String,
+                    @field age: Int)
 
     val wr: InfluxWriter[Test] = InfluxFormatter.writer[Test]
 
@@ -19,9 +18,8 @@ class MacroSpec extends FlatSpec with Matchers {
   }
 
   it should "generate writer for partially annotated fields" in {
-    case class Test(
-                     @tag name: String,
-                     age: Int)
+    case class Test(@tag name: String,
+                    age: Int)
 
     val wr: InfluxWriter[Test] = InfluxFormatter.writer[Test]
 

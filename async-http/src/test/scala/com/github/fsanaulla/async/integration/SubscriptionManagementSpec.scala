@@ -3,17 +3,21 @@ package com.github.fsanaulla.async.integration
 import com.github.fsanaulla.async.utils.TestHelper._
 import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxClientFactory}
 import com.github.fsanaulla.core.model.Subscription
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
 import com.github.fsanaulla.core.utils.InfluxDuration._
 import com.github.fsanaulla.core.utils.constants.Destinations
 import com.github.fsanaulla.core.utils.constants.Destinations.Destination
+import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 21.08.17
   */
-class SubscriptionManagementSpec extends TestSpec {
+class SubscriptionManagementSpec
+  extends TestSpec
+    with EmptyCredentials
+    with EmbeddedInfluxDB{
 
   val subName = "subs"
   val dbName = "async_subs_spec_db"

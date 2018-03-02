@@ -3,8 +3,9 @@ package com.github.fsanaulla.async.integration
 import com.github.fsanaulla.async.utils.TestHelper._
 import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxClientFactory}
 import com.github.fsanaulla.core.model.RetentionPolicyInfo
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
 import com.github.fsanaulla.core.utils.InfluxDuration._
+import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.postfixOps
@@ -14,7 +15,10 @@ import scala.language.postfixOps
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class RetentionPolicyManagerSpec extends TestSpec {
+class RetentionPolicyManagerSpec
+  extends TestSpec
+    with EmptyCredentials
+    with EmbeddedInfluxDB {
 
   val rpDB = "async_rp_spec_db"
 

@@ -3,7 +3,7 @@ package com.github.fsanaulla.async.unit
 import com.github.fsanaulla.async.utils.TestHelper._
 import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryHandler
 import com.github.fsanaulla.core.query.ShardManagementQuery
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.utils.{BothCredentials, TestSpec}
 import com.softwaremill.sttp.Uri
 
 /**
@@ -14,7 +14,8 @@ import com.softwaremill.sttp.Uri
 class ShardManagementQuerySpec
   extends TestSpec
     with AsyncQueryHandler
-    with ShardManagementQuery[Uri] {
+    with ShardManagementQuery[Uri]
+    with BothCredentials {
 
   val host = "localhost"
   val port = 8086

@@ -1,13 +1,15 @@
 import sbt.Keys.{crossScalaVersions, organization, publishArtifact, version}
 import sbt.url
-import scoverage.ScoverageKeys.coverageMinimum
 
 lazy val commonSettings = Seq(
   version := "0.4.0",
   organization := "com.github.fsanaulla",
+  crossScalaVersions := Seq("2.12.4", "2.11.11"),
   homepage := Some(url("https://github.com/fsanaulla/chronicler")),
   licenses += "MIT" -> url("https://opensource.org/licenses/MIT"),
-  developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla"))
+  developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla")),
+  resolvers += Resolver.mavenLocal,
+  parallelExecution := false // to work with Embedded InfluxDB
 )
 
 lazy val publishSettings = Seq(
@@ -39,7 +41,6 @@ lazy val core = (project in file("core"))
   .settings(
     name := "chronicler-core",
     scalaVersion := "2.12.4",
-    crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
     publishArtifact in (Test, packageBin) := true,
       scalacOptions ++= Seq(
       "-feature",
@@ -54,10 +55,9 @@ lazy val akkaHttp = (project in file("akka-http"))
   .settings(
     name := "chronicler-akka-http",
     scalaVersion := "2.12.4",
-    crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
-    libraryDependencies ++= Dependencies.akkaHttpDep,
-    coverageMinimum := Coverage.min,
-    coverageExcludedPackages := Coverage.exclude // todo: change
+    libraryDependencies ++= Dependencies.akkaHttpDep
+//    coverageMinimum := Coverage.min,
+//    coverageExcludedPackages := Coverage.exclude, // todo: change
   ).dependsOn(core % "compile->compile;test->test")
 
 lazy val asyncHttp = (project in file("async-http"))
@@ -66,18 +66,18 @@ lazy val asyncHttp = (project in file("async-http"))
   .settings(
     name := "chronicler-async-http",
     scalaVersion := "2.12.4",
-    crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
     libraryDependencies ++= Dependencies.asyncHttpDep
   ).dependsOn(core % "compile->compile;test->test")
 
-lazy val udp = (project in file("udp-client"))
+lazy val udp = (project in file("udp"))
   .settings(commonSettings: _*)
   .settings(publishSettings: _*)
   .settings(
     name := "chronicler-udp",
     scalaVersion := "2.12.4",
-    crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
-  ).dependsOn(core)
+    libraryDependencies ++= Dependencies.udpDep)
+  .dependsOn(core)
+  .dependsOn(asyncHttp % "test->test")
 
 lazy val macros = (project in file("macros"))
   .settings(commonSettings: _*)
@@ -86,7 +86,6 @@ lazy val macros = (project in file("macros"))
     name := "chronicler-macros",
     scalaVersion := "2.12.4",
     scalacOptions ++= Seq("-deprecation", "-feature", "-print"),
-    crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
     libraryDependencies ++= Dependencies.macrosDep
   ).dependsOn(core)
 

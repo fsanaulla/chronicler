@@ -10,9 +10,6 @@ import spray.json.{DeserializationException, JsArray, JsNumber, JsString}
 object TestHelper {
 
   final val currentNanoTime: Long = System.currentTimeMillis() * 1000000
-  final val OkResult = Result(200, isSuccess = true)
-  final val NoContentResult = Result(204, isSuccess = true)
-  final val AuthErrorResult = Result(401, isSuccess = false, Some(new AuthorizationException("unable to parse authentication credentials")))
 
   case class FakeEntity(firstName: String,
                         lastName: String,

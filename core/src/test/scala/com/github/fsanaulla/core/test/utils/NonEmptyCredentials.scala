@@ -7,10 +7,6 @@ import com.github.fsanaulla.core.model.InfluxCredentials
   * Author: fayaz.sanaulla@gmail.com
   * Date: 16.08.17
   */
-trait TestCredentials {
-
+trait NonEmptyCredentials extends Credentials {
   implicit val credentials: InfluxCredentials = InfluxCredentials(Some("admin"), Some("admin"))
-
-  val emptyCredentials = InfluxCredentials(None, None)
-
 }

@@ -1,31 +1,44 @@
 package com.github.fsanaulla.chronicler.akka.integration
 
 import com.github.fsanaulla.chronicler.akka.InfluxClientFactory
-import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
 import com.github.fsanaulla.core.model.ShardGroupsInfo
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.utils.ResultMatchers._
+import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
+import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
-class ShardManagementSpec extends TestSpec {
+class ShardManagementSpec
+  extends TestSpec
+    with EmptyCredentials
+    with EmbeddedInfluxDB {
 
-  val testDb = "_internal"
+  val testDb = "db"
 
-  "shard operations" should "correctly work" in {
+  override def httpPort = 9001
+  override def backUpPort: Int = httpPort + 1
 
-    // INIT INFLUX CLIENT
-    val influx = InfluxClientFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
+  lazy val influx = InfluxClientFactory.createHttpClient(
+    host = influxHost,
+    port = httpPort,
+    username = credentials.username,
+    password = credentials.password)
 
-    val shards = influx.getShards(testDb).futureValue.queryResult
+  "shard operations" should "show shards" in {
+
+    influx.createDatabase(testDb, shardDuration = Some("1s")).futureValue shouldEqual OkResult
+
+    val shards = influx.showShards().futureValue.queryResult
 
     shards should not be Nil
 
-    influx.dropShard(shards.head.id).futureValue shouldEqual OkResult
+    shards.foreach(println)
+  }
 
-    influx.getShards(testDb).futureValue.queryResult should not be shards
+  it should "show shards groupe" in {
 
     val shardGroups = influx.showShardGroups().futureValue.queryResult
 
@@ -35,6 +48,6 @@ class ShardManagementSpec extends TestSpec {
 
     shardGroups.head shouldBe a [ShardGroupsInfo]
 
-    influx.close()
+    influx.close() shouldEqual {}
   }
 }

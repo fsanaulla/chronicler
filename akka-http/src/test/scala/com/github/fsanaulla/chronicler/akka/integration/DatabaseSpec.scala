@@ -8,19 +8,30 @@ import com.github.fsanaulla.chronicler.akka.utils.SampleEntitys._
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
 import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxClientFactory}
 import com.github.fsanaulla.core.model.Point
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.utils.ResultMatchers._
+import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
+import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 import spray.json.{DefaultJsonProtocol, JsArray, JsValue}
 
 /**
-  * Created by fayaz on 06.07.17.
+  * Created by
+  * Author: fayaz.sanaulla@gmail.com
+  * Date: 02.03.18
   */
-class DatabaseSpec extends TestSpec with SprayJsonSupport with DefaultJsonProtocol {
+class DatabaseSpec
+  extends TestSpec
+    with EmptyCredentials
+    with SprayJsonSupport
+    with DefaultJsonProtocol
+    with EmbeddedInfluxDB {
 
-  val testDB = "akka_database_spec_db"
+  val testDB = "database_spec_db"
+  override def httpPort = 9000
+  override def backUpPort: Int = httpPort + 1
 
-  // INIT INFLUX CLIENT
   lazy val influx: InfluxAkkaHttpClient = InfluxClientFactory.createHttpClient(
       host = influxHost,
+      port = httpPort,
       username = credentials.username,
       password = credentials.password)
 
@@ -30,7 +41,7 @@ class DatabaseSpec extends TestSpec with SprayJsonSupport with DefaultJsonProtoc
     influx.createDatabase(testDB).futureValue shouldEqual OkResult
 
     db.writeFromFile(new File(getClass.getResource("/points.txt").getPath)).futureValue shouldEqual NoContentResult
-//    nonTpSfApi.readJs("SELECT * FROM test1").futureValue.queryResult.size shouldEqual 3
+    db.readJs("SELECT * FROM test1").futureValue.queryResult.size shouldEqual 3
   }
 
   it should "write points" in {

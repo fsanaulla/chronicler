@@ -1,31 +1,56 @@
 package com.github.fsanaulla.chronicler.akka.integration
 
+import com.github.fsanaulla.chronicler.akka.InfluxClientFactory
+import com.github.fsanaulla.core.model.QueryInfo
+import com.github.fsanaulla.core.test.utils.ResultMatchers._
+import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
+import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
+import org.scalatest.Ignore
+
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
-class QueryManagementSpec {
+@Ignore
+class QueryManagementSpec
+  extends TestSpec
+    with EmptyCredentials
+    with EmbeddedInfluxDB {
 
-//  val testDb = "query_db"
-//
-//  "Query management operation" should "correctly work" ignore {
-//    // INIT INFLUX CLIENT
-//    val influx = InfluxClient(host = influxHost, username = credentials.username, password = credentials.password)
-//
-//    influx.createDatabase(testDb).futureValue shouldEqual OkResult
-//
-//    val queryInfo = influx.showQueries().futureValue.queryResult.find(_.query == "SHOW QUERIES").value
-//
-//    queryInfo shouldBe a [QueryInfo]
-//
-//    influx.killQuery(queryInfo.queryId).futureValue shouldEqual OkResult
-//
-//    influx.showQueries().futureValue.queryResult.find(_.queryId == queryInfo.queryId) shouldEqual None
-//
-//    influx.dropDatabase(testDb).futureValue shouldEqual OkResult
-//
-//    influx.close()
-//
-//  }
+  // make this suite great again
+
+  val testDb = "query_db"
+  val cqName = "cq_name"
+  val cqQuery = "SELECT * INTO meas1 FROM meas GROUP BY ad"
+
+  lazy val influx = InfluxClientFactory.createHttpClient(
+    host = influxHost,
+    username = credentials.username,
+    password = credentials.password)
+
+  var queryId = 0
+
+  "Query management operation" should "show queries" in {
+    influx.createDatabase(testDb).futureValue shouldEqual OkResult
+
+    influx.createCQ(testDb, cqName, cqQuery).futureValue shouldEqual OkResult
+
+    val showQueris = influx.showQueries().futureValue.queryResult
+
+    val query = showQueris.find(_.query == cqQuery).value
+
+    query shouldBe a[QueryInfo]
+
+    queryId = query.queryId
+
+  }
+
+  it should "kill queries" in {
+    influx.killQuery(queryId).futureValue shouldEqual OkResult
+
+    influx.showQueries().futureValue.queryResult.find(_.queryId == queryId) shouldEqual None
+
+    influx.close() shouldEqual {}
+  }
 }

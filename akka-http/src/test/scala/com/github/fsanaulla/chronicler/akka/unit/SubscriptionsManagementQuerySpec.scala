@@ -4,7 +4,7 @@ import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryHandler
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
 import com.github.fsanaulla.core.query.SubscriptionsManagementQuery
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.utils.{BothCredentials, TestSpec}
 import com.github.fsanaulla.core.utils.constants.Destinations
 
 /**
@@ -14,6 +14,7 @@ import com.github.fsanaulla.core.utils.constants.Destinations
   */
 class SubscriptionsManagementQuerySpec
   extends TestSpec
+    with BothCredentials
     with AkkaQueryHandler
     with SubscriptionsManagementQuery[Uri] {
 

@@ -2,21 +2,21 @@ package com.github.fsanaulla.async.integration
 
 import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxClientFactory}
 import com.github.fsanaulla.core.model.AuthorizationException
+import com.github.fsanaulla.core.test.utils.{NonEmptyCredentials, TestSpec}
 import com.github.fsanaulla.core.utils.constants.Privileges
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.time.{Second, Seconds, Span}
-import org.scalatest.{FlatSpec, Matchers, OptionValues}
+import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
+import org.scalatest.Ignore
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 17.08.17
   */
+@Ignore
 class NotAuthUserManagementSpec
-  extends FlatSpec
-    with Matchers
-    with ScalaFutures
-    with OptionValues {
+  extends TestSpec
+    with NonEmptyCredentials
+    with EmbeddedInfluxDB {
 
   val userDB = "async_not_auth_user_spec_db"
   val userName = "Martin"
@@ -25,10 +25,6 @@ class NotAuthUserManagementSpec
 
   val admin = "Admin"
   val adminPass = "admin_pass"
-
-  val influxHost = "localhost"
-
-  implicit val pc: PatienceConfig = PatienceConfig(Span(20, Seconds), Span(1, Second))
 
   lazy val influx: InfluxAsyncHttpClient = InfluxClientFactory.createHttpClient(influxHost)
 

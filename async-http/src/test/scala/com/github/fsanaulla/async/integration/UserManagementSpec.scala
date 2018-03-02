@@ -3,8 +3,9 @@ package com.github.fsanaulla.async.integration
 import com.github.fsanaulla.async.utils.TestHelper._
 import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxClientFactory}
 import com.github.fsanaulla.core.model.{UserInfo, UserPrivilegesInfo}
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
 import com.github.fsanaulla.core.utils.constants.Privileges
+import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -13,7 +14,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UserManagementSpec extends TestSpec {
+class UserManagementSpec
+  extends TestSpec
+    with EmptyCredentials
+    with EmbeddedInfluxDB{
 
   val userDB = "async_user_management_spec_db"
   val userName = "Martin"

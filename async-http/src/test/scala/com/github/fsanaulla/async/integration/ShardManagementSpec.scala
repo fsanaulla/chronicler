@@ -3,7 +3,8 @@ package com.github.fsanaulla.async.integration
 import com.github.fsanaulla.async.utils.TestHelper._
 import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxClientFactory}
 import com.github.fsanaulla.core.model.ShardGroupsInfo
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
+import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -12,7 +13,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
-class ShardManagementSpec extends TestSpec {
+class ShardManagementSpec
+  extends TestSpec
+    with EmptyCredentials
+    with EmbeddedInfluxDB{
 
   val testDb = "_internal"
 

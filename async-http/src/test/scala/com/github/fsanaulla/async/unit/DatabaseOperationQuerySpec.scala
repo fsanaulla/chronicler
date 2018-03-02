@@ -3,7 +3,7 @@ package com.github.fsanaulla.async.unit
 import com.github.fsanaulla.async.utils.TestHelper._
 import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryHandler
 import com.github.fsanaulla.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.utils.{BothCredentials, TestSpec}
 import com.github.fsanaulla.core.utils.constants.{Consistencys, Epochs, Precisions}
 import com.softwaremill.sttp.Uri
 
@@ -15,7 +15,8 @@ import com.softwaremill.sttp.Uri
 class DatabaseOperationQuerySpec
   extends TestSpec
     with AsyncQueryHandler
-    with DatabaseOperationQuery[Uri] {
+    with DatabaseOperationQuery[Uri]
+    with BothCredentials {
 
   val host = "localhost"
   val port = 8086
