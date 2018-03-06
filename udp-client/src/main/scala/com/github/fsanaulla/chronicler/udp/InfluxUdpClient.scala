@@ -13,10 +13,11 @@ import scala.io.Source
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-private[fsanaulla] class InfluxUdpClient(host: String, port: Int = 8089) extends PointTransformer {
+private[fsanaulla] class InfluxUdpClient(host: String, port: Int = 8089)
+  extends PointTransformer
+    with AutoCloseable {
 
   private val socket = new DatagramSocket()
-
   private implicit val conn: UdpConnection = UdpConnection(InetAddress.getByName(host), port)
 
   def writeNative(point: String): Unit = {

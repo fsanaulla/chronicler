@@ -31,7 +31,7 @@ private[fsanaulla] trait AkkaRequestHandler
   }
 
   override def writeRequest(uri: Uri,
-                            method: HttpMethod = HttpMethods.POST,
+                            method: HttpMethod = defaultMethod,
                             entity: MessageEntity): Future[HttpResponse] = {
     Source
       .single(

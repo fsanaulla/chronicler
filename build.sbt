@@ -85,7 +85,7 @@ lazy val macros = (project in file("macros"))
   .settings(
     name := "chronicler-macros",
     scalaVersion := "2.12.4",
-    scalacOptions ++= Seq("-deprecation", "-feature", "-print"),
+    scalacOptions ++= Seq("-deprecation", "-feature"),
     crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
     libraryDependencies ++= Dependencies.macrosDep
   ).dependsOn(core)
