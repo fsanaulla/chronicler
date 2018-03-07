@@ -26,8 +26,6 @@ class DatabaseSpec
     with EmbeddedInfluxDB {
 
   val testDB = "database_spec_db"
-  override def httpPort = 9000
-  override def backUpPort: Int = httpPort + 1
 
   lazy val influx: InfluxAkkaHttpClient = InfluxClientFactory.createHttpClient(
       host = influxHost,
@@ -95,12 +93,7 @@ class DatabaseSpec
 
     db.bulkWriteNative(Seq("test4,firstName=Jon,lastName=Snow age=24", "test4,firstName=Deny,lastName=Targaryen age=25")).futureValue shouldEqual NoContentResult
     db.read[FakeEntity]("SELECT * FROM test4").futureValue.queryResult shouldEqual Seq(FakeEntity("Deny", "Targaryen", 25), FakeEntity("Jon", "Snow", 24))
-  }
 
-  it should "clear up after all" in {
-    // DROP DB TEST
-    influx.dropDatabase(testDB).futureValue shouldEqual OkResult
-
-    influx.close()
+    influx.close() shouldEqual {}
   }
 }

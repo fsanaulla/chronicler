@@ -3,9 +3,10 @@ package com.github.fsanaulla
 import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.core.utils._
 import com.github.fsanaulla.macros.InfluxFormatter
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.{FlatSpec, Ignore, Matchers}
 import spray.json._
 
+@Ignore
 class MacroReaderSpec extends FlatSpec with Matchers {
 
   "Macros" should "generate reader" in {

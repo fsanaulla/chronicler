@@ -27,7 +27,6 @@ class UserManagementSpec
   val admin = "Admin"
   val adminPass = "admin_pass"
 
-  // INIT INFLUX CLIENT
   lazy val influx: InfluxAsyncHttpClient = InfluxClientFactory.createHttpClient(
     host = influxHost,
     username = credentials.username,
@@ -79,12 +78,6 @@ class UserManagementSpec
   it should "drop users" in {
     influx.dropUser(userName).futureValue shouldEqual OkResult
     influx.dropUser(admin).futureValue shouldEqual OkResult
-
-    influx.showUsers().futureValue.queryResult shouldEqual Seq(UserInfo(credentials.username.get, isAdmin = true))
-  }
-
-  it should "clear up after all" in {
-    influx.dropDatabase(userDB).futureValue shouldEqual OkResult
 
     influx.close() shouldEqual {}
   }

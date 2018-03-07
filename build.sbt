@@ -7,7 +7,8 @@ lazy val commonSettings = Seq(
   crossScalaVersions := Seq("2.12.4", "2.11.11"),
   homepage := Some(url("https://github.com/fsanaulla/chronicler")),
   licenses += "MIT" -> url("https://opensource.org/licenses/MIT"),
-  developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla"))
+  developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla")),
+  parallelExecution := false
 )
 
 lazy val publishSettings = Seq(
@@ -30,8 +31,13 @@ lazy val publishSettings = Seq(
 )
 
 lazy val chronicler = (project in file("."))
-  .aggregate(core, akkaHttp, asyncHttp, udp)
-  .settings(parallelExecution := false)
+  .aggregate(
+    core,
+    akkaHttp,
+    asyncHttp,
+    udp,
+    macros
+  )
 
 lazy val core = (project in file("core"))
   .settings(commonSettings: _*)
@@ -44,8 +50,7 @@ lazy val core = (project in file("core"))
       "-feature",
       "-language:implicitConversions",
       "-language:postfixOps"),
-    libraryDependencies ++= Dependencies.coreDep
-  )
+    libraryDependencies ++= Dependencies.coreDep)
 
 lazy val akkaHttp = (project in file("akka-http"))
   .settings(commonSettings: _*)
@@ -54,8 +59,6 @@ lazy val akkaHttp = (project in file("akka-http"))
     name := "chronicler-akka-http",
     scalaVersion := "2.12.4",
     libraryDependencies ++= Dependencies.akkaHttpDep
-//    coverageMinimum := Coverage.min,
-//    coverageExcludedPackages := Coverage.exclude, // todo: change
   ).dependsOn(core % "compile->compile;test->test")
 
 lazy val asyncHttp = (project in file("async-http"))

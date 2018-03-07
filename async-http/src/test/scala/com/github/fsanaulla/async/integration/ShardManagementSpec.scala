@@ -22,29 +22,27 @@ class ShardManagementSpec
 
   lazy val influx: InfluxAsyncHttpClient = InfluxClientFactory.createHttpClient(host = influxHost, username = credentials.username, password = credentials.password)
 
-  "shard operations" should "get/drop shards" in {
+  "shard operations" should "show shards" in {
 
-    val shards = influx.getShards(testDb).futureValue.queryResult
+    influx.createDatabase(testDb, shardDuration = Some("1s")).futureValue shouldEqual OkResult
+
+    val shards = influx.showShards().futureValue.queryResult
 
     shards should not be Nil
 
-    influx.dropShard(shards.head.id).futureValue shouldEqual OkResult
-
-    influx.getShards(testDb).futureValue.queryResult should not be shards
+    shards.foreach(println)
   }
 
-  it should "get shards gruops" in {
+  it should "show shards groupe" in {
 
     val shardGroups = influx.showShardGroups().futureValue.queryResult
 
     shardGroups should not equal Nil
 
-    shardGroups shouldBe a[Seq[_]]
+    shardGroups shouldBe a [Seq[_]]
 
-    shardGroups.head shouldBe a[ShardGroupsInfo]
-  }
+    shardGroups.head shouldBe a [ShardGroupsInfo]
 
-  it should "clear up after all" in {
     influx.close() shouldEqual {}
   }
 }

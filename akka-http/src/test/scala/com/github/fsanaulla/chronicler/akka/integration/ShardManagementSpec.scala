@@ -18,8 +18,6 @@ class ShardManagementSpec
 
   val testDb = "db"
 
-  override def httpPort = 9001
-  override def backUpPort: Int = httpPort + 1
 
   lazy val influx = InfluxClientFactory.createHttpClient(
     host = influxHost,

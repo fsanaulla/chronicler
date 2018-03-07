@@ -17,9 +17,6 @@ class UserManagementSpec
     with EmptyCredentials
     with EmbeddedInfluxDB {
 
-  override def httpPort = 9001
-  override def backUpPort: Int = httpPort + 1
-
   val userDB = "user_management_spec_db"
   val userName = "Martin"
   val userPass = "pass"
@@ -78,7 +75,6 @@ class UserManagementSpec
   it should "make admin" in {
     influx.makeAdmin(admin).futureValue shouldEqual OkResult
     influx.showUsers().futureValue.queryResult.contains(UserInfo(admin, isAdmin = true)) shouldEqual true
-
   }
 
   it should "drop users" in {

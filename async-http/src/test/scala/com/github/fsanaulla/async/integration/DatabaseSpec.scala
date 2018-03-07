@@ -28,9 +28,6 @@ class DatabaseSpec
 
   val testDB = "db"
 
-  override def httpPort = 9001
-  override def backUpPort: Int = httpPort + 1
-
   lazy val influx: InfluxAsyncHttpClient = InfluxClientFactory.createHttpClient(
       host = influxHost,
       port = httpPort,
@@ -39,9 +36,11 @@ class DatabaseSpec
 
   lazy val db: Database = influx.database(testDB)
 
-  "UnsafelyApi" should "write from file" in {
+  "Database api" should "write from file" in {
     influx.createDatabase(testDB).futureValue shouldEqual OkResult
+
     db.writeFromFile(new File(getClass.getResource("/points.txt").getPath)).futureValue shouldEqual NoContentResult
+    db.readJs("SELECT * FROM test1").futureValue.queryResult.size shouldEqual 3
   }
 
   it should "write points" in {
@@ -63,12 +62,16 @@ class DatabaseSpec
     db.read[FakeEntity]("SELECT * FROM test2").futureValue.queryResult shouldEqual Seq(FakeEntity("Martin", "Odersky", 54), FakeEntity("Jame", "Franko", 36), FakeEntity("Martin", "Odersky", 54))
   }
 
-  it should "bulk read js" in {
+  it should "read js" ignore {
+
+    db.readJs("SELECT * FROM test2 WHERE age < 40")
+      .futureValue
+      .queryResult should not equal Nil
 
     val multiQuery = db.bulkReadJs(
       Seq(
-        "SELECT * FROM test2",
-        "SELECT * FROM test2 WHERE age < 40"
+        "SELECT * FROM test2 WHERE age < 40",
+        "SELECT * FROM test2"
       )
     ).futureValue
 
@@ -95,13 +98,7 @@ class DatabaseSpec
 
     db.bulkWriteNative(Seq("test4,firstName=Jon,lastName=Snow age=24", "test4,firstName=Deny,lastName=Targaryen age=25")).futureValue shouldEqual NoContentResult
     db.read[FakeEntity]("SELECT * FROM test4").futureValue.queryResult shouldEqual Seq(FakeEntity("Deny", "Targaryen", 25), FakeEntity("Jon", "Snow", 24))
-  }
 
-  it should "clear up after all" in {
-
-    // DROP DB TEST
-    influx.dropDatabase(testDB).futureValue shouldEqual OkResult
-
-    influx.close()
+    influx.close() shouldEqual {}
   }
 }

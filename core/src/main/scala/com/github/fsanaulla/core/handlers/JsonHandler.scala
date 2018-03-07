@@ -17,12 +17,10 @@ private[fsanaulla] trait JsonHandler[R] extends SprayJsonSupport with DefaultJso
     js.getFields("results")
       .head
       .convertTo[Seq[JsObject]]
-      .map(_
+      .flatMap(_
         .getFields("series")
-        .headOption match {
-          case Some(jsVal) => jsVal.convertTo[Seq[JsObject]].head
-          case _ => JsObject.empty
-        })
+        .headOption
+        .flatMap(_.convertTo[Seq[JsObject]].headOption))
       .map(_
         .getFields("values")
         .headOption match {

@@ -18,8 +18,6 @@ class RetentionPolicyManagerSpec
     with EmbeddedInfluxDB {
 
   val rpDB = "db"
-  override def httpPort = 9001
-  override def backUpPort: Int = httpPort + 1
 
   // INIT INFLUX CLIENT
   lazy val influx = InfluxClientFactory.createHttpClient(

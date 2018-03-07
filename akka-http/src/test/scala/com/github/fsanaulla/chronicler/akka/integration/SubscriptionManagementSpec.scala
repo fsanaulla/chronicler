@@ -18,9 +18,6 @@ class SubscriptionManagementSpec
     with EmptyCredentials
     with EmbeddedInfluxDB {
 
-  override def httpPort = 9001
-  override def backUpPort: Int = httpPort + 1
-
   val subName = "subs"
   val dbName = "subs_spec_db"
   val rpName = "subs_rp"

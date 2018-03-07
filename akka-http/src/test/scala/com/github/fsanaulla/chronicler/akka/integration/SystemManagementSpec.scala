@@ -15,9 +15,6 @@ class SystemManagementSpec
     with EmptyCredentials
     with EmbeddedInfluxDB {
 
-  override def httpPort = 9001
-  override def backUpPort: Int = httpPort + 1
-
   "System api" should "correctly work" in {
     val influx = InfluxClientFactory.createHttpClient(
       influxHost,

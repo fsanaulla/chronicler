@@ -5,12 +5,16 @@ import com.github.fsanaulla.core.test.utils.TestSpec
 import com.softwaremill.sttp.Response
 import spray.json.{JsObject, JsonParser}
 
+import scala.concurrent.ExecutionContext
+
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
 class AsyncJsonHandlerSpec extends TestSpec with AsyncJsonHandler {
+
+  override implicit val ex: ExecutionContext = ExecutionContext.Implicits.global
 
   val singleStrJson = """{
                       "results": [

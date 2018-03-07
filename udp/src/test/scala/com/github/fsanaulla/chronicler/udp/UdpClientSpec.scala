@@ -5,7 +5,7 @@ import com.github.fsanaulla.core.model.Point
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Second, Seconds, Span}
-import org.scalatest.{FlatSpec, Ignore, Matchers}
+import org.scalatest.{FlatSpec, Matchers}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -14,7 +14,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 24.02.18
   */
-@Ignore
 class UdpClientSpec
   extends FlatSpec
     with Matchers
@@ -22,6 +21,8 @@ class UdpClientSpec
     with EmbeddedInfluxDB {
 
   implicit val pc: PatienceConfig = PatienceConfig(Span(20, Seconds), Span(1, Second))
+
+  override def udpPort: Option[Int] = Some(8089)
 
   lazy val influxUdp = new InfluxUdpClient("localhost")
 

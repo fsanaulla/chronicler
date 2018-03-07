@@ -20,8 +20,6 @@ class MeasurementSpec
 
   val safeDB = "meas_db"
   val measName = "meas"
-  override def httpPort = 9001
-  override def backUpPort: Int = httpPort + 1
 
   lazy val influx: InfluxAkkaHttpClient = InfluxClientFactory.createHttpClient(
       host = influxHost,

@@ -6,6 +6,7 @@ import com.github.fsanaulla.core.handlers.RequestHandler
 import com.softwaremill.sttp._
 import spray.json.{JsObject, JsonParser}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 private[fsanaulla] trait AsyncRequestHandler
@@ -15,6 +16,8 @@ private[fsanaulla] trait AsyncRequestHandler
   protected val defaultMethod: Method = Method.POST
 
   private val asJson: ResponseAs[JsObject, Nothing] = {
+
+    println(asString)
     asString.map {
       case str: String if str.nonEmpty => JsonParser(str).asJsObject
       case _ => JsObject.empty
