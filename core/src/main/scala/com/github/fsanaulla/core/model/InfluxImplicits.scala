@@ -11,6 +11,8 @@ import spray.json.{DefaultJsonProtocol, DeserializationException, JsArray, JsBoo
 object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
 
   implicit def bigDec2Int(bd: BigDecimal): Int = bd.toInt
+  implicit def bigDec2double(bd: BigDecimal): Double = bd.toDouble
+  implicit def bigDec2Long(bd: BigDecimal): Long = bd.toLong
 
   implicit object StringInfluxReader extends InfluxReader[String] {
 
@@ -59,14 +61,8 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
   implicit object RetentionPolicyInfluxReader extends InfluxReader[RetentionPolicyInfo] {
 
     override def read(js: JsArray): RetentionPolicyInfo = js.elements match {
-      case Vector(JsString(name), JsString(duration), JsString(shardGroupdDuration), JsNumber(replication), JsBoolean(default)) =>
-        RetentionPolicyInfo(
-          name,
-          duration,
-          shardGroupdDuration,
-          replication,
-          default
-        )
+      case Vector(JsString(name), JsString(duration), JsString(shardGroupDuration), JsNumber(replication), JsBoolean(default)) =>
+        RetentionPolicyInfo(name, duration, shardGroupDuration, replication, default)
       case _ =>
         throw DeserializationException(s"Can't deserialize $RetentionPolicyInfo object")
     }
@@ -106,16 +102,7 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
 
     override def read(js: JsArray): Shard = js.elements match {
       case Vector(JsNumber(shardId), JsString(dbName), JsString(rpName), JsNumber(shardGroupId), JsString(startTime), JsString(endTime), JsString(expiryTime), JsString(owners)) =>
-        Shard(
-          shardId.toInt,
-          dbName,
-          rpName,
-          shardGroupId,
-          startTime,
-          endTime,
-          expiryTime,
-          owners
-        )
+        Shard(shardId.toInt, dbName, rpName, shardGroupId, startTime, endTime, expiryTime, owners)
       case _ =>
         throw DeserializationException(s"Can't deserialize $Shard object")
     }
@@ -135,14 +122,7 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
 
     override def read(js: JsArray): ShardGroup = js.elements match {
       case Vector(JsNumber(shardId), JsString(dbName), JsString(rpName), JsString(startTime), JsString(endTime), JsString(expiryTime)) =>
-        ShardGroup(
-          shardId,
-          dbName,
-          rpName,
-          startTime,
-          endTime,
-          expiryTime
-        )
+        ShardGroup(shardId, dbName, rpName, startTime, endTime, expiryTime)
       case _ =>
         throw DeserializationException(s"Can't deserialize $ShardGroup object")
     }
@@ -171,7 +151,8 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
   implicit object TagValueInfluxReader extends InfluxReader[TagValue] {
 
     override def read(js: JsArray): TagValue = js.elements match {
-      case Vector(JsString(tag), JsString(value)) => TagValue(tag, value)
+      case Vector(JsString(tag), JsString(value)) =>
+        TagValue(tag, value)
       case _ =>
         throw DeserializationException(s"Can't deserialize $TagValue object")
     }

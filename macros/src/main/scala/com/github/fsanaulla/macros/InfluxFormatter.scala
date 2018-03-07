@@ -19,10 +19,10 @@ object InfluxFormatter {
   /**
     * Generate InfluxReader for type ${A}
     */
-  def reader[A]: InfluxReader[A] = ???
+  def reader[A]: InfluxReader[A] = macro InfluxFormatterImpl.reader_impl[A]
 
   /**
     * Generate InfluxFormatter for type ${A}
     */
-  def format[A]: InfluxFormatter[A] = ???
+  def format[A]: InfluxFormatter[A] = macro InfluxFormatterImpl.format_impl[A]
 }

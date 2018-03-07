@@ -5,8 +5,7 @@ import com.github.fsanaulla.macros.InfluxFormatter
 import com.github.fsanaulla.macros.annotations.{field, tag}
 import org.scalatest.{FlatSpec, Matchers}
 
-// Bug not related to scala version
-class MacroSpec extends FlatSpec with Matchers {
+class MacroWriterSpec extends FlatSpec with Matchers {
 
   "Macros" should "generate writer with fully annotated fields" in {
     case class Test(@tag name: String,

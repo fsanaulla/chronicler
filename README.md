@@ -5,9 +5,10 @@
 
 </div>
 
+# About project
 Chronicler - asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](https://www.influxdata.com/).
 # Versions
-There is avaible version for scala `2.11` and `2.12`. JDK 8 is required.
+There are available version for scala `2.11` and `2.12`. JDK 8 is required.
 # Integration
 Add to your dependencies list in `build.sbt`:
 ```

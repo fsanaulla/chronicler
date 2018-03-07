@@ -7,9 +7,7 @@ lazy val commonSettings = Seq(
   crossScalaVersions := Seq("2.12.4", "2.11.11"),
   homepage := Some(url("https://github.com/fsanaulla/chronicler")),
   licenses += "MIT" -> url("https://opensource.org/licenses/MIT"),
-  developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla")),
-  resolvers += Resolver.mavenLocal,
-  parallelExecution := false // to work with Embedded InfluxDB
+  developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla"))
 )
 
 lazy val publishSettings = Seq(
