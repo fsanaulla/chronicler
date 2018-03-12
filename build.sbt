@@ -59,7 +59,7 @@ lazy val akkaHttp = (project in file("akka-http"))
     name := "chronicler-akka-http",
     scalaVersion := "2.12.4",
     libraryDependencies += Dependencies.akkaHttp
-  ).dependsOn(core)
+  ).dependsOn(core % "compile->compile;test->test")
 
 lazy val asyncHttp = (project in file("async-http"))
   .settings(commonSettings: _*)
@@ -68,7 +68,7 @@ lazy val asyncHttp = (project in file("async-http"))
     name := "chronicler-async-http",
     scalaVersion := "2.12.4",
     libraryDependencies += Dependencies.asyncHttp
-  ).dependsOn(core)
+  ).dependsOn(core % "compile->compile;test->test")
 
 lazy val udp = project
   .settings(commonSettings: _*)
