@@ -1,20 +1,15 @@
 version: 2
 jobs:
-  build:
-       docker:
-         - image: circleci/openjdk:8-jdk
-       steps:
-         - checkout
-         - run:
-             name: Insatll sbt
-             command: |
-                wget -q https://dl.bintray.com/sbt/debian/sbt-1.1.0.deb
-                sudo dpkg -i sbt-1.1.0.deb
   akkaHttp:
       docker:
         - image: circleci/openjdk:8-jdk
       steps:
         - checkout
+        - run:
+            name: Insatll sbt
+            command: |
+               wget -q https://dl.bintray.com/sbt/debian/sbt-1.1.0.deb
+               sudo dpkg -i sbt-1.1.0.deb
         - run:
             name: Test
             command: "sbt + \"project akkaHttp\" fullTest"
@@ -24,6 +19,11 @@ jobs:
       steps:
         - checkout
         - run:
+            name: Insatll sbt
+            command: |
+               wget -q https://dl.bintray.com/sbt/debian/sbt-1.1.0.deb
+               sudo dpkg -i sbt-1.1.0.deb
+        - run:
             name: Test
             command: "sbt + \"project asyncHttp\" fullTest"
   udp:
@@ -31,6 +31,11 @@ jobs:
         - image: circleci/openjdk:8-jdk
       steps:
         - checkout
+        - run:
+            name: Insatll sbt
+            command: |
+               wget -q https://dl.bintray.com/sbt/debian/sbt-1.1.0.deb
+               sudo dpkg -i sbt-1.1.0.deb
         - run:
             name: Test
             command: "sbt + \"project udp\" fullTest"
@@ -40,22 +45,18 @@ jobs:
       steps:
         - checkout
         - run:
+            name: Insatll sbt
+            command: |
+               wget -q https://dl.bintray.com/sbt/debian/sbt-1.1.0.deb
+               sudo dpkg -i sbt-1.1.0.deb
+        - run:
             name: Test
             command: "sbt + \"project core\" fullTest"
 workflows:
   version: 2
-  build_and_test:
+  test:
     jobs:
-      - build
-      - akkaHttp:
-          requires:
-            - build
-      - asyncHttp:
-          requires:
-            - build
-      - udp:
-          requires:
-            - build
-      - core:
-          requires:
-            - build
+      - akkaHttp
+      - asyncHttp
+      - udp
+      - core

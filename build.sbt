@@ -2,9 +2,9 @@ import sbt.Keys.{crossScalaVersions, organization, publishArtifact, version}
 import sbt.url
 
 lazy val commonSettings = Seq(
-  version := "0.4.0",
+  version := "0.1.0",
   organization := "com.github.fsanaulla",
-  crossScalaVersions := Seq("2.12.4", "2.11.11"),
+  crossScalaVersions := Seq("2.11.8", "2.12.4"),
   homepage := Some(url("https://github.com/fsanaulla/chronicler")),
   licenses += "Apache-2.0" -> url("https://opensource.org/licenses/Apache-2.0"),
   developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla")),
