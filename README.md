@@ -24,7 +24,7 @@ libraryDependencies += "com.github.fsanaulla" %% "chronicler-udp" % "0.1.0"
 
 | Task | Description | Status |
 | ------------- | ------------- | ---------- |
-| Macro Formatters | Allow generatin `InfluxReader[T}`, `InfluxWriter[T]` at compile time | In Progress |
+| Macro Formaters | Allow generating `InfluxReader[T]`, `InfluxWriter[T]` at compile time | In Progress |
 | Type safe query DSL | More flexible method for quering information | Not started |
 
 # Table of content

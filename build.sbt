@@ -38,7 +38,7 @@ lazy val chronicler = (project in file("."))
     udp
   )
 
-lazy val core = (project in file("core"))
+lazy val core = project
   .settings(commonSettings: _*)
   .settings(publishSettings: _*)
   .settings(
@@ -59,7 +59,7 @@ lazy val akkaHttp = (project in file("akka-http"))
     name := "chronicler-akka-http",
     scalaVersion := "2.12.4",
     libraryDependencies += Dependencies.akkaHttp
-  ).dependsOn(core % "compile->compile;test->test")
+  ).dependsOn(core)
 
 lazy val asyncHttp = (project in file("async-http"))
   .settings(commonSettings: _*)
@@ -68,9 +68,9 @@ lazy val asyncHttp = (project in file("async-http"))
     name := "chronicler-async-http",
     scalaVersion := "2.12.4",
     libraryDependencies += Dependencies.asyncHttp
-  ).dependsOn(core % "compile->compile;test->test")
+  ).dependsOn(core)
 
-lazy val udp = (project in file("udp"))
+lazy val udp = project
   .settings(commonSettings: _*)
   .settings(publishSettings: _*)
   .settings(
@@ -79,7 +79,7 @@ lazy val udp = (project in file("udp"))
   .dependsOn(core)
   .dependsOn(asyncHttp % "test->test")
 
-lazy val macros = (project in file("macros"))
+lazy val macros = project
   .settings(commonSettings: _*)
   .settings(publishSettings: _*)
   .settings(
