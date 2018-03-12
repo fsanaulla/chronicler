@@ -1,7 +1,6 @@
-package com.github.fsanaulla
+package com.github.fsanaulla.macros
 
 import com.github.fsanaulla.core.model.InfluxWriter
-import com.github.fsanaulla.macros.InfluxFormatter
 import com.github.fsanaulla.macros.annotations.{field, tag}
 import org.scalatest.{FlatSpec, Matchers}
 

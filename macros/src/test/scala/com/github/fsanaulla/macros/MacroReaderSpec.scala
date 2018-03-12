@@ -1,8 +1,7 @@
-package com.github.fsanaulla
+package com.github.fsanaulla.macros
 
 import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.core.utils._
-import com.github.fsanaulla.macros.InfluxFormatter
 import org.scalatest.{FlatSpec, Ignore, Matchers}
 import spray.json._
 
