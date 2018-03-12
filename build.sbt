@@ -6,7 +6,7 @@ lazy val commonSettings = Seq(
   organization := "com.github.fsanaulla",
   crossScalaVersions := Seq("2.12.4", "2.11.11"),
   homepage := Some(url("https://github.com/fsanaulla/chronicler")),
-  licenses += "MIT" -> url("https://opensource.org/licenses/MIT"),
+  licenses += "Apache-2.0" -> url("https://opensource.org/licenses/Apache-2.0"),
   developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla")),
   parallelExecution := false
 )
@@ -31,12 +31,12 @@ lazy val publishSettings = Seq(
 )
 
 lazy val chronicler = (project in file("."))
+  .settings(publishArtifact := false)
   .aggregate(
     core,
     akkaHttp,
     asyncHttp,
-    udp,
-    macros
+    udp
   )
 
 lazy val core = (project in file("core"))
@@ -47,9 +47,9 @@ lazy val core = (project in file("core"))
     scalaVersion := "2.12.4",
     publishArtifact in (Test, packageBin) := true,
       scalacOptions ++= Seq(
-      "-feature",
-      "-language:implicitConversions",
-      "-language:postfixOps"),
+        "-feature",
+        "-language:implicitConversions",
+        "-language:postfixOps"),
     libraryDependencies ++= Dependencies.coreDep)
 
 lazy val akkaHttp = (project in file("akka-http"))
@@ -90,6 +90,7 @@ lazy val macros = (project in file("macros"))
     libraryDependencies ++= Dependencies.macrosDep
   ).dependsOn(core)
 
+addCommandAlias("fullTest", ";clean;compile;test:compile;test")
 //credentials += Credentials(
 //  "Sonatype Nexus Repository Manager",
 //  "oss.sonatype.org",
