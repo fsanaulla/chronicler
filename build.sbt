@@ -12,7 +12,6 @@ lazy val commonSettings = Seq(
 )
 
 lazy val publishSettings = Seq(
-  // Publish section
   useGpg := true,
   publishArtifact in Test := false,
   scmInfo := Some(
@@ -50,7 +49,8 @@ lazy val core = (project in file("core"))
         "-feature",
         "-language:implicitConversions",
         "-language:postfixOps"),
-    libraryDependencies ++= Dependencies.coreDep)
+    libraryDependencies ++= Dependencies.coreDep
+  )
 
 lazy val akkaHttp = (project in file("akka-http"))
   .settings(commonSettings: _*)
@@ -58,7 +58,7 @@ lazy val akkaHttp = (project in file("akka-http"))
   .settings(
     name := "chronicler-akka-http",
     scalaVersion := "2.12.4",
-    libraryDependencies ++= Dependencies.akkaHttpDep
+    libraryDependencies += Dependencies.akkaHttp
   ).dependsOn(core % "compile->compile;test->test")
 
 lazy val asyncHttp = (project in file("async-http"))
@@ -67,7 +67,7 @@ lazy val asyncHttp = (project in file("async-http"))
   .settings(
     name := "chronicler-async-http",
     scalaVersion := "2.12.4",
-    libraryDependencies ++= Dependencies.asyncHttpDep
+    libraryDependencies += Dependencies.asyncHttp
   ).dependsOn(core % "compile->compile;test->test")
 
 lazy val udp = (project in file("udp"))
@@ -75,8 +75,7 @@ lazy val udp = (project in file("udp"))
   .settings(publishSettings: _*)
   .settings(
     name := "chronicler-udp",
-    scalaVersion := "2.12.4",
-    libraryDependencies ++= Dependencies.udpDep)
+    scalaVersion := "2.12.4")
   .dependsOn(core)
   .dependsOn(asyncHttp % "test->test")
 
@@ -87,10 +86,12 @@ lazy val macros = (project in file("macros"))
     name := "chronicler-macros",
     scalaVersion := "2.12.4",
     scalacOptions ++= Seq("-deprecation", "-feature", "-print"),
-    libraryDependencies ++= Dependencies.macrosDep
+    libraryDependencies += Dependencies.scalaReflect,
+    excludeDependencies += Dependencies.Excluded.embeddedInflux
   ).dependsOn(core)
 
 addCommandAlias("fullTest", ";clean;compile;test:compile;test")
+addCommandAlias("fullRelease", ";clean;publishSigned;sonatypeRelease")
 //credentials += Credentials(
 //  "Sonatype Nexus Repository Manager",
 //  "oss.sonatype.org",

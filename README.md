@@ -1,19 +1,32 @@
 <div align="center">
 
 # Chronicler
-[![Build Status](https://travis-ci.org/fsanaulla/chronicler.svg?branch=master)](https://travis-ci.org/fsanaulla/chronicler)  [![Coverage Status](https://coveralls.com.github.fsanaulla.chronicler.async.io/repos/github/fsanaulla/chronicler/badge.svg?branch=master)](https://coveralls.com.github.fsanaulla.chronicler.async.io/github/fsanaulla/chronicler?branch=master)
+![CircleCI](https://circleci.com/gh/fsanaulla/chronicler.svg?style=shield&circle-token=3943b9e35ee6ec63d54741e57a2833a4609b9adc)
 
 </div>
 
 # About project
 Chronicler - asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](https://www.influxdata.com/).
-# Versions
-There are available version for scala `2.11` and `2.12`. JDK 8 is required.
+With several implementation, that allow you choose what you want. It support scala `2.11` and `2.12`.
 # Integration
 Add to your dependencies list in `build.sbt`:
 ```
-libraryDependencies += "com.github.fsanaulla" %% "chronicler" % "0.3.4"
+// for Akka based client
+libraryDependencies += "com.github.fsanaulla" %% "chronicler-akka-http" % "0.1.0"
+
+// for Netty based client
+libraryDependencies += "com.github.fsanaulla" %% "chronicler-async-http" % "0.1.0"
+
+// for UDP protocol client
+libraryDependencies += "com.github.fsanaulla" %% "chronicler-udp" % "0.1.0"
 ```
+# Roadmap
+
+| Task | Description | Status |
+| ------------- | ------------- | ---------- |
+| Macro Formatters | Allow generatin `InfluxReader[T}`, `InfluxWriter[T]` at compile time | In Progress |
+| Type safe query DSL | More flexible method for quering information | Not started |
+
 # Table of content
 - [Helper Tools](docs/helper_tools.md)
 - [Set up connection](docs/clients_connection.md)
