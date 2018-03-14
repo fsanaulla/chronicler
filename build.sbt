@@ -1,55 +1,97 @@
-import sbt.Keys.{publishArtifact, resolvers, version}
+import sbt.Keys.{crossScalaVersions, organization, publishArtifact, version}
 import sbt.url
-import scoverage.ScoverageKeys.coverageMinimum
 
-name := "chronicler"
-version := "0.3.4"
-organization := "com.github.fsanaulla"
-homepage := Some(url("https://github.com/fsanaulla/chronicler"))
-licenses += "MIT" -> url("https://opensource.org/licenses/MIT")
+lazy val commonSettings = Seq(
+  version := "0.1.0",
+  organization := "com.github.fsanaulla",
+  crossScalaVersions := Seq("2.11.8", "2.12.4"),
+  homepage := Some(url("https://github.com/fsanaulla/chronicler")),
+  licenses += "Apache-2.0" -> url("https://opensource.org/licenses/Apache-2.0"),
+  developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla")),
+  parallelExecution := false
+)
 
-
-// used 2.12.2 instead of last one, because of macros paradise plugin supported version
-scalaVersion in ThisBuild := "2.12.2"
-crossScalaVersions in ThisBuild := Seq(scalaVersion.value, "2.11.11")
-scalacOptions ++= Seq(
-  "-feature",
-  "-language:implicitConversions",
-  "-language:postfixOps",
-  "-Xplugin-require:macroparadise")
-
-// Dependencies section
-resolvers ++= Dependencies.projectResolvers
-libraryDependencies ++= Dependencies.rootDependencies
-
-coverageMinimum := Coverage.min
-coverageExcludedPackages := Coverage.exclude
-
-
-// Publish section
-useGpg := true
-
-publishArtifact in Test := false
-
-scmInfo := Some(
-  ScmInfo(
-    url("https://github.com/fsanaulla/chronicler"),
-    "https://github.com/fsanaulla/chronicler.git"
+lazy val publishSettings = Seq(
+  useGpg := true,
+  publishArtifact in Test := false,
+  scmInfo := Some(
+    ScmInfo(
+      url("https://github.com/fsanaulla/chronicler"),
+      "https://github.com/fsanaulla/chronicler.git"
+    )
+  ),
+  pomIncludeRepository := (_ => false),
+  publishTo := Some(
+    if (isSnapshot.value)
+      Opts.resolver.sonatypeSnapshots
+    else
+      Opts.resolver.sonatypeStaging
   )
 )
 
-developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla"))
+lazy val chronicler = (project in file("."))
+  .settings(publishArtifact := false)
+  .aggregate(
+    core,
+    akkaHttp,
+    asyncHttp,
+    udp
+  )
 
-pomIncludeRepository := (_ => false)
+lazy val core = project
+  .settings(commonSettings: _*)
+  .settings(publishSettings: _*)
+  .settings(
+    name := "chronicler-core",
+    scalaVersion := "2.12.4",
+    publishArtifact in (Test, packageBin) := true,
+      scalacOptions ++= Seq(
+        "-feature",
+        "-language:implicitConversions",
+        "-language:postfixOps"),
+    libraryDependencies ++= Dependencies.coreDep
+  )
 
-publishTo := Some(
-  if (isSnapshot.value)
-    Opts.resolver.sonatypeSnapshots
-  else
-    Opts.resolver.sonatypeStaging
-)
+lazy val akkaHttp = (project in file("akka-http"))
+  .settings(commonSettings: _*)
+  .settings(publishSettings: _*)
+  .settings(
+    name := "chronicler-akka-http",
+    scalaVersion := "2.12.4",
+    libraryDependencies += Dependencies.akkaHttp
+  ).dependsOn(core % "compile->compile;test->test")
 
+lazy val asyncHttp = (project in file("async-http"))
+  .settings(commonSettings: _*)
+  .settings(publishSettings: _*)
+  .settings(
+    name := "chronicler-async-http",
+    scalaVersion := "2.12.4",
+    libraryDependencies += Dependencies.asyncHttp
+  ).dependsOn(core % "compile->compile;test->test")
 
+lazy val udp = project
+  .settings(commonSettings: _*)
+  .settings(publishSettings: _*)
+  .settings(
+    name := "chronicler-udp",
+    scalaVersion := "2.12.4")
+  .dependsOn(core)
+  .dependsOn(asyncHttp % "test->test")
+
+lazy val macros = project
+  .settings(commonSettings: _*)
+  .settings(publishSettings: _*)
+  .settings(
+    name := "chronicler-macros",
+    scalaVersion := "2.12.4",
+    scalacOptions ++= Seq("-deprecation", "-feature", "-print"),
+    libraryDependencies += Dependencies.scalaReflect,
+    excludeDependencies += Dependencies.Excluded.embeddedInflux
+  ).dependsOn(core)
+
+addCommandAlias("fullTest", ";clean;compile;test:compile;test")
+addCommandAlias("fullRelease", ";clean;publishSigned;sonatypeRelease")
 //credentials += Credentials(
 //  "Sonatype Nexus Repository Manager",
 //  "oss.sonatype.org",

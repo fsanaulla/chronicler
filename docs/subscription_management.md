@@ -1,7 +1,7 @@
 # Subscription management <a name="subsManagement"></a>
 You can simply create `subscription`:
 ```
-import com.fsanaulla.utils.constants.Destinations._
+import com.github.fsanaulla.core.utils.constants.Destinations._
 
 influx.createSubscription("subsName", "dbName", "rpName", Destinations.ALL, Seq("host1", "host2"))
 res0: Future[Result]
@@ -23,7 +23,7 @@ res0: Future[QueryResult[Subscription]]
 ```
 There is no update method in subs api, so it's just simulation using drop and create:
 ```
-import com.fsanaulla.utils.constants.Destinations._
+import com.github.fsanaulla.core.utils.constants.Destinations._
 
 influx.updateSubscription("subsName", "dbName", "rpName", Destinations.ALL, Seq("host1", "host2"))
 res0: Future[Result]

@@ -26,7 +26,7 @@ res0: Future[Result]
 
 To choose needed database:
 ```
-val db: Database = influx.use("mydb")
+val db: Database = influx.database("mydb")
 ```
 Drop database
 ```
