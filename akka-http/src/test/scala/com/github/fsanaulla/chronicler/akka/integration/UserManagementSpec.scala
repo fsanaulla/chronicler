@@ -7,14 +7,14 @@ import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.core.utils.constants.Privileges
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UserManagementSpec
-  extends TestSpec
-    with EmbeddedInfluxDB{
+class UserManagementSpec extends TestSpec with EmbeddedInfluxDB{
 
   val userDB = "db"
   val userName = "Martin"
@@ -24,7 +24,7 @@ class UserManagementSpec
   val admin = "Admin"
   val adminPass = "admin_pass"
 
-  lazy val influx: InfluxAkkaHttpClient = InfluxDB(influxHost)
+  lazy val influx: InfluxAkkaHttpClient = InfluxDB.connect()
 
   "User management operation" should "create user" in {
     influx.createDatabase(userDB).futureValue shouldEqual OkResult

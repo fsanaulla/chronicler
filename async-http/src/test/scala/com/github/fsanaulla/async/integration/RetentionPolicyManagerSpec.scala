@@ -15,14 +15,11 @@ import scala.language.postfixOps
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class RetentionPolicyManagerSpec
-  extends TestSpec
-    with EmbeddedInfluxDB {
+class RetentionPolicyManagerSpec extends TestSpec with EmbeddedInfluxDB {
 
   val rpDB = "db"
 
-  lazy val influx: InfluxAsyncHttpClient =
-    InfluxDB(host = influxHost, port = httpPort)
+  lazy val influx: InfluxAsyncHttpClient = InfluxDB.connect()
 
   "Retention policy" should "create retention policy" in {
     influx.createDatabase(rpDB).futureValue shouldEqual OkResult

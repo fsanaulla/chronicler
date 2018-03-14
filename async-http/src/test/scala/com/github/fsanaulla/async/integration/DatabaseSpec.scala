@@ -27,8 +27,7 @@ class DatabaseSpec
 
   val testDB = "db"
 
-  lazy val influx: InfluxAsyncHttpClient =
-    InfluxDB(influxHost)
+  lazy val influx: InfluxAsyncHttpClient = InfluxDB.connect()
 
   lazy val db: Database = influx.database(testDB)
 

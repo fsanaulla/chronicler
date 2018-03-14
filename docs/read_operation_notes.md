@@ -9,14 +9,19 @@ You can execute multiple query's in one request:
 db.bulkReadJs(Seq("SELECT * FROM measurement", "SELECT * FROM measurement1"))
 res0: Future[QueryResult[Seq[JsArray]]]
 ```
-The next one it's typed method, for using it you need define your own `InfluxReader[T]` and add it implicitly to scope. There is example of one on that.
-Simply mark it with `readable` annotation to generate implicits at compile time
+The next one it's typed method, for using it you need define your own `InfluxReader[T]` and add it implicitly to scope. 
 ```
-@readable
 case class FakeEntity(firstName: String, lastName: String, age: Int)
+
+implicit val rd = new InfluxReader[FakeEntity] {
+    def read(js: JsArray): FakeEntity = {
+        // parsing
+    }
+}
 ```
 And then just use it
 ```
 db.read[FakeEntity]("SELECT * FROM measurement")
 res0: Future[QueryResult[FakeEntity]]
 ```
+In close time will be added macro generation for it, so you will be saved from boilerplate coding.

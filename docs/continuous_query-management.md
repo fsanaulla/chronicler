@@ -5,22 +5,22 @@ To create Continuously Query(further CQ). Where query params look's like `SELECT
 influx.createCQ("dbName", "cqName", "query")
 res0: Future[Result]
 ```
-Droping CQ:
+Droping Continuously Query:
 ```
 influx.dropCQ("dbName", "cqName")
 res0: Future[Result]
 ```
-Show CQ's:
+Show Continuously Query's:
 ```
 influx.showCQs()
 res0: Future[QueryResult[ContinuousQueryInfo]]
 ```
-Show database related CQ's:
+Show database related Continuously Query's:
 ```
 influx.showCQ("dbName")
 res0: Future[QueryResult[ContinuousQuery]]
 ```
-There is no default update method for CQ, so `updateCQ` it's simulation using `dropCQ` and `createCQ` methods.
+There is no default update method for Continuously Query, so `updateCQ` it's simulation using `dropCQ` and `createCQ` methods.
 ```
 influx.updateCQ("dbName", "cqName", "query")
 res0: Future[Result]

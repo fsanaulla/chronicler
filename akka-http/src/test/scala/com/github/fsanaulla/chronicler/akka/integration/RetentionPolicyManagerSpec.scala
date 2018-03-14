@@ -7,18 +7,18 @@ import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.core.utils.InfluxDuration._
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class RetentionPolicyManagerSpec
-  extends TestSpec
-    with EmbeddedInfluxDB {
+class RetentionPolicyManagerSpec extends TestSpec with EmbeddedInfluxDB {
 
   val rpDB = "db"
 
-  lazy val influx: InfluxAkkaHttpClient = InfluxDB(influxHost)
+  lazy val influx: InfluxAkkaHttpClient = InfluxDB.connect()
 
   "Retention policy" should "create retention policy" in {
     influx.createDatabase(rpDB).futureValue shouldEqual OkResult

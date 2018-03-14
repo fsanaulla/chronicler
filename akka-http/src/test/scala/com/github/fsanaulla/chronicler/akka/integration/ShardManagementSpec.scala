@@ -6,6 +6,8 @@ import com.github.fsanaulla.core.test.utils.ResultMatchers._
 import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
@@ -15,7 +17,7 @@ class ShardManagementSpec extends TestSpec with EmbeddedInfluxDB {
 
   val testDb = "_internal"
 
-  lazy val influx: InfluxAkkaHttpClient = InfluxDB(influxHost)
+  lazy val influx: InfluxAkkaHttpClient = InfluxDB.connect()
 
   "shard operations" should "show shards" in {
 

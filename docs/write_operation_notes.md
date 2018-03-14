@@ -44,42 +44,38 @@ res0: Future[Result]
 The same methods able for `InfluxUdpClient`. Like:
 ```
 updInflux.writeNative("cpu_load_short,host=server02,region=us-west value=0.55 1422568543702900257")
-res0: Unit
+res0: Future[Unit]
 ```
-main difference in return type. All udp methods return unit result by [UDP Protocol](https://en.wikipedia.org/wiki/User_Datagram_Protocol) nature
+main difference in return type. All udp methods return type is result of [UDP Protocol](https://en.wikipedia.org/wiki/User_Datagram_Protocol) nature
 
 The second group are typesafe operation. To use it create type safe connection:
 ```
 val meas = influx.measurement[FakeEntity]("db", "meas")
 ```
 That one can take any type that have implicit `InfluxWriter`object in the scope, that parse your object to [Line Protocol String](https://docs.influxdata.com/influxdb/v1.3/write_protocols/line_protocol_reference/). For example:
-To to object writable to influx, just mark it with annotation `writable`, and specify tag and field params in object.
-This annotation will generate implicit object for you at compile time. See [scalameta](http://scalameta.org/).
 ```
 import com.github.fsanaulla.annotation._
 
-@writable
 case class FakeEntity(@tag firstName: String,
                       @tag lastName: String,
                       @field age: Int)
+                      
+implicit val wr = new InfluxWriter[FakeEntity] {
+    def write(fe: FakeEntity): String = {
+        // parsing code
+    }
+}
 ```
 Then you can simply:
 ```
 val fe = FakeEntity("Name", "Surname", 54)
 
 // single
-meas.write[FakeEntity](fe)
+meas.write(fe)
 res0: Future[Result]
 
 // bulk
 meas.bulkWrite(Seq(fe, ...))
 res0: Future[Result]
 ```
-Another one useful annotation exist called `formattable`, example below:
-```
-@formattable
-case class FakeEntity(@tag firstName: String,
-                      @tag lastName: String,
-                      @field age: Int)
-```
-It with generate both implicits like: `InfluxReader[FakeEntity]` and `InfluxWriter[FakeEntity]`
+In close future will be added support for compile time code generation, using macros. So you will be saved from boilerplate coding.

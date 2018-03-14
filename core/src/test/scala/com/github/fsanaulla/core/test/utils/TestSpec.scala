@@ -11,7 +11,5 @@ import org.scalatest.{FlatSpec, Matchers, OptionValues}
   */
 trait TestSpec extends FlatSpec with Matchers with ScalaFutures with OptionValues {
 
-  final val influxHost = "localhost"
-
   implicit val pc: PatienceConfig = PatienceConfig(Span(20, Seconds), Span(1, Second))
 }

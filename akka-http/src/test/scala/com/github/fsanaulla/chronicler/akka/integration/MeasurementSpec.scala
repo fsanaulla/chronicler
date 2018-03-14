@@ -8,19 +8,19 @@ import com.github.fsanaulla.core.test.utils.ResultMatchers._
 import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 28.09.17
   */
-class MeasurementSpec
-  extends TestSpec
-    with EmbeddedInfluxDB {
+class MeasurementSpec extends TestSpec with EmbeddedInfluxDB {
 
   val safeDB = "db"
   val measName = "meas"
 
-  lazy val influx: InfluxAkkaHttpClient = InfluxDB(influxHost)
+  lazy val influx: InfluxAkkaHttpClient = InfluxDB.connect()
 
   lazy val meas: Measurement[FakeEntity] = influx.measurement[FakeEntity](safeDB, measName)
   lazy val db: Database = influx.database(safeDB)

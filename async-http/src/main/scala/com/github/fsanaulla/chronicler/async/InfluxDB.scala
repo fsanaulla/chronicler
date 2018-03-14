@@ -6,9 +6,17 @@ import scala.concurrent.ExecutionContext
 
 object InfluxDB {
 
-  def apply(host: String,
-            port: Int = 8086,
-            credentials: Option[InfluxCredentials] = None)
-           (implicit ex: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global) =
+  /***
+    * Create HTTP client
+    * @param host - InfluxDB host
+    * @param port - InfluxDB port
+    * @param credentials - user credentials
+    * @param ex - Execution context
+    * @return - InfluxAsyncHttpClient
+    */
+  def connect(host: String = "localhost",
+              port: Int = 8086,
+              credentials: Option[InfluxCredentials] = None)
+             (implicit ex: ExecutionContext) =
     new InfluxAsyncHttpClient(host, port, credentials)
 }

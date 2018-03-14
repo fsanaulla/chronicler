@@ -17,8 +17,7 @@ class ShardManagementSpec extends TestSpec with EmbeddedInfluxDB {
 
   val testDb = "_internal"
 
-  lazy val influx: InfluxAsyncHttpClient =
-    InfluxDB(host = influxHost, port = httpPort)
+  lazy val influx: InfluxAsyncHttpClient = InfluxDB.connect()
 
   "shard operations" should "show shards" in {
 

@@ -14,9 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UserManagementSpec
-  extends TestSpec
-    with EmbeddedInfluxDB{
+class UserManagementSpec extends TestSpec with EmbeddedInfluxDB{
 
   val userDB = "db"
   val userName = "Martin"
@@ -26,8 +24,7 @@ class UserManagementSpec
   val admin = "Admin"
   val adminPass = "admin_pass"
 
-  lazy val influx: InfluxAsyncHttpClient =
-    InfluxDB(host = influxHost, port = httpPort)
+  lazy val influx: InfluxAsyncHttpClient = InfluxDB.connect()
 
   "User management operation" should "create user" in {
     influx.createDatabase(userDB).futureValue shouldEqual OkResult

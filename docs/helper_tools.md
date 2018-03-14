@@ -1,4 +1,5 @@
 # Helper tools <a name="helptools"></a>
+
 ## Time <a name="time"></a>
 In many places you require to specify influx time format, like in `duration` related fields. In this case you can write based time like, `1h30m45s` by hand according to [Duration Time Format](https://docs.influxdata.com/influxdb/v1.3/query_language/spec/#durations).
 Or use `InfluxDuration` object.

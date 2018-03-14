@@ -29,7 +29,7 @@ libraryDependencies += "com.github.fsanaulla" %% "chronicler-udp" % "0.1.0"
 
 # Table of content
 - [Helper Tools](docs/helper_tools.md)
-- [Set up connection](docs/clients_connection.md)
+- [Set up connection](docs/get_started.md)
 - [Database management](docs/database_management.md)
 - [Read operation](docs/read_operation_notes.md)
 - [Write operation](docs/write_operation_notes.md)

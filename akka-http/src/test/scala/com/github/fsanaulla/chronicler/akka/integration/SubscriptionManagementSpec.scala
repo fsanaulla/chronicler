@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.akka.integration
 
-import com.github.fsanaulla.chronicler.akka.InfluxDB
+import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.Subscription
 import com.github.fsanaulla.core.test.utils.ResultMatchers._
 import com.github.fsanaulla.core.test.utils.TestSpec
@@ -8,6 +8,8 @@ import com.github.fsanaulla.core.utils.InfluxDuration._
 import com.github.fsanaulla.core.utils.constants.Destinations
 import com.github.fsanaulla.core.utils.constants.Destinations.Destination
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * Created by
@@ -29,7 +31,7 @@ class SubscriptionManagementSpec
 
   val duration: String = 1.hours + 30.minutes
 
-  lazy val influx = InfluxDB(influxHost)
+  lazy val influx: InfluxAkkaHttpClient = InfluxDB.connect()
 
   "Subscription operation" should "create subscription" in {
 

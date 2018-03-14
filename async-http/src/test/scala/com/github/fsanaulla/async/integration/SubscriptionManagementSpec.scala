@@ -9,14 +9,14 @@ import com.github.fsanaulla.core.utils.constants.Destinations
 import com.github.fsanaulla.core.utils.constants.Destinations.Destination
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 21.08.17
   */
-class SubscriptionManagementSpec
-  extends TestSpec
-    with EmbeddedInfluxDB{
+class SubscriptionManagementSpec extends TestSpec with EmbeddedInfluxDB{
 
   val subName = "subs"
   val dbName = "async_subs_spec_db"
@@ -29,8 +29,7 @@ class SubscriptionManagementSpec
 
   val duration: String = 1.hours + 30.minutes
 
-  lazy val influx: InfluxAsyncHttpClient =
-    InfluxDB(host = influxHost, port = httpPort)
+  lazy val influx: InfluxAsyncHttpClient = InfluxDB.connect()
 
   "Subscription operation" should "create subscription" in {
 

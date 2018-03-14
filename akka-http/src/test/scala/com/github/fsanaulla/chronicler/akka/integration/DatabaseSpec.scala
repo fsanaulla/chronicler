@@ -13,6 +13,8 @@ import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 import spray.json.{DefaultJsonProtocol, JsArray, JsValue}
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
@@ -26,8 +28,7 @@ class DatabaseSpec
 
   val testDB = "db"
 
-  lazy val influx: InfluxAkkaHttpClient =
-    InfluxDB(influxHost)
+  lazy val influx: InfluxAkkaHttpClient = InfluxDB.connect()
 
   lazy val db: Database = influx.database(testDB)
 

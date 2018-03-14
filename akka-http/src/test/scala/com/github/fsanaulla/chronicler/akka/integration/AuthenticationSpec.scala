@@ -7,6 +7,8 @@ import com.github.fsanaulla.core.test.utils.{NonEmptyCredentials, TestSpec}
 import com.github.fsanaulla.core.utils.constants.Privileges
 import org.scalatest.Ignore
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
@@ -24,7 +26,7 @@ class AuthenticationSpec extends TestSpec with NonEmptyCredentials {
   val admin = "Admin"
   val adminPass = "admin_pass"
 
-  lazy val influx: InfluxAkkaHttpClient = InfluxDB(influxHost)
+  lazy val influx: InfluxAkkaHttpClient = InfluxDB.connect()
 
   "Not authorized user" should  "not create database" in {
     influx.createAdmin(admin, adminPass).futureValue shouldEqual OkResult

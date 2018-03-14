@@ -21,11 +21,10 @@ object InfluxDB {
     * @param system - implicit actor system, by default will create new one
     * @return - InfluxAkkaHttpClient
     */
-  def apply(host: String,
-            port: Int = 8086,
-            credentials: Option[InfluxCredentials] = None)
-           (implicit ex: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global,
-            system: ActorSystem = ActorSystem()) =
-    new InfluxAkkaHttpClient(host, port, credentials)
-
+  def connect(host: String = "localhost",
+              port: Int = 8086,
+              credentials: Option[InfluxCredentials] = None,
+              system: ActorSystem = ActorSystem())
+             (implicit ex: ExecutionContext) =
+    new InfluxAkkaHttpClient(host, port, credentials)(ex, system)
 }
