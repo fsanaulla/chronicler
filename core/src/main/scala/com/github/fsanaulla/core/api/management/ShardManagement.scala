@@ -5,7 +5,7 @@ import com.github.fsanaulla.core.model.InfluxImplicits._
 import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.core.query.ShardManagementQuery
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 /**
   * Created by
@@ -16,20 +16,19 @@ private[fsanaulla] trait ShardManagement[R, U, M, E] extends ShardManagementQuer
   self: RequestHandler[R, U, M, E]
     with ResponseHandler[R]
     with QueryHandler[U]
-    with HasCredentials =>
-
-  protected implicit val ex: ExecutionContext
+    with HasCredentials
+    with Executable =>
 
   def dropShard(shardId: Int): Future[Result] = {
     readRequest(dropShardQuery(shardId)).flatMap(toResult)
   }
 
   def showShardGroups(): Future[QueryResult[ShardGroupsInfo]] = {
-    readRequest(showShardGroups()).flatMap(toShardGroupQueryResult)
+    readRequest(showShardGroupsQuery()).flatMap(toShardGroupQueryResult)
   }
 
   def showShards(): Future[QueryResult[ShardInfo]] = {
-    readRequest(showShards()).flatMap(toShardQueryResult)
+    readRequest(showShardsQuery()).flatMap(toShardQueryResult)
   }
 
   def getShards(dbName: String): Future[QueryResult[Shard]] = {

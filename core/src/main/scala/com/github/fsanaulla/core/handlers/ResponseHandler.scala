@@ -4,16 +4,14 @@ import com.github.fsanaulla.core.model.InfluxImplicits._
 import com.github.fsanaulla.core.model._
 import spray.json.JsArray
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 /**
   * This trait define response handling functionality, it's provide method's that generalize
   * response handle flow, for every backend implementation
   * @tparam R - Backend HTTP response type, for example for Akka HTTP backend - HttpResponse
   */
-private[fsanaulla] trait ResponseHandler[R] {
-
-  protected implicit val ex: ExecutionContext
+private[fsanaulla] trait ResponseHandler[R] { self: Executable =>
 
   /**
     * Method for handling HTTP responses with empty body

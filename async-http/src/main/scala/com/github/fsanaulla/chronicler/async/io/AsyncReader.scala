@@ -2,7 +2,7 @@ package com.github.fsanaulla.chronicler.async.io
 
 import com.github.fsanaulla.chronicler.async.handlers.{AsyncQueryHandler, AsyncRequestHandler, AsyncResponseHandler}
 import com.github.fsanaulla.core.io.ReadOperations
-import com.github.fsanaulla.core.model.{InfluxCredentials, QueryResult}
+import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials, QueryResult}
 import com.github.fsanaulla.core.query.DatabaseOperationQuery
 import com.github.fsanaulla.core.utils.constants.Epochs
 import com.github.fsanaulla.core.utils.constants.Epochs.Epoch
@@ -15,11 +15,10 @@ private[fsanaulla] trait AsyncReader
   extends AsyncQueryHandler
     with AsyncRequestHandler
     with AsyncResponseHandler
-    with DatabaseOperationQuery[Uri] { self: ReadOperations =>
+    with DatabaseOperationQuery[Uri]
+    with HasCredentials { self: ReadOperations =>
 
-  protected implicit val credentials: InfluxCredentials
-
-  override def readJs0(dbName: String,
+  override def _readJs(dbName: String,
                        query: String,
                        epoch: Epoch = Epochs.NANOSECONDS,
                        pretty: Boolean = false,
@@ -29,7 +28,7 @@ private[fsanaulla] trait AsyncReader
       .flatMap(toQueryJsResult)
   }
 
-  override def bulkReadJs0(dbName: String,
+  override def _bulkReadJs(dbName: String,
                            querys: Seq[String],
                            epoch: Epoch = Epochs.NANOSECONDS,
                            pretty: Boolean = false,

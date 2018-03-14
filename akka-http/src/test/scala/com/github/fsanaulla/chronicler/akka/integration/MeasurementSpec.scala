@@ -3,7 +3,7 @@ package com.github.fsanaulla.chronicler.akka.integration
 import com.github.fsanaulla.chronicler.akka.api.{Database, Measurement}
 import com.github.fsanaulla.chronicler.akka.utils.SampleEntitys._
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper.{FakeEntity, _}
-import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxClientFactory}
+import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
 import com.github.fsanaulla.core.test.utils.ResultMatchers._
 import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
@@ -21,12 +21,8 @@ class MeasurementSpec
   val safeDB = "meas_db"
   val measName = "meas"
 
-  lazy val influx: InfluxAkkaHttpClient = InfluxClientFactory.createHttpClient(
-      host = influxHost,
-      port = httpPort,
-      username = credentials.username,
-      password = credentials.password
-  )
+  lazy val influx: InfluxAkkaHttpClient =
+    InfluxDB(host = influxHost, port = httpPort)
 
   lazy val meas: Measurement[FakeEntity] =
     influx.measurement[FakeEntity](safeDB, measName)

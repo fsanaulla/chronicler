@@ -7,7 +7,7 @@ import com.github.fsanaulla.core.query.SubscriptionsManagementQuery
 import com.github.fsanaulla.core.utils.constants.Destinations
 import com.github.fsanaulla.core.utils.constants.Destinations.Destination
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 /**
   * Created by
@@ -18,9 +18,8 @@ private[fsanaulla] trait SubscriptionManagement[R, U, M, E] extends Subscription
   self: RequestHandler[R, U, M, E]
     with ResponseHandler[R]
     with QueryHandler[U]
-    with HasCredentials =>
-
-  protected implicit val ex: ExecutionContext
+    with HasCredentials
+    with Executable =>
 
   def createSubscription(subsName: String,
                          dbName: String,

@@ -1,7 +1,7 @@
 package com.github.fsanaulla.core.query
 
 import com.github.fsanaulla.core.handlers.QueryHandler
-import com.github.fsanaulla.core.model.InfluxCredentials
+import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials}
 import com.github.fsanaulla.core.utils.constants.Consistencys.Consistency
 import com.github.fsanaulla.core.utils.constants.Epochs.Epoch
 import com.github.fsanaulla.core.utils.constants.Precisions.Precision
@@ -14,13 +14,12 @@ import scala.collection.mutable
   * Date: 27.08.17
   */
 private[fsanaulla] trait DatabaseOperationQuery[U] {
-  self: QueryHandler[U] =>
+  self: QueryHandler[U] with HasCredentials =>
 
-  protected def writeToInfluxQuery(dbName: String,
-                                   consistency: Consistency,
-                                   precision: Precision,
-                                   retentionPolicy: Option[String])
-                                  (implicit credentials: InfluxCredentials): U = {
+  def writeToInfluxQuery(dbName: String,
+                         consistency: Consistency,
+                         precision: Precision,
+                         retentionPolicy: Option[String]): U = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
       "db" -> dbName,
@@ -35,12 +34,11 @@ private[fsanaulla] trait DatabaseOperationQuery[U] {
     buildQuery("/write", buildQueryParams(queryParams))
   }
 
-  protected def readFromInfluxSingleQuery(dbName: String,
+  def readFromInfluxSingleQuery(dbName: String,
                                           query: String,
                                           epoch: Epoch,
                                           pretty: Boolean,
-                                          chunked: Boolean)
-                                         (implicit credentials: InfluxCredentials): U = {
+                                          chunked: Boolean): U = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
       "db" -> dbName,
@@ -53,12 +51,11 @@ private[fsanaulla] trait DatabaseOperationQuery[U] {
     buildQuery("/query", buildQueryParams(queryParams))
   }
 
-  protected def readFromInfluxBulkQuery(dbName: String,
+  def readFromInfluxBulkQuery(dbName: String,
                                         querys: Seq[String],
                                         epoch: Epoch,
                                         pretty: Boolean,
-                                        chunked: Boolean)
-                                       (implicit credentials: InfluxCredentials): U = {
+                                        chunked: Boolean): U = {
 
     val queryParams = mutable.Map[String, String](
       "db" -> dbName,

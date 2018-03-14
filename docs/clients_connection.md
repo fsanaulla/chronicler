@@ -1,5 +1,5 @@
 # Set up connection
-Creating simply `HTTP` connection based on `host` and default `port`
+To create client for InfluxDB, there are several options:
 ```
 val influx = InfluxClientsFactory.createHttpClient("host") // default port 8086
 ```

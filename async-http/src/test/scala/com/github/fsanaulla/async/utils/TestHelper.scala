@@ -28,12 +28,12 @@ object TestHelper {
     }
   }
 
-  def queryTesterAuth(query: String)(implicit credentials: InfluxCredentials): Uri = {
-    uri"http://localhost:8086/query?q=$query&p=${credentials.password.get}&u=${credentials.username.get}"
+  def queryTesterAuth(query: String)(credentials: InfluxCredentials): Uri = {
+    uri"http://localhost:8086/query?q=$query&p=${credentials.password}&u=${credentials.username}"
   }
 
-  def queryTesterAuth(db: String, query: String)(implicit credentials: InfluxCredentials): Uri = {
-    uri"http://localhost:8086/query?q=$query&p=${credentials.password.get}&db=$db&u=${credentials.username.get}"
+  def queryTesterAuth(db: String, query: String)(credentials: InfluxCredentials): Uri = {
+    uri"http://localhost:8086/query?q=$query&p=${credentials.password}&db=$db&u=${credentials.username}"
   }
 
   def queryTester(query: String): Uri = {

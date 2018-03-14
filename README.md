@@ -8,7 +8,7 @@
 # About project
 Chronicler - asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](https://www.influxdata.com/).
 With several implementation, that allow you choose what you want. It support scala `2.11` and `2.12`.
-# Integration
+# Installation
 Add to your dependencies list in `build.sbt`:
 ```
 // for Akka based client

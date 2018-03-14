@@ -21,15 +21,14 @@ import scala.util.{Failure, Success}
   */
 private[fsanaulla] class InfluxAkkaHttpClient(host: String,
                                               port: Int,
-                                              username: Option[String],
-                                              password: Option[String])
+                                              val credentials: Option[InfluxCredentials])
                                              (implicit val ex: ExecutionContext, val system: ActorSystem)
     extends InfluxClient[HttpResponse, Uri, HttpMethod, RequestEntity]
       with AkkaRequestHandler
       with AkkaResponseHandler
-      with AkkaQueryHandler {
+      with AkkaQueryHandler
+      with HasCredentials {
 
-  protected implicit val credentials: InfluxCredentials = InfluxCredentials(username, password)
   protected implicit val mat: ActorMaterializer = ActorMaterializer()
   protected implicit val connection: Connection = Http().outgoingConnection(host, port) recover {
     case ex: StreamTcpException => throw new ConnectionException(ex.getMessage)
@@ -41,7 +40,8 @@ private[fsanaulla] class InfluxAkkaHttpClient(host: String,
     * @param dbName - database name
     * @return Database instance that provide non type safe operations
     */
-  override def database(dbName: String): Database = new Database(dbName)
+  override def database(dbName: String): Database =
+    new Database(dbName, credentials)
 
   /**
     *
@@ -51,7 +51,7 @@ private[fsanaulla] class InfluxAkkaHttpClient(host: String,
     * @return - Measurement instance of type [A]
     */
   override def measurement[A](dbName: String, measurementName: String): Measurement[A] = {
-    new Measurement[A](dbName, measurementName)
+    new Measurement[A](dbName, measurementName, credentials)
   }
 
   /**

@@ -5,7 +5,7 @@ import com.github.fsanaulla.core.model.InfluxImplicits._
 import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.core.query.ContinuousQuerys
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 /**
   * Created by
@@ -16,9 +16,8 @@ private[fsanaulla] trait ContinuousQueryManagement[R, U, M, E] extends Continuou
   self: RequestHandler[R, U, M, E]
     with ResponseHandler[R]
     with QueryHandler[U]
-    with HasCredentials =>
-
-  protected implicit val ex: ExecutionContext
+    with HasCredentials
+    with Executable =>
 
   def showCQs(): Future[QueryResult[ContinuousQueryInfo]] = {
     readRequest(uri = showCQQuery())

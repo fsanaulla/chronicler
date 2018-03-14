@@ -3,7 +3,7 @@ package com.github.fsanaulla.async.unit
 import com.github.fsanaulla.async.utils.TestHelper._
 import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryHandler
 import com.github.fsanaulla.core.query.UserManagementQuery
-import com.github.fsanaulla.core.test.utils.{BothCredentials, TestSpec}
+import com.github.fsanaulla.core.test.utils.{EmptyCredentials, NonEmptyCredentials, TestSpec}
 import com.github.fsanaulla.core.utils.constants.Privileges
 import com.softwaremill.sttp.Uri
 
@@ -12,78 +12,114 @@ import com.softwaremill.sttp.Uri
   * Author: fayaz.sanaulla@gmail.com
   * Date: 21.08.17
   */
-class UserManagementQuerySpec
-  extends TestSpec
-    with UserManagementQuery[Uri]
-    with AsyncQueryHandler
-    with BothCredentials {
+class UserManagementQuerySpec extends TestSpec {
 
-  val host = "localhost"
-  val port = 8086
+  trait Env extends AsyncQueryHandler with UserManagementQuery[Uri] {
+    val host = "localhost"
+    val port = 8086
+  }
+  trait AuthEnv extends Env with NonEmptyCredentials
+  trait NonAuthEnv extends Env with EmptyCredentials
 
   private val testUsername = "TEST_USER_NAME"
   private val testPassword = "TEST_PASSWORD"
   private val testDatabase = "TEST_DATABASE"
   private val testPrivilege = Privileges.ALL
 
-  "create user query" should "generate correct query" in {
-    createUserQuery(testUsername, testPassword) shouldEqual queryTesterAuth(s"CREATE USER $testUsername WITH PASSWORD '$testPassword'")
-
-    createUserQuery(testUsername, testPassword)(emptyCredentials) shouldEqual queryTester(s"CREATE USER $testUsername WITH PASSWORD '$testPassword'")
+  "UserManagementQuery" should "create user query" in new AuthEnv {
+    createUserQuery(testUsername, testPassword) shouldEqual
+      queryTesterAuth(s"CREATE USER $testUsername WITH PASSWORD '$testPassword'")(credentials.get)
   }
 
-  "create admin user query" should "generate correct query" in {
-    createAdminQuery(testUsername, testPassword) shouldEqual queryTesterAuth(s"CREATE USER $testUsername WITH PASSWORD '$testPassword' WITH ALL PRIVILEGES")
-
-    createAdminQuery(testUsername, testPassword)(emptyCredentials) shouldEqual queryTester(s"CREATE USER $testUsername WITH PASSWORD '$testPassword' WITH ALL PRIVILEGES")
+  it should "create user query without auth" in new NonAuthEnv {
+    createUserQuery(testUsername, testPassword) shouldEqual
+      queryTester(s"CREATE USER $testUsername WITH PASSWORD '$testPassword'")
   }
 
-  "drop user query" should "generate correct query" in {
-    dropUserQuery(testUsername) shouldEqual queryTesterAuth(s"DROP USER $testUsername")
+  it should "create admin user query" in new AuthEnv {
+    createAdminQuery(testUsername, testPassword) shouldEqual
+      queryTesterAuth(s"CREATE USER $testUsername WITH PASSWORD '$testPassword' WITH ALL PRIVILEGES")(credentials.get)
 
-    dropUserQuery(testUsername)(emptyCredentials) shouldEqual queryTester(s"DROP USER $testUsername")
   }
 
-  "show users query" should "generate correct query" in {
-    showUsersQuery shouldEqual queryTesterAuth("SHOW USERS")
-
-    showUsersQuery()(emptyCredentials) shouldEqual queryTester("SHOW USERS")
+  it should "create admin user query without auth" in new NonAuthEnv {
+    createAdminQuery(testUsername, testPassword) shouldEqual
+      queryTester(s"CREATE USER $testUsername WITH PASSWORD '$testPassword' WITH ALL PRIVILEGES")
   }
 
-  "show user privileges query" should "generate correct query" in {
-    showUserPrivilegesQuery(testUsername) shouldEqual queryTesterAuth(s"SHOW GRANTS FOR $testUsername")
-
-    showUserPrivilegesQuery(testUsername)(emptyCredentials) shouldEqual queryTester(s"SHOW GRANTS FOR $testUsername")
+  it should "drop user query" in new AuthEnv {
+    dropUserQuery(testUsername) shouldEqual
+      queryTesterAuth(s"DROP USER $testUsername")(credentials.get)
   }
 
-  "make admin query" should "generate correct query" in {
-    makeAdminQuery(testUsername) shouldEqual queryTesterAuth(s"GRANT ALL PRIVILEGES TO $testUsername")
-
-    makeAdminQuery(testUsername)(emptyCredentials) shouldEqual queryTester(s"GRANT ALL PRIVILEGES TO $testUsername")
+  it should "drop user query without auth" in new NonAuthEnv {
+    dropUserQuery(testUsername) shouldEqual
+      queryTester(s"DROP USER $testUsername")
   }
 
-  "disable admin query" should "generate correct query" in {
-    disableAdminQuery(testUsername) shouldEqual queryTesterAuth(s"REVOKE ALL PRIVILEGES FROM $testUsername")
-
-    disableAdminQuery(testUsername)(emptyCredentials) shouldEqual queryTester(s"REVOKE ALL PRIVILEGES FROM $testUsername")
+  it should "show users query" in new AuthEnv {
+    showUsersQuery shouldEqual queryTesterAuth("SHOW USERS")(credentials.get)
   }
 
-  "set user password query" should "generate correct query" in {
-    setUserPasswordQuery(testUsername, testPassword) shouldEqual queryTesterAuth(s"SET PASSWORD FOR $testUsername = '$testPassword'")
-
-    setUserPasswordQuery(testUsername, testPassword)(emptyCredentials) shouldEqual queryTester(s"SET PASSWORD FOR $testUsername = '$testPassword'")
+  it should "show users query without auth" in new NonAuthEnv {
+    showUsersQuery() shouldEqual queryTester("SHOW USERS")
   }
 
-  "set privileges query" should "generate correct query" in {
-    setPrivilegesQuery(testDatabase, testUsername, testPrivilege) shouldEqual queryTesterAuth(s"GRANT $testPrivilege ON $testDatabase TO $testUsername")
-
-    setPrivilegesQuery(testDatabase, testUsername, testPrivilege)(emptyCredentials) shouldEqual queryTester(s"GRANT $testPrivilege ON $testDatabase TO $testUsername")
+  it should "show user privileges query" in new AuthEnv {
+    showUserPrivilegesQuery(testUsername) shouldEqual
+      queryTesterAuth(s"SHOW GRANTS FOR $testUsername")(credentials.get)
   }
 
-  "revoke privileges query" should "generate correct query" in {
-    revokePrivilegesQuery(testDatabase, testUsername, testPrivilege) shouldEqual queryTesterAuth(s"REVOKE $testPrivilege ON $testDatabase FROM $testUsername")
+  it should "show user privileges query without auth" in new NonAuthEnv {
+    showUserPrivilegesQuery(testUsername) shouldEqual queryTester(s"SHOW GRANTS FOR $testUsername")
+  }
 
-    revokePrivilegesQuery(testDatabase, testUsername, testPrivilege)(emptyCredentials) shouldEqual queryTester(s"REVOKE $testPrivilege ON $testDatabase FROM $testUsername")
+  it should "make admin query" in new AuthEnv {
+    makeAdminQuery(testUsername) shouldEqual
+      queryTesterAuth(s"GRANT ALL PRIVILEGES TO $testUsername")(credentials.get)
+  }
+
+  it should "make admin query without auth" in new NonAuthEnv {
+    makeAdminQuery(testUsername) shouldEqual queryTester(s"GRANT ALL PRIVILEGES TO $testUsername")
+  }
+
+  it should "disable admin query" in new AuthEnv {
+    disableAdminQuery(testUsername) shouldEqual
+      queryTesterAuth(s"REVOKE ALL PRIVILEGES FROM $testUsername")(credentials.get)
+  }
+
+  it should "disable admin query without auth" in new NonAuthEnv {
+    disableAdminQuery(testUsername) shouldEqual queryTester(s"REVOKE ALL PRIVILEGES FROM $testUsername")
+  }
+
+  it should "set user password query" in new AuthEnv {
+    setUserPasswordQuery(testUsername, testPassword) shouldEqual
+      queryTesterAuth(s"SET PASSWORD FOR $testUsername = '$testPassword'")(credentials.get)
+  }
+
+  it should "set user password query without auth" in new NonAuthEnv {
+    setUserPasswordQuery(testUsername, testPassword) shouldEqual
+      queryTester(s"SET PASSWORD FOR $testUsername = '$testPassword'")
+  }
+
+  it should "set privileges query" in new AuthEnv {
+    setPrivilegesQuery(testDatabase, testUsername, testPrivilege) shouldEqual
+      queryTesterAuth(s"GRANT $testPrivilege ON $testDatabase TO $testUsername")(credentials.get)
+  }
+
+  it should "set privileges query without auth" in new NonAuthEnv {
+    setPrivilegesQuery(testDatabase, testUsername, testPrivilege) shouldEqual
+      queryTester(s"GRANT $testPrivilege ON $testDatabase TO $testUsername")
+  }
+
+  it should "revoke privileges query" in new AuthEnv {
+    revokePrivilegesQuery(testDatabase, testUsername, testPrivilege) shouldEqual
+      queryTesterAuth(s"REVOKE $testPrivilege ON $testDatabase FROM $testUsername")(credentials.get)
+  }
+
+  it should "revoke privileges query without auth" in new NonAuthEnv {
+    revokePrivilegesQuery(testDatabase, testUsername, testPrivilege) shouldEqual
+      queryTester(s"REVOKE $testPrivilege ON $testDatabase FROM $testUsername")
   }
 
 }

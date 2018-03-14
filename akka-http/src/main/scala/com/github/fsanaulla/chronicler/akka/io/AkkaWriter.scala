@@ -5,13 +5,13 @@ import akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryHandler, AkkaRequestHandler, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.akka.utils.AkkaTypeAlias.Connection
 import com.github.fsanaulla.core.io.WriteOperations
-import com.github.fsanaulla.core.model.{InfluxCredentials, Result}
+import com.github.fsanaulla.core.model.{Executable, HasCredentials, InfluxCredentials, Result}
 import com.github.fsanaulla.core.query.DatabaseOperationQuery
 import com.github.fsanaulla.core.utils.PointTransformer
 import com.github.fsanaulla.core.utils.constants.Consistencys.Consistency
 import com.github.fsanaulla.core.utils.constants.Precisions.Precision
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 /**
   * Created by
@@ -23,10 +23,10 @@ private[fsanaulla] trait AkkaWriter
     with AkkaRequestHandler
     with AkkaResponseHandler
     with AkkaQueryHandler
-    with PointTransformer { self: WriteOperations[RequestEntity] =>
+    with PointTransformer
+    with HasCredentials
+    with Executable { self: WriteOperations[RequestEntity] =>
 
-  protected implicit val credentials: InfluxCredentials
-  protected implicit val ex: ExecutionContext
   protected implicit val mat: ActorMaterializer
   protected implicit val connection: Connection
 

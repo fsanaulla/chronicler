@@ -1,14 +1,15 @@
 package com.github.fsanaulla.chronicler.async.handlers
 
 import com.github.fsanaulla.core.handlers.JsonHandler
+import com.github.fsanaulla.core.model.Executable
 import com.softwaremill.sttp.Response
 import spray.json.{JsObject, JsonParser}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-private[fsanaulla] trait AsyncJsonHandler extends JsonHandler[Response[JsObject]] {
-
-  protected implicit val ex: ExecutionContext
+private[fsanaulla] trait AsyncJsonHandler
+  extends JsonHandler[Response[JsObject]]
+    with Executable {
 
   override def getJsBody(response: Response[JsObject]): Future[JsObject] = {
     response.body match {

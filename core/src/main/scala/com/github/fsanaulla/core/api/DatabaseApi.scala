@@ -76,13 +76,13 @@ private[fsanaulla] abstract class DatabaseApi[E](dbName: String)
                    epoch: Epoch = Epochs.NANOSECONDS,
                    pretty: Boolean = false,
                    chunked: Boolean = false): Future[QueryResult[JsArray]] = {
-    readJs0(dbName, query, epoch, pretty, chunked)
+    _readJs(dbName, query, epoch, pretty, chunked)
   }
 
   final def bulkReadJs(querys: Seq[String],
                        epoch: Epoch = Epochs.NANOSECONDS,
                        pretty: Boolean = false,
                        chunked: Boolean = false): Future[QueryResult[Seq[JsArray]]] = {
-    bulkReadJs0(dbName, querys, epoch, pretty, chunked)
+    _bulkReadJs(dbName, querys, epoch, pretty, chunked)
   }
 }

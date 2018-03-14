@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.akka.integration
 
-import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxClientFactory}
+import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.AuthorizationException
 import com.github.fsanaulla.core.test.utils.ResultMatchers._
 import com.github.fsanaulla.core.test.utils.{NonEmptyCredentials, TestSpec}
@@ -24,7 +24,7 @@ class AuthenticationSpec extends TestSpec with NonEmptyCredentials {
   val admin = "Admin"
   val adminPass = "admin_pass"
 
-  lazy val influx: InfluxAkkaHttpClient = InfluxClientFactory.createHttpClient(influxHost)
+  lazy val influx: InfluxAkkaHttpClient = InfluxDB(influxHost)
 
   "Not authorized user" should  "not create database" in {
     influx.createAdmin(admin, adminPass).futureValue shouldEqual OkResult

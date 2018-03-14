@@ -12,22 +12,21 @@ import scala.concurrent.{ExecutionContext, Future}
 
 private[fsanaulla] class InfluxAsyncHttpClient(val host: String,
                                                val port: Int,
-                                               username: Option[String],
-                                               password: Option[String])(implicit val ex: ExecutionContext)
+                                               val credentials: Option[InfluxCredentials])
+                                              (implicit val ex: ExecutionContext)
   extends InfluxClient[Response[JsObject], Uri, Method, String]
     with AsyncRequestHandler
     with AsyncResponseHandler
     with AsyncQueryHandler {
 
   protected implicit val backend: SttpBackend[Future, Nothing] = AsyncHttpClientFutureBackend()
-  protected implicit val credentials: InfluxCredentials = InfluxCredentials(username, password)
-
   /**
     *
     * @param dbName - database name
     * @return Database instance that provide non type safe operations
     */
-  override def database(dbName: String): Database = new Database(host, port, dbName)
+  override def database(dbName: String): Database =
+    new Database(host, port, credentials, dbName)
 
   /**
     *
@@ -36,9 +35,8 @@ private[fsanaulla] class InfluxAsyncHttpClient(val host: String,
     * @tparam A - Measurement's time series type
     * @return - Measurement instance of type [A]
     */
-  override def measurement[A](dbName: String,
-                              measurementName: String): Measurement[A] =
-    new Measurement[A](host, port, dbName, measurementName)
+  override def measurement[A](dbName: String, measurementName: String): Measurement[A] =
+    new Measurement[A](host, port, credentials, dbName, measurementName)
 
   /**
     * Ping InfluxDB

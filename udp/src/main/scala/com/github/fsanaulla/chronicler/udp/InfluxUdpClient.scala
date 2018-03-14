@@ -3,7 +3,7 @@ package com.github.fsanaulla.chronicler.udp
 import java.net._
 
 import com.github.fsanaulla.chronicler.udp.models.UdpConnection
-import com.github.fsanaulla.core.model.{InfluxWriter, Point}
+import com.github.fsanaulla.core.model.{Executable, InfluxWriter, Point}
 import com.github.fsanaulla.core.utils.PointTransformer
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -17,7 +17,8 @@ import scala.io.Source
 private[fsanaulla] class InfluxUdpClient(host: String,
                                          port: Int = 8089)
                                         (implicit ex: ExecutionContext)
-  extends PointTransformer with AutoCloseable {
+  extends PointTransformer
+    with AutoCloseable {
 
   private val socket = new DatagramSocket()
   private implicit val conn: UdpConnection = UdpConnection(InetAddress.getByName(host), port)

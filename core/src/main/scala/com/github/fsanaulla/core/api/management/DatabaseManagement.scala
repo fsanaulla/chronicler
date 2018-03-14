@@ -5,15 +5,15 @@ import com.github.fsanaulla.core.model.InfluxImplicits._
 import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.core.query.DataManagementQuery
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 private[fsanaulla] trait DatabaseManagement[R, U, M, E] extends DataManagementQuery[U] {
   self: RequestHandler[R, U, M, E]
     with ResponseHandler[R]
     with QueryHandler[U]
-    with HasCredentials =>
+    with HasCredentials
+    with Executable =>
 
-  protected implicit val ex: ExecutionContext
 
   def createDatabase(dbName: String,
                      duration: Option[String] = None,

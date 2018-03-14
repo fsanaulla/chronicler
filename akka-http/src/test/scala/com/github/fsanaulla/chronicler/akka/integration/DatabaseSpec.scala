@@ -6,7 +6,7 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import com.github.fsanaulla.chronicler.akka.api.Database
 import com.github.fsanaulla.chronicler.akka.utils.SampleEntitys._
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
-import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxClientFactory}
+import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.Point
 import com.github.fsanaulla.core.test.utils.ResultMatchers._
 import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
@@ -27,11 +27,7 @@ class DatabaseSpec
 
   val testDB = "database_spec_db"
 
-  lazy val influx: InfluxAkkaHttpClient = InfluxClientFactory.createHttpClient(
-      host = influxHost,
-      port = httpPort,
-      username = credentials.username,
-      password = credentials.password)
+  lazy val influx: InfluxAkkaHttpClient = InfluxDB(host = influxHost, port = httpPort)
 
   lazy val db: Database = influx.database(testDB)
 

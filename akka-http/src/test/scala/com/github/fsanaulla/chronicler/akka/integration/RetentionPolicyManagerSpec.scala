@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.akka.integration
 
-import com.github.fsanaulla.chronicler.akka.InfluxClientFactory
+import com.github.fsanaulla.chronicler.akka.InfluxDB
 import com.github.fsanaulla.core.model.RetentionPolicyInfo
 import com.github.fsanaulla.core.test.utils.ResultMatchers._
 import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
@@ -19,12 +19,8 @@ class RetentionPolicyManagerSpec
 
   val rpDB = "db"
 
-  // INIT INFLUX CLIENT
-  lazy val influx = InfluxClientFactory.createHttpClient(
-    host = influxHost,
-    port = httpPort,
-    username = credentials.username,
-    password = credentials.password)
+  lazy val influx =
+    InfluxDB(host = influxHost, port = httpPort)
 
   "retention policy operation" should "create RP" in {
 

@@ -9,13 +9,13 @@ import scala.concurrent.Future
 
 trait ReadOperations {
 
-  def readJs0(dbName: String,
-             query: String,
-             epoch: Epoch = Epochs.NANOSECONDS,
-             pretty: Boolean = false,
-             chunked: Boolean = false): Future[QueryResult[JsArray]]
+  def _readJs(dbName: String,
+              query: String,
+              epoch: Epoch = Epochs.NANOSECONDS,
+              pretty: Boolean = false,
+              chunked: Boolean = false): Future[QueryResult[JsArray]]
 
-  def bulkReadJs0(dbName: String,
+  def _bulkReadJs(dbName: String,
                   querys: Seq[String],
                   epoch: Epoch = Epochs.NANOSECONDS,
                   pretty: Boolean = false,

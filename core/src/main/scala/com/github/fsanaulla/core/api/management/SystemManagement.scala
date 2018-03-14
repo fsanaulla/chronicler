@@ -1,13 +1,11 @@
 package com.github.fsanaulla.core.api.management
 
 import com.github.fsanaulla.core.api.{DatabaseApi, MeasurementApi}
-import com.github.fsanaulla.core.model.Result
+import com.github.fsanaulla.core.model.{Executable, Result}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-trait SystemManagement[E] {
-
-  protected implicit val ex: ExecutionContext
+trait SystemManagement[E] { self: Executable =>
 
   /**
     *

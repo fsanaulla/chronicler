@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.udp
 
-import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxClientFactory}
+import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.Point
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 import org.scalatest.concurrent.ScalaFutures
@@ -27,7 +27,7 @@ class UdpClientSpec
   lazy val influxUdp = new InfluxUdpClient("localhost")
 
   lazy val influxHttp: InfluxAsyncHttpClient =
-    InfluxClientFactory.createHttpClient("localhost")
+    InfluxDB.apply("localhost")
 
   "Udp client" should "write to InfluxDB" in {
 

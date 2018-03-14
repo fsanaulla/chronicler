@@ -1,9 +1,9 @@
 package com.github.fsanaulla.async.integration
 
 import com.github.fsanaulla.async.utils.TestHelper._
-import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxClientFactory}
+import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.{UserInfo, UserPrivilegesInfo}
-import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.core.utils.constants.Privileges
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
@@ -16,7 +16,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class UserManagementSpec
   extends TestSpec
-    with EmptyCredentials
     with EmbeddedInfluxDB{
 
   val userDB = "async_user_management_spec_db"
@@ -27,11 +26,8 @@ class UserManagementSpec
   val admin = "Admin"
   val adminPass = "admin_pass"
 
-  lazy val influx: InfluxAsyncHttpClient = InfluxClientFactory.createHttpClient(
-    host = influxHost,
-    username = credentials.username,
-    password = credentials.password)
-
+  lazy val influx: InfluxAsyncHttpClient =
+    InfluxDB(host = influxHost, port = httpPort)
 
   "User management operation" should "create user" in {
     influx.createDatabase(userDB).futureValue shouldEqual OkResult

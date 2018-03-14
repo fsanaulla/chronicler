@@ -1,21 +1,19 @@
 package com.github.fsanaulla.core.query
 
 import com.github.fsanaulla.core.handlers.QueryHandler
-import com.github.fsanaulla.core.handlers.QueryHandler
-import com.github.fsanaulla.core.model.InfluxCredentials
+import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials}
 
 import scala.collection.mutable
 
 private[fsanaulla] trait RetentionPolicyManagementQuery[U]  {
-  self: QueryHandler[U] =>
+  self: QueryHandler[U] with HasCredentials =>
 
-  protected def createRetentionPolicyQuery(rpName: String,
+  def createRetentionPolicyQuery(rpName: String,
                                            dbName: String,
                                            duration: String,
                                            replication: Int,
                                            shardDuration: Option[String],
-                                           default: Boolean = false)
-                                          (implicit credentials: InfluxCredentials): U = {
+                                           default: Boolean = false): U = {
     val sb = StringBuilder.newBuilder
 
     sb.append("CREATE RETENTION POLICY ")
@@ -36,19 +34,16 @@ private[fsanaulla] trait RetentionPolicyManagementQuery[U]  {
     buildQuery("/query", buildQueryParams(sb.toString()))
   }
 
-  protected def dropRetentionPolicyQuery(rpName: String,
-                                         dbName: String)
-                                        (implicit credentials: InfluxCredentials): U = {
+  def dropRetentionPolicyQuery(rpName: String, dbName: String): U = {
     buildQuery("/query", buildQueryParams(s"DROP RETENTION POLICY $rpName ON $dbName"))
   }
 
-  protected def updateRetentionPolicyQuery(rpName: String,
+  def updateRetentionPolicyQuery(rpName: String,
                                            dbName: String,
                                            duration: Option[String],
                                            replication: Option[Int],
                                            shardDuration: Option[String],
-                                           default: Boolean = false)
-                                          (implicit credentials: InfluxCredentials): U = {
+                                           default: Boolean = false): U = {
     val sb = StringBuilder.newBuilder
 
     sb.append("ALTER RETENTION POLICY ")
@@ -73,7 +68,7 @@ private[fsanaulla] trait RetentionPolicyManagementQuery[U]  {
     buildQuery("/query", buildQueryParams(sb.toString()))
   }
 
-  protected def showRetentionPoliciesQuery(dbName: String)(implicit credentials: InfluxCredentials): U = {
+  def showRetentionPoliciesQuery(dbName: String): U = {
     buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> "SHOW RETENTION POLICIES")))
   }
 }

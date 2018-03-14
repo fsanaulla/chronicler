@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.akka.integration
 
-import com.github.fsanaulla.chronicler.akka.InfluxClientFactory
+import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.Subscription
 import com.github.fsanaulla.core.test.utils.ResultMatchers._
 import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
@@ -29,11 +29,8 @@ class SubscriptionManagementSpec
 
   val duration: String = 1.hours + 30.minutes
 
-  lazy val influx = InfluxClientFactory.createHttpClient(
-    host = influxHost,
-    port = httpPort,
-    username = credentials.username,
-    password = credentials.password)
+  lazy val influx: InfluxAkkaHttpClient =
+    InfluxDB(host = influxHost, port = httpPort)
 
   "Subs operation" should "create subscription" in {
 

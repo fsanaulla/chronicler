@@ -1,6 +1,6 @@
 package com.github.fsanaulla.async.integration
 
-import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxClientFactory}
+import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.AuthorizationException
 import com.github.fsanaulla.core.test.utils.{NonEmptyCredentials, TestSpec}
 import com.github.fsanaulla.core.utils.constants.Privileges
@@ -26,7 +26,7 @@ class NotAuthUserManagementSpec
   val admin = "Admin"
   val adminPass = "admin_pass"
 
-  lazy val influx: InfluxAsyncHttpClient = InfluxClientFactory.createHttpClient(influxHost)
+  lazy val influx: InfluxAsyncHttpClient = InfluxDB.apply(influxHost)
 
   "Not authorized user" should  "not create database" in {
     influx.createDatabase(userDB).futureValue.ex.value shouldBe a[AuthorizationException]

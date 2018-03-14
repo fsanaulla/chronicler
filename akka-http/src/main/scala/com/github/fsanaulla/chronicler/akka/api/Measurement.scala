@@ -6,7 +6,7 @@ import _root_.akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.utils.AkkaTypeAlias.Connection
 import com.github.fsanaulla.chronicler.async.io.AkkaWriter
 import com.github.fsanaulla.core.api.MeasurementApi
-import com.github.fsanaulla.core.model.{InfluxCredentials, InfluxWriter, Result}
+import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.core.utils.constants.Consistencys.Consistency
 import com.github.fsanaulla.core.utils.constants.Precisions.Precision
 import com.github.fsanaulla.core.utils.constants.{Consistencys, Precisions}
@@ -18,13 +18,17 @@ import scala.concurrent.{ExecutionContext, Future}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 03.09.17
   */
-private[fsanaulla] class Measurement[E](dbName: String, measurementName: String)
-                                       (protected implicit val credentials: InfluxCredentials,
-                                        protected implicit val actorSystem: ActorSystem,
+private[fsanaulla] class Measurement[E](dbName: String,
+                                        measurementName: String,
+                                        val credentials: Option[InfluxCredentials])
+                                       (protected implicit val actorSystem: ActorSystem,
                                         protected implicit val mat: ActorMaterializer,
                                         protected implicit val ex: ExecutionContext,
                                         protected implicit val connection: Connection)
-    extends MeasurementApi[E, RequestEntity](dbName, measurementName) with AkkaWriter {
+    extends MeasurementApi[E, RequestEntity](dbName, measurementName)
+      with HasCredentials
+      with Executable
+      with AkkaWriter {
 
   import com.github.fsanaulla.chronicler.akka.models.AkkaDeserializers.str2Http
 

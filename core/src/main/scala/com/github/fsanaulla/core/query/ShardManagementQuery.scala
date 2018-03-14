@@ -1,7 +1,7 @@
 package com.github.fsanaulla.core.query
 
 import com.github.fsanaulla.core.handlers.QueryHandler
-import com.github.fsanaulla.core.model.InfluxCredentials
+import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials}
 
 /**
   * Created by
@@ -9,17 +9,17 @@ import com.github.fsanaulla.core.model.InfluxCredentials
   * Date: 19.08.17
   */
 private[fsanaulla] trait ShardManagementQuery[U] {
-  self: QueryHandler[U] =>
+  self: QueryHandler[U] with HasCredentials =>
 
-  protected def dropShardQuery(shardId: Int)(implicit credentials: InfluxCredentials): U = {
+  def dropShardQuery(shardId: Int): U = {
     buildQuery("/query", buildQueryParams(s"DROP SHARD $shardId"))
   }
 
-  protected def showShards()(implicit credentials: InfluxCredentials): U = {
+  def showShardsQuery(): U = {
     buildQuery("/query", buildQueryParams("SHOW SHARDS"))
   }
 
-  protected def showShardGroups()(implicit credentials: InfluxCredentials): U = {
+  def showShardGroupsQuery(): U = {
     buildQuery("/query", buildQueryParams("SHOW SHARD GROUPS"))
   }
 

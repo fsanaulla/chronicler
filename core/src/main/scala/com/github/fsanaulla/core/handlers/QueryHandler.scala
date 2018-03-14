@@ -1,6 +1,6 @@
 package com.github.fsanaulla.core.handlers
 
-import com.github.fsanaulla.core.model.InfluxCredentials
+import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials}
 
 import scala.collection.mutable
 
@@ -9,7 +9,7 @@ import scala.collection.mutable
   * @tparam A - Result type parameter, for example for AkkaHttpBackend
   *             used `akka.http.scaladsl.model.Uri`
   */
-private[fsanaulla] trait QueryHandler[A] {
+private[fsanaulla] trait QueryHandler[A] { self: HasCredentials =>
 
   /**
     * Method that build result URI object of type [A], from uri path, and query parameters
@@ -22,14 +22,12 @@ private[fsanaulla] trait QueryHandler[A] {
   /**
     * Method that embed credentials to already created query parameters map
     * @param queryMap - query parameters map
-    * @param credentials - implicit credentials
     * @return - updated query parameters map with embedded credentials
     */
-  def buildQueryParams(queryMap: mutable.Map[String, String])(implicit credentials: InfluxCredentials): Map[String, String] = {
+  def buildQueryParams(queryMap: mutable.Map[String, String]): Map[String, String] = {
     for {
-      u <- credentials.username
-      p <- credentials.password
-    } yield queryMap += ("u" -> u, "p" -> p)
+      c <- credentials
+    } yield queryMap += ("u" -> c.username, "p" -> c.password)
 
     queryMap.toMap
   }
@@ -37,10 +35,9 @@ private[fsanaulla] trait QueryHandler[A] {
   /**
     * Produce query parameters map for string parameter, with embedding credentials
     * @param query - query string parameter
-    * @param credentials - implicit user's credentials
     * @return - query parameters
     */
-  def buildQueryParams(query: String)(implicit credentials: InfluxCredentials): Map[String, String] = {
+  def buildQueryParams(query: String): Map[String, String] = {
     buildQueryParams(scala.collection.mutable.Map("q" -> query))
   }
 }

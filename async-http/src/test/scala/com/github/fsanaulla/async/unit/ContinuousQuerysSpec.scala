@@ -3,7 +3,7 @@ package com.github.fsanaulla.async.unit
 import com.github.fsanaulla.async.utils.TestHelper._
 import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryHandler
 import com.github.fsanaulla.core.query.ContinuousQuerys
-import com.github.fsanaulla.core.test.utils.{BothCredentials, TestSpec}
+import com.github.fsanaulla.core.test.utils.{EmptyCredentials, NonEmptyCredentials, TestSpec}
 import com.softwaremill.sttp.Uri
 
 /**
@@ -11,35 +11,42 @@ import com.softwaremill.sttp.Uri
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class ContinuousQuerysSpec
-  extends TestSpec
-    with AsyncQueryHandler
-    with ContinuousQuerys[Uri]
-    with BothCredentials {
+class ContinuousQuerysSpec extends TestSpec {
 
-  val host = "localhost"
-  val port = 8086
+  trait Env extends AsyncQueryHandler with ContinuousQuerys[Uri] {
+    val host = "localhost"
+    val port = 8086
+  }
+
+  trait AuthEnv extends Env with NonEmptyCredentials
+  trait NonAuthEnv extends Env with EmptyCredentials
 
   val db = "mydb"
   val cq = "bee_cq"
   val query = "SELECT mean(bees) AS mean_bees INTO aggregate_bees FROM farm GROUP BY time(30m)"
 
-  "ContinuousQuerys operation" should "generate correct show query" in {
-    showCQQuery() shouldEqual queryTesterAuth("SHOW CONTINUOUS QUERIES")
-
-    showCQQuery()(emptyCredentials) shouldEqual queryTester("SHOW CONTINUOUS QUERIES")
+  "ContinuousQuerys operation" should "generate correct show query" in new AuthEnv {
+    showCQQuery() shouldEqual queryTesterAuth("SHOW CONTINUOUS QUERIES")(credentials.get)
   }
 
-  it should "generate correct drop query" in {
-    dropCQQuery(db, cq) shouldEqual queryTesterAuth(s"DROP CONTINUOUS QUERY $cq ON $db")
-
-    dropCQQuery(db, cq)(emptyCredentials) shouldEqual queryTester(s"DROP CONTINUOUS QUERY $cq ON $db")
+  it should "generate correct drop query" in new AuthEnv {
+    dropCQQuery(db, cq) shouldEqual queryTesterAuth(s"DROP CONTINUOUS QUERY $cq ON $db")(credentials.get)
   }
 
-  it should "generate correct create query" in {
-    createCQQuery(db, cq, query) shouldEqual queryTesterAuth(s"CREATE CONTINUOUS QUERY $cq ON $db BEGIN $query END")
+  it should "generate correct create query" in new AuthEnv {
+    createCQQuery(db, cq, query) shouldEqual queryTesterAuth(s"CREATE CONTINUOUS QUERY $cq ON $db BEGIN $query END")(credentials.get)
+  }
 
-    createCQQuery(db, cq, query)(emptyCredentials) shouldEqual queryTester(s"CREATE CONTINUOUS QUERY $cq ON $db BEGIN $query END")
+  it should "generate correct show query without auth" in new NonAuthEnv {
+    showCQQuery() shouldEqual queryTester("SHOW CONTINUOUS QUERIES")
+  }
+
+  it should "generate correct drop query without auth" in new NonAuthEnv {
+    dropCQQuery(db, cq) shouldEqual queryTester(s"DROP CONTINUOUS QUERY $cq ON $db")
+  }
+
+  it should "generate correct create query without auth" in new NonAuthEnv {
+    createCQQuery(db, cq, query) shouldEqual queryTester(s"CREATE CONTINUOUS QUERY $cq ON $db BEGIN $query END")
   }
 
 }

@@ -1,9 +1,9 @@
 package com.github.fsanaulla.async.integration
 
 import com.github.fsanaulla.async.utils.TestHelper._
-import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxClientFactory}
+import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.Subscription
-import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.core.utils.InfluxDuration._
 import com.github.fsanaulla.core.utils.constants.Destinations
 import com.github.fsanaulla.core.utils.constants.Destinations.Destination
@@ -16,7 +16,6 @@ import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
   */
 class SubscriptionManagementSpec
   extends TestSpec
-    with EmptyCredentials
     with EmbeddedInfluxDB{
 
   val subName = "subs"
@@ -30,10 +29,8 @@ class SubscriptionManagementSpec
 
   val duration: String = 1.hours + 30.minutes
 
-  lazy val influx: InfluxAsyncHttpClient = InfluxClientFactory.createHttpClient(
-    host = influxHost,
-    username = credentials.username,
-    password = credentials.password)
+  lazy val influx: InfluxAsyncHttpClient =
+    InfluxDB(host = influxHost, port = httpPort)
 
   "Subscription operation" should "create subscription" in {
 

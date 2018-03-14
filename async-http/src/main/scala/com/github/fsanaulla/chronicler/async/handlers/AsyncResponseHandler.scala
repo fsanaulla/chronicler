@@ -7,7 +7,9 @@ import spray.json.{JsArray, JsObject}
 
 import scala.concurrent.Future
 
-private[fsanaulla] trait AsyncResponseHandler extends ResponseHandler[Response[JsObject]] with AsyncJsonHandler {
+private[fsanaulla] trait AsyncResponseHandler
+  extends ResponseHandler[Response[JsObject]]
+    with AsyncJsonHandler {
 
   // Simply result's
   def toResult(response: Response[JsObject]): Future[Result] = {

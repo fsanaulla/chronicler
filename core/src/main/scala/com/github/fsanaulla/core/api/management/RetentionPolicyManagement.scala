@@ -2,19 +2,17 @@ package com.github.fsanaulla.core.api.management
 
 import com.github.fsanaulla.core.handlers.{QueryHandler, RequestHandler, ResponseHandler}
 import com.github.fsanaulla.core.model.InfluxImplicits._
-import com.github.fsanaulla.core.model.{HasCredentials, QueryResult, Result, RetentionPolicyInfo}
+import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.core.query.RetentionPolicyManagementQuery
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 private[fsanaulla] trait RetentionPolicyManagement[R, U, M, E] extends RetentionPolicyManagementQuery[U] {
   self: RequestHandler[R, U, M, E]
     with ResponseHandler[R]
     with QueryHandler[U]
-    with HasCredentials =>
-
-  protected implicit val ex: ExecutionContext
-
+    with HasCredentials
+    with Executable =>
 
   def createRetentionPolicy(rpName: String,
                             dbName: String,

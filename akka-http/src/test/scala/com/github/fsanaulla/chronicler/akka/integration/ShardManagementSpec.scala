@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.akka.integration
 
-import com.github.fsanaulla.chronicler.akka.InfluxClientFactory
+import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.ShardGroupsInfo
 import com.github.fsanaulla.core.test.utils.ResultMatchers._
 import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
@@ -19,11 +19,8 @@ class ShardManagementSpec
   val testDb = "db"
 
 
-  lazy val influx = InfluxClientFactory.createHttpClient(
-    host = influxHost,
-    port = httpPort,
-    username = credentials.username,
-    password = credentials.password)
+  lazy val influx: InfluxAkkaHttpClient =
+    InfluxDB(host = influxHost, port = httpPort)
 
   "shard operations" should "show shards" in {
 
@@ -38,7 +35,7 @@ class ShardManagementSpec
 
   it should "show shards groupe" in {
 
-    val shardGroups = influx.showShardGroups().futureValue.queryResult
+    val shardGroups = influx.showShardGroupsQuery().futureValue.queryResult
 
     shardGroups should not equal Nil
 

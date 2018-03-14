@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.akka.integration
 
-import com.github.fsanaulla.chronicler.akka.InfluxClientFactory
+import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.QueryInfo
 import com.github.fsanaulla.core.test.utils.ResultMatchers._
 import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
@@ -24,10 +24,8 @@ class QueryManagementSpec
   val cqName = "cq_name"
   val cqQuery = "SELECT * INTO meas1 FROM meas GROUP BY ad"
 
-  lazy val influx = InfluxClientFactory.createHttpClient(
-    host = influxHost,
-    username = credentials.username,
-    password = credentials.password)
+  lazy val influx: InfluxAkkaHttpClient =
+    InfluxDB(host = influxHost, port = httpPort)
 
   var queryId = 0
 

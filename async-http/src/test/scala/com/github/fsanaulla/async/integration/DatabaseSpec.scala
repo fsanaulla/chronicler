@@ -6,9 +6,9 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import com.github.fsanaulla.async.utils.SampleEntitys._
 import com.github.fsanaulla.async.utils.TestHelper._
 import com.github.fsanaulla.chronicler.async.api.Database
-import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxClientFactory}
+import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.Point
-import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 import spray.json.{DefaultJsonProtocol, JsArray, JsValue}
 
@@ -23,16 +23,12 @@ class DatabaseSpec
   extends TestSpec
     with SprayJsonSupport
     with DefaultJsonProtocol
-    with EmptyCredentials
     with EmbeddedInfluxDB {
 
   val testDB = "db"
 
-  lazy val influx: InfluxAsyncHttpClient = InfluxClientFactory.createHttpClient(
-      host = influxHost,
-      port = httpPort,
-      username = credentials.username,
-      password = credentials.password)
+  lazy val influx: InfluxAsyncHttpClient =
+    InfluxDB(influxHost)
 
   lazy val db: Database = influx.database(testDB)
 

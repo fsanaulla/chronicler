@@ -4,7 +4,7 @@ import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryHandler
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
 import com.github.fsanaulla.core.query.QuerysManagementQuery
-import com.github.fsanaulla.core.test.utils.{BothCredentials, TestSpec}
+import com.github.fsanaulla.core.test.utils.TestSpec
 
 /**
   * Created by
@@ -13,7 +13,7 @@ import com.github.fsanaulla.core.test.utils.{BothCredentials, TestSpec}
   */
 class QuerysManagementQuerySpec
   extends TestSpec
-    with BothCredentials
+    with TestCredenctials
     with AkkaQueryHandler
     with QuerysManagementQuery[Uri] {
 

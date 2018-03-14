@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.akka.integration
 
-import com.github.fsanaulla.chronicler.akka.InfluxClientFactory
+import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.{UserInfo, UserPrivilegesInfo}
 import com.github.fsanaulla.core.test.utils.ResultMatchers.OkResult
 import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
@@ -25,12 +25,8 @@ class UserManagementSpec
   val admin = "Admin"
   val adminPass = "admin_pass"
 
-  lazy val influx = InfluxClientFactory.createHttpClient(
-    host = influxHost,
-    port = httpPort,
-    username = credentials.username,
-    password = credentials.password)
-
+  lazy val influx: InfluxAkkaHttpClient =
+    InfluxDB(host = influxHost, port = httpPort)
 
   "User management operation" should "create user" in {
 

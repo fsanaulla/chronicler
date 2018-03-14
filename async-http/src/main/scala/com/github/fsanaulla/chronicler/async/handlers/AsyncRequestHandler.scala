@@ -16,8 +16,6 @@ private[fsanaulla] trait AsyncRequestHandler
   protected val defaultMethod: Method = Method.POST
 
   private val asJson: ResponseAs[JsObject, Nothing] = {
-
-    println(asString)
     asString.map {
       case str: String if str.nonEmpty => JsonParser(str).asJsObject
       case _ => JsObject.empty

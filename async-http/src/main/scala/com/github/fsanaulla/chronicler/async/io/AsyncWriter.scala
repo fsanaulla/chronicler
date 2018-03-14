@@ -2,7 +2,7 @@ package com.github.fsanaulla.chronicler.async.io
 
 import com.github.fsanaulla.chronicler.async.handlers._
 import com.github.fsanaulla.core.io.WriteOperations
-import com.github.fsanaulla.core.model.{InfluxCredentials, Result}
+import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials, Result}
 import com.github.fsanaulla.core.query.DatabaseOperationQuery
 import com.github.fsanaulla.core.utils.PointTransformer
 import com.github.fsanaulla.core.utils.constants.Consistencys.Consistency
@@ -16,9 +16,8 @@ private[fsanaulla] trait AsyncWriter
     with AsyncRequestHandler
     with AsyncResponseHandler
     with AsyncQueryHandler
-    with PointTransformer { self: WriteOperations[String] =>
-
-  protected implicit val credentials: InfluxCredentials
+    with PointTransformer
+    with HasCredentials { self: WriteOperations[String] =>
 
   override def _write(dbName: String,
                       entity: String,

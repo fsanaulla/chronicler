@@ -1,9 +1,9 @@
 package com.github.fsanaulla.async.integration
 
 import com.github.fsanaulla.async.utils.TestHelper._
-import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxClientFactory}
+import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.RetentionPolicyInfo
-import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.core.utils.InfluxDuration._
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
@@ -17,16 +17,12 @@ import scala.language.postfixOps
   */
 class RetentionPolicyManagerSpec
   extends TestSpec
-    with EmptyCredentials
     with EmbeddedInfluxDB {
 
   val rpDB = "async_rp_spec_db"
 
-  lazy val influx: InfluxAsyncHttpClient = InfluxClientFactory.createHttpClient(
-    host = influxHost,
-    username = credentials.username,
-    password = credentials.password
-  )
+  lazy val influx: InfluxAsyncHttpClient =
+    InfluxDB(host = influxHost, port = httpPort)
 
   "Retention policy" should "create retention policy" in {
     influx.createDatabase(rpDB).futureValue shouldEqual OkResult

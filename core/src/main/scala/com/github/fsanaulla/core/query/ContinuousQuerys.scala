@@ -1,7 +1,7 @@
 package com.github.fsanaulla.core.query
 
 import com.github.fsanaulla.core.handlers.QueryHandler
-import com.github.fsanaulla.core.model.InfluxCredentials
+import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials}
 
 /**
   * Created by
@@ -9,18 +9,16 @@ import com.github.fsanaulla.core.model.InfluxCredentials
   * Date: 08.08.17
   */
 private[fsanaulla] trait ContinuousQuerys[U] {
-  self: QueryHandler[U] =>
+  self: QueryHandler[U] with HasCredentials =>
 
-  protected def showCQQuery()(implicit credentials: InfluxCredentials): U =
+  def showCQQuery(): U =
     buildQuery("/query", buildQueryParams("SHOW CONTINUOUS QUERIES"))
 
-  protected def dropCQQuery(dbName: String, cqName: String)(implicit credentials: InfluxCredentials): U = {
+  def dropCQQuery(dbName: String, cqName: String): U = {
     buildQuery("/query", buildQueryParams(s"DROP CONTINUOUS QUERY $cqName ON $dbName"))
   }
 
-  protected def createCQQuery(dbName: String,
-                              cqName: String,
-                              query: String)(implicit credentials: InfluxCredentials): U = {
+  def createCQQuery(dbName: String, cqName: String, query: String): U = {
     buildQuery("/query", buildQueryParams(s"CREATE CONTINUOUS QUERY $cqName ON $dbName BEGIN $query END"))
   }
 }

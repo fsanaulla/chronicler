@@ -4,7 +4,7 @@ import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryHandler
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
 import com.github.fsanaulla.core.query.ShardManagementQuery
-import com.github.fsanaulla.core.test.utils.{BothCredentials, TestSpec}
+import com.github.fsanaulla.core.test.utils.TestSpec
 
 /**
   * Created by
@@ -13,7 +13,7 @@ import com.github.fsanaulla.core.test.utils.{BothCredentials, TestSpec}
   */
 class ShardManagementQuerySpec
   extends TestSpec
-    with BothCredentials
+    with TestCredenctials
     with AkkaQueryHandler
     with ShardManagementQuery[Uri] {
 
@@ -30,8 +30,8 @@ class ShardManagementQuerySpec
   }
 
   "show shard groups" should "correctly work" in {
-    showShardGroups() shouldEqual queryTesterAuth("SHOW SHARD GROUPS")
+    showShardGroupsQuery() shouldEqual queryTesterAuth("SHOW SHARD GROUPS")
 
-    showShardGroups()(emptyCredentials) shouldEqual queryTester("SHOW SHARD GROUPS")
+    showShardGroupsQuery()(emptyCredentials) shouldEqual queryTester("SHOW SHARD GROUPS")
   }
 }

@@ -6,15 +6,14 @@ import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.core.query.UserManagementQuery
 import com.github.fsanaulla.core.utils.constants.Privileges.Privilege
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 private[fsanaulla] trait UserManagement[R, U, M, E] extends UserManagementQuery[U] {
   self: RequestHandler[R, U, M, E]
     with ResponseHandler[R]
     with QueryHandler[U]
-    with HasCredentials =>
-
-  protected implicit val ex: ExecutionContext
+    with HasCredentials
+    with Executable =>
 
   def createUser(username: String, password: String): Future[Result] = {
     readRequest(createUserQuery(username, password)).flatMap(toResult)

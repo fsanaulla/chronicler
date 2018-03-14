@@ -1,7 +1,7 @@
 package com.github.fsanaulla.core.query
 
 import com.github.fsanaulla.core.handlers.QueryHandler
-import com.github.fsanaulla.core.model.InfluxCredentials
+import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials}
 
 import scala.collection.mutable
 
@@ -9,13 +9,13 @@ import scala.collection.mutable
   * Created by fayaz on 27.06.17.
   */
 private[fsanaulla] trait DataManagementQuery[U] {
-  self: QueryHandler[U] =>
+  self: QueryHandler[U] with HasCredentials =>
 
-  protected def createDatabaseQuery(dbName: String,
-                                    duration: Option[String],
-                                    replication: Option[Int],
-                                    shardDuration: Option[String],
-                                    rpName: Option[String])(implicit credentials: InfluxCredentials): U = {
+  def createDatabaseQuery(dbName: String,
+                          duration: Option[String],
+                          replication: Option[Int],
+                          shardDuration: Option[String],
+                          rpName: Option[String]): U = {
 
     val sb = StringBuilder.newBuilder
 
@@ -44,40 +44,39 @@ private[fsanaulla] trait DataManagementQuery[U] {
     buildQuery("/query", buildQueryParams(sb.toString()))
   }
 
-  protected def dropDatabaseQuery(dbName: String)(implicit credentials: InfluxCredentials): U = {
+  def dropDatabaseQuery(dbName: String): U = {
     buildQuery("/query", buildQueryParams(s"DROP DATABASE $dbName"))
   }
 
-  protected def dropSeriesQuery(dbName: String, seriesName: String)(implicit credentials: InfluxCredentials): U = {
+  def dropSeriesQuery(dbName: String, seriesName: String): U = {
     buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DROP SERIES FROM $seriesName")))
   }
 
-  protected def dropMeasurementQuery(dbName: String, measurementName: String)(implicit credentials: InfluxCredentials): U = {
+  def dropMeasurementQuery(dbName: String, measurementName: String): U = {
     buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DROP MEASUREMENT $measurementName")))
   }
 
-  protected def deleteAllSeriesQuery(dbName: String, seriesName: String)(implicit credentials: InfluxCredentials): U = {
+  def deleteAllSeriesQuery(dbName: String, seriesName: String): U = {
     buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DELETE FROM $seriesName")))
   }
 
-  protected def showMeasurementQuery(dbName: String)(implicit credentials: InfluxCredentials): U = {
+  def showMeasurementQuery(dbName: String): U = {
     buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"SHOW MEASUREMENTS")))
   }
 
-  protected def showDatabasesQuery()(implicit credentials: InfluxCredentials): U = {
+  def showDatabasesQuery(): U = {
     buildQuery("/query", buildQueryParams(s"SHOW DATABASES"))
   }
 
-  protected def showFieldKeysQuery(dbName: String, measurementName: String)(implicit credentials: InfluxCredentials): U = {
+  def showFieldKeysQuery(dbName: String, measurementName: String): U = {
     buildQuery("/query", buildQueryParams(s"SHOW FIELD KEYS ON $dbName FROM $measurementName"))
   }
 
-  protected def showTagKeysQuery(dbName: String,
-                                 measurementName: String,
-                                 whereClause: Option[String],
-                                 limit: Option[Int],
-                                 offset: Option[Int])
-                                (implicit credentials: InfluxCredentials): U = {
+  def showTagKeysQuery(dbName: String,
+                       measurementName: String,
+                       whereClause: Option[String],
+                       limit: Option[Int],
+                       offset: Option[Int]): U = {
     val sb = StringBuilder.newBuilder
 
     sb.append("SHOW TAG KEYS ON ")
@@ -100,13 +99,14 @@ private[fsanaulla] trait DataManagementQuery[U] {
     buildQuery("/query", buildQueryParams(sb.toString()))
   }
 
-  protected def showTagValuesQuery(dbName: String,
-                                   measurementName: String,
-                                   withKey: Seq[String],
-                                   whereClause: Option[String],
-                                   limit: Option[Int],
-                                   offset: Option[Int])(implicit credentials: InfluxCredentials): U = {
+  def showTagValuesQuery(dbName: String,
+                         measurementName: String,
+                         withKey: Seq[String],
+                         whereClause: Option[String],
+                         limit: Option[Int],
+                         offset: Option[Int]): U = {
     require(withKey.nonEmpty, "Keys can't be empty")
+
     val sb = StringBuilder.newBuilder
 
     sb.append("SHOW TAG VALUES ON ")

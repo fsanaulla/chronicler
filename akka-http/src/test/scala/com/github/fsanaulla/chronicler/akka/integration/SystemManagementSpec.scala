@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.akka.integration
 
-import com.github.fsanaulla.chronicler.akka.InfluxClientFactory
+import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
 import com.github.fsanaulla.core.test.utils.ResultMatchers.NoContentResult
 import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
@@ -15,13 +15,10 @@ class SystemManagementSpec
     with EmptyCredentials
     with EmbeddedInfluxDB {
 
-  "System api" should "correctly work" in {
-    val influx = InfluxClientFactory.createHttpClient(
-      influxHost,
-      port = httpPort,
-      username = credentials.username,
-      password = credentials.password)
+  lazy val influx: InfluxAkkaHttpClient =
+    InfluxDB(host = influxHost, port = httpPort)
 
+  "System api" should "correctly work" in {
     influx.ping().futureValue shouldEqual NoContentResult
   }
 }

@@ -5,16 +5,17 @@ import com.github.fsanaulla.core.handlers.ResponseHandler
 import com.github.fsanaulla.core.model._
 import spray.json.{JsArray, JsObject}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 31.07.17
   */
-private[fsanaulla] trait AkkaResponseHandler extends ResponseHandler[HttpResponse] with AkkaJsonHandler {
-
-  protected implicit val ex: ExecutionContext
+private[fsanaulla] trait AkkaResponseHandler
+  extends ResponseHandler[HttpResponse]
+    with AkkaJsonHandler
+    with Executable {
 
   // Simply result's
   def toResult(response: HttpResponse): Future[Result] = {
