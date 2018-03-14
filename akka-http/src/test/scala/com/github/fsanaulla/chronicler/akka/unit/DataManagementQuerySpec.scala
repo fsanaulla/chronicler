@@ -17,7 +17,9 @@ class DataManagementQuerySpec extends TestSpec {
     val host = "localhost"
     val port = 8086
   }
+
   trait AuthEnv extends Env with NonEmptyCredentials
+
   trait NonAuthEnv extends Env with EmptyCredentials
 
   val testDb: String = "testDb"
@@ -128,3 +130,4 @@ class DataManagementQuerySpec extends TestSpec {
   it should "generate correct 'show field-key' query without auth" in new NonAuthEnv {
     showFieldKeysQuery(testDb, testMeasurement) shouldEqual queryTester(s"SHOW FIELD KEYS ON $testDb FROM $testMeasurement")
   }
+}
