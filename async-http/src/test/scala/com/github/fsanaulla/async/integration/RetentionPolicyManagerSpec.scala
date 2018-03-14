@@ -19,7 +19,7 @@ class RetentionPolicyManagerSpec
   extends TestSpec
     with EmbeddedInfluxDB {
 
-  val rpDB = "async_rp_spec_db"
+  val rpDB = "db"
 
   lazy val influx: InfluxAsyncHttpClient =
     InfluxDB(host = influxHost, port = httpPort)

@@ -48,5 +48,4 @@ class ContinuousQuerysSpec extends TestSpec {
   it should "generate correct create query without auth" in new NonAuthEnv {
     createCQQuery(db, cq, query) shouldEqual queryTester(s"CREATE CONTINUOUS QUERY $cq ON $db BEGIN $query END")
   }
-
 }

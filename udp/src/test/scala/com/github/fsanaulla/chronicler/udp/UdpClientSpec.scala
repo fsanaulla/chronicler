@@ -26,8 +26,7 @@ class UdpClientSpec
 
   lazy val influxUdp = new InfluxUdpClient("localhost")
 
-  lazy val influxHttp: InfluxAsyncHttpClient =
-    InfluxDB.apply("localhost")
+  lazy val influxHttp: InfluxAsyncHttpClient = InfluxDB("localhost")
 
   "Udp client" should "write to InfluxDB" in {
 

@@ -126,7 +126,7 @@ class DataManagementQuerySpec extends TestSpec {
   }
 
   it should "generate correct 'show field-key' query without auth" in new NonAuthEnv {
-    showFieldKeysQuery(testDb, testMeasurement) shouldEqual queryTester(s"SHOW FIELD KEYS ON $testDb FROM $testMeasurement")
+    showFieldKeysQuery(testDb, testMeasurement) shouldEqual
+      queryTester(s"SHOW FIELD KEYS ON $testDb FROM $testMeasurement")
   }
-
 }

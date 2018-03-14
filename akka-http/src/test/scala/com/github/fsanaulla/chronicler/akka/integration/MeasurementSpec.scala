@@ -5,7 +5,7 @@ import com.github.fsanaulla.chronicler.akka.utils.SampleEntitys._
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper.{FakeEntity, _}
 import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
 import com.github.fsanaulla.core.test.utils.ResultMatchers._
-import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 /**
@@ -15,25 +15,21 @@ import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
   */
 class MeasurementSpec
   extends TestSpec
-    with EmptyCredentials
     with EmbeddedInfluxDB {
 
-  val safeDB = "meas_db"
+  val safeDB = "db"
   val measName = "meas"
 
-  lazy val influx: InfluxAkkaHttpClient =
-    InfluxDB(host = influxHost, port = httpPort)
+  lazy val influx: InfluxAkkaHttpClient = InfluxDB(influxHost)
 
-  lazy val meas: Measurement[FakeEntity] =
-    influx.measurement[FakeEntity](safeDB, measName)
-
+  lazy val meas: Measurement[FakeEntity] = influx.measurement[FakeEntity](safeDB, measName)
   lazy val db: Database = influx.database(safeDB)
 
-
-  "Safe entity" should "write typed entity" in {
+  "Measurement[FakeEntity]" should "make single write" in {
     influx.createDatabase(safeDB).futureValue shouldEqual OkResult
-    
+
     meas.write(singleEntity).futureValue shouldEqual NoContentResult
+
     db.readJs(s"SELECT * FROM $measName")
       .futureValue
       .queryResult should not equal Nil
@@ -46,5 +42,7 @@ class MeasurementSpec
       .futureValue
       .queryResult
       .size should be > 1
+
+    influx.close() shouldEqual {}
   }
 }

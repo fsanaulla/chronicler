@@ -121,5 +121,4 @@ class UserManagementQuerySpec extends TestSpec {
     revokePrivilegesQuery(testDatabase, testUsername, testPrivilege) shouldEqual
       queryTester(s"REVOKE $testPrivilege ON $testDatabase FROM $testUsername")
   }
-
 }

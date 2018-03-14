@@ -3,7 +3,7 @@ package com.github.fsanaulla.chronicler.akka.integration
 import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.ShardGroupsInfo
 import com.github.fsanaulla.core.test.utils.ResultMatchers._
-import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 /**
@@ -11,16 +11,11 @@ import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
-class ShardManagementSpec
-  extends TestSpec
-    with EmptyCredentials
-    with EmbeddedInfluxDB {
+class ShardManagementSpec extends TestSpec with EmbeddedInfluxDB {
 
-  val testDb = "db"
+  val testDb = "_internal"
 
-
-  lazy val influx: InfluxAkkaHttpClient =
-    InfluxDB(host = influxHost, port = httpPort)
+  lazy val influx: InfluxAkkaHttpClient = InfluxDB(influxHost)
 
   "shard operations" should "show shards" in {
 
@@ -35,7 +30,7 @@ class ShardManagementSpec
 
   it should "show shards groupe" in {
 
-    val shardGroups = influx.showShardGroupsQuery().futureValue.queryResult
+    val shardGroups = influx.showShardGroups().futureValue.queryResult
 
     shardGroups should not equal Nil
 

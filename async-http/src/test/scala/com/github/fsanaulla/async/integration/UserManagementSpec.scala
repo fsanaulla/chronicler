@@ -18,7 +18,7 @@ class UserManagementSpec
   extends TestSpec
     with EmbeddedInfluxDB{
 
-  val userDB = "async_user_management_spec_db"
+  val userDB = "db"
   val userName = "Martin"
   val userPass = "pass"
   val userNPass = "new_pass"

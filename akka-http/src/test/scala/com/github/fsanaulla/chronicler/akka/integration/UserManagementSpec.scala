@@ -3,7 +3,7 @@ package com.github.fsanaulla.chronicler.akka.integration
 import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.{UserInfo, UserPrivilegesInfo}
 import com.github.fsanaulla.core.test.utils.ResultMatchers.OkResult
-import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.core.utils.constants.Privileges
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
@@ -14,10 +14,9 @@ import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
   */
 class UserManagementSpec
   extends TestSpec
-    with EmptyCredentials
-    with EmbeddedInfluxDB {
+    with EmbeddedInfluxDB{
 
-  val userDB = "user_management_spec_db"
+  val userDB = "db"
   val userName = "Martin"
   val userPass = "pass"
   val userNPass = "new_pass"
@@ -25,11 +24,9 @@ class UserManagementSpec
   val admin = "Admin"
   val adminPass = "admin_pass"
 
-  lazy val influx: InfluxAkkaHttpClient =
-    InfluxDB(host = influxHost, port = httpPort)
+  lazy val influx: InfluxAkkaHttpClient = InfluxDB(influxHost)
 
   "User management operation" should "create user" in {
-
     influx.createDatabase(userDB).futureValue shouldEqual OkResult
 
     influx.createUser(userName, userPass).futureValue shouldEqual OkResult
@@ -41,8 +38,7 @@ class UserManagementSpec
     influx.showUsers().futureValue.queryResult.contains(UserInfo(admin, isAdmin = true)) shouldEqual true
   }
 
-  it should "show privileges" in {
-
+  it should "show user privileges" in {
     influx.showUserPrivileges(admin).futureValue.queryResult shouldEqual Nil
   }
 
@@ -65,7 +61,6 @@ class UserManagementSpec
   it should "disable admin" in {
     influx.disableAdmin(admin).futureValue shouldEqual OkResult
     influx.showUsers().futureValue.queryResult.contains(UserInfo(admin, isAdmin = false)) shouldEqual true
-
   }
 
   it should "make admin" in {

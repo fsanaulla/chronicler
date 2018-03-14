@@ -1,11 +1,12 @@
 package com.github.fsanaulla.chronicler.akka.integration
 
-import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
+import com.github.fsanaulla.chronicler.akka.InfluxDB
 import com.github.fsanaulla.core.model.Subscription
 import com.github.fsanaulla.core.test.utils.ResultMatchers._
-import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.core.utils.InfluxDuration._
 import com.github.fsanaulla.core.utils.constants.Destinations
+import com.github.fsanaulla.core.utils.constants.Destinations.Destination
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 /**
@@ -15,24 +16,22 @@ import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
   */
 class SubscriptionManagementSpec
   extends TestSpec
-    with EmptyCredentials
-    with EmbeddedInfluxDB {
+    with EmbeddedInfluxDB{
 
   val subName = "subs"
-  val dbName = "subs_spec_db"
+  val dbName = "async_subs_spec_db"
   val rpName = "subs_rp"
-  val destType: Destinations.ANY.type = Destinations.ANY
-  val newDestType: Destinations.ALL.type = Destinations.ALL
+  val destType: Destination = Destinations.ANY
+  val newDestType: Destination = Destinations.ALL
   val hosts = Seq("udp://h1.example.com:9090", "udp://h2.example.com:9090")
   val subscription = Subscription(rpName, subName, destType, hosts)
   val newSubscription: Subscription = subscription.copy(destType = newDestType)
 
   val duration: String = 1.hours + 30.minutes
 
-  lazy val influx: InfluxAkkaHttpClient =
-    InfluxDB(host = influxHost, port = httpPort)
+  lazy val influx = InfluxDB(influxHost)
 
-  "Subs operation" should "create subscription" in {
+  "Subscription operation" should "create subscription" in {
 
     influx.createDatabase(dbName).futureValue shouldEqual OkResult
 
@@ -43,22 +42,28 @@ class SubscriptionManagementSpec
     influx.createSubscription(subName, dbName, rpName, destType, hosts).futureValue shouldEqual OkResult
 
     influx.showSubscriptions(dbName).futureValue.queryResult shouldEqual Seq(subscription)
-
   }
 
-  it should "update subscription" in {
+  it should "update subscriptions" in {
     influx.updateSubscription(subName, dbName, rpName, newDestType, hosts).futureValue shouldEqual OkResult
 
     influx.showSubscriptions(dbName).futureValue.queryResult shouldEqual Seq(newSubscription)
   }
 
   it should "drop subscription" in {
-
     influx.dropSubscription(subName, dbName, rpName).futureValue shouldEqual OkResult
 
     influx.showSubscriptions(dbName).futureValue.queryResult shouldEqual Nil
 
-    influx.close() shouldEqual {}
+    influx.dropRetentionPolicy(rpName, dbName).futureValue shouldEqual OkResult
+
+    influx.dropDatabase(dbName).futureValue shouldEqual OkResult
+
   }
 
+  it should "clear up after all" in {
+    influx.dropDatabase(dbName).futureValue shouldEqual OkResult
+
+    influx.close() shouldEqual {}
+  }
 }

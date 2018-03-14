@@ -4,28 +4,35 @@ import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryHandler
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
 import com.github.fsanaulla.core.query.QuerysManagementQuery
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.utils.{EmptyCredentials, NonEmptyCredentials, TestSpec}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
-class QuerysManagementQuerySpec
-  extends TestSpec
-    with TestCredenctials
-    with AkkaQueryHandler
-    with QuerysManagementQuery[Uri] {
+class QuerysManagementQuerySpec extends TestSpec {
 
-  "show query" should "correctly work" in {
-    showQuerysQuery() shouldEqual queryTesterAuth("SHOW QUERIES")
+  trait Env extends AkkaQueryHandler with QuerysManagementQuery[Uri] {
+    val host = "localhost"
+    val port = 8086
+  }
+  trait AuthEnv extends Env with NonEmptyCredentials
+  trait NonAuthEnv extends Env with EmptyCredentials
 
-    showQuerysQuery()(emptyCredentials) shouldEqual queryTester("SHOW QUERIES")
+  "QueryManagement" should "show query" in new AuthEnv {
+    showQuerysQuery() shouldEqual queryTesterAuth("SHOW QUERIES")(credentials.get)
   }
 
-  "kill query" should "correctly work" in {
-    killQueryQuery(5) shouldEqual queryTesterAuth("KILL QUERY 5")
+  it should "kill query" in new AuthEnv {
+    killQueryQuery(5) shouldEqual queryTesterAuth("KILL QUERY 5")(credentials.get)
+  }
 
-    killQueryQuery(5)(emptyCredentials) shouldEqual queryTester("KILL QUERY 5")
+  it should "show query without auth" in new NonAuthEnv {
+    showQuerysQuery() shouldEqual queryTester("SHOW QUERIES")
+  }
+
+  it should "kill query without auth" in new NonAuthEnv {
+    killQueryQuery(5) shouldEqual queryTester("KILL QUERY 5")
   }
 }

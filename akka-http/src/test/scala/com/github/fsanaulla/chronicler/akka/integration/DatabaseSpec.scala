@@ -9,7 +9,7 @@ import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
 import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.Point
 import com.github.fsanaulla.core.test.utils.ResultMatchers._
-import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
+import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 import spray.json.{DefaultJsonProtocol, JsArray, JsValue}
 
@@ -20,14 +20,14 @@ import spray.json.{DefaultJsonProtocol, JsArray, JsValue}
   */
 class DatabaseSpec
   extends TestSpec
-    with EmptyCredentials
     with SprayJsonSupport
     with DefaultJsonProtocol
     with EmbeddedInfluxDB {
 
-  val testDB = "database_spec_db"
+  val testDB = "db"
 
-  lazy val influx: InfluxAkkaHttpClient = InfluxDB(host = influxHost, port = httpPort)
+  lazy val influx: InfluxAkkaHttpClient =
+    InfluxDB(influxHost)
 
   lazy val db: Database = influx.database(testDB)
 
@@ -57,12 +57,16 @@ class DatabaseSpec
     db.read[FakeEntity]("SELECT * FROM test2").futureValue.queryResult shouldEqual Seq(FakeEntity("Martin", "Odersky", 54), FakeEntity("Jame", "Franko", 36), FakeEntity("Martin", "Odersky", 54))
   }
 
-  it should "bulk read js" in {
+  it should "read js" ignore {
+
+    db.readJs("SELECT * FROM test2 WHERE age < 40")
+      .futureValue
+      .queryResult should not equal Nil
 
     val multiQuery = db.bulkReadJs(
       Seq(
-        "SELECT * FROM test2",
-        "SELECT * FROM test2 WHERE age < 40"
+        "SELECT * FROM test2 WHERE age < 40",
+        "SELECT * FROM test2"
       )
     ).futureValue
 
