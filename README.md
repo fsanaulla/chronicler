@@ -1,7 +1,7 @@
 <div align="center">
 
 # Chronicler
-![CircleCI](https://circleci.com/gh/fsanaulla/chronicler.svg?style=shield&circle-token=3943b9e35ee6ec63d54741e57a2833a4609b9adc)
+![CircleCI](https://circleci.com/gh/fsanaulla/chronicler.svg?style=shield&circle-token=3943b9e35ee6ec63d54741e57a2833a4609b9adc) [![Coverage Status](https://coveralls.io/repos/github/fsanaulla/chronicler/badge.svg?branch=master)](https://coveralls.io/github/fsanaulla/chronicler?branch=master)
 
 </div>
 
