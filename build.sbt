@@ -90,7 +90,7 @@ lazy val macros = project
     excludeDependencies += Dependencies.Excluded.embeddedInflux
   ).dependsOn(core)
 
-addCommandAlias("fullTest", ";clean;compile;test:compile;test")
+addCommandAlias("fullTest", ";clean;compile;coverage;test:compile;test:coverageReport")
 addCommandAlias("fullRelease", ";clean;publishSigned;sonatypeRelease")
 //credentials += Credentials(
 //  "Sonatype Nexus Repository Manager",

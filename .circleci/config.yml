@@ -52,6 +52,14 @@ jobs:
         - run:
             name: Test
             command: "sbt \"project core\" +fullTest"
+  codacy:
+      docker:
+        - image: circleci/openjdk:8-jdk
+      steps:
+        - checkout
+        - run:
+            name: Test
+            command: "sbt coverageAggregate codacyCoverage"
 workflows:
   version: 2
   test:
@@ -60,3 +68,9 @@ workflows:
       - asyncHttp
       - udp
       - core
+      - codacy:
+          requires:
+            - akkaHttp
+            - asyncHttp
+            - udp
+            - core

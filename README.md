@@ -1,9 +1,8 @@
 <div align="center">
 
 # Chronicler
+![CircleCI](https://circleci.com/gh/fsanaulla/chronicler.svg?style=shield&circle-token=3943b9e35ee6ec63d54741e57a2833a4609b9adc)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/7e195f786666462da89b22e27600fcc8)](https://app.codacy.com/app/fsanaulla/chronicler?utm_source=github.com&utm_medium=referral&utm_content=fsanaulla/chronicler&utm_campaign=badger)
-![CircleCI](https://circleci.com/gh/fsanaulla/chronicler.svg?style=shield&circle-token=3943b9e35ee6ec63d54741e57a2833a4609b9adc) [![Coverage Status](https://coveralls.io/repos/github/fsanaulla/chronicler/badge.svg?branch=master)](https://coveralls.io/github/fsanaulla/chronicler?branch=master)
-
 </div>
 
 # About project
