@@ -3,6 +3,7 @@
 # Chronicler
 ![CircleCI](https://circleci.com/gh/fsanaulla/chronicler.svg?style=shield&circle-token=3943b9e35ee6ec63d54741e57a2833a4609b9adc)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/7e195f786666462da89b22e27600fcc8)](https://app.codacy.com/app/fsanaulla/chronicler?utm_source=github.com&utm_medium=referral&utm_content=fsanaulla/chronicler&utm_campaign=badger)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.fsanaulla/chronicler-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.fsanaulla/chronicler-core)
 </div>
 
 # About project
@@ -28,13 +29,13 @@ libraryDependencies += "com.github.fsanaulla" %% "chronicler-udp" % "0.1.0"
 | Type safe query DSL | More flexible method for quering information | Not started |
 
 # Table of content
-- [Helper Tools](docs/helper_tools.md)
-- [Set up connection](docs/get_started.md)
-- [Database management](docs/database_management.md)
+- [Get started](docs/get_started.md)
 - [Read operation](docs/read_operation_notes.md)
 - [Write operation](docs/write_operation_notes.md)
+- [Database management](docs/database_management.md)
 - [User management](docs/user_management.md)
 - [Continuously Query management](docs/continuous_query-management.md)
 - [Subscription management](docs/subscription_management.md)
 - [Retention Policy management](docs/retention_policy_management.md)
 - [Shards management](docs/shard_management.md)
+- [Helper Tools](docs/helper_tools.md)
