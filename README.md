@@ -3,23 +3,29 @@
 # Chronicler
 ![CircleCI](https://circleci.com/gh/fsanaulla/chronicler.svg?style=shield&circle-token=3943b9e35ee6ec63d54741e57a2833a4609b9adc)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/7e195f786666462da89b22e27600fcc8)](https://app.codacy.com/app/fsanaulla/chronicler?utm_source=github.com&utm_medium=referral&utm_content=fsanaulla/chronicler&utm_campaign=badger)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.fsanaulla/chronicler-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.fsanaulla/chronicler-core)
 </div>
 
 # About project
 Chronicler - asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](https://www.influxdata.com/).
 With several implementation, that allow you choose what you want. It support scala `2.11` and `2.12`.
+
+| Project | Version |
+| ------------- | ------------- |
+| `chronicler-akka-http` | [![Latest version](https://index.scala-lang.org/fsanaulla/chronicler/chronicler-akka-http/latest.svg)](https://index.scala-lang.org/fsanaulla/chronicler/chronicler-akka-http) |
+| `chronicler-async-http` | [![Latest version](https://index.scala-lang.org/fsanaulla/chronicler/chronicler-async-http/latest.svg)](https://index.scala-lang.org/fsanaulla/chronicler/chronicler-async-http) |
+| `chronicler-udp` | [![Latest version](https://index.scala-lang.org/fsanaulla/chronicler/chronicler-udp/latest.svg)](https://index.scala-lang.org/fsanaulla/chronicler/chronicler-udp) |
+
 # Installation
 Add to your dependencies list in `build.sbt`:
 ```
 // for Akka based client
-libraryDependencies += "com.github.fsanaulla" %% "chronicler-akka-http" % "0.1.0"
+libraryDependencies += "com.github.fsanaulla" %% "chronicler-akka-http" % <version>
 
 // for Netty based client
-libraryDependencies += "com.github.fsanaulla" %% "chronicler-async-http" % "0.1.0"
+libraryDependencies += "com.github.fsanaulla" %% "chronicler-async-http" % <version>
 
 // for UDP protocol client
-libraryDependencies += "com.github.fsanaulla" %% "chronicler-udp" % "0.1.0"
+libraryDependencies += "com.github.fsanaulla" %% "chronicler-udp" % <version>
 ```
 # Roadmap
 
