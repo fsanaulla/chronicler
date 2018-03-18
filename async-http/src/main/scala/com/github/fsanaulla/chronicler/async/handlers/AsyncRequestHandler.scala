@@ -15,18 +15,33 @@ private[fsanaulla] trait AsyncRequestHandler
   protected implicit val backend: SttpBackend[Future, Nothing]
   protected val defaultMethod: Method = Method.POST
 
-  private val asJson: ResponseAs[JsObject, Nothing] = {
+  private def asJson: ResponseAs[JsObject, Nothing] = {
     asString.map {
       case str: String if str.nonEmpty => JsonParser(str).asJsObject
-      case _ => JsObject.empty
+      case _: String => JsObject.empty
     }
   }
 
   override def readRequest(uri: Uri, method: Method, entity: Option[String] = None): Future[Response[JsObject]] = {
-    (method: @unchecked) match {
+    println(uri.toString())
+
+    val res = (method: @unchecked) match {
       case Method.POST => sttp.post(uri).optBody(entity).response(asJson).send()
-      case Method.GET => sttp.get(uri).optBody(entity).response(asJson).send()
+      case Method.GET =>
+        val req0 = sttp.get(uri)
+        println(req0)
+
+        val req1 = req0.response(asJson)
+        println(req1)
+
+        req1.send()
     }
+
+    res.onComplete {
+      case scala.util.Success(r) => println(r.unsafeBody.prettyPrint)
+    }
+
+    res
   }
 
   override def writeRequest(uri: Uri, method: Method = defaultMethod, entity: String): Future[Response[JsObject]] = {

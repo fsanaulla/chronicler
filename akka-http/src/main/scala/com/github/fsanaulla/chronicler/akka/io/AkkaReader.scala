@@ -16,8 +16,8 @@ private[fsanaulla] trait AkkaReader
   extends AkkaRequestHandler
     with AkkaResponseHandler
     with AkkaQueryHandler
-    with DatabaseOperationQuery[Uri] {
-  self: ReadOperations with HasCredentials with Executable =>
+    with DatabaseOperationQuery[Uri]
+    with HasCredentials { self: ReadOperations  with Executable =>
 
   override def _readJs(dbName: String,
                        query: String,
@@ -30,11 +30,11 @@ private[fsanaulla] trait AkkaReader
   }
 
   override def _bulkReadJs(dbName: String,
-                           querys: Seq[String],
+                           queries: Seq[String],
                            epoch: Epoch = Epochs.NANOSECONDS,
                            pretty: Boolean = false,
                            chunked: Boolean = false): Future[QueryResult[Seq[JsArray]]] = {
-    readRequest(readFromInfluxBulkQuery(dbName, querys, epoch, pretty, chunked), GET)
+    readRequest(readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked), GET)
       .flatMap(toBulkQueryJsResult)
   }
 }

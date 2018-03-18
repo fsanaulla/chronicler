@@ -31,14 +31,14 @@ class DatabaseSpec
 
   lazy val db: Database = influx.database(testDB)
 
-  "Database api" should "write from file" in {
+  "Database API" should "write data from file" in {
     influx.createDatabase(testDB).futureValue shouldEqual OkResult
 
     db.writeFromFile(new File(getClass.getResource("/points.txt").getPath)).futureValue shouldEqual NoContentResult
     db.readJs("SELECT * FROM test1").futureValue.queryResult.size shouldEqual 3
   }
 
-  it should "write points" in {
+  it should "write 2 points represented entities" in {
 
     val point1 = Point("test2")
       .addTag("firstName", "Martin")
@@ -57,11 +57,7 @@ class DatabaseSpec
     db.read[FakeEntity]("SELECT * FROM test2").futureValue.queryResult shouldEqual Seq(FakeEntity("Martin", "Odersky", 54), FakeEntity("Jame", "Franko", 36), FakeEntity("Martin", "Odersky", 54))
   }
 
-  it should "read js" ignore {
-
-    db.readJs("SELECT * FROM test2 WHERE age < 40")
-      .futureValue
-      .queryResult should not equal Nil
+  it should "retrieve multiple request" in {
 
     val multiQuery = db.bulkReadJs(
       Seq(

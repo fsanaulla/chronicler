@@ -23,18 +23,20 @@ private[fsanaulla] trait AsyncReader
                        epoch: Epoch = Epochs.NANOSECONDS,
                        pretty: Boolean = false,
                        chunked: Boolean = false): Future[QueryResult[JsArray]] = {
-
-    readRequest(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked), Method.GET)
-      .flatMap(toQueryJsResult)
+    val _query = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
+    readRequest(_query, Method.GET).flatMap(toQueryJsResult)
   }
 
   override def _bulkReadJs(dbName: String,
-                           querys: Seq[String],
+                           queries: Seq[String],
                            epoch: Epoch = Epochs.NANOSECONDS,
                            pretty: Boolean = false,
                            chunked: Boolean = false): Future[QueryResult[Seq[JsArray]]] = {
-    readRequest(readFromInfluxBulkQuery(dbName, querys, epoch, pretty, chunked), Method.GET)
-      .flatMap(toBulkQueryJsResult)
+    val query = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)
+
+    val res = readRequest(query, Method.GET)
+
+    res.flatMap(toBulkQueryJsResult)
   }
 
 
