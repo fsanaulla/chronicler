@@ -16,5 +16,7 @@ private[fsanaulla] trait AsyncQueryHandler
     val u = Uri(host, port).path(uri).optParams(queryParams)
     val q0 = u.paramsMap("q")
     val q1 = q0.replace(";", "%3B")
+
+    u
   }
 }
