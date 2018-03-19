@@ -6,7 +6,6 @@ import com.github.fsanaulla.core.handlers.RequestHandler
 import com.softwaremill.sttp._
 import spray.json.{JsObject, JsonParser}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 private[fsanaulla] trait AsyncRequestHandler
@@ -22,32 +21,17 @@ private[fsanaulla] trait AsyncRequestHandler
     }
   }
 
-  override def readRequest(uri: Uri, method: Method, entity: Option[String] = None): Future[Response[JsObject]] = {
-    println(uri.toString())
-
-    val res = (method: @unchecked) match {
-      case Method.POST => sttp.post(uri).optBody(entity).response(asJson).send()
-      case Method.GET =>
-        val req0 = sttp.get(uri)
-        println(req0)
-
-        val req1 = req0.response(asJson)
-        println(req1)
-
-        req1.send()
-    }
-
-    res.onComplete {
-      case scala.util.Success(r) => println(r.unsafeBody.prettyPrint)
-    }
-
-    res
+  override def readRequest(uri: Uri,
+                           method: Method,
+                           entity: Option[String] = None): Future[Response[JsObject]] = (method: @unchecked) match {
+    case Method.POST => sttp.post(uri).optBody(entity).response(asJson).send()
+    case Method.GET => sttp.get(uri).response(asJson).send()
   }
 
-  override def writeRequest(uri: Uri, method: Method = defaultMethod, entity: String): Future[Response[JsObject]] = {
-    (method: @unchecked) match {
-      case Method.POST => sttp.post(uri).body(entity).response(asJson).send()
-      case Method.GET => sttp.get(uri).body(entity).response(asJson).send()
-    }
+  override def writeRequest(uri: Uri,
+                            method: Method = defaultMethod,
+                            entity: String): Future[Response[JsObject]] = (method: @unchecked) match {
+    case Method.POST => sttp.post(uri).body(entity).response(asJson).send()
+    case Method.GET => sttp.get(uri).body(entity).response(asJson).send()
   }
 }
