@@ -52,14 +52,19 @@ jobs:
         - run:
             name: Test
             command: "sbt \"project core\" +fullTest"
-#  codacy:
-#      docker:
-#        - image: circleci/openjdk:8-jdk
-#      steps:
-#        - checkout
-#        - run:
-#            name: Test
-#            command: "sbt coverageAggregate codacyCoverage"
+  macros:
+      docker:
+        - image: circleci/openjdk:8-jdk
+      steps:
+        - checkout
+        - run:
+            name: Insatll sbt
+            command: |
+               wget -q https://dl.bintray.com/sbt/debian/sbt-1.1.0.deb
+               sudo dpkg -i sbt-1.1.0.deb
+        - run:
+            name: Test
+            command: "sbt \"project macros\" +fullTest"
 workflows:
   version: 2
   test:
@@ -68,9 +73,4 @@ workflows:
       - asyncHttp
       - udp
       - core
-#      - codacy:
-#          requires:
-#            - akkaHttp
-#            - asyncHttp
-#            - udp
-#            - core
+      - macros

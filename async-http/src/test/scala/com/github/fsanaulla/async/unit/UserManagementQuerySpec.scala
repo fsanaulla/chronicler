@@ -3,7 +3,7 @@ package com.github.fsanaulla.async.unit
 import com.github.fsanaulla.async.utils.TestHelper._
 import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryHandler
 import com.github.fsanaulla.core.query.UserManagementQuery
-import com.github.fsanaulla.core.test.utils.{EmptyCredentials, NonEmptyCredentials, TestSpec}
+import com.github.fsanaulla.core.test.utils.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.github.fsanaulla.core.utils.constants.Privileges
 import com.softwaremill.sttp.Uri
 
@@ -12,7 +12,7 @@ import com.softwaremill.sttp.Uri
   * Author: fayaz.sanaulla@gmail.com
   * Date: 21.08.17
   */
-class UserManagementQuerySpec extends TestSpec {
+class UserManagementQuerySpec extends FlatSpecWithMatchers {
 
   trait Env extends AsyncQueryHandler with UserManagementQuery[Uri] {
     val host = "localhost"

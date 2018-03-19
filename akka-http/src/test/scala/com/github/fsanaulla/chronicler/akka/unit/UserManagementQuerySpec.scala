@@ -4,7 +4,7 @@ import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryHandler
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
 import com.github.fsanaulla.core.query.UserManagementQuery
-import com.github.fsanaulla.core.test.utils.{EmptyCredentials, NonEmptyCredentials, TestSpec}
+import com.github.fsanaulla.core.test.utils.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.github.fsanaulla.core.utils.constants.Privileges
 
 /**
@@ -12,7 +12,7 @@ import com.github.fsanaulla.core.utils.constants.Privileges
   * Author: fayaz.sanaulla@gmail.com
   * Date: 21.08.17
   */
-class UserManagementQuerySpec extends TestSpec {
+class UserManagementQuerySpec extends FlatSpecWithMatchers {
 
   trait Env extends AkkaQueryHandler with UserManagementQuery[Uri] {
     val host = "localhost"

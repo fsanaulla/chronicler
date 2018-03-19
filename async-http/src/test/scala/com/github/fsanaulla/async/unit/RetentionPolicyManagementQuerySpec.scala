@@ -3,7 +3,7 @@ package com.github.fsanaulla.async.unit
 import com.github.fsanaulla.async.utils.TestHelper._
 import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryHandler
 import com.github.fsanaulla.core.query.RetentionPolicyManagementQuery
-import com.github.fsanaulla.core.test.utils.{EmptyCredentials, NonEmptyCredentials, TestSpec}
+import com.github.fsanaulla.core.test.utils.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.github.fsanaulla.core.utils.InfluxDuration._
 import com.softwaremill.sttp.Uri
 
@@ -14,7 +14,7 @@ import scala.language.postfixOps
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class RetentionPolicyManagementQuerySpec extends TestSpec {
+class RetentionPolicyManagementQuerySpec extends FlatSpecWithMatchers {
 
   trait Env extends RetentionPolicyManagementQuery[Uri] with AsyncQueryHandler {
     val host = "localhost"

@@ -9,20 +9,20 @@ import scala.language.experimental.macros
   * Author: fayaz.sanaulla@gmail.com
   * Date: 13.02.18
   */
-object InfluxFormatter {
+object Macros {
 
   /**
     * Generate InfluxWriter for type ${A}
     */
-  def writer[A]: InfluxWriter[A] = macro InfluxFormatterImpl.writer_impl[A]
+  def writer[A]: InfluxWriter[A] = macro MacrosImpl.writer_impl[A]
 
   /**
     * Generate InfluxReader for type ${A}
     */
-  def reader[A]: InfluxReader[A] = macro InfluxFormatterImpl.reader_impl[A]
+  def reader[A]: InfluxReader[A] = macro MacrosImpl.reader_impl[A]
 
   /**
     * Generate InfluxFormatter for type ${A}
     */
-  def format[A]: InfluxFormatter[A] = macro InfluxFormatterImpl.format_impl[A]
+  def format[A]: InfluxFormatter[A] = macro MacrosImpl.format_impl[A]
 }

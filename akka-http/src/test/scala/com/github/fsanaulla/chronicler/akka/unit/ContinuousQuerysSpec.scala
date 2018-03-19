@@ -4,14 +4,14 @@ import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryHandler
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
 import com.github.fsanaulla.core.query.ContinuousQuerys
-import com.github.fsanaulla.core.test.utils.{EmptyCredentials, NonEmptyCredentials, TestSpec}
+import com.github.fsanaulla.core.test.utils.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class ContinuousQuerysSpec extends TestSpec {
+class ContinuousQuerysSpec extends FlatSpecWithMatchers {
 
   trait Env extends AkkaQueryHandler with ContinuousQuerys[Uri] {
     val host = "localhost"

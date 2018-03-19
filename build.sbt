@@ -2,7 +2,7 @@ import sbt.Keys.{crossScalaVersions, organization, publishArtifact, version}
 import sbt.url
 
 lazy val commonSettings = Seq(
-  version := "0.1.0",
+  version := "0.2.0",
   organization := "com.github.fsanaulla",
   crossScalaVersions := Seq("2.11.8", "2.12.4"),
   homepage := Some(url("https://github.com/fsanaulla/chronicler")),
@@ -35,7 +35,8 @@ lazy val chronicler = (project in file("."))
     core,
     akkaHttp,
     asyncHttp,
-    udp
+    udp,
+    macros
   )
 
 lazy val core = project
@@ -86,15 +87,8 @@ lazy val macros = project
     name := "chronicler-macros",
     scalaVersion := "2.12.4",
     scalacOptions ++= Seq("-deprecation", "-feature", "-print"),
-    libraryDependencies += Dependencies.scalaReflect,
-    excludeDependencies += Dependencies.Excluded.embeddedInflux
-  ).dependsOn(core)
+    libraryDependencies += Dependencies.scalaReflect
+  ).dependsOn(core % "compile->compile;test->test")
 
 addCommandAlias("fullTest", ";clean;compile;coverage;test:compile;test:coverageReport")
 addCommandAlias("fullRelease", ";clean;publishSigned;sonatypeRelease")
-//credentials += Credentials(
-//  "Sonatype Nexus Repository Manager",
-//  "oss.sonatype.org",
-//  sys.env.getOrElse("SONATYPE_LOGIN", ""),
-//  sys.env.getOrElse("SONATYPE_PASS", "")
-//)
