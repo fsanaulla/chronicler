@@ -14,6 +14,8 @@ With several implementation, that allow you choose what you want. It support sca
 | `chronicler-akka-http` | [![Latest version](https://index.scala-lang.org/fsanaulla/chronicler/chronicler-akka-http/latest.svg)](https://index.scala-lang.org/fsanaulla/chronicler/chronicler-akka-http) |
 | `chronicler-async-http` | [![Latest version](https://index.scala-lang.org/fsanaulla/chronicler/chronicler-async-http/latest.svg)](https://index.scala-lang.org/fsanaulla/chronicler/chronicler-async-http) |
 | `chronicler-udp` | [![Latest version](https://index.scala-lang.org/fsanaulla/chronicler/chronicler-udp/latest.svg)](https://index.scala-lang.org/fsanaulla/chronicler/chronicler-udp) |
+| `chronicler-macros` | [![Latest version](https://index.scala-lang.org/fsanaulla/chronicler/chronicler-macros/latest.svg)](https://index.scala-lang.org/fsanaulla/chronicler/chronicler-macros) |
+
 
 # Installation
 Add to your dependencies list in `build.sbt`:
@@ -31,7 +33,7 @@ libraryDependencies += "com.github.fsanaulla" %% "chronicler-udp" % <version>
 
 | Task | Description | Status |
 | ------------- | ------------- | ---------- |
-| Macro Formaters | Allow generating `InfluxReader[T]`, `InfluxWriter[T]` at compile time | In Progress |
+| Macro Formaters | Allow generating `InfluxReader[T]`, `InfluxWriter[T]` at compile time | Completed |
 | Type safe query DSL | More flexible method for quering information | Not started |
 
 # Table of content
