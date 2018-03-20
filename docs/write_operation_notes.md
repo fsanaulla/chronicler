@@ -78,4 +78,4 @@ res0: Future[Result]
 meas.bulkWrite(Seq(fe, ...))
 res0: Future[Result]
 ```
-In close future will be added support for compile time code generation, using macros. So you will be saved from boilerplate coding.
+To avoid boilerplate code, and headache. Just use [Macros](docs/macros.md).

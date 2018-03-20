@@ -24,4 +24,4 @@ And then just use it
 db.read[FakeEntity]("SELECT * FROM measurement")
 res0: Future[QueryResult[FakeEntity]]
 ```
-In close time will be added macro generation for it, so you will be saved from boilerplate coding.
+To avoid boilerplate code, and headache. Just use [Macros](docs/macros.md).

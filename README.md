@@ -47,3 +47,4 @@ libraryDependencies += "com.github.fsanaulla" %% "chronicler-udp" % <version>
 - [Retention Policy management](docs/retention_policy_management.md)
 - [Shards management](docs/shard_management.md)
 - [Helper Tools](docs/helper_tools.md)
+- [Macros](docs/macros.md)
