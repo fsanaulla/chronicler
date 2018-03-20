@@ -1,13 +1,18 @@
 package com.github.fsanaulla.async.utils
 
+import java.net.URLEncoder
+
 import com.github.fsanaulla.core.model._
-import com.softwaremill.sttp._
 import spray.json.{DeserializationException, JsArray, JsNumber, JsString}
 
 /**
   * Created by fayaz on 11.07.17.
   */
 object TestHelper {
+
+  implicit class StringRich(val str: String) extends AnyVal {
+    def encode: String = URLEncoder.encode(str)
+  }
 
   final val currentNanoTime: Long = System.currentTimeMillis() * 1000000
   final val OkResult = Result(200, isSuccess = true)
@@ -28,27 +33,27 @@ object TestHelper {
     }
   }
 
-  def queryTesterAuth(query: String)(credentials: InfluxCredentials): Uri = {
-    uri"http://localhost:8086/query?q=$query&p=${credentials.password}&u=${credentials.username}"
+  def queryTesterAuth(query: String)(credentials: InfluxCredentials): String =
+    s"http://localhost:8086/query?q=${query.encode}&p=${credentials.password.encode}&u=${credentials.username.encode}"
+
+
+  def queryTesterAuth(db: String, query: String)(credentials: InfluxCredentials): String =
+    s"http://localhost:8086/query?q=${query.encode}&p=${credentials.password.encode}&db=${db.encode}&u=${credentials.username.encode}"
+
+
+  def queryTester(query: String): String = {
+    s"http://localhost:8086/query?q=${query.encode}"
   }
 
-  def queryTesterAuth(db: String, query: String)(credentials: InfluxCredentials): Uri = {
-    uri"http://localhost:8086/query?q=$query&p=${credentials.password}&db=$db&u=${credentials.username}"
+  def queryTester(db: String, query: String): String = {
+    s"http://localhost:8086/query?q=${query.encode}&db=${db.encode}"
   }
 
-  def queryTester(query: String): Uri = {
-    uri"http://localhost:8086/query?q=$query"
-  }
+  def queryTester(path: String, mp: Map[String, String]): String = {
+    val s = mp.map {
+      case (k, v) => s"$k=${v.encode}"
+    }.mkString("&")
 
-  def queryTester(db: String, query: String): Uri = {
-    uri"http://localhost:8086/query?q=$query&db=$db"
-  }
-
-  def writeTester(mp: Map[String, String]): Uri = {
-    uri"http://localhost:8086/write?$mp"
-  }
-
-  def queryTesterSimple(query: Map[String, String]): Uri = {
-    uri"http://localhost:8086/query?$query"
+    s"http://localhost:8086$path?$s"
   }
 }

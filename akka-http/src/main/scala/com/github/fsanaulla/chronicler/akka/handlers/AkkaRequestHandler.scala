@@ -18,6 +18,7 @@ private[fsanaulla] trait AkkaRequestHandler
   override def readRequest(uri: Uri,
                            method: HttpMethod,
                            entity: Option[MessageEntity] = None): Future[HttpResponse] = {
+    println(uri)
     Source
       .single(
         HttpRequest(

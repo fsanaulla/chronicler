@@ -58,16 +58,12 @@ class DatabaseSpec
     db.read[FakeEntity]("SELECT * FROM test2").futureValue.queryResult shouldEqual Seq(FakeEntity("Martin", "Odersky", 54), FakeEntity("Jame", "Franko", 36), FakeEntity("Martin", "Odersky", 54))
   }
 
-  it should "read js" ignore {
-
-    db.readJs("SELECT * FROM test2 WHERE age < 40")
-      .futureValue
-      .queryResult should not equal Nil
+  it should "read multiple query results" in {
 
     val multiQuery = db.bulkReadJs(
       Seq(
-        "SELECT * FROM test2 WHERE age < 40",
-        "SELECT * FROM test2"
+        "SELECT * FROM test2",
+        "SELECT * FROM test2 WHERE age < 40"
       )
     ).futureValue
 
@@ -87,7 +83,7 @@ class DatabaseSpec
       .map(_.map(_.convertTo[Seq[JsValue]].tail)) shouldEqual largeMultiJsonEntity.map(_.map(_.convertTo[Seq[JsValue]].tail))
   }
 
-  it should "write native" in {
+  it should "write native represented entities" in {
 
     db.writeNative("test3,firstName=Jame,lastName=Lannister age=48").futureValue shouldEqual NoContentResult
     db.read[FakeEntity]("SELECT * FROM test3").futureValue.queryResult shouldEqual Seq(FakeEntity("Jame", "Lannister", 48))

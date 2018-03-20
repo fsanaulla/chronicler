@@ -133,7 +133,6 @@ class AsyncResponseHandlerSpec
   }
 
   "optError handler" should "correct work" in {
-
     getErrorOpt(errHttpResponse).futureValue shouldEqual Some("user not found")
   }
 }

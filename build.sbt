@@ -90,5 +90,5 @@ lazy val macros = project
     libraryDependencies += Dependencies.scalaReflect
   ).dependsOn(core % "compile->compile;test->test")
 
-addCommandAlias("fullTest", ";clean;compile;coverage;test:compile;test:coverageReport")
+addCommandAlias("fullTest", ";clean;compile;test:compile;test")
 addCommandAlias("fullRelease", ";clean;publishSigned;sonatypeRelease")

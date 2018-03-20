@@ -16,7 +16,7 @@ trait ReadOperations {
               chunked: Boolean = false): Future[QueryResult[JsArray]]
 
   def _bulkReadJs(dbName: String,
-                  querys: Seq[String],
+                  queries: Seq[String],
                   epoch: Epoch = Epochs.NANOSECONDS,
                   pretty: Boolean = false,
                   chunked: Boolean = false): Future[QueryResult[Seq[JsArray]]]
