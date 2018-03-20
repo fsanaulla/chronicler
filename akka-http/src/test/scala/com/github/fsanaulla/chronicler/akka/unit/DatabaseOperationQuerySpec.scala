@@ -4,7 +4,7 @@ import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryHandler
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
 import com.github.fsanaulla.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.core.test.utils.{EmptyCredentials, NonEmptyCredentials, TestSpec}
+import com.github.fsanaulla.core.test.utils.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.github.fsanaulla.core.utils.constants.{Consistencys, Epochs, Precisions}
 
 /**
@@ -12,7 +12,7 @@ import com.github.fsanaulla.core.utils.constants.{Consistencys, Epochs, Precisio
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class DatabaseOperationQuerySpec extends TestSpec {
+class DatabaseOperationQuerySpec extends FlatSpecWithMatchers {
 
   trait Env extends AkkaQueryHandler with DatabaseOperationQuery[Uri] {
     val host = "localhost"

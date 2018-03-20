@@ -4,22 +4,20 @@ import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryHandler
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
 import com.github.fsanaulla.core.query.DataManagementQuery
-import com.github.fsanaulla.core.test.utils.{EmptyCredentials, NonEmptyCredentials, TestSpec}
+import com.github.fsanaulla.core.test.utils.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class DataManagementQuerySpec extends TestSpec {
+class DataManagementQuerySpec extends FlatSpecWithMatchers {
 
   trait Env extends AkkaQueryHandler with DataManagementQuery[Uri] {
     val host = "localhost"
     val port = 8086
   }
-
   trait AuthEnv extends Env with NonEmptyCredentials
-
   trait NonAuthEnv extends Env with EmptyCredentials
 
   val testDb: String = "testDb"
