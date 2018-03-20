@@ -49,11 +49,11 @@ object TestHelper {
     s"http://localhost:8086/query?q=${query.encode}&db=${db.encode}"
   }
 
-  def queryTester(mp: Map[String, String]): String = {
+  def queryTester(path: String, mp: Map[String, String]): String = {
     val s = mp.map {
       case (k, v) => s"$k=${v.encode}"
     }.mkString("&")
 
-    s"http://localhost:8086/write?$s"
+    s"http://localhost:8086$path?$s"
   }
 }
