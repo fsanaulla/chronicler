@@ -92,9 +92,3 @@ lazy val macros = project
 
 addCommandAlias("fullTest", ";clean;compile;test:compile;test")
 addCommandAlias("fullRelease", ";clean;publishSigned;sonatypeRelease")
-//credentials += Credentials(
-//  "Sonatype Nexus Repository Manager",
-//  "oss.sonatype.org",
-//  sys.env.getOrElse("SONATYPE_LOGIN", ""),
-//  sys.env.getOrElse("SONATYPE_PASS", "")
-//)

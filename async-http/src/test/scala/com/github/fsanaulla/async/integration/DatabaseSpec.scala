@@ -61,8 +61,8 @@ class DatabaseSpec
 
     val multiQuery = db.bulkReadJs(
       Seq(
-        "SELECT * FROM test2 WHERE age < 40",
-        "SELECT * FROM test2"
+        "SELECT * FROM test2",
+        "SELECT * FROM test2 WHERE age < 40"
       )
     ).futureValue
 
