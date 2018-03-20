@@ -27,7 +27,8 @@ class DatabaseOperationQuerySpec extends TestSpec {
 
   "DatabaseOperationQuery" should "return correct write query" in new AuthEnv {
 
-    writeToInfluxQuery(testDB, Consistencys.ONE, Precisions.NANOSECONDS, None) shouldEqual writeTester(
+    writeToInfluxQuery(testDB, Consistencys.ONE, Precisions.NANOSECONDS, None).toString() shouldEqual queryTester(
+      "/write",
       Map(
         "precision" -> "ns",
         "u" -> credentials.get.username,
@@ -37,7 +38,8 @@ class DatabaseOperationQuerySpec extends TestSpec {
       )
     )
 
-    writeToInfluxQuery(testDB, Consistencys.ALL, Precisions.NANOSECONDS, None) shouldEqual writeTester(
+    writeToInfluxQuery(testDB, Consistencys.ALL, Precisions.NANOSECONDS, None).toString() shouldEqual queryTester(
+      "/write",
       Map(
         "precision" -> "ns",
         "u" -> credentials.get.username,
@@ -48,11 +50,11 @@ class DatabaseOperationQuerySpec extends TestSpec {
   }
 
   it should "return correct write query without auth " in new NonAuthEnv {
-    writeToInfluxQuery(testDB, Consistencys.ONE, Precisions.NANOSECONDS, None) shouldEqual
-      writeTester(Map("db" -> testDB, "precision" -> "ns", "consistency" -> "one"))
+    writeToInfluxQuery(testDB, Consistencys.ONE, Precisions.NANOSECONDS, None).toString() shouldEqual
+      queryTester("/write", Map("db" -> testDB, "precision" -> "ns", "consistency" -> "one"))
 
-    writeToInfluxQuery(testDB, Consistencys.ONE, Precisions.MICROSECONDS, None) shouldEqual
-      writeTester(Map("db" -> testDB, "precision" -> "u", "consistency" -> "one"))
+    writeToInfluxQuery(testDB, Consistencys.ONE, Precisions.MICROSECONDS, None).toString() shouldEqual
+      queryTester("/write", Map("db" -> testDB, "precision" -> "u", "consistency" -> "one"))
   }
 
   it should "return correct single read query" in new AuthEnv {
@@ -65,7 +67,8 @@ class DatabaseOperationQuerySpec extends TestSpec {
       "epoch" -> "ns",
       "q" -> "SELECT * FROM test"
     )
-    readFromInfluxSingleQuery(testDB, testQuery, Epochs.NANOSECONDS, pretty = false, chunked = false) shouldEqual queryTesterSimple(map)
+    readFromInfluxSingleQuery(testDB, testQuery, Epochs.NANOSECONDS, pretty = false, chunked = false).toString() shouldEqual
+      queryTester("/query", map)
   }
 
   it should "return correct bulk read query" in new AuthEnv {
@@ -78,6 +81,7 @@ class DatabaseOperationQuerySpec extends TestSpec {
       "epoch" -> "ns",
       "q" -> "SELECT * FROM test;SELECT * FROM test1"
     )
-    readFromInfluxBulkQuery(testDB, Seq("SELECT * FROM test", "SELECT * FROM test1"), Epochs.NANOSECONDS, pretty = false, chunked = false) shouldEqual queryTesterSimple(map)
+    readFromInfluxBulkQuery(testDB, Seq("SELECT * FROM test", "SELECT * FROM test1"), Epochs.NANOSECONDS, pretty = false, chunked = false).toString() shouldEqual
+      queryTester("/query", map)
   }
 }

@@ -52,17 +52,16 @@ private[fsanaulla] trait DatabaseOperationQuery[U] {
   }
 
   def readFromInfluxBulkQuery(dbName: String,
-                                        querys: Seq[String],
-                                        epoch: Epoch,
-                                        pretty: Boolean,
-                                        chunked: Boolean): U = {
-
+                              queries: Seq[String],
+                              epoch: Epoch,
+                              pretty: Boolean,
+                              chunked: Boolean): U = {
     val queryParams = mutable.Map[String, String](
       "db" -> dbName,
       "pretty" -> pretty.toString,
       "chunked" -> chunked.toString,
       "epoch" -> epoch,
-      "q" -> querys.mkString(";")
+      "q" -> queries.mkString(";")
     )
 
     buildQuery("/query", buildQueryParams(queryParams))

@@ -21,26 +21,26 @@ class ShardManagementQuerySpec extends TestSpec {
   trait NonAuthEnv extends Env with EmptyCredentials
 
   "ShardManagementQuery" should "drop shard by id" in new AuthEnv {
-    dropShardQuery(5) shouldEqual queryTesterAuth("DROP SHARD 5")(credentials.get)
+    dropShardQuery(5).toString() shouldEqual queryTesterAuth("DROP SHARD 5")(credentials.get)
   }
 
   it should "drop shard by id without auth" in new NonAuthEnv {
-    dropShardQuery(5) shouldEqual queryTester("DROP SHARD 5")
+    dropShardQuery(5).toString() shouldEqual queryTester("DROP SHARD 5")
   }
 
   it should "show shards" in new AuthEnv {
-    showShardsQuery() shouldEqual queryTesterAuth("SHOW SHARDS")(credentials.get)
+    showShardsQuery().toString() shouldEqual queryTesterAuth("SHOW SHARDS")(credentials.get)
   }
 
   it should "show shards without auth" in new NonAuthEnv {
-    showShardsQuery() shouldEqual queryTester("SHOW SHARDS")
+    showShardsQuery().toString() shouldEqual queryTester("SHOW SHARDS")
   }
 
   it should "show shard groups" in new AuthEnv {
-    showShardGroupsQuery() shouldEqual queryTesterAuth("SHOW SHARD GROUPS")(credentials.get)
+    showShardGroupsQuery().toString() shouldEqual queryTesterAuth("SHOW SHARD GROUPS")(credentials.get)
   }
 
   it should "show shard groups without auth" in new NonAuthEnv {
-    showShardGroupsQuery() shouldEqual queryTester("SHOW SHARD GROUPS")
+    showShardGroupsQuery().toString() shouldEqual queryTester("SHOW SHARD GROUPS")
   }
 }
