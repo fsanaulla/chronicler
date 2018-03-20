@@ -5,7 +5,7 @@ package com.github.fsanaulla.core.utils
   * Author: fayaz.sanaulla@gmail.com
   * Date: 18.09.17
   */
-object Implicits {
+private[fsanaulla] object Implicits {
 
   implicit def bd2Int(bd: BigDecimal): Int = bd.toInt
 

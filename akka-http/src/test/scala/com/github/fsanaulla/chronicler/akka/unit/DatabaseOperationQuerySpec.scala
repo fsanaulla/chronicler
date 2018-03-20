@@ -3,9 +3,9 @@ package com.github.fsanaulla.chronicler.akka.unit
 import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryHandler
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
+import com.github.fsanaulla.core.enums.{Consistencies, Epochs, Precisions}
 import com.github.fsanaulla.core.query.DatabaseOperationQuery
 import com.github.fsanaulla.core.test.utils.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
-import com.github.fsanaulla.core.utils.constants.{Consistencys, Epochs, Precisions}
 
 /**
   * Created by
@@ -27,7 +27,7 @@ class DatabaseOperationQuerySpec extends FlatSpecWithMatchers {
 
   "DatabaseOperationQuery" should "return correct write query" in new AuthEnv {
 
-    writeToInfluxQuery(testDB, Consistencys.ONE, Precisions.NANOSECONDS, None) shouldEqual writeTester(
+    writeToInfluxQuery(testDB, Consistencies.ONE, Precisions.NANOSECONDS, None) shouldEqual writeTester(
       Map(
         "precision" -> "ns",
         "u" -> credentials.get.username,
@@ -37,7 +37,7 @@ class DatabaseOperationQuerySpec extends FlatSpecWithMatchers {
       )
     )
 
-    writeToInfluxQuery(testDB, Consistencys.ALL, Precisions.NANOSECONDS, None) shouldEqual writeTester(
+    writeToInfluxQuery(testDB, Consistencies.ALL, Precisions.NANOSECONDS, None) shouldEqual writeTester(
       Map(
         "precision" -> "ns",
         "u" -> credentials.get.username,
@@ -48,10 +48,10 @@ class DatabaseOperationQuerySpec extends FlatSpecWithMatchers {
   }
 
   it should "return correct write query without auth " in new NonAuthEnv {
-    writeToInfluxQuery(testDB, Consistencys.ONE, Precisions.NANOSECONDS, None) shouldEqual
+    writeToInfluxQuery(testDB, Consistencies.ONE, Precisions.NANOSECONDS, None) shouldEqual
       writeTester(Map("db" -> testDB, "precision" -> "ns", "consistency" -> "one"))
 
-    writeToInfluxQuery(testDB, Consistencys.ONE, Precisions.MICROSECONDS, None) shouldEqual
+    writeToInfluxQuery(testDB, Consistencies.ONE, Precisions.MICROSECONDS, None) shouldEqual
       writeTester(Map("db" -> testDB, "precision" -> "u", "consistency" -> "one"))
   }
 

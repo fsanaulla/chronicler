@@ -2,9 +2,9 @@ package com.github.fsanaulla.async.unit
 
 import com.github.fsanaulla.async.utils.TestHelper._
 import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryHandler
+import com.github.fsanaulla.core.enums.Destinations
 import com.github.fsanaulla.core.query.SubscriptionsManagementQuery
 import com.github.fsanaulla.core.test.utils.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
-import com.github.fsanaulla.core.utils.constants.Destinations
 import com.softwaremill.sttp.Uri
 
 /**

@@ -1,8 +1,7 @@
 package com.github.fsanaulla.core.io
 
+import com.github.fsanaulla.core.enums.{Consistency, Precision}
 import com.github.fsanaulla.core.model.Result
-import com.github.fsanaulla.core.utils.constants.Consistencys.Consistency
-import com.github.fsanaulla.core.utils.constants.Precisions.Precision
 
 import scala.concurrent.Future
 

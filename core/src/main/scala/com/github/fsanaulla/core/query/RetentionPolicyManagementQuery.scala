@@ -9,11 +9,11 @@ private[fsanaulla] trait RetentionPolicyManagementQuery[U]  {
   self: QueryHandler[U] with HasCredentials =>
 
   def createRetentionPolicyQuery(rpName: String,
-                                           dbName: String,
-                                           duration: String,
-                                           replication: Int,
-                                           shardDuration: Option[String],
-                                           default: Boolean = false): U = {
+                                 dbName: String,
+                                 duration: String,
+                                 replication: Int,
+                                 shardDuration: Option[String],
+                                 default: Boolean = false): U = {
     val sb = StringBuilder.newBuilder
 
     sb.append("CREATE RETENTION POLICY ")
@@ -39,11 +39,11 @@ private[fsanaulla] trait RetentionPolicyManagementQuery[U]  {
   }
 
   def updateRetentionPolicyQuery(rpName: String,
-                                           dbName: String,
-                                           duration: Option[String],
-                                           replication: Option[Int],
-                                           shardDuration: Option[String],
-                                           default: Boolean = false): U = {
+                                 dbName: String,
+                                 duration: Option[String],
+                                 replication: Option[Int],
+                                 shardDuration: Option[String],
+                                 default: Boolean = false): U = {
     val sb = StringBuilder.newBuilder
 
     sb.append("ALTER RETENTION POLICY ")

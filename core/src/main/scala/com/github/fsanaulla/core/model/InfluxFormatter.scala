@@ -21,7 +21,6 @@ trait InfluxFormatter[T] extends InfluxReader[T] with InfluxWriter[T]
   "No InfluxWriter found for type ${T}. Try to implement an implicit Writable for this type."
 )
 trait InfluxWriter[T] {
-
   def write(obj: T): String
 }
 
@@ -32,6 +31,5 @@ trait InfluxWriter[T] {
   "No InfluxReader found for type ${T}. Try to implement an implicit Readable for this type."
 )
 trait InfluxReader[T] {
-
   def read(js: JsArray): T
 }

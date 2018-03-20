@@ -2,11 +2,10 @@ package com.github.fsanaulla.async.integration
 
 import com.github.fsanaulla.async.utils.TestHelper._
 import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
+import com.github.fsanaulla.core.enums.{Destination, Destinations}
 import com.github.fsanaulla.core.model.Subscription
 import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.core.utils.InfluxDuration._
-import com.github.fsanaulla.core.utils.constants.Destinations
-import com.github.fsanaulla.core.utils.constants.Destinations.Destination
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 import scala.concurrent.ExecutionContext.Implicits.global

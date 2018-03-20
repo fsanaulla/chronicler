@@ -1,10 +1,10 @@
 package com.github.fsanaulla.chronicler.akka.integration
 
 import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
+import com.github.fsanaulla.core.enums.Privileges
 import com.github.fsanaulla.core.model.AuthorizationException
 import com.github.fsanaulla.core.test.utils.ResultMatchers._
 import com.github.fsanaulla.core.test.utils.{NonEmptyCredentials, TestSpec}
-import com.github.fsanaulla.core.utils.constants.Privileges
 import org.scalatest.Ignore
 
 import scala.concurrent.ExecutionContext.Implicits.global

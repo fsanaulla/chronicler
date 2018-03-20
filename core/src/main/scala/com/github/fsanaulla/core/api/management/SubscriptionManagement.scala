@@ -1,11 +1,10 @@
 package com.github.fsanaulla.core.api.management
 
+import com.github.fsanaulla.core.enums.{Destination, Destinations}
 import com.github.fsanaulla.core.handlers.{QueryHandler, RequestHandler, ResponseHandler}
 import com.github.fsanaulla.core.model.InfluxImplicits._
 import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.core.query.SubscriptionsManagementQuery
-import com.github.fsanaulla.core.utils.constants.Destinations
-import com.github.fsanaulla.core.utils.constants.Destinations.Destination
 
 import scala.concurrent.Future
 

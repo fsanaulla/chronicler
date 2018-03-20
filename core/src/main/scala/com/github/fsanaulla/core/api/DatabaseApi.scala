@@ -2,12 +2,9 @@ package com.github.fsanaulla.core.api
 
 import java.io.File
 
+import com.github.fsanaulla.core.enums._
 import com.github.fsanaulla.core.io.{ReadOperations, WriteOperations}
 import com.github.fsanaulla.core.model._
-import com.github.fsanaulla.core.utils.constants.Consistencys.Consistency
-import com.github.fsanaulla.core.utils.constants.Epochs.Epoch
-import com.github.fsanaulla.core.utils.constants.Precisions.Precision
-import com.github.fsanaulla.core.utils.constants.{Consistencys, Epochs, Precisions}
 import spray.json.JsArray
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -19,7 +16,7 @@ private[fsanaulla] abstract class DatabaseApi[E](dbName: String)
 
   final def writeFromFile0(file: File,
                            chunkSize: Int = 8192,
-                           consistency: Consistency = Consistencys.ONE,
+                           consistency: Consistency = Consistencies.ONE,
                            precision: Precision = Precisions.NANOSECONDS,
                            retentionPolicy: Option[String] = None)
                           (implicit ds: Deserializer[File, E]): Future[Result] = {
@@ -27,7 +24,7 @@ private[fsanaulla] abstract class DatabaseApi[E](dbName: String)
   }
 
   final def writeNative0(point: String,
-                         consistency: Consistency = Consistencys.ONE,
+                         consistency: Consistency = Consistencies.ONE,
                          precision: Precision = Precisions.NANOSECONDS,
                          retentionPolicy: Option[String] = None)
                         (implicit ds: Deserializer[String, E]): Future[Result] = {
@@ -35,7 +32,7 @@ private[fsanaulla] abstract class DatabaseApi[E](dbName: String)
   }
 
   final def bulkWriteNative0(points: Seq[String],
-                             consistency: Consistency = Consistencys.ONE,
+                             consistency: Consistency = Consistencies.ONE,
                              precision: Precision = Precisions.NANOSECONDS,
                              retentionPolicy: Option[String] = None)
                             (implicit ds: Deserializer[Seq[String], E]): Future[Result] = {
@@ -43,7 +40,7 @@ private[fsanaulla] abstract class DatabaseApi[E](dbName: String)
   }
 
   final def writePoint0(point: Point,
-                        consistency: Consistency = Consistencys.ONE,
+                        consistency: Consistency = Consistencies.ONE,
                         precision: Precision = Precisions.NANOSECONDS,
                         retentionPolicy: Option[String] = None)
                        (implicit ds: Deserializer[Point, E]): Future[Result] = {
@@ -51,7 +48,7 @@ private[fsanaulla] abstract class DatabaseApi[E](dbName: String)
   }
 
   final def bulkWritePoints0(points: Seq[Point],
-                             consistency: Consistency = Consistencys.ONE,
+                             consistency: Consistency = Consistencies.ONE,
                              precision: Precision = Precisions.NANOSECONDS,
                              retentionPolicy: Option[String] = None)
                             (implicit ds: Deserializer[Seq[Point], E]): Future[Result] = {

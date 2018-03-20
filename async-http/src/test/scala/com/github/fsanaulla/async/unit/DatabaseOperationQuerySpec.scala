@@ -2,9 +2,9 @@ package com.github.fsanaulla.async.unit
 
 import com.github.fsanaulla.async.utils.TestHelper._
 import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryHandler
+import com.github.fsanaulla.core.enums.{Consistencies, Epochs, Precisions}
 import com.github.fsanaulla.core.query.DatabaseOperationQuery
 import com.github.fsanaulla.core.test.utils.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
-import com.github.fsanaulla.core.utils.constants.{Consistencys, Epochs, Precisions}
 import com.softwaremill.sttp.Uri
 
 /**
@@ -27,7 +27,7 @@ class DatabaseOperationQuerySpec extends FlatSpecWithMatchers {
 
   "DatabaseOperationQuery" should "return correct write query" in new AuthEnv {
 
-    writeToInfluxQuery(testDB, Consistencys.ONE, Precisions.NANOSECONDS, None).toString() shouldEqual queryTester(
+    writeToInfluxQuery(testDB, Consistencies.ONE, Precisions.NANOSECONDS, None).toString() shouldEqual queryTester(
       "/write",
       Map(
         "precision" -> "ns",
@@ -38,7 +38,7 @@ class DatabaseOperationQuerySpec extends FlatSpecWithMatchers {
       )
     )
 
-    writeToInfluxQuery(testDB, Consistencys.ALL, Precisions.NANOSECONDS, None).toString() shouldEqual queryTester(
+    writeToInfluxQuery(testDB, Consistencies.ALL, Precisions.NANOSECONDS, None).toString() shouldEqual queryTester(
       "/write",
       Map(
         "precision" -> "ns",
@@ -50,10 +50,10 @@ class DatabaseOperationQuerySpec extends FlatSpecWithMatchers {
   }
 
   it should "return correct write query without auth " in new NonAuthEnv {
-    writeToInfluxQuery(testDB, Consistencys.ONE, Precisions.NANOSECONDS, None).toString() shouldEqual
+    writeToInfluxQuery(testDB, Consistencies.ONE, Precisions.NANOSECONDS, None).toString() shouldEqual
       queryTester("/write", Map("db" -> testDB, "precision" -> "ns", "consistency" -> "one"))
 
-    writeToInfluxQuery(testDB, Consistencys.ONE, Precisions.MICROSECONDS, None).toString() shouldEqual
+    writeToInfluxQuery(testDB, Consistencies.ONE, Precisions.MICROSECONDS, None).toString() shouldEqual
       queryTester("/write", Map("db" -> testDB, "precision" -> "u", "consistency" -> "one"))
   }
 

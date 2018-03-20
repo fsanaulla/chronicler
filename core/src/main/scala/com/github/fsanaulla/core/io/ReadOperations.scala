@@ -1,8 +1,7 @@
 package com.github.fsanaulla.core.io
 
+import com.github.fsanaulla.core.enums.{Epoch, Epochs}
 import com.github.fsanaulla.core.model.QueryResult
-import com.github.fsanaulla.core.utils.constants.Epochs
-import com.github.fsanaulla.core.utils.constants.Epochs.Epoch
 import spray.json.JsArray
 
 import scala.concurrent.Future

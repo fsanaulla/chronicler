@@ -1,6 +1,7 @@
 package com.github.fsanaulla.core.model
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import com.github.fsanaulla.core.enums.{Destinations, Privileges}
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsArray, JsBoolean, JsNumber, JsString}
 
 /**
@@ -10,9 +11,7 @@ import spray.json.{DefaultJsonProtocol, DeserializationException, JsArray, JsBoo
   */
 object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
 
-  implicit def bigDec2Int(bd: BigDecimal): Int = bd.toInt
-  implicit def bigDec2double(bd: BigDecimal): Double = bd.toDouble
-  implicit def bigDec2Long(bd: BigDecimal): Long = bd.toLong
+  import com.github.fsanaulla.core.utils.Implicits._
 
   implicit object StringInfluxReader extends InfluxReader[String] {
 
@@ -82,7 +81,7 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
 
     override def read(js: JsArray): UserPrivilegesInfo = js.elements match {
       case Vector(JsString(username), JsString(admin)) =>
-        UserPrivilegesInfo(username, admin)
+        UserPrivilegesInfo(username, Privileges.withName(admin))
       case _ =>
         throw DeserializationException(s"Can't deserialize $UserPrivilegesInfo object")
     }
@@ -132,7 +131,7 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
 
     override def read(js: JsArray): Subscription = js.elements match {
       case Vector(JsString(rpName), JsString(subsName), JsString(destType), JsArray(elems)) =>
-        Subscription(rpName, subsName, destType, elems.map(_.convertTo[String]))
+        Subscription(rpName, subsName, Destinations.withName(destType), elems.map(_.convertTo[String]))
       case _ =>
         throw DeserializationException(s"Can't deserialize $Subscription object")
     }

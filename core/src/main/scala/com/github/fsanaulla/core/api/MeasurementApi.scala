@@ -1,19 +1,17 @@
 package com.github.fsanaulla.core.api
 
+import com.github.fsanaulla.core.enums.{Consistency, Precision}
 import com.github.fsanaulla.core.io.WriteOperations
 import com.github.fsanaulla.core.model.{Deserializer, InfluxWriter, Result}
 import com.github.fsanaulla.core.utils.PointTransformer
-import com.github.fsanaulla.core.utils.constants.Consistencys.Consistency
-import com.github.fsanaulla.core.utils.constants.Precisions.Precision
 
 import scala.concurrent.Future
 
-//todo: implement typesafe read operation
 private[fsanaulla] abstract class MeasurementApi[E, R](dbName: String,
                                                        measurementName: String)
   extends WriteOperations[R] with PointTransformer {
 
-  final def write0(entity: E,
+  final def _write0(entity: E,
                    consistency: Consistency,
                    precision: Precision,
                    retentionPolicy: Option[String] = None)
@@ -28,7 +26,7 @@ private[fsanaulla] abstract class MeasurementApi[E, R](dbName: String,
     )
   }
 
-  final def bulkWrite0(entitys: Seq[E],
+  final def _bulkWrite0(entitys: Seq[E],
                        consistency: Consistency,
                        precision: Precision,
                        retentionPolicy: Option[String] = None)
