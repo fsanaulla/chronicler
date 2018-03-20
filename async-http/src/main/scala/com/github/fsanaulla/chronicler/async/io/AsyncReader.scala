@@ -33,10 +33,7 @@ private[fsanaulla] trait AsyncReader
                            pretty: Boolean = false,
                            chunked: Boolean = false): Future[QueryResult[Seq[JsArray]]] = {
     val query = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)
-
-    val res = readRequest(query, Method.GET)
-
-    res.flatMap(toBulkQueryJsResult)
+    readRequest(query, Method.GET).flatMap(toBulkQueryJsResult)
   }
 
 
