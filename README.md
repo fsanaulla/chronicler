@@ -28,6 +28,9 @@ libraryDependencies += "com.github.fsanaulla" %% "chronicler-async-http" % <vers
 
 // for UDP protocol client
 libraryDependencies += "com.github.fsanaulla" %% "chronicler-udp" % <version>
+
+// macros extension
+libraryDependencies += "com.github.fsanaulla" %% "chronicler-macros" % <version>
 ```
 # Roadmap
 
