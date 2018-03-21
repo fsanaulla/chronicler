@@ -1,12 +1,11 @@
 package com.github.fsanaulla.chronicler.akka.integration
 
 import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
+import com.github.fsanaulla.core.enums.{Destination, Destinations}
 import com.github.fsanaulla.core.model.Subscription
 import com.github.fsanaulla.core.test.utils.ResultMatchers._
 import com.github.fsanaulla.core.test.utils.TestSpec
 import com.github.fsanaulla.core.utils.InfluxDuration._
-import com.github.fsanaulla.core.utils.constants.Destinations
-import com.github.fsanaulla.core.utils.constants.Destinations.Destination
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 import scala.concurrent.ExecutionContext.Implicits.global

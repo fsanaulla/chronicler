@@ -5,6 +5,11 @@ import com.github.fsanaulla.core.model.{Executable, Result}
 
 import scala.concurrent.Future
 
+/**
+  * Created by
+  * Author: fayaz.sanaulla@gmail.com
+  * Date: 08.08.17
+  */
 trait SystemManagement[E] { self: Executable =>
 
   /**

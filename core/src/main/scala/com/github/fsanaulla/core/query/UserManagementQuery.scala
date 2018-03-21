@@ -1,5 +1,6 @@
 package com.github.fsanaulla.core.query
 
+import com.github.fsanaulla.core.enums.Privilege
 import com.github.fsanaulla.core.handlers.QueryHandler
 import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials}
 
@@ -40,13 +41,13 @@ private[fsanaulla] trait UserManagementQuery[U] {
 
   def setPrivilegesQuery(dbName: String,
                          username: String,
-                         privileges: String): U = {
+                         privileges: Privilege): U = {
     buildQuery("/query", buildQueryParams(s"GRANT $privileges ON $dbName TO $username"))
   }
 
   def revokePrivilegesQuery(dbName: String,
                             username: String,
-                            privileges: String): U = {
+                            privileges: Privilege): U = {
     buildQuery("/query", buildQueryParams(s"REVOKE $privileges ON $dbName FROM $username"))
   }
 }

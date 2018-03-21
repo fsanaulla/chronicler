@@ -7,6 +7,11 @@ import com.github.fsanaulla.core.query.RetentionPolicyManagementQuery
 
 import scala.concurrent.Future
 
+/**
+  * Created by
+  * Author: fayaz.sanaulla@gmail.com
+  * Date: 08.08.17
+  */
 private[fsanaulla] trait RetentionPolicyManagement[R, U, M, E] extends RetentionPolicyManagementQuery[U] {
   self: RequestHandler[R, U, M, E]
     with ResponseHandler[R]

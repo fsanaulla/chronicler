@@ -3,11 +3,10 @@ package com.github.fsanaulla.chronicler.akka.io
 import _root_.akka.http.scaladsl.model.HttpMethods.GET
 import _root_.akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryHandler, AkkaRequestHandler, AkkaResponseHandler}
+import com.github.fsanaulla.core.enums.{Epoch, Epochs}
 import com.github.fsanaulla.core.io.ReadOperations
 import com.github.fsanaulla.core.model.{Executable, HasCredentials, InfluxCredentials, QueryResult}
 import com.github.fsanaulla.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.core.utils.constants.Epochs
-import com.github.fsanaulla.core.utils.constants.Epochs.Epoch
 import spray.json.JsArray
 
 import scala.concurrent.Future

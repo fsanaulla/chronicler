@@ -3,9 +3,9 @@ package com.github.fsanaulla.chronicler.akka.unit
 import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryHandler
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
+import com.github.fsanaulla.core.enums.Destinations
 import com.github.fsanaulla.core.query.SubscriptionsManagementQuery
 import com.github.fsanaulla.core.test.utils.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
-import com.github.fsanaulla.core.utils.constants.Destinations
 
 /**
   * Created by

@@ -36,18 +36,22 @@ libraryDependencies += "com.github.fsanaulla" %% "chronicler-macros" % <version>
 
 | Task | Description | Status |
 | ------------- | ------------- | ---------- |
+| Netty based client | multiple backed type | Completed |
 | Macro Formaters | Allow generating `InfluxReader[T]`, `InfluxWriter[T]` at compile time | Completed |
-| Type safe query DSL | More flexible method for quering information | Not started |
+| Spark integration | Adding support for Spark -> InfluxDB pipeline | Not started |
+| Type safe query DSL | Flexible method for query building | Not started |
 
 # Table of content
-- [Get started](docs/get_started.md)
-- [Read operation](docs/read_operation_notes.md)
-- [Write operation](docs/write_operation_notes.md)
-- [Database management](docs/database_management.md)
-- [User management](docs/user_management.md)
-- [Continuously Query management](docs/continuous_query-management.md)
-- [Subscription management](docs/subscription_management.md)
-- [Retention Policy management](docs/retention_policy_management.md)
-- [Shards management](docs/shard_management.md)
-- [Helper Tools](docs/helper_tools.md)
-- [Macros](docs/macros.md)
+1. [Get started](docs/get_started.md)
+2. [Read operation](docs/read_operation_notes.md)
+3. [Write operation](docs/write_operation_notes.md)
+4. [Database management](docs/database_management.md)
+5. [User management](docs/user_management.md)
+6. [CQ management](docs/continuous_query-management.md)
+7. [Subscription management](docs/subscription_management.md)
+8. [RP management](docs/retention_policy_management.md)
+9. [Shards management](docs/shard_management.md)
+10. [Response handling](docs/response_handling.md)
+11. [Macros](docs/macros.md)
+12. [Utils](docs/utils.md)
+

@@ -1,10 +1,8 @@
 package com.github.fsanaulla.core.query
 
+import com.github.fsanaulla.core.enums.{Consistency, Epoch, Precision}
 import com.github.fsanaulla.core.handlers.QueryHandler
 import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials}
-import com.github.fsanaulla.core.utils.constants.Consistencys.Consistency
-import com.github.fsanaulla.core.utils.constants.Epochs.Epoch
-import com.github.fsanaulla.core.utils.constants.Precisions.Precision
 
 import scala.collection.mutable
 
@@ -23,8 +21,8 @@ private[fsanaulla] trait DatabaseOperationQuery[U] {
 
     val queryParams = scala.collection.mutable.Map[String, String](
       "db" -> dbName,
-      "consistency" -> consistency,
-      "precision" -> precision
+      "consistency" -> consistency.toString,
+      "precision" -> precision.toString
     )
 
     for (rp <- retentionPolicy) {
@@ -44,7 +42,7 @@ private[fsanaulla] trait DatabaseOperationQuery[U] {
       "db" -> dbName,
       "pretty" -> pretty.toString,
       "chunked" -> chunked.toString,
-      "epoch" -> epoch,
+      "epoch" -> epoch.toString,
       "q" -> query
     )
 
@@ -60,7 +58,7 @@ private[fsanaulla] trait DatabaseOperationQuery[U] {
       "db" -> dbName,
       "pretty" -> pretty.toString,
       "chunked" -> chunked.toString,
-      "epoch" -> epoch,
+      "epoch" -> epoch.toString,
       "q" -> queries.mkString(";")
     )
 

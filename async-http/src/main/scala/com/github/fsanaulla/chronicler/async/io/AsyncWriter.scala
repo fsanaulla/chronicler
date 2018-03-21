@@ -1,12 +1,11 @@
 package com.github.fsanaulla.chronicler.async.io
 
 import com.github.fsanaulla.chronicler.async.handlers._
+import com.github.fsanaulla.core.enums.{Consistency, Precision}
 import com.github.fsanaulla.core.io.WriteOperations
 import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials, Result}
 import com.github.fsanaulla.core.query.DatabaseOperationQuery
 import com.github.fsanaulla.core.utils.PointTransformer
-import com.github.fsanaulla.core.utils.constants.Consistencys.Consistency
-import com.github.fsanaulla.core.utils.constants.Precisions.Precision
 import com.softwaremill.sttp.Uri
 
 import scala.concurrent.Future

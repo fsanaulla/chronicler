@@ -119,8 +119,9 @@ private[macros] object MacrosImpl {
 
     q"""
        new InfluxReader[$tpe] {
-          import com.github.fsanaulla.core.model.InfluxImplicits._
+          import com.github.fsanaulla.core.utils.Implicits._
           import spray.json._
+
           def read(js: JsArray): $tpe = js.elements.tail match { case ..$cases }
        }
       """
@@ -228,7 +229,7 @@ private[macros] object MacrosImpl {
 
     q"""
        new InfluxFormatter[$tpe] {
-          import com.github.fsanaulla.core.model.InfluxImplicits._
+          import com.github.fsanaulla.core.utils.Implicits._
           import spray.json._
 
           ${createWriteMethod(methods)}

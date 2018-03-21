@@ -6,10 +6,8 @@ import _root_.akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.utils.AkkaTypeAlias.Connection
 import com.github.fsanaulla.chronicler.async.io.AkkaWriter
 import com.github.fsanaulla.core.api.MeasurementApi
+import com.github.fsanaulla.core.enums.{Consistencies, Consistency, Precision, Precisions}
 import com.github.fsanaulla.core.model._
-import com.github.fsanaulla.core.utils.constants.Consistencys.Consistency
-import com.github.fsanaulla.core.utils.constants.Precisions.Precision
-import com.github.fsanaulla.core.utils.constants.{Consistencys, Precisions}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -33,19 +31,19 @@ private[fsanaulla] class Measurement[E](dbName: String,
   import com.github.fsanaulla.chronicler.akka.models.AkkaDeserializers.str2Http
 
   def write(entity: E,
-            consistency: Consistency = Consistencys.ONE,
+            consistency: Consistency = Consistencies.ONE,
             precision: Precision = Precisions.NANOSECONDS,
             retentionPolicy: Option[String] = None)
            (implicit writer: InfluxWriter[E]): Future[Result] = {
-    write0(entity, consistency, precision, retentionPolicy)
+    _write0(entity, consistency, precision, retentionPolicy)
   }
 
   def bulkWrite(entitys: Seq[E],
-                consistency: Consistency = Consistencys.ONE,
+                consistency: Consistency = Consistencies.ONE,
                 precision: Precision = Precisions.NANOSECONDS,
                 retentionPolicy: Option[String] = None)
                (implicit writer: InfluxWriter[E]): Future[Result] = {
-    bulkWrite0(entitys, consistency, precision, retentionPolicy)
+    _bulkWrite0(entitys, consistency, precision, retentionPolicy)
   }
 
 }

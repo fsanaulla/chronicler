@@ -10,6 +10,9 @@ object Dependencies {
   // core
   final val sprayJson = "com.typesafe.akka" %% "akka-http-spray-json" % Versions.akkaHttp
 
+  // enums
+  final val enums = "com.beachape" %% "enumeratum" % "1.5.13"
+
   // akka-http
   final val akkaHttp = "com.typesafe.akka" %% "akka-http" % Versions.akkaHttp
 
@@ -24,7 +27,7 @@ object Dependencies {
   final val embedInflux = "com.github.fsanaulla" %% "scalatest-embedinflux" % Versions.scalaTestInflux % Test
 
 
-  final val coreDep = Seq(sprayJson, scalaTest, embedInflux)
+  final val coreDep = Seq(sprayJson, enums, scalaTest, embedInflux)
 
   object Excluded {
     final val embeddedInflux = ExclusionRule("com.github.fsanaulla", "scalatest-embedinflux")

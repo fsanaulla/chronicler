@@ -7,6 +7,11 @@ import com.github.fsanaulla.core.query.DataManagementQuery
 
 import scala.concurrent.Future
 
+/**
+  * Created by
+  * Author: fayaz.sanaulla@gmail.com
+  * Date: 08.08.17
+  */
 private[fsanaulla] trait DatabaseManagement[R, U, M, E] extends DataManagementQuery[U] {
   self: RequestHandler[R, U, M, E]
     with ResponseHandler[R]

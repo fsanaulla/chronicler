@@ -1,11 +1,10 @@
 package com.github.fsanaulla.chronicler.async.io
 
 import com.github.fsanaulla.chronicler.async.handlers.{AsyncQueryHandler, AsyncRequestHandler, AsyncResponseHandler}
+import com.github.fsanaulla.core.enums.{Epoch, Epochs}
 import com.github.fsanaulla.core.io.ReadOperations
 import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials, QueryResult}
 import com.github.fsanaulla.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.core.utils.constants.Epochs
-import com.github.fsanaulla.core.utils.constants.Epochs.Epoch
 import com.softwaremill.sttp.{Method, Uri}
 import spray.json.JsArray
 

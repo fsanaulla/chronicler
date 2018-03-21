@@ -8,37 +8,30 @@ package com.github.fsanaulla.core.model
 case class InfluxTag(key: String, value: String)
 
 sealed trait InfluxField {
-
   override def toString: String
 }
 
 case class StringField(key: String, value: String) extends InfluxField {
-
   override def toString: String = key + "=" + value
 }
 
 case class IntField(key: String, value: Int) extends InfluxField {
-
   override def toString: String = key + "=" + value
 }
 
 case class LongField(key: String, value: Long) extends InfluxField {
-
   override def toString: String = key + "=" + value
 }
 
 case class DoubleField(key: String, value: Double) extends InfluxField {
-
   override def toString: String = key + "=" + value
 }
 
 case class BooleanField(key: String, value: Boolean) extends InfluxField {
-
   override def toString: String = key + "=" + value
 }
 
 case class CharField(key: String, value: Char) extends InfluxField {
-
   override def toString: String = key + "=" + value
 }
 
@@ -76,15 +69,11 @@ case class Point(measurement: String,
   }
 
   def serialize: String = {
-
     val sb = StringBuilder.newBuilder
 
     sb.append(measurement).append(",")
-
     sb.append(tags.map(tag => tag.key + "=" + tag.value).mkString(","))
-
     sb.append(" ")
-
     sb.append(fields.map(_.toString).mkString(" "))
 
     if (time != -1L) {
