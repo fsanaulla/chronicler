@@ -12,7 +12,6 @@ import scala.collection.immutable
 sealed trait Destination extends EnumEntry
 
 object Destinations extends enumeratum.Enum[Destination] {
-
   val values: immutable.IndexedSeq[Destination] = findValues
 
   case object ALL extends Destination

@@ -9,14 +9,15 @@ import scala.collection.immutable
   * Author: fayaz.sanaulla@gmail.com
   * Date: 29.07.17
   */
-sealed trait Consistency extends EnumEntry
+sealed abstract class Consistency(override val entryName: String) extends EnumEntry {
+  override def toString: String = entryName
+}
 
 object Consistencies extends enumeratum.Enum[Consistency]{
-
   val values: immutable.IndexedSeq[Consistency] = findValues
 
-  case object ONE extends Consistency
-  case object QUORUM extends Consistency
-  case object ALL extends Consistency
-  case object ANY extends Consistency
+  case object ONE extends Consistency("one")
+  case object QUORUM extends Consistency("quorum")
+  case object ALL extends Consistency("all")
+  case object ANY extends Consistency("any")
 }

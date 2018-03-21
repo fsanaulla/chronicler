@@ -9,16 +9,17 @@ import scala.collection.immutable
   * Author: fayaz.sanaulla@gmail.com
   * Date: 29.07.17
   */
-sealed trait Precision extends EnumEntry
+sealed abstract class Precision(override val entryName: String) extends EnumEntry {
+  override def toString: String = entryName
+}
 
 object Precisions extends enumeratum.Enum[Precision] {
-
   val values: immutable.IndexedSeq[Precision] = findValues
 
-  case object NANOSECONDS extends Precision
-  case object MICROSECONDS extends Precision
-  case object MILLISECONDS extends Precision
-  case object SECONDS extends Precision
-  case object MINUTES extends Precision
-  case object HOURS extends Precision
+  case object NANOSECONDS extends Precision("ns")
+  case object MICROSECONDS extends Precision("u")
+  case object MILLISECONDS extends Precision("ms")
+  case object SECONDS extends Precision("s")
+  case object MINUTES extends Precision("m")
+  case object HOURS extends Precision("h")
 }

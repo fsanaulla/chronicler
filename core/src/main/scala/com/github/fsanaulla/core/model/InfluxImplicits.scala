@@ -14,7 +14,6 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
   import com.github.fsanaulla.core.utils.Implicits._
 
   implicit object StringInfluxReader extends InfluxReader[String] {
-
     override def read(js: JsArray): String = js.elements match {
       case Vector(JsString(str)) => str
       case _ =>
@@ -23,7 +22,6 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
   }
 
   implicit object IntInfluxReader extends InfluxReader[Int] {
-
     override def read(js: JsArray): Int = js.elements match {
       case Vector(JsNumber(num)) => num
       case _ => throw DeserializationException(s"Can't deserialize $js to Int")
@@ -31,7 +29,6 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
   }
 
   implicit object DoubleInfluxReader extends InfluxReader[Double] {
-
     override def read(js: JsArray): Double = js.elements match {
       case Vector(JsNumber(num)) => num.toDouble
       case _ =>
@@ -40,7 +37,6 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
   }
 
   implicit object LongInfluxReader extends InfluxReader[Long] {
-
     override def read(js: JsArray): Long = js.elements match {
       case Vector(JsNumber(num)) => num.toLong
       case _ =>
@@ -49,7 +45,6 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
   }
 
   implicit object BooleanInfluxReader extends InfluxReader[Boolean] {
-
     override def read(js: JsArray): Boolean = js.elements match {
       case Vector(JsBoolean(bool)) => bool
       case _ =>
@@ -68,7 +63,6 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
   }
 
   implicit object UserInfoInfluxReader extends InfluxReader[UserInfo] {
-
     override def read(js: JsArray): UserInfo = js.elements match {
       case Vector(JsString(username), JsBoolean(admin)) =>
         UserInfo(username, admin)
@@ -78,7 +72,6 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
   }
 
   implicit object UserPrivilegesInfoInfluxReader extends InfluxReader[UserPrivilegesInfo] {
-
     override def read(js: JsArray): UserPrivilegesInfo = js.elements match {
       case Vector(JsString(username), JsString(admin)) =>
         UserPrivilegesInfo(username, Privileges.withName(admin))
@@ -88,7 +81,6 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
   }
 
   implicit object ContinuousQueryInfluxReader extends InfluxReader[ContinuousQuery] {
-
     override def read(js: JsArray): ContinuousQuery = js.elements match {
       case Vector(JsString(cqName), JsString(query)) =>
         ContinuousQuery(cqName, query)
@@ -98,7 +90,6 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
   }
 
   implicit object ShardInfluxReader extends InfluxReader[Shard] {
-
     override def read(js: JsArray): Shard = js.elements match {
       case Vector(JsNumber(shardId), JsString(dbName), JsString(rpName), JsNumber(shardGroupId), JsString(startTime), JsString(endTime), JsString(expiryTime), JsString(owners)) =>
         Shard(shardId.toInt, dbName, rpName, shardGroupId, startTime, endTime, expiryTime, owners)
@@ -108,7 +99,6 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
   }
 
   implicit object QueryInfoInfluxReader extends InfluxReader[QueryInfo] {
-
     override def read(js: JsArray): QueryInfo = js.elements match {
       case Vector(JsNumber(queryId), JsString(query), JsString(dbName), JsString(duration)) =>
         QueryInfo(queryId, query, dbName, duration)
@@ -118,7 +108,6 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
   }
 
   implicit object ShardGroupInfluxReader extends InfluxReader[ShardGroup] {
-
     override def read(js: JsArray): ShardGroup = js.elements match {
       case Vector(JsNumber(shardId), JsString(dbName), JsString(rpName), JsString(startTime), JsString(endTime), JsString(expiryTime)) =>
         ShardGroup(shardId, dbName, rpName, startTime, endTime, expiryTime)
@@ -128,7 +117,6 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
   }
 
   implicit object SubscriptionInfluxReader extends InfluxReader[Subscription] {
-
     override def read(js: JsArray): Subscription = js.elements match {
       case Vector(JsString(rpName), JsString(subsName), JsString(destType), JsArray(elems)) =>
         Subscription(rpName, subsName, Destinations.withName(destType), elems.map(_.convertTo[String]))
@@ -138,7 +126,6 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
   }
 
   implicit object FieldInfoInfluxReader extends InfluxReader[FieldInfo] {
-
     override def read(js: JsArray): FieldInfo = js.elements match {
       case Vector(JsString(fieldName), JsString(fieldType)) =>
         FieldInfo(fieldName, fieldType)
@@ -148,7 +135,6 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
   }
 
   implicit object TagValueInfluxReader extends InfluxReader[TagValue] {
-
     override def read(js: JsArray): TagValue = js.elements match {
       case Vector(JsString(tag), JsString(value)) =>
         TagValue(tag, value)
