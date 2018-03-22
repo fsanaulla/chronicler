@@ -12,10 +12,10 @@ With several implementation, that allow you choose what you want. It support sca
 
 | Project | Version |
 | ------------- | ------------- |
-| `chronicler-akka-http` | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.fsanaulla/chronicler-akka-http/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/com.github.fsanaulla/chronicler-akka-http_2.12) |
-| `chronicler-async-http` | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.fsanaulla/chronicler-async-http/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/com.github.fsanaulla/chronicler-async-http_2.12) |
-| `chronicler-udp` | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.fsanaulla/chronicler-udp/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/com.github.fsanaulla/chronicler-udp_2.12) |
-| `chronicler-macros` | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.fsanaulla/chronicler-macros/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/com.github.fsanaulla/chronicler-macros_2.12) |
+| `chronicler-akka-http` | ![Download](https://img.shields.io/maven-central/v/com.github.fsanaulla/chronicler-akka-http_2.11.svg) |
+| `chronicler-async-http` | ![Download](https://img.shields.io/maven-central/v/com.github.fsanaulla/chronicler-async-http_2.11.svg) |
+| `chronicler-udp` | ![Download](https://img.shields.io/maven-central/v/com.github.fsanaulla/chronicler-udp_2.11.svg) |
+| `chronicler-macros` | ![Download](https://img.shields.io/maven-central/v/com.github.fsanaulla/chronicler-macros_2.11.svg) |
 
 
 # Installation
