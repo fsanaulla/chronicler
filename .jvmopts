@@ -1,1 +1,2 @@
--mem 2000
+-Xms1g
+-Xmx3g
