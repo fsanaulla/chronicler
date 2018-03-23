@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  akkaHttp:
+  chronicler:
       docker:
         - image: circleci/openjdk:8-jdk
       steps:
@@ -12,65 +12,79 @@ jobs:
                sudo dpkg -i sbt-1.1.0.deb
         - run:
             name: Test
-            command: "sbt \"project akkaHttp\" +fullTest"
-  asyncHttp:
-      docker:
-        - image: circleci/openjdk:8-jdk
-      steps:
-        - checkout
-        - run:
-            name: Insatll sbt
-            command: |
-               wget -q https://dl.bintray.com/sbt/debian/sbt-1.1.0.deb
-               sudo dpkg -i sbt-1.1.0.deb
-        - run:
-            name: Test
-            command: "sbt \"project asyncHttp\" +fullTest"
-  udp:
-      docker:
-        - image: circleci/openjdk:8-jdk
-      steps:
-        - checkout
-        - run:
-            name: Insatll sbt
-            command: |
-               wget -q https://dl.bintray.com/sbt/debian/sbt-1.1.0.deb
-               sudo dpkg -i sbt-1.1.0.deb
-        - run:
-            name: Test
-            command: "sbt \"project udp\" +fullTest"
-  core:
-      docker:
-        - image: circleci/openjdk:8-jdk
-      steps:
-        - checkout
-        - run:
-            name: Insatll sbt
-            command: |
-               wget -q https://dl.bintray.com/sbt/debian/sbt-1.1.0.deb
-               sudo dpkg -i sbt-1.1.0.deb
-        - run:
-            name: Test
-            command: "sbt \"project core\" +fullTest"
-  macros:
-      docker:
-        - image: circleci/openjdk:8-jdk
-      steps:
-        - checkout
-        - run:
-            name: Insatll sbt
-            command: |
-               wget -q https://dl.bintray.com/sbt/debian/sbt-1.1.0.deb
-               sudo dpkg -i sbt-1.1.0.deb
-        - run:
-            name: Test
-            command: "sbt \"project macros\" +fullTest"
+            command: "sbt universeTest"
+#  akkaHttp:
+#      docker:
+#        - image: circleci/openjdk:8-jdk
+#      steps:
+#        - checkout
+#        - run:
+#            name: Insatll sbt
+#            command: |
+#               wget -q https://dl.bintray.com/sbt/debian/sbt-1.1.0.deb
+#               sudo dpkg -i sbt-1.1.0.deb
+#        - run:
+#            name: Test
+#            command: "sbt \"project akkaHttp\" +fullTest"
+#  asyncHttp:
+#      docker:
+#        - image: circleci/openjdk:8-jdk
+#      steps:
+#        - checkout
+#        - run:
+#            name: Insatll sbt
+#            command: |
+#               wget -q https://dl.bintray.com/sbt/debian/sbt-1.1.0.deb
+#               sudo dpkg -i sbt-1.1.0.deb
+#        - run:
+#            name: Test
+#            command: "sbt \"project asyncHttp\" +fullTest"
+#  udp:
+#      docker:
+#        - image: circleci/openjdk:8-jdk
+#      steps:
+#        - checkout
+#        - run:
+#            name: Insatll sbt
+#            command: |
+#               wget -q https://dl.bintray.com/sbt/debian/sbt-1.1.0.deb
+#               sudo dpkg -i sbt-1.1.0.deb
+#        - run:
+#            name: Test
+#            command: "sbt \"project udp\" +fullTest"
+#  core:
+#      docker:
+#        - image: circleci/openjdk:8-jdk
+#      steps:
+#        - checkout
+#        - run:
+#            name: Insatll sbt
+#            command: |
+#               wget -q https://dl.bintray.com/sbt/debian/sbt-1.1.0.deb
+#               sudo dpkg -i sbt-1.1.0.deb
+#        - run:
+#            name: Test
+#            command: "sbt \"project core\" +fullTest"
+#  macros:
+#      docker:
+#        - image: circleci/openjdk:8-jdk
+#      steps:
+#        - checkout
+#        - run:
+#            name: Insatll sbt
+#            command: |
+#               wget -q https://dl.bintray.com/sbt/debian/sbt-1.1.0.deb
+#               sudo dpkg -i sbt-1.1.0.deb
+#        - run:
+#            name: Test
+#            command: "sbt \"project macros\" +fullTest"
 workflows:
   version: 2
   test:
     jobs:
-      - akkaHttp
-      - asyncHttp
-      - udp
-      - core
-      - macros
+      - chronicler
+#      - akkaHttp
+#      - asyncHttp
+#      - udp
+#      - core
+#      - macros
