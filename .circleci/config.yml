@@ -15,7 +15,7 @@ jobs:
             command: "sbt universeTest"
         - run:
             name: Codecov uploader
-            command: "bash <(curl -s --data-binary codecov.yml https://codecov.io/bash)"
+            command: "bash <(curl -s https://codecov.io/bash)"
 workflows:
   version: 2
   test:
