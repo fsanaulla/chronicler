@@ -100,6 +100,5 @@ addCommandAlias(
   "project akkaHttp;+fullTest;" +
   "project asyncHttp;+fullTest;" +
   "project udp;+fullTest;" +
-  "project macros;+fullTest;" +
-  "project chronicler;coverageAggregate;coveralls"
+  "project macros;+fullTest"
 )

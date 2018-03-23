@@ -12,7 +12,10 @@ jobs:
                sudo dpkg -i sbt-1.1.0.deb
         - run:
             name: Test
-            command: "sbt universeTest"
+            command: "sbt +fullTest"
+        - run:
+            name: Codecov uploader
+            command: "bash <(curl -s https://codecov.io/bash)"
 #  akkaHttp:
 #      docker:
 #        - image: circleci/openjdk:8-jdk
