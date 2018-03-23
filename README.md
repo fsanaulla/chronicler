@@ -2,7 +2,7 @@
 
 # Chronicler
 ![CircleCI](https://circleci.com/gh/fsanaulla/chronicler.svg?style=shield&circle-token=3943b9e35ee6ec63d54741e57a2833a4609b9adc)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7e195f786666462da89b22e27600fcc8)](https://app.codacy.com/app/fsanaulla/chronicler?utm_source=github.com&utm_medium=referral&utm_content=fsanaulla/chronicler&utm_campaign=badger)
+[![codecov](https://codecov.io/gh/fsanaulla/chronicler/branch/master/graph/badge.svg)](https://codecov.io/gh/fsanaulla/chronicler)
 [![License](http://img.shields.io/:license-Apache%202-green.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 </div>
 

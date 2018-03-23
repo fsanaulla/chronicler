@@ -90,5 +90,15 @@ lazy val macros = project
     libraryDependencies += Dependencies.scalaReflect
   ).dependsOn(core % "compile->compile;test->test")
 
-addCommandAlias("fullTest", ";clean;compile;test:compile;test")
+addCommandAlias("fullTest", ";clean;compile;test:compile;coverage;test;coverageReport")
+
 addCommandAlias("fullRelease", ";clean;publishSigned;sonatypeRelease")
+// build all project in one task, for combining coverage reports and decreasing CI jobs
+addCommandAlias(
+  "universeTest",
+  ";project core;+fullTest;" +
+  "project akkaHttp;+fullTest;" +
+  "project asyncHttp;+fullTest;" +
+  "project udp;+fullTest;" +
+  "project macros;+fullTest"
+)
