@@ -63,6 +63,6 @@ private[fsanaulla] object InfluxUDPClient {
   def buildDatagram(msg: Array[Byte])(implicit conn: UdpConnection): DatagramPacket =
     new DatagramPacket(msg, msg.length, conn.address, conn.port)
 
-  def send(dp: DatagramPacket): Future[Unit] =
+  def send(dp: DatagramPacket)(implicit ex: ExecutionContext): Future[Unit] =
     Future { socket.send(dp) }
 }
