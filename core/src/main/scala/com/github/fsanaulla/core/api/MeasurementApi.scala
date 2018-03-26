@@ -1,7 +1,7 @@
 package com.github.fsanaulla.core.api
 
 import com.github.fsanaulla.core.enums.{Consistency, Precision}
-import com.github.fsanaulla.core.io.WriteOperations
+import com.github.fsanaulla.core.io.{ReadOperations, WriteOperations}
 import com.github.fsanaulla.core.model.{Deserializer, InfluxWriter, Result}
 import com.github.fsanaulla.core.utils.PointTransformer
 
@@ -9,7 +9,7 @@ import scala.concurrent.Future
 
 private[fsanaulla] abstract class MeasurementApi[E, R](dbName: String,
                                                        measurementName: String)
-  extends WriteOperations[R] with PointTransformer {
+  extends WriteOperations[R] with ReadOperations with PointTransformer {
 
   final def _write0(entity: E,
                    consistency: Consistency,

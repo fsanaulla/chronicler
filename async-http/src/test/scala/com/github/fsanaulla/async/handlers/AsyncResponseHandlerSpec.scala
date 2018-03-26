@@ -2,9 +2,9 @@ package com.github.fsanaulla.async.handlers
 
 import com.github.fsanaulla.async.utils.SampleEntitys.singleResult
 import com.github.fsanaulla.chronicler.async.handlers.AsyncResponseHandler
-import com.github.fsanaulla.core.model.InfluxImplicits._
 import com.github.fsanaulla.core.model.{ContinuousQuery, ContinuousQueryInfo}
 import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.utils.InfluxImplicits._
 import com.softwaremill.sttp.Response
 import spray.json.JsonParser
 

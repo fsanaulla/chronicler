@@ -2,6 +2,8 @@ package com.github.fsanaulla.chronicler.akka.utils
 
 import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.core.model._
+import com.github.fsanaulla.macros.Macros
+import com.github.fsanaulla.macros.annotations.{field, tag}
 import spray.json.{DeserializationException, JsArray, JsNumber, JsString}
 
 /**
@@ -11,19 +13,11 @@ object TestHelper {
 
   final val currentNanoTime: Long = System.currentTimeMillis() * 1000000
 
-  case class FakeEntity(firstName: String,
-                        lastName: String,
-                        age: Int)
+  case class FakeEntity(@tag firstName: String,
+                        @tag lastName: String,
+                        @field age: Int)
 
-  implicit object FormattableFE extends InfluxFormatter[FakeEntity] {
-    override def write(obj: FakeEntity): String =
-      s"firstName=${obj.firstName},lastName=${obj.lastName} age=${obj.age}"
-
-    override def read(js: JsArray): FakeEntity = js.elements match {
-      case Vector(_, JsNumber(age), JsString(fname), JsString(lname)) => FakeEntity(fname, lname, age.toInt)
-      case _ => throw DeserializationException(s"Can't deserialize $FakeEntity object")
-    }
-  }
+  implicit val fmt: InfluxFormatter[FakeEntity] = Macros.format[FakeEntity]
 
   def queryTesterAuth(query: String)(credentials: InfluxCredentials): Uri =
     Uri("/query").withQuery(Uri.Query("q" -> query, "p" -> credentials.username, "u" -> credentials.username))

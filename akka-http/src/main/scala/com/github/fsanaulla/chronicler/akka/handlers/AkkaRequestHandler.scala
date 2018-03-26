@@ -8,6 +8,11 @@ import com.github.fsanaulla.core.handlers.RequestHandler
 
 import scala.concurrent.Future
 
+/**
+  * Created by
+  * Author: fayaz.sanaulla@gmail.com
+  * Date: 15.03.18
+  */
 private[fsanaulla] trait AkkaRequestHandler
   extends RequestHandler[HttpResponse, Uri, HttpMethod, MessageEntity] {
 

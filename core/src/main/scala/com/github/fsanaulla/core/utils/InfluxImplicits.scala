@@ -1,7 +1,8 @@
-package com.github.fsanaulla.core.model
+package com.github.fsanaulla.core.utils
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import com.github.fsanaulla.core.enums.{Destinations, Privileges}
+import com.github.fsanaulla.core.model._
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsArray, JsBoolean, JsNumber, JsString}
 
 /**
@@ -53,7 +54,6 @@ object InfluxImplicits extends SprayJsonSupport with DefaultJsonProtocol {
   }
 
   implicit object RetentionPolicyInfluxReader extends InfluxReader[RetentionPolicyInfo] {
-
     override def read(js: JsArray): RetentionPolicyInfo = js.elements match {
       case Vector(JsString(name), JsString(duration), JsString(shardGroupDuration), JsNumber(replication), JsBoolean(default)) =>
         RetentionPolicyInfo(name, duration, shardGroupDuration, replication, default)

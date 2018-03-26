@@ -4,6 +4,11 @@ import _root_.akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.core.handlers.QueryHandler
 import com.github.fsanaulla.core.model.HasCredentials
 
+/**
+  * Created by
+  * Author: fayaz.sanaulla@gmail.com
+  * Date: 15.03.18
+  */
 private[fsanaulla] trait AkkaQueryHandler
   extends QueryHandler[Uri]
     with HasCredentials {

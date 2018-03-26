@@ -14,20 +14,13 @@ import scala.io.Source
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-private[fsanaulla] class InfluxUdpClient(host: String, port: Int)
+private[fsanaulla] class InfluxUDPClient(host: String, port: Int)
                                         (implicit ex: ExecutionContext)
-  extends PointTransformer
-    with AutoCloseable {
+  extends PointTransformer with AutoCloseable {
 
-  private val socket = new DatagramSocket()
+  import InfluxUDPClient._
 
   private implicit val conn: UdpConnection = UdpConnection(InetAddress.getByName(host), port)
-
-  private def buildDatagram(msg: Array[Byte])(implicit conn: UdpConnection): DatagramPacket =
-    new DatagramPacket(msg, msg.length, conn.address, conn.port)
-
-  private def send(dp: DatagramPacket): Future[Unit] =
-    Future { socket.send(dp) }
 
   def writeNative(point: String): Future[Unit] =
     send(buildDatagram(point.getBytes()))
@@ -62,4 +55,14 @@ private[fsanaulla] class InfluxUdpClient(host: String, port: Int)
     send(buildDatagram(points.map(_.serialize).mkString("\n").getBytes()))
 
   def close(): Unit = socket.close()
+}
+
+private[fsanaulla] object InfluxUDPClient {
+  private val socket = new DatagramSocket()
+
+  def buildDatagram(msg: Array[Byte])(implicit conn: UdpConnection): DatagramPacket =
+    new DatagramPacket(msg, msg.length, conn.address, conn.port)
+
+  def send(dp: DatagramPacket): Future[Unit] =
+    Future { socket.send(dp) }
 }

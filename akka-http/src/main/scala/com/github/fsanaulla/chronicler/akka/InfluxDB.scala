@@ -8,7 +8,7 @@ import scala.concurrent.ExecutionContext
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
-  * Date: 31.01.18
+  * Date: 15.03.18
   */
 object InfluxDB {
 

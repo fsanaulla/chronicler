@@ -7,7 +7,9 @@ import _root_.akka.stream.scaladsl.Flow
 import scala.concurrent.Future
 
 /**
-  * Created by fayaz on 04.07.17.
+  * Created by
+  * Author: fayaz.sanaulla@gmail.com
+  * Date: 15.03.18
   */
 private[fsanaulla] object AkkaTypeAlias {
 

@@ -22,7 +22,8 @@ import scala.util.{Failure, Success}
 private[fsanaulla] class InfluxAkkaHttpClient(host: String,
                                               port: Int,
                                               val credentials: Option[InfluxCredentials])
-                                             (implicit val ex: ExecutionContext, val system: ActorSystem)
+                                             (implicit val ex: ExecutionContext,
+                                              val system: ActorSystem)
     extends InfluxClient[HttpResponse, Uri, HttpMethod, RequestEntity]
       with AkkaRequestHandler
       with AkkaResponseHandler

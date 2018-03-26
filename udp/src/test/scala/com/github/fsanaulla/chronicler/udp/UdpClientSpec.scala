@@ -20,7 +20,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB {
 
   override def udpPort: Option[Int] = Some(8089)
 
-  lazy val influxUdp: InfluxUdpClient = InfluxUDP.connect()
+  lazy val influxUdp: InfluxUDPClient = InfluxUDP.connect()
 
   lazy val influxHttp: InfluxAsyncHttpClient = InfluxDB.connect()
 

@@ -10,7 +10,7 @@ import scala.concurrent.Future
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
-  * Date: 31.07.17
+  * Date: 15.03.18
   */
 private[fsanaulla] trait AkkaResponseHandler
   extends ResponseHandler[HttpResponse]

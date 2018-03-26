@@ -9,6 +9,11 @@ import spray.json.JsObject
 
 import scala.concurrent.Future
 
+/**
+  * Created by
+  * Author: fayaz.sanaulla@gmail.com
+  * Date: 15.03.18
+  */
 private[fsanaulla] trait AkkaJsonHandler extends JsonHandler[HttpResponse] {
 
   protected implicit val mat: ActorMaterializer

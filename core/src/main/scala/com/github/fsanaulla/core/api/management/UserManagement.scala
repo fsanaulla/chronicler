@@ -2,9 +2,9 @@ package com.github.fsanaulla.core.api.management
 
 import com.github.fsanaulla.core.enums.Privilege
 import com.github.fsanaulla.core.handlers.{QueryHandler, RequestHandler, ResponseHandler}
-import com.github.fsanaulla.core.model.InfluxImplicits._
 import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.core.query.UserManagementQuery
+import com.github.fsanaulla.core.utils.InfluxImplicits._
 
 import scala.concurrent.Future
 

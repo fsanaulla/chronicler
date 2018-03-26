@@ -4,7 +4,7 @@ import sbt.url
 lazy val commonSettings = Seq(
   scalaVersion := "2.12.4",
   organization := "com.github.fsanaulla",
-  scalacOptions ++= Seq("-deprecation", "-feature"),
+  scalacOptions ++= Seq("-deprecation", "-feature", "-Ylog-classpath"),
   crossScalaVersions := Seq("2.11.8", scalaVersion.value),
   homepage := Some(url("https://github.com/fsanaulla/chronicler")),
   licenses += "Apache-2.0" -> url("https://opensource.org/licenses/Apache-2.0"),
@@ -58,8 +58,10 @@ lazy val akkaHttp = (project in file("akka-http"))
   .settings(
     name := "chronicler-akka-http",
     scalacOptions += "-language:postfixOps",
-    libraryDependencies += Dependencies.akkaHttp
-  ).dependsOn(core % "compile->compile;test->test")
+    libraryDependencies ++= Dependencies.akkaHttpDep
+  )
+  .dependsOn(core % "compile->compile;test->test")
+  .dependsOn(macros % "test->test")
 
 lazy val asyncHttp = (project in file("async-http"))
   .settings(commonSettings: _*)
@@ -83,7 +85,7 @@ lazy val macros = project
   .settings(
     name := "chronicler-macros",
     scalacOptions ++= Seq("-deprecation", "-feature"),
-    libraryDependencies += Dependencies.scalaReflect
+    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
   ).dependsOn(core % "compile->compile;test->test")
 
 addCommandAlias("fullTest", ";clean;compile;test:compile;coverage;test;coverageReport")

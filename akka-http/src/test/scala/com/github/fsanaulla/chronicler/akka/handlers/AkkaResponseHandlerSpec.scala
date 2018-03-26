@@ -5,9 +5,9 @@ import _root_.akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import _root_.akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.utils.AkkaContentTypes._
 import com.github.fsanaulla.chronicler.akka.utils.SampleEntitys.singleResult
-import com.github.fsanaulla.core.model.InfluxImplicits._
 import com.github.fsanaulla.core.model.{ContinuousQuery, ContinuousQueryInfo}
 import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.utils.InfluxImplicits._
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
