@@ -39,7 +39,8 @@ class MeasurementSpec extends TestSpec with EmbeddedInfluxDB {
 
     meas.read(s"SELECT * FROM $measName")
       .futureValue
-      .queryResult shouldEqual singleEntity :: multiEntitys :: Nil
+      .queryResult
+      .size shouldEqual 3
 
     influx.close() shouldEqual {}
   }
