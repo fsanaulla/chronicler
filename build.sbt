@@ -58,7 +58,7 @@ lazy val akkaHttp = (project in file("akka-http"))
   .settings(
     name := "chronicler-akka-http",
     scalacOptions += "-language:postfixOps",
-    libraryDependencies ++= Dependencies.akkaHttpDep
+    libraryDependencies += Dependencies.akkaHttp
   )
   .dependsOn(core % "compile->compile;test->test")
   .dependsOn(macros % "test->test")
@@ -68,6 +68,7 @@ lazy val asyncHttp = (project in file("async-http"))
   .settings(publishSettings: _*)
   .settings(
     name := "chronicler-async-http",
+    scalacOptions += "-language:implicitConversions",
     libraryDependencies += Dependencies.asyncHttp
   )
   .dependsOn(core % "compile->compile;test->test")
@@ -102,4 +103,13 @@ addCommandAlias(
   "project asyncHttp;+fullTest;" +
   "project udp;+fullTest;" +
   "project macros;+fullTest"
+)
+
+addCommandAlias(
+  "universeRelease",
+  ";project core;+fullRelease;" +
+    "project akkaHttp;+fullRelease;" +
+    "project asyncHttp;+fullRelease;" +
+    "project udp;+fullRelease;" +
+    "project macros;+fullRelease"
 )
