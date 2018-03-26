@@ -23,7 +23,7 @@ private[fsanaulla] trait AkkaReader
     with DatabaseOperationQuery[Uri]
     with HasCredentials { self: ReadOperations  with Executable =>
 
-  protected override def _readJs(dbName: String,
+  override def _readJs(dbName: String,
                        query: String,
                        epoch: Epoch,
                        pretty: Boolean,
@@ -33,7 +33,7 @@ private[fsanaulla] trait AkkaReader
       .flatMap(toQueryJsResult)
   }
 
-  protected override def _bulkReadJs(dbName: String,
+  override def _bulkReadJs(dbName: String,
                            queries: Seq[String],
                            epoch: Epoch,
                            pretty: Boolean,
