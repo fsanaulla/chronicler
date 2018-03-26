@@ -22,25 +22,24 @@ class MeasurementSpec extends TestSpec with EmbeddedInfluxDB {
   lazy val influx: InfluxAsyncHttpClient = InfluxDB.connect()
 
   lazy val meas: Measurement[FakeEntity] = influx.measurement[FakeEntity](safeDB, measName)
-  lazy val db = influx.database(safeDB)
 
   "Measurement[FakeEntity]" should "make single write" in {
     influx.createDatabase(safeDB).futureValue shouldEqual OkResult
 
     meas.write(singleEntity).futureValue shouldEqual NoContentResult
 
-    db.readJs(s"SELECT * FROM $measName")
+    meas.read(s"SELECT * FROM $measName")
       .futureValue
-      .queryResult should not equal Nil
+      .queryResult shouldEqual Seq(singleEntity)
   }
 
   it should "make safe bulk write" in {
     meas.bulkWrite(multiEntitys).futureValue shouldEqual NoContentResult
 
-    db.readJs(s"SELECT * FROM $measName")
+    meas.read(s"SELECT * FROM $measName")
       .futureValue
       .queryResult
-      .size should be > 1
+      .size shouldEqual 3
 
     influx.close() shouldEqual {}
   }

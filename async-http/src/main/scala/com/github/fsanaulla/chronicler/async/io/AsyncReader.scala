@@ -1,7 +1,7 @@
 package com.github.fsanaulla.chronicler.async.io
 
 import com.github.fsanaulla.chronicler.async.handlers.{AsyncQueryHandler, AsyncRequestHandler, AsyncResponseHandler}
-import com.github.fsanaulla.core.enums.{Epoch, Epochs}
+import com.github.fsanaulla.core.enums.Epoch
 import com.github.fsanaulla.core.io.ReadOperations
 import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials, QueryResult}
 import com.github.fsanaulla.core.query.DatabaseOperationQuery
@@ -17,20 +17,20 @@ private[fsanaulla] trait AsyncReader
     with DatabaseOperationQuery[Uri]
     with HasCredentials { self: ReadOperations =>
 
-  override def _readJs(dbName: String,
-                       query: String,
-                       epoch: Epoch = Epochs.NANOSECONDS,
-                       pretty: Boolean = false,
-                       chunked: Boolean = false): Future[QueryResult[JsArray]] = {
+  protected override def _readJs(dbName: String,
+                                 query: String,
+                                 epoch: Epoch,
+                                 pretty: Boolean,
+                                 chunked: Boolean): Future[QueryResult[JsArray]] = {
     val _query = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
     readRequest(_query, Method.GET).flatMap(toQueryJsResult)
   }
 
-  override def _bulkReadJs(dbName: String,
-                           queries: Seq[String],
-                           epoch: Epoch = Epochs.NANOSECONDS,
-                           pretty: Boolean = false,
-                           chunked: Boolean = false): Future[QueryResult[Seq[JsArray]]] = {
+  protected override def _bulkReadJs(dbName: String,
+                                     queries: Seq[String],
+                                     epoch: Epoch,
+                                     pretty: Boolean,
+                                     chunked: Boolean): Future[QueryResult[Seq[JsArray]]] = {
     val query = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)
     readRequest(query, Method.GET).flatMap(toBulkQueryJsResult)
   }

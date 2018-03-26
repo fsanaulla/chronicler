@@ -69,7 +69,9 @@ lazy val asyncHttp = (project in file("async-http"))
   .settings(
     name := "chronicler-async-http",
     libraryDependencies += Dependencies.asyncHttp
-  ).dependsOn(core % "compile->compile;test->test")
+  )
+  .dependsOn(core % "compile->compile;test->test")
+  .dependsOn(macros % "test->test")
 
 lazy val udp = project
   .settings(commonSettings: _*)
