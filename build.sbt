@@ -4,7 +4,7 @@ import sbt.url
 lazy val commonSettings = Seq(
   scalaVersion := "2.12.4",
   organization := "com.github.fsanaulla",
-  scalacOptions ++= Seq("-deprecation", "-feature", "-Ylog-classpath"),
+  scalacOptions ++= Seq("-deprecation", "-feature"),
   crossScalaVersions := Seq("2.11.8", scalaVersion.value),
   homepage := Some(url("https://github.com/fsanaulla/chronicler")),
   licenses += "Apache-2.0" -> url("https://opensource.org/licenses/Apache-2.0"),
