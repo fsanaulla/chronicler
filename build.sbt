@@ -4,6 +4,7 @@ import sbt.url
 lazy val commonSettings = Seq(
   scalaVersion := "2.12.4",
   organization := "com.github.fsanaulla",
+  scalacOptions ++= Seq("-deprecation", "-feature"),
   crossScalaVersions := Seq("2.11.8", scalaVersion.value),
   homepage := Some(url("https://github.com/fsanaulla/chronicler")),
   licenses += "Apache-2.0" -> url("https://opensource.org/licenses/Apache-2.0"),
@@ -46,7 +47,6 @@ lazy val core = project
     name := "chronicler-core",
     publishArtifact in (Test, packageBin) := true,
       scalacOptions ++= Seq(
-        "-feature",
         "-language:implicitConversions",
         "-language:postfixOps"),
     libraryDependencies ++= Dependencies.coreDep
@@ -57,6 +57,7 @@ lazy val akkaHttp = (project in file("akka-http"))
   .settings(publishSettings: _*)
   .settings(
     name := "chronicler-akka-http",
+    scalacOptions += "-language:postfixOps",
     libraryDependencies += Dependencies.akkaHttp
   ).dependsOn(core % "compile->compile;test->test")
 
@@ -74,6 +75,7 @@ lazy val udp = project
   .settings(name := "chronicler-udp")
   .dependsOn(core)
   .dependsOn(asyncHttp % "test->test")
+  .dependsOn(macros % "test->test")
 
 lazy val macros = project
   .settings(commonSettings: _*)
