@@ -107,7 +107,7 @@ addCommandAlias(
 addCommandAlias(
   "universeRelease",
   ";project core;+fullRelease;" +
-"project akkaHttp;+fullRelease;" +
+  "project akkaHttp;+fullRelease;" +
   "project asyncHttp;+fullRelease;" +
   "project udp;+fullRelease;" +
   "project macros;+fullRelease"
