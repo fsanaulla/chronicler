@@ -97,18 +97,18 @@ addCommandAlias("fullRelease", ";clean;publishSigned;sonatypeRelease")
 // build all project in one task, for combining coverage reports and decreasing CI jobs
 addCommandAlias(
   "travisTest",
-  ";project core;++$TRAVIS_SCALA_VERSION fullTest;" +
-  "project akkaHttp;++$TRAVIS_SCALA_VERSION fullTest;" +
-  "project asyncHttp;++$TRAVIS_SCALA_VERSION fullTest;" +
-  "project udp;++$TRAVIS_SCALA_VERSION fullTest;" +
-  "project macros;++$TRAVIS_SCALA_VERSION fullTest"
+  ";project core;++ $TRAVIS_SCALA_VERSION fullTest;" +
+  "project akkaHttp;++ $TRAVIS_SCALA_VERSION fullTest;" +
+  "project asyncHttp;++ $TRAVIS_SCALA_VERSION fullTest;" +
+  "project udp;++ $TRAVIS_SCALA_VERSION fullTest;" +
+  "project macros;++ $TRAVIS_SCALA_VERSION fullTest"
 )
 
 addCommandAlias(
   "universeRelease",
   ";project core;+fullRelease;" +
-    "project akkaHttp;+fullRelease;" +
-    "project asyncHttp;+fullRelease;" +
-    "project udp;+fullRelease;" +
-    "project macros;+fullRelease"
+"project akkaHttp;+fullRelease;" +
+  "project asyncHttp;+fullRelease;" +
+  "project udp;+fullRelease;" +
+  "project macros;+fullRelease"
 )
