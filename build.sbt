@@ -2,7 +2,7 @@ import sbt.Keys.{crossScalaVersions, organization, publishArtifact}
 import sbt.url
 
 lazy val commonSettings = Seq(
-  scalaVersion := "2.12.4",
+  scalaVersion := "2.12.5",
   organization := "com.github.fsanaulla",
   scalacOptions ++= Seq("-deprecation", "-feature"),
   crossScalaVersions := Seq("2.11.8", scalaVersion.value),
@@ -87,7 +87,6 @@ lazy val macros = project
   .settings(publishSettings: _*)
   .settings(
     name := "chronicler-macros",
-    scalacOptions ++= Seq("-deprecation", "-feature"),
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
   ).dependsOn(core % "compile->compile;test->test")
 
@@ -97,12 +96,12 @@ addCommandAlias("fullRelease", ";clean;publishSigned;sonatypeRelease")
 
 // build all project in one task, for combining coverage reports and decreasing CI jobs
 addCommandAlias(
-  "universeTest",
-  ";project core;+fullTest;" +
-  "project akkaHttp;+fullTest;" +
-  "project asyncHttp;+fullTest;" +
-  "project udp;+fullTest;" +
-  "project macros;+fullTest"
+  "travisTest",
+  ";project core;++$TRAVIS_SCALA_VERSION fullTest;" +
+  "project akkaHttp;++$TRAVIS_SCALA_VERSION fullTest;" +
+  "project asyncHttp;++$TRAVIS_SCALA_VERSION fullTest;" +
+  "project udp;++$TRAVIS_SCALA_VERSION fullTest;" +
+  "project macros;++$TRAVIS_SCALA_VERSION fullTest"
 )
 
 addCommandAlias(
