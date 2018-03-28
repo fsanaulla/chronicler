@@ -1,0 +1,13 @@
+language: scala
+scala:
+  - 2.11.8
+  - 2.12.4
+
+jdk:
+  - oraclejdk8
+
+script:
+  - sbt travisTest
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
