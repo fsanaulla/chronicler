@@ -2,3 +2,9 @@
 /.idea
 target
 /project/project
+
+# WebPage section
+.sass-cache/
+_site/
+Gemfile
+Gemfile.lock
