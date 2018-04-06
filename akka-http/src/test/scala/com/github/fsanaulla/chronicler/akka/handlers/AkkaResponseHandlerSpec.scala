@@ -7,7 +7,7 @@ import com.github.fsanaulla.chronicler.akka.utils.AkkaContentTypes._
 import com.github.fsanaulla.chronicler.akka.utils.SampleEntitys.singleResult
 import com.github.fsanaulla.core.model.{ContinuousQuery, ContinuousQueryInfo}
 import com.github.fsanaulla.core.test.utils.TestSpec
-import com.github.fsanaulla.core.utils.InfluxImplicits._
+import com.github.fsanaulla.core.utils.DefaultInfluxImplicits._
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._

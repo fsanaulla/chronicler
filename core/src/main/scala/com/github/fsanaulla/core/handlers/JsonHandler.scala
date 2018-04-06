@@ -2,6 +2,8 @@ package com.github.fsanaulla.core.handlers
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import com.github.fsanaulla.core.model.InfluxReader
+import com.github.fsanaulla.core.utils.Extensions.RichJValue
+import jawn.ast.{JArray, JObject, JValue}
 import spray.json.{DefaultJsonProtocol, JsArray, JsObject, JsValue}
 
 import scala.concurrent.Future
@@ -30,6 +32,12 @@ private[fsanaulla] trait JsonHandler[R] extends SprayJsonSupport with DefaultJso
       )
   }
 
+  def getOptBulkInfluxValue(js: JObject): Option[Array[Array[JValue]]] = {
+    js.get("results").arrayValue
+      .map(_.flatMap(_.get("series").arrayValue.flatMap(_.headOption)))
+      .map(_.flatMap(_.get("values").arrayValue))
+  }
+
   def getInfluxPoints(js: JsObject): Seq[JsArray] = {
     js.getFields("results")
       .head
@@ -47,6 +55,15 @@ private[fsanaulla] trait JsonHandler[R] extends SprayJsonSupport with DefaultJso
         }
       case _ => Nil
     }
+  }
+
+  def getOptInfluxPoints(js: JObject): Option[Array[JArray]] = {
+    js.get("results")
+      .arrayValue
+      .flatMap(_.headOption)
+      .flatMap(_.get("series").arrayValue.flatMap(_.headOption))
+      .flatMap(_.get("values").arrayValue.flatMap(_.headOption))
+      .flatMap(_.arrayValue.map(_.flatMap(_.array)))
   }
 
   def getInfluxInfo[T](js: JsObject)(implicit reader: InfluxReader[T]): Seq[(String, Seq[T])] = {
@@ -70,5 +87,26 @@ private[fsanaulla] trait JsonHandler[R] extends SprayJsonSupport with DefaultJso
           }
       case _ => Nil
     }
+  }
+
+  def getOptInfluxInfo[T](js: JObject)(implicit reader: InfluxReader[T]): Option[Array[(String, Array[T])]] = {
+    js.get("results")
+      .arrayValue.flatMap(_.headOption)
+      .flatMap(_.get("series").arrayValue.flatMap(_.headOption))
+      .flatMap(_.arrayValue)
+      .map(_.flatMap(_.obj))
+      .map(_.map { obj =>
+        val dbName = obj.get("name").asString
+        val cqInfo = obj
+          .get("values")
+          .arrayValue
+          .flatMap(_.headOption)
+          .flatMap(_.arrayValue)
+          .map(_.flatMap(_.array))
+          .map(_.map(reader.read))
+          .getOrElse(Array.empty[T])
+
+        dbName -> cqInfo
+      })
   }
 }

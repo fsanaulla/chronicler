@@ -1,7 +1,7 @@
 package com.github.fsanaulla.core.handlers
 
 import com.github.fsanaulla.core.model._
-import com.github.fsanaulla.core.utils.InfluxImplicits._
+import com.github.fsanaulla.core.utils.DefaultInfluxImplicits._
 import spray.json.JsArray
 
 import scala.concurrent.Future

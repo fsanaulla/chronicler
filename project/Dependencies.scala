@@ -8,6 +8,7 @@ import sbt._
 object Dependencies {
 
   // core
+  final val jawn = "org.spire-math" %% "jawn-ast" % "0.12.1"
   final val sprayJson = "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.11"
   final val enums = "com.beachape" %% "enumeratum" % "1.5.13"
 
@@ -21,5 +22,5 @@ object Dependencies {
   final val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalaTest % Test
   final val embedInflux = "com.github.fsanaulla" %% "scalatest-embedinflux" % Versions.scalaTestInflux % Test
 
-  final val coreDep = Seq(sprayJson, enums, scalaTest, embedInflux)
+  final val coreDep = Seq(sprayJson, enums, jawn, scalaTest, embedInflux)
 }
