@@ -5,6 +5,7 @@ import com.github.fsanaulla.async.utils.TestHelper.{FakeEntity, _}
 import com.github.fsanaulla.chronicler.async.api.Measurement
 import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
 import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -14,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 28.09.17
   */
-class MeasurementSpec extends TestSpec with EmbeddedInfluxDB {
+class MeasurementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPConf {
 
   val safeDB = "db"
   val measName = "meas"
@@ -30,7 +31,7 @@ class MeasurementSpec extends TestSpec with EmbeddedInfluxDB {
 
     meas.read(s"SELECT * FROM $measName")
       .futureValue
-      .queryResult shouldEqual Seq(singleEntity)
+      .queryResult shouldEqual Array(singleEntity)
   }
 
   it should "make safe bulk write" in {
@@ -39,7 +40,7 @@ class MeasurementSpec extends TestSpec with EmbeddedInfluxDB {
     meas.read(s"SELECT * FROM $measName")
       .futureValue
       .queryResult
-      .size shouldEqual 3
+      .length shouldEqual 3
 
     influx.close() shouldEqual {}
   }

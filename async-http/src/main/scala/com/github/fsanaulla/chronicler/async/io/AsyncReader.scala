@@ -6,6 +6,7 @@ import com.github.fsanaulla.core.io.ReadOperations
 import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials, QueryResult}
 import com.github.fsanaulla.core.query.DatabaseOperationQuery
 import com.softwaremill.sttp.{Method, Uri}
+import jawn.ast.JArray
 import spray.json.JsArray
 
 import scala.concurrent.Future
@@ -21,7 +22,7 @@ private[fsanaulla] trait AsyncReader
                                  query: String,
                                  epoch: Epoch,
                                  pretty: Boolean,
-                                 chunked: Boolean): Future[QueryResult[JsArray]] = {
+                                 chunked: Boolean): Future[QueryResult[JArray]] = {
     val _query = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
     readRequest(_query, Method.GET).flatMap(toQueryJsResult)
   }
@@ -30,10 +31,8 @@ private[fsanaulla] trait AsyncReader
                                      queries: Seq[String],
                                      epoch: Epoch,
                                      pretty: Boolean,
-                                     chunked: Boolean): Future[QueryResult[Seq[JsArray]]] = {
+                                     chunked: Boolean): Future[QueryResult[Array[JArray]]] = {
     val query = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)
     readRequest(query, Method.GET).flatMap(toBulkQueryJsResult)
   }
-
-
 }

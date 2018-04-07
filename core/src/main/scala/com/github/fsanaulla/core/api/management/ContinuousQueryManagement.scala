@@ -30,7 +30,7 @@ private[fsanaulla] trait ContinuousQueryManagement[R, U, M, E] extends Continuou
       .map(_.find(_.dbName == dbName))
       .map {
         case Some(cqi) => cqi.querys
-        case _ => Nil
+        case _ => Array.empty[ContinuousQuery]
       }
       .map(seq => QueryResult[ContinuousQuery](200, isSuccess = true, seq))
   }

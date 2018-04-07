@@ -7,6 +7,4 @@ object Versions {
   final val akka = "2.5.11"
   final val akkaHttp = "10.0.11"
   final val sttp = "1.1.11"
-  final val scalaTest = "3.0.5"
-  final val scalaTestInflux = "0.1.5"
 }

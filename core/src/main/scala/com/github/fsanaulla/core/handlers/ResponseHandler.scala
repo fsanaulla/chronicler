@@ -2,9 +2,10 @@ package com.github.fsanaulla.core.handlers
 
 import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.core.utils.DefaultInfluxImplicits._
-import spray.json.JsArray
+import jawn.ast.JArray
 
 import scala.concurrent.Future
+import scala.reflect.ClassTag
 
 /**
   * This trait define response handling functionality, it's provide method's that generalize
@@ -21,19 +22,19 @@ private[fsanaulla] trait ResponseHandler[R] { self: Executable =>
   def toResult(response: R): Future[Result]
 
   /**
-    * Method for handling HTTP responses with body, with on fly deserialization into JsArray value
+    * Method for handling HTTP responses with body, with on fly deserialization into JArray value
     * @param response - backaend response value
-    * @return - Query result of JsArray in future container
+    * @return - Query result of JArray in future container
     */
-  def toQueryJsResult(response: R): Future[QueryResult[JsArray]]
+  def toQueryJsResult(response: R): Future[QueryResult[JArray]]
 
   /**
     * Method for handling HTtp responses with non empty body, that contains multiple response.
-    * deserialized into Seq[JsArray]
+    * deserialized into Seq[JArray]
     * @param response - backend response value
     * @return - Query result with multiple response values
     */
-  def toBulkQueryJsResult(response: R): Future[QueryResult[Seq[JsArray]]]
+  def toBulkQueryJsResult(response: R): Future[QueryResult[Array[JArray]]]
 
   /**
     * Method for handling Info based HTTP responses, with possibility for future deserialization.
@@ -44,10 +45,20 @@ private[fsanaulla] trait ResponseHandler[R] { self: Executable =>
     * @tparam B - info object
     * @return - Query result of [B] in future container
     */
-  def toComplexQueryResult[A, B](response: R, f: (String, Seq[A]) => B)(implicit reader: InfluxReader[A]): Future[QueryResult[B]]
+  def toComplexQueryResult[A: ClassTag, B: ClassTag](response: R, f: (String, Array[A]) => B)(implicit reader: InfluxReader[A]): Future[QueryResult[B]]
 
+  /**
+    * Extract error message from failed response
+    * @param response Response
+    * @return - Error message
+    */
   def getError(response: R): Future[String]
 
+  /**
+    * Extract if exist eroor message from response
+    * @param response - Response
+    * @return - optional error message
+    */
   def getErrorOpt(response: R): Future[Option[String]]
 
   /**
@@ -57,43 +68,34 @@ private[fsanaulla] trait ResponseHandler[R] { self: Executable =>
     * @tparam A - Deserialized entity type
     * @return - Query result in future container
     */
-  def toQueryResult[A](response: R)(implicit reader: InfluxReader[A]): Future[QueryResult[A]] = {
-    toQueryJsResult(response)
-      .map(
-        res =>
-          QueryResult[A](
-            res.code,
-            isSuccess = res.isSuccess,
-            res.queryResult.map(reader.read),
-            res.ex
-          ))
-  }
+  def toQueryResult[A: ClassTag](response: R)(implicit reader: InfluxReader[A]): Future[QueryResult[A]] =
+    toQueryJsResult(response).map(_.transform(reader.read))
 
   def toCqQueryResult(response: R)(implicit reader: InfluxReader[ContinuousQuery]): Future[QueryResult[ContinuousQueryInfo]] = {
     toComplexQueryResult[ContinuousQuery, ContinuousQueryInfo](
       response,
-      (name: String, seq: Seq[ContinuousQuery]) => ContinuousQueryInfo(name, seq)
+      (name: String, arr: Array[ContinuousQuery]) => ContinuousQueryInfo(name, arr)
     )
   }
 
   def toShardQueryResult(response: R)(implicit reader: InfluxReader[Shard]): Future[QueryResult[ShardInfo]] = {
     toComplexQueryResult[Shard, ShardInfo](
       response,
-      (name: String, seq: Seq[Shard]) => ShardInfo(name, seq)
+      (name: String, arr: Array[Shard]) => ShardInfo(name, arr)
     )
   }
 
   def toSubscriptionQueryResult(response: R)(implicit reader: InfluxReader[Subscription]): Future[QueryResult[SubscriptionInfo]] = {
     toComplexQueryResult[Subscription, SubscriptionInfo](
       response,
-      (name: String, seq: Seq[Subscription]) => SubscriptionInfo(name, seq)
+      (name: String, arr: Array[Subscription]) => SubscriptionInfo(name, arr)
     )
   }
 
   def toShardGroupQueryResult(response: R)(implicit reader: InfluxReader[ShardGroup]): Future[QueryResult[ShardGroupsInfo]] = {
     toComplexQueryResult[ShardGroup, ShardGroupsInfo](
       response,
-      (name: String, seq: Seq[ShardGroup]) => ShardGroupsInfo(name, seq)
+      (name: String, arr: Array[ShardGroup]) => ShardGroupsInfo(name, arr)
     )
   }
 

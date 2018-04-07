@@ -4,6 +4,7 @@ import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
 import com.github.fsanaulla.core.enums.Privileges
 import com.github.fsanaulla.core.model.AuthorizationException
 import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 import org.scalatest.Ignore
 
@@ -15,7 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Date: 17.08.17
   */
 @Ignore
-class AuthUserManagementSpec extends TestSpec with EmbeddedInfluxDB {
+class AuthUserManagementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPConf {
 
   val userDB = "async_not_auth_user_spec_db"
   val userName = "Martin"

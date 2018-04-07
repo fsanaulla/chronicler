@@ -3,6 +3,7 @@ package com.github.fsanaulla.macros
 import com.github.fsanaulla.core.model.{InfluxFormatter, InfluxReader}
 import com.github.fsanaulla.core.test.utils.FlatSpecWithMatchers
 import com.github.fsanaulla.macros.annotations.{field, tag}
+import jawn.ast.{JArray, JNum, JString}
 import spray.json.{JsArray, JsNumber, JsString}
 
 class MacroFormatterSpec extends FlatSpecWithMatchers {
@@ -10,7 +11,7 @@ class MacroFormatterSpec extends FlatSpecWithMatchers {
   val fm: InfluxFormatter[Test] = Macros.format[Test]
 
   "Macros.format" should "generate reader" in {
-    fm.read(JsArray(JsNumber(234324), JsNumber(4), JsString("Fz"))) shouldEqual Test("Fz", 4)
+    fm.read(JArray(Array(JNum(234324), JNum(4), JString("Fz")))) shouldEqual Test("Fz", 4)
   }
 
   it should "generate writer" in {

@@ -5,6 +5,7 @@ import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
 import com.github.fsanaulla.core.enums.{Destination, Destinations}
 import com.github.fsanaulla.core.model.Subscription
 import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
 import com.github.fsanaulla.core.utils.InfluxDuration._
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
@@ -15,14 +16,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 21.08.17
   */
-class SubscriptionManagementSpec extends TestSpec with EmbeddedInfluxDB{
+class SubscriptionManagementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPConf {
 
   val subName = "subs"
   val dbName = "async_subs_spec_db"
   val rpName = "subs_rp"
   val destType: Destination = Destinations.ANY
   val newDestType: Destination = Destinations.ALL
-  val hosts = Seq("udp://h1.example.com:9090", "udp://h2.example.com:9090")
+  val hosts = Array("udp://h1.example.com:9090", "udp://h2.example.com:9090")
   val subscription = Subscription(rpName, subName, destType, hosts)
   val newSubscription: Subscription = subscription.copy(destType = newDestType)
 
@@ -40,13 +41,13 @@ class SubscriptionManagementSpec extends TestSpec with EmbeddedInfluxDB{
 
     influx.createSubscription(subName, dbName, rpName, destType, hosts).futureValue shouldEqual OkResult
 
-    influx.showSubscriptions(dbName).futureValue.queryResult shouldEqual Seq(subscription)
+    influx.showSubscriptions(dbName).futureValue.queryResult shouldEqual Array(subscription)
   }
 
   it should "update subscriptions" in {
     influx.updateSubscription(subName, dbName, rpName, newDestType, hosts).futureValue shouldEqual OkResult
 
-    influx.showSubscriptions(dbName).futureValue.queryResult shouldEqual Seq(newSubscription)
+    influx.showSubscriptions(dbName).futureValue.queryResult shouldEqual Array(newSubscription)
   }
 
   it should "drop subscription" in {
@@ -56,11 +57,6 @@ class SubscriptionManagementSpec extends TestSpec with EmbeddedInfluxDB{
 
     influx.dropRetentionPolicy(rpName, dbName).futureValue shouldEqual OkResult
 
-    influx.dropDatabase(dbName).futureValue shouldEqual OkResult
-
-  }
-
-  it should "clear up after all" in {
     influx.dropDatabase(dbName).futureValue shouldEqual OkResult
 
     influx.close() shouldEqual {}

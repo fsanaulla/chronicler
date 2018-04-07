@@ -2,13 +2,14 @@ package com.github.fsanaulla.async.integration
 
 import java.io.File
 
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import com.github.fsanaulla.async.utils.SampleEntitys._
 import com.github.fsanaulla.async.utils.TestHelper._
 import com.github.fsanaulla.chronicler.async.api.Database
 import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.Point
 import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
+import com.github.fsanaulla.core.utils.Extensions.RichJValue
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 import spray.json.{DefaultJsonProtocol, JsArray, JsValue}
 
@@ -20,10 +21,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Date: 28.09.17
   */
 class DatabaseSpec
-  extends TestSpec
-    with SprayJsonSupport
-    with DefaultJsonProtocol
-    with EmbeddedInfluxDB {
+  extends TestSpec with EmbeddedInfluxDB with InfluxHTTPConf {
 
   val testDB = "db"
 
@@ -34,8 +32,13 @@ class DatabaseSpec
   "Database API" should "write data from file" in {
     influx.createDatabase(testDB).futureValue shouldEqual OkResult
 
-    db.writeFromFile(new File(getClass.getResource("/points.txt").getPath)).futureValue shouldEqual NoContentResult
-    db.readJs("SELECT * FROM test1").futureValue.queryResult.size shouldEqual 3
+    db.writeFromFile(new File(getClass.getResource("/points.txt").getPath))
+      .futureValue shouldEqual NoContentResult
+    
+    db.readJs("SELECT * FROM test1")
+      .futureValue
+      .queryResult
+      .length shouldEqual 3
   }
 
   it should "write 2 points represented entities" in {
@@ -51,44 +54,56 @@ class DatabaseSpec
       .addField("age", 36)
 
     db.writePoint(point1).futureValue shouldEqual NoContentResult
-    db.read[FakeEntity]("SELECT * FROM test2").futureValue.queryResult shouldEqual Seq(FakeEntity("Martin", "Odersky", 54))
+    
+    db.read[FakeEntity]("SELECT * FROM test2")
+      .futureValue
+      .queryResult shouldEqual Array(FakeEntity("Martin", "Odersky", 54))
 
-    db.bulkWritePoints(Seq(point1, point2)).futureValue shouldEqual NoContentResult
-    db.read[FakeEntity]("SELECT * FROM test2").futureValue.queryResult shouldEqual Seq(FakeEntity("Martin", "Odersky", 54), FakeEntity("Jame", "Franko", 36), FakeEntity("Martin", "Odersky", 54))
+    db.bulkWritePoints(Array(point1, point2)).futureValue shouldEqual NoContentResult
+    
+    db.read[FakeEntity]("SELECT * FROM test2")
+      .futureValue
+      .queryResult shouldEqual Array(FakeEntity("Martin", "Odersky", 54), FakeEntity("Jame", "Franko", 36), FakeEntity("Martin", "Odersky", 54))
   }
 
   it should "retrieve multiple request" in {
 
     val multiQuery = db.bulkReadJs(
-      Seq(
+      Array(
         "SELECT * FROM test2",
         "SELECT * FROM test2 WHERE age < 40"
       )
     ).futureValue
 
-    multiQuery.queryResult.size shouldEqual 2
-    multiQuery.queryResult shouldBe a[Seq[_]]
+    multiQuery.queryResult.length shouldEqual 2
+    multiQuery.queryResult shouldBe a[Array[_]]
 
-    multiQuery.queryResult.head.size shouldEqual 3
-    multiQuery.queryResult.head shouldBe a[Seq[_]]
+    multiQuery.queryResult.head.length shouldEqual 3
+    multiQuery.queryResult.head shouldBe a[Array[_]]
     multiQuery.queryResult.head.head shouldBe a[JsArray]
 
-    multiQuery.queryResult.last.size shouldEqual 1
-    multiQuery.queryResult.last shouldBe a[Seq[_]]
+    multiQuery.queryResult.last.length shouldEqual 1
+    multiQuery.queryResult.last shouldBe a[Array[_]]
     multiQuery.queryResult.last.head shouldBe a[JsArray]
 
     multiQuery
       .queryResult
-      .map(_.map(_.convertTo[Seq[JsValue]].tail)) shouldEqual largeMultiJsonEntity.map(_.map(_.convertTo[Seq[JsValue]].tail))
+      .map(_.map(_.arrayValue.value.tail)) shouldEqual largeMultiJsonEntity.map(_.map(_.arrayValue.value.tail))
   }
 
   it should "write native" in {
 
     db.writeNative("test3,firstName=Jame,lastName=Lannister age=48").futureValue shouldEqual NoContentResult
-    db.read[FakeEntity]("SELECT * FROM test3").futureValue.queryResult shouldEqual Seq(FakeEntity("Jame", "Lannister", 48))
+    
+    db.read[FakeEntity]("SELECT * FROM test3")
+      .futureValue
+      .queryResult shouldEqual Array(FakeEntity("Jame", "Lannister", 48))
 
     db.bulkWriteNative(Seq("test4,firstName=Jon,lastName=Snow age=24", "test4,firstName=Deny,lastName=Targaryen age=25")).futureValue shouldEqual NoContentResult
-    db.read[FakeEntity]("SELECT * FROM test4").futureValue.queryResult shouldEqual Seq(FakeEntity("Deny", "Targaryen", 25), FakeEntity("Jon", "Snow", 24))
+
+    db.read[FakeEntity]("SELECT * FROM test4")
+      .futureValue
+      .queryResult shouldEqual Array(FakeEntity("Deny", "Targaryen", 25), FakeEntity("Jon", "Snow", 24))
 
     influx.close() shouldEqual {}
   }

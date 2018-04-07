@@ -5,9 +5,11 @@ import java.io.File
 import com.github.fsanaulla.core.enums._
 import com.github.fsanaulla.core.io.{ReadOperations, WriteOperations}
 import com.github.fsanaulla.core.model._
+import jawn.ast.JArray
 import spray.json.JsArray
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.ClassTag
 
 private[fsanaulla] abstract class DatabaseApi[E](dbName: String)
                                                 (implicit ex: ExecutionContext)
@@ -55,31 +57,25 @@ private[fsanaulla] abstract class DatabaseApi[E](dbName: String)
     _write(dbName, ds.deserialize(points), consistency, precision, retentionPolicy)
   }
 
-  final def read[A](query: String,
-                    epoch: Epoch = Epochs.NANOSECONDS,
-                    pretty: Boolean = false,
-                    chunked: Boolean = false)
-                   (implicit reader: InfluxReader[A]): Future[QueryResult[A]] = {
-    readJs(query, epoch, pretty, chunked) map { res =>
-      QueryResult[A](
-        res.code,
-        isSuccess = res.isSuccess,
-        res.queryResult.map(reader.read),
-        res.ex)
-    }
+  final def read[A: ClassTag](query: String,
+                              epoch: Epoch = Epochs.NANOSECONDS,
+                              pretty: Boolean = false,
+                              chunked: Boolean = false)
+                             (implicit reader: InfluxReader[A]): Future[QueryResult[A]] = {
+    readJs(query, epoch, pretty, chunked).map(_.transform(reader.read))
   }
 
   final def readJs(query: String,
                    epoch: Epoch = Epochs.NANOSECONDS,
                    pretty: Boolean = false,
-                   chunked: Boolean = false): Future[QueryResult[JsArray]] = {
+                   chunked: Boolean = false): Future[QueryResult[JArray]] = {
     _readJs(dbName, query, epoch, pretty, chunked)
   }
 
   final def bulkReadJs(queries: Seq[String],
                        epoch: Epoch = Epochs.NANOSECONDS,
                        pretty: Boolean = false,
-                       chunked: Boolean = false): Future[QueryResult[Seq[JsArray]]] = {
+                       chunked: Boolean = false): Future[QueryResult[Array[JArray]]] = {
     _bulkReadJs(dbName, queries, epoch, pretty, chunked)
   }
 }

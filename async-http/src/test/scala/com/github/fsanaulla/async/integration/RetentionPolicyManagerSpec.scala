@@ -4,6 +4,7 @@ import com.github.fsanaulla.async.utils.TestHelper._
 import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.RetentionPolicyInfo
 import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
 import com.github.fsanaulla.core.utils.InfluxDuration._
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
@@ -15,7 +16,7 @@ import scala.language.postfixOps
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class RetentionPolicyManagerSpec extends TestSpec with EmbeddedInfluxDB {
+class RetentionPolicyManagerSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPConf {
 
   val rpDB = "db"
 
@@ -24,7 +25,10 @@ class RetentionPolicyManagerSpec extends TestSpec with EmbeddedInfluxDB {
   "Retention policy" should "create retention policy" in {
     influx.createDatabase(rpDB).futureValue shouldEqual OkResult
 
-    influx.showDatabases().futureValue.queryResult.contains(rpDB) shouldEqual true
+    influx.showDatabases()
+      .futureValue
+      .queryResult
+      .contains(rpDB) shouldEqual true
 
     influx.createRetentionPolicy("test", rpDB, 2 hours, 2, Some(2 hours), default = true).futureValue shouldEqual OkResult
 
@@ -35,13 +39,15 @@ class RetentionPolicyManagerSpec extends TestSpec with EmbeddedInfluxDB {
   it should "drop retention policy" in {
     influx.dropRetentionPolicy("autogen", rpDB).futureValue shouldEqual OkResult
 
-    influx.showRetentionPolicies(rpDB).futureValue.queryResult shouldEqual Seq(RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true))
+    influx.showRetentionPolicies(rpDB)
+      .futureValue
+      .queryResult shouldEqual Array(RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true))
   }
 
   it should "update retention policy" in {
     influx.updateRetentionPolicy("test", rpDB, Some(3 hours)).futureValue shouldEqual OkResult
 
-    influx.showRetentionPolicies(rpDB).futureValue.queryResult shouldEqual Seq(RetentionPolicyInfo("test", "3h0m0s", "2h0m0s", 2, default = true))
+    influx.showRetentionPolicies(rpDB).futureValue.queryResult shouldEqual Array(RetentionPolicyInfo("test", "3h0m0s", "2h0m0s", 2, default = true))
   }
 
   it should "clean up everything" in {
