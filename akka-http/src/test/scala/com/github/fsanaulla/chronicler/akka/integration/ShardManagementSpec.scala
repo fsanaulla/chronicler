@@ -37,7 +37,7 @@ class ShardManagementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTP
 
     shardGroups should not equal Nil
 
-    shardGroups shouldBe a [Seq[_]]
+    shardGroups shouldBe a [Array[_]]
 
     shardGroups.head shouldBe a [ShardGroupsInfo]
 
