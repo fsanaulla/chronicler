@@ -6,7 +6,6 @@ import com.github.fsanaulla.core.enums._
 import com.github.fsanaulla.core.io.{ReadOperations, WriteOperations}
 import com.github.fsanaulla.core.model._
 import jawn.ast.JArray
-import spray.json.JsArray
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag

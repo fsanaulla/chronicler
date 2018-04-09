@@ -9,7 +9,8 @@ import scala.reflect.ClassTag
 /***
   * Predefined methods for response handling from response: R
   */
-private[core] trait ResponseHandlerHelper[R] { self: ResponseHandler[R] =>
+private[core] trait ResponseHandlerHelper[R] {
+  self: ResponseHandler[R] with Executable =>
 
   /**
   * Extract HTTP response body, and transform it to A
