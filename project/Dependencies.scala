@@ -12,7 +12,8 @@ object Dependencies {
   final val enums = "com.beachape" %% "enumeratum" % "1.5.13"
 
   // akka-http
-  final val akkaHttp = "com.typesafe.akka" %% "akka-http" % "10.0.11"
+  final val akkaStream = "com.typesafe.akka" %% "akka-stream" % "2.5.11"
+  final val akkaHttp = "com.typesafe.akka" %% "akka-http" % "10.1.0"
 
   // async-http
   final val asyncHttp = "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp
@@ -22,4 +23,5 @@ object Dependencies {
   final val embedInflux = "com.github.fsanaulla" %% "scalatest-embedinflux" % "0.1.6" % Test
 
   final val coreDep = Seq(enums, jawn, scalaTest, embedInflux)
+  final val akkaDep = Seq(akkaStream, akkaHttp)
 }
