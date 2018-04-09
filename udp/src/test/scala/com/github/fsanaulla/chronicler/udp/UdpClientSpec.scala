@@ -4,6 +4,7 @@ import com.github.fsanaulla.chronicler.async.api.Database
 import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.{InfluxFormatter, Point}
 import com.github.fsanaulla.core.test.TestSpec
+import com.github.fsanaulla.core.testing.configurations.InfluxUDPConf
 import com.github.fsanaulla.macros.Macros
 import com.github.fsanaulla.macros.annotations.{field, tag}
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
@@ -15,11 +16,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 24.02.18
   */
-class UdpClientSpec extends TestSpec with EmbeddedInfluxDB {
+class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf {
   import UdpClientSpec._
-
-  override def udpPort: Option[Int] = Some(8089)
-
+  
   lazy val influxUdp: InfluxUDPClient = InfluxUDP.connect()
 
   lazy val influxHttp: InfluxAsyncHttpClient = InfluxDB.connect()
@@ -52,7 +51,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB {
     udp
       .read[Test]("SELECT * FROM cpu")
       .futureValue
-      .queryResult.size shouldEqual 2
+      .queryResult.length shouldEqual 2
   }
 
   it should "write native" in {
@@ -63,7 +62,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB {
     udp
       .read[Test]("SELECT * FROM cpu")
       .futureValue
-      .queryResult.size shouldEqual 3
+      .queryResult.length shouldEqual 3
   }
 }
 
