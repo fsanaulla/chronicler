@@ -1,17 +1,15 @@
 package com.github.fsanaulla.core.handlers.json
 
-import com.github.fsanaulla.core.model.{Executable, InfluxReader}
+import com.github.fsanaulla.core.model.InfluxReader
 import com.github.fsanaulla.core.utils.Extensions.RichJValue
 import jawn.ast.{JArray, JValue}
 
-import scala.concurrent.Future
 import scala.reflect.ClassTag
 
 /***
   * Predefined JSON extractors
   */
-private[core] trait JsonHandlerHelper[R] extends Executable {
-  self: JsonHandler[R] =>
+private[core] trait JsonHandlerHelper {
 
   /**
     * Extract influx points from JSON, representede as Arrays
@@ -66,24 +64,5 @@ private[core] trait JsonHandlerHelper[R] extends Executable {
     */
   def getOptInfluxInfo[T: ClassTag](js: JValue)(implicit rd: InfluxReader[T]): Option[Array[(String, Array[T])]] = {
     getOptJsInfluxInfo(js).map(_.map { case (k, v) => k -> v.map(rd.read)})
-  }
-
-  /**
-    * Extract error message from response
-    * @param response - Response
-    * @return         - Error Message
-    */
-  def getError(response: R): Future[String] =
-    getJsBody(response).map(_.get("error").asString)
-
-  /**
-    * Extract optional error message from response
-    * @param response - Response
-    * @return         - optional error message
-    */
-  def getErrorOpt(response: R): Future[Option[String]] = {
-    getJsBody(response)
-      .map(_.get("results").arrayValue.flatMap(_.headOption))
-      .map(_.flatMap(_.get("error").getString))
   }
 }
