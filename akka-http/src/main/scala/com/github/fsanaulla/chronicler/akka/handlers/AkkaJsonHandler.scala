@@ -4,7 +4,7 @@ import _root_.akka.http.scaladsl.model.HttpResponse
 import _root_.akka.http.scaladsl.unmarshalling.Unmarshal
 import _root_.akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.utils.AkkaContentTypes.AppJson
-import com.github.fsanaulla.core.handlers.JsonHandler
+import com.github.fsanaulla.core.handlers.json.JsonHandler
 import spray.json.JsObject
 
 import scala.concurrent.Future

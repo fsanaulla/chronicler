@@ -1,7 +1,7 @@
 package com.github.fsanaulla.chronicler.akka.handlers
 
 import _root_.akka.http.scaladsl.model.HttpResponse
-import com.github.fsanaulla.core.handlers.ResponseHandler
+import com.github.fsanaulla.core.handlers.response.ResponseHandler
 import com.github.fsanaulla.core.model._
 import spray.json.{JsArray, JsObject}
 

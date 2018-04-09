@@ -1,4 +1,4 @@
-package com.github.fsanaulla.core.test.utils
+package com.github.fsanaulla.core.test
 
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.ScalaFutures

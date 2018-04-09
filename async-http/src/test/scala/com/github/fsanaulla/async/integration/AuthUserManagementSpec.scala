@@ -3,8 +3,7 @@ package com.github.fsanaulla.async.integration
 import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
 import com.github.fsanaulla.core.enums.Privileges
 import com.github.fsanaulla.core.model.AuthorizationException
-import com.github.fsanaulla.core.test.utils.TestSpec
-import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
+import com.github.fsanaulla.core.test.TestSpec
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 import org.scalatest.Ignore
 

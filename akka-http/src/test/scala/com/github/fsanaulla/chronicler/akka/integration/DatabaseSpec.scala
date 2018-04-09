@@ -8,8 +8,7 @@ import com.github.fsanaulla.chronicler.akka.utils.SampleEntitys._
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
 import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.Point
-import com.github.fsanaulla.core.test.utils.ResultMatchers._
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.TestSpec
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 import spray.json.{DefaultJsonProtocol, JsArray, JsValue}
 

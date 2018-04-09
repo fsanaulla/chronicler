@@ -1,11 +1,10 @@
 package com.github.fsanaulla.chronicler.async.handlers
 
-import com.github.fsanaulla.core.handlers.ResponseHandler
+import com.github.fsanaulla.core.handlers.response.ResponseHandler
 import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.core.utils.Extensions.RichJValue
 import com.softwaremill.sttp.Response
 import jawn.ast.{JArray, JValue}
-import spray.json.{JsArray, JsObject}
 
 import scala.concurrent.Future
 import scala.reflect.ClassTag
@@ -67,7 +66,7 @@ private[fsanaulla] trait AsyncResponseHandler extends ResponseHandler[Response[J
     response.code.intValue() match {
       case code if isSuccessful(code) =>
         getJsBody(response)
-          .map(getOptBulkInfluxValue)
+          .map(getOptBulkInfluxPoints)
           .map {
             case Some(seq) => QueryResult.successful[Array[JArray]](code, seq)
             case _ => QueryResult.empty[Array[JArray]](code)

@@ -1,10 +1,9 @@
 package com.github.fsanaulla.macros
 
-import com.github.fsanaulla.core.model.{InfluxFormatter, InfluxReader}
-import com.github.fsanaulla.core.test.utils.FlatSpecWithMatchers
+import com.github.fsanaulla.core.model.InfluxFormatter
+import com.github.fsanaulla.core.test.FlatSpecWithMatchers
 import com.github.fsanaulla.macros.annotations.{field, tag}
 import jawn.ast.{JArray, JNum, JString}
-import spray.json.{JsArray, JsNumber, JsString}
 
 class MacroFormatterSpec extends FlatSpecWithMatchers {
   case class Test(@tag name: String, @field age: Int)

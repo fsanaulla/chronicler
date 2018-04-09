@@ -1,8 +1,7 @@
 package com.github.fsanaulla.macros
 
 import com.github.fsanaulla.core.model._
-import com.github.fsanaulla.core.test.utils.FlatSpecWithMatchers
-import com.github.fsanaulla.core.utils._
+import com.github.fsanaulla.core.test.FlatSpecWithMatchers
 import jawn.ast.{JArray, JNum, JString}
 
 class MacroReaderSpec extends FlatSpecWithMatchers {

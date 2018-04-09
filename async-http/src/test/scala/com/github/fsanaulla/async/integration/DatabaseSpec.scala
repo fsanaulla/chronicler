@@ -7,11 +7,10 @@ import com.github.fsanaulla.async.utils.TestHelper._
 import com.github.fsanaulla.chronicler.async.api.Database
 import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.Point
-import com.github.fsanaulla.core.test.utils.TestSpec
-import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
+import com.github.fsanaulla.core.test.TestSpec
 import com.github.fsanaulla.core.utils.Extensions.RichJValue
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
-import spray.json.{DefaultJsonProtocol, JsArray, JsValue}
+import spray.json.JsArray
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

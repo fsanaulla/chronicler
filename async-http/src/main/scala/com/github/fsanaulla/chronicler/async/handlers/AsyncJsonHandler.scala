@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.async.handlers
 
-import com.github.fsanaulla.core.handlers.JsonHandler
+import com.github.fsanaulla.core.handlers.json.JsonHandler
 import com.github.fsanaulla.core.model.Executable
 import com.softwaremill.sttp.Response
 import jawn.ast.{JParser, JValue}

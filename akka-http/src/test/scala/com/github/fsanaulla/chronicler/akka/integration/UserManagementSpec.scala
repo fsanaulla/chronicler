@@ -3,8 +3,7 @@ package com.github.fsanaulla.chronicler.akka.integration
 import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
 import com.github.fsanaulla.core.enums.Privileges
 import com.github.fsanaulla.core.model.{UserInfo, UserPrivilegesInfo}
-import com.github.fsanaulla.core.test.utils.ResultMatchers.OkResult
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.TestSpec
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 import scala.concurrent.ExecutionContext.Implicits.global

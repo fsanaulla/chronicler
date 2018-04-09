@@ -3,7 +3,7 @@ package com.github.fsanaulla.chronicler.udp
 import com.github.fsanaulla.chronicler.async.api.Database
 import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.{InfluxFormatter, Point}
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.TestSpec
 import com.github.fsanaulla.macros.Macros
 import com.github.fsanaulla.macros.annotations.{field, tag}
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB

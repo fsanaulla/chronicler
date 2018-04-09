@@ -4,7 +4,7 @@ import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import _root_.akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.utils.AkkaContentTypes._
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.TestSpec
 import spray.json.{JsObject, JsonParser}
 
 class AkkaJsonHandlerSpec extends TestSpec with AkkaJsonHandler {
