@@ -8,9 +8,10 @@ import com.github.fsanaulla.chronicler.async.api.Database
 import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.Point
 import com.github.fsanaulla.core.test.TestSpec
+import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
 import com.github.fsanaulla.core.utils.Extensions.RichJValue
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
-import spray.json.JsArray
+import jawn.ast.JArray
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -79,11 +80,11 @@ class DatabaseSpec
 
     multiQuery.queryResult.head.length shouldEqual 3
     multiQuery.queryResult.head shouldBe a[Array[_]]
-    multiQuery.queryResult.head.head shouldBe a[JsArray]
+    multiQuery.queryResult.head.head shouldBe a[JArray]
 
     multiQuery.queryResult.last.length shouldEqual 1
     multiQuery.queryResult.last shouldBe a[Array[_]]
-    multiQuery.queryResult.last.head shouldBe a[JsArray]
+    multiQuery.queryResult.last.head shouldBe a[JArray]
 
     multiQuery
       .queryResult

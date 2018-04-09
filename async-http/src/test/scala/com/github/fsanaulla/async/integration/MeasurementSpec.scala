@@ -5,6 +5,7 @@ import com.github.fsanaulla.async.utils.TestHelper.{FakeEntity, _}
 import com.github.fsanaulla.chronicler.async.api.Measurement
 import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
 import com.github.fsanaulla.core.test.TestSpec
+import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 import scala.concurrent.ExecutionContext.Implicits.global
