@@ -8,7 +8,7 @@ import scala.concurrent.Future
   * Trait that define all necessary methods for handling JSON related operation
   * @tparam R - Response type
   */
-private[fsanaulla] trait JsonHandler[R] extends JsonHandlerHelper {
+private[fsanaulla] trait JsonHandler[R] extends JsonHandlerHelper[R] {
 
   /***
     * Extracting JSON from Response

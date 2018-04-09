@@ -2,7 +2,6 @@ package com.github.fsanaulla.chronicler.async.handlers
 
 import com.github.fsanaulla.core.handlers.response.ResponseHandler
 import com.github.fsanaulla.core.model._
-import com.github.fsanaulla.core.utils.Extensions.RichJValue
 import com.softwaremill.sttp.Response
 import jawn.ast.{JArray, JValue}
 
@@ -75,14 +74,5 @@ private[fsanaulla] trait AsyncResponseHandler extends ResponseHandler[Response[J
         errorHandler(other, response)
           .map(ex => QueryResult.failed[Array[JArray]](other, ex))
     }
-  }
-
-  def getError(response: Response[JValue]): Future[String] =
-    getJsBody(response).map(_.get("error").asString)
-
-  def getErrorOpt(response: Response[JValue]): Future[Option[String]] = {
-    getJsBody(response)
-      .map(_.get("results").arrayValue.flatMap(_.headOption))
-      .map(_.flatMap(_.get("error").getString))
   }
 }

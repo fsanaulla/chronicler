@@ -4,14 +4,16 @@ import com.github.fsanaulla.core.model.InfluxReader
 import com.github.fsanaulla.core.utils.Extensions.RichJValue
 import jawn.ast.{JArray, JValue}
 
+import scala.concurrent.Future
 import scala.reflect.ClassTag
 
 /***
   * Predefined JSON extractors
   */
-private[core] trait JsonHandlerHelper {
+private[core] trait JsonHandlerHelper[R] {
+  self: JsonHandler[R] =>
 
-  /***
+  /**
     * Extract influx points from JSON, representede as Arrays
     * @param js - JSON value
     * @return - optional array of points
@@ -23,7 +25,7 @@ private[core] trait JsonHandlerHelper {
       .map(_.flatMap(_.array)) // map to array of JArray
   }
 
-  /***
+  /**
     * Extract bulk result from JSON
     * @param js - JSON value
     * @return - Array of points
@@ -34,7 +36,7 @@ private[core] trait JsonHandlerHelper {
       .map(_.flatMap(_.get("values").arrayValue.map(_.flatMap(_.array)))) // get 'values' array
   }
 
-  /***
+  /**
     * Extract Measurement name -> Measurement points array
     * @param js - JSON value
     * @return = array of meas name -> meas points
@@ -55,7 +57,7 @@ private[core] trait JsonHandlerHelper {
       })
   }
 
-  /***
+  /**
     * Extract Measurement name and values from it from JSON
     * @param js - JSON value
     * @param rd - implicit reader for deserializing influx point to scala case classes
@@ -64,5 +66,24 @@ private[core] trait JsonHandlerHelper {
     */
   def getOptInfluxInfo[T: ClassTag](js: JValue)(implicit rd: InfluxReader[T]): Option[Array[(String, Array[T])]] = {
     getOptJsInfluxInfo(js).map(_.map { case (k, v) => k -> v.map(rd.read)})
+  }
+
+  /**
+    * Extract error message from response
+    * @param response - Response
+    * @return         - Error Message
+    */
+  def getError(response: R): Future[String] =
+    getJsBody(response).map(_.get("error").asString)
+
+  /**
+    * Extract optional error message from response
+    * @param response - Response
+    * @return         - optional error message
+    */
+  def getErrorOpt(response: R): Future[Option[String]] = {
+    getJsBody(response)
+      .map(_.get("results").arrayValue.flatMap(_.headOption))
+      .map(_.flatMap(_.get("error").getString))
   }
 }

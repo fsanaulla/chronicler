@@ -3,7 +3,6 @@ package com.github.fsanaulla.chronicler.akka.handlers
 import _root_.akka.http.scaladsl.model.HttpResponse
 import com.github.fsanaulla.core.handlers.response.ResponseHandler
 import com.github.fsanaulla.core.model._
-import spray.json.{JsArray, JsObject}
 
 import scala.concurrent.Future
 
@@ -71,20 +70,5 @@ private[fsanaulla] trait AkkaResponseHandler
         errorHandler(other, response)
           .map(ex => QueryResult.failed[Seq[JsArray]](other, ex))
     }
-  }
-
-  def getError(response: HttpResponse): Future[String] = {
-    getJsBody(response)
-      .map(_.getFields("error").head.convertTo[String])
-  }
-
-  def getErrorOpt(response: HttpResponse): Future[Option[String]] = {
-    getJsBody(response)
-      .map(
-        _.getFields("results")
-          .headOption
-          .flatMap(_.convertTo[Seq[JsObject]].headOption)
-          .flatMap(_.fields.get("error"))
-          .map(_.convertTo[String]))
   }
 }
