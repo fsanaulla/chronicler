@@ -1,6 +1,6 @@
 package com.github.fsanaulla.core.handlers.json
 
-import com.github.fsanaulla.core.model.InfluxReader
+import com.github.fsanaulla.core.model.{Executable, InfluxReader}
 import com.github.fsanaulla.core.utils.Extensions.RichJValue
 import jawn.ast.{JArray, JValue}
 
@@ -10,7 +10,7 @@ import scala.reflect.ClassTag
 /***
   * Predefined JSON extractors
   */
-private[core] trait JsonHandlerHelper[R] {
+private[core] trait JsonHandlerHelper[R] extends Executable {
   self: JsonHandler[R] =>
 
   /**
