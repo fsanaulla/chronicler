@@ -83,6 +83,6 @@ private[fsanaulla] trait AsyncResponseHandler extends ResponseHandler[Response[J
   def getErrorOpt(response: Response[JValue]): Future[Option[String]] = {
     getJsBody(response)
       .map(_.get("results").arrayValue.flatMap(_.headOption))
-      .map(_.flatMap(_.get("errors").getString))
+      .map(_.flatMap(_.get("error").getString))
   }
 }
