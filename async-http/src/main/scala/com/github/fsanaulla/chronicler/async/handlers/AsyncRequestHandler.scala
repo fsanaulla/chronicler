@@ -5,7 +5,6 @@ import com.github.fsanaulla.chronicler.async.utils.Extensions.RichRequest
 import com.github.fsanaulla.core.handlers.RequestHandler
 import com.softwaremill.sttp._
 import jawn.ast.{JNull, JParser, JValue}
-import spray.json.{JsObject, JsValue, JsonParser}
 
 import scala.concurrent.Future
 import scala.util.Success

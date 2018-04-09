@@ -18,5 +18,5 @@ private[fsanaulla] trait InfluxClient[R, U, M, E]
     with HasCredentials
     with Executable
     with AutoCloseable {
-  self: RequestHandler[R, U, M, E] with ResponseHandler[R] with QueryHandler[U] with HasCredentials =>
+  self: RequestHandler[R, U, M, E] with ResponseHandler[R] with QueryHandler[U] =>
 }

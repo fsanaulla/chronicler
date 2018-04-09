@@ -7,7 +7,6 @@ import com.github.fsanaulla.core.model.{InfluxCredentials, Result}
 import com.softwaremill.sttp.asynchttpclient.future.AsyncHttpClientFutureBackend
 import com.softwaremill.sttp.{Method, Response, SttpBackend, Uri}
 import jawn.ast.JValue
-import spray.json.JsObject
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
