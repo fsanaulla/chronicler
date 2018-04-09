@@ -12,6 +12,7 @@ import com.github.fsanaulla.core.client.InfluxClient
 import com.github.fsanaulla.core.model._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.ClassTag
 import scala.util.{Failure, Success}
 
 /**
@@ -51,7 +52,7 @@ private[fsanaulla] class InfluxAkkaHttpClient(host: String,
     * @tparam A - Measurement's time series type
     * @return - Measurement instance of type [A]
     */
-  override def measurement[A](dbName: String, measurementName: String): Measurement[A] = {
+  override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] = {
     new Measurement[A](dbName, measurementName, credentials)
   }
 

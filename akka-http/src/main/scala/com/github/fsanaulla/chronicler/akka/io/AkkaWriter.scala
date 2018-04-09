@@ -1,4 +1,4 @@
-package com.github.fsanaulla.chronicler.async.io
+package com.github.fsanaulla.chronicler.akka.io
 
 import akka.http.scaladsl.model.{RequestEntity, Uri}
 import akka.stream.ActorMaterializer
@@ -6,7 +6,7 @@ import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryHandler, AkkaRequ
 import com.github.fsanaulla.chronicler.akka.utils.AkkaTypeAlias.Connection
 import com.github.fsanaulla.core.enums.{Consistency, Precision}
 import com.github.fsanaulla.core.io.WriteOperations
-import com.github.fsanaulla.core.model.{Executable, HasCredentials, InfluxCredentials, Result}
+import com.github.fsanaulla.core.model.{Executable, HasCredentials, Result}
 import com.github.fsanaulla.core.query.DatabaseOperationQuery
 import com.github.fsanaulla.core.utils.PointTransformer
 

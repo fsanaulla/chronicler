@@ -4,7 +4,9 @@ import com.github.fsanaulla.chronicler.akka.api.Measurement
 import com.github.fsanaulla.chronicler.akka.utils.SampleEntitys._
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper.{FakeEntity, _}
 import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
+import com.github.fsanaulla.core.test.ResultMatchers._
 import com.github.fsanaulla.core.test.TestSpec
+import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -14,7 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 28.09.17
   */
-class MeasurementSpec extends TestSpec with EmbeddedInfluxDB {
+class MeasurementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPConf {
 
   val safeDB = "db"
   val measName = "meas"

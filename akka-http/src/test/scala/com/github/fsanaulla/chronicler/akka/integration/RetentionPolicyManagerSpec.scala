@@ -2,7 +2,9 @@ package com.github.fsanaulla.chronicler.akka.integration
 
 import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.RetentionPolicyInfo
+import com.github.fsanaulla.core.test.ResultMatchers._
 import com.github.fsanaulla.core.test.TestSpec
+import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
 import com.github.fsanaulla.core.utils.InfluxDuration._
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
@@ -13,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class RetentionPolicyManagerSpec extends TestSpec with EmbeddedInfluxDB {
+class RetentionPolicyManagerSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPConf {
 
   val rpDB = "db"
 

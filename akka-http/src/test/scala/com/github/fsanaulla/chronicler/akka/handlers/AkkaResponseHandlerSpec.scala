@@ -16,9 +16,7 @@ import scala.language.postfixOps
 /**
   * Created by fayaz on 12.07.17.
   */
-class AkkaResponseHandlerSpec
-  extends TestSpec
-    with AkkaResponseHandler {
+class AkkaResponseHandlerSpec extends TestSpec with AkkaResponseHandler {
 
   implicit val actorSystem: ActorSystem = ActorSystem("TestActorSystem")
   implicit val mat: ActorMaterializer = ActorMaterializer()
@@ -129,7 +127,11 @@ class AkkaResponseHandlerSpec
   }
 
   it should "extract CQ information result" in {
-    toCqQueryResult(cqHttpResponse).futureValue.queryResult.filter(_.querys.nonEmpty).head shouldEqual ContinuousQueryInfo("mydb", Seq(ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")))
+    val cqi = toCqQueryResult(cqHttpResponse).futureValue.queryResult.filter(_.querys.nonEmpty).head
+    
+    cqi.dbName shouldEqual "mydb"
+    cqi.querys.length shouldEqual 1
+    cqi.querys.head shouldEqual ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")
   }
 
   it should "extract error message" in {
