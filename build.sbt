@@ -58,7 +58,7 @@ lazy val akkaHttp = (project in file("akka-http"))
   .settings(
     name := "chronicler-akka-http",
     scalacOptions += "-language:postfixOps",
-    libraryDependencies += Dependencies.akkaDep
+    libraryDependencies ++= Dependencies.akkaDep
   )
   .dependsOn(core % "compile->compile;test->test")
   .dependsOn(macros % "test->test")
