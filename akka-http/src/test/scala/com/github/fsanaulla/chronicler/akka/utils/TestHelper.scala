@@ -4,7 +4,6 @@ import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.macros.Macros
 import com.github.fsanaulla.macros.annotations.{field, tag}
-import spray.json.{DeserializationException, JsArray, JsNumber, JsString}
 
 /**
   * Created by fayaz on 11.07.17.

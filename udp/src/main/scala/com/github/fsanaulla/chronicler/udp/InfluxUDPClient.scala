@@ -1,5 +1,6 @@
 package com.github.fsanaulla.chronicler.udp
 
+import java.io.File
 import java.net._
 
 import com.github.fsanaulla.chronicler.udp.models.UdpConnection
@@ -42,8 +43,8 @@ private[fsanaulla] class InfluxUDPClient(host: String, port: Int)
     send(buildDatagram(sendEntity))
   }
 
-  def writeFromFile(filePath: String): Future[Unit] = {
-    val sendData = Source.fromFile(filePath).getLines().mkString("\n").getBytes()
+  def writeFromFile(file: File): Future[Unit] = {
+    val sendData = Source.fromFile(file).getLines().mkString("\n").getBytes()
 
     send(buildDatagram(sendData))
   }

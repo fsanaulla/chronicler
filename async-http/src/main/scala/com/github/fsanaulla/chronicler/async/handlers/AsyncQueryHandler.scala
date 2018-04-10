@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.async.handlers
 
-import com.github.fsanaulla.core.handlers.QueryHandler
+import com.github.fsanaulla.core.handlers.query.QueryHandler
 import com.github.fsanaulla.core.model.HasCredentials
 import com.softwaremill.sttp.Uri.QueryFragment
 import com.softwaremill.sttp.Uri.QueryFragment.KeyValue

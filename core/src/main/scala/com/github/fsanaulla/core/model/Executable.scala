@@ -2,12 +2,13 @@ package com.github.fsanaulla.core.model
 
 import scala.concurrent.ExecutionContext
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 13.03.18
+/***
+  * Trait for mixin execution context
   */
-private [fsanaulla] trait Executable {
+private[fsanaulla] trait Executable {
 
+  /**
+    * Implicit execution context
+    */
   protected implicit val ex: ExecutionContext
 }

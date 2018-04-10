@@ -3,8 +3,9 @@ package com.github.fsanaulla.chronicler.akka.integration
 import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
 import com.github.fsanaulla.core.enums.Privileges
 import com.github.fsanaulla.core.model.{UserInfo, UserPrivilegesInfo}
-import com.github.fsanaulla.core.test.utils.ResultMatchers.OkResult
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.ResultMatchers._
+import com.github.fsanaulla.core.test.TestSpec
+import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -14,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UserManagementSpec extends TestSpec with EmbeddedInfluxDB{
+class UserManagementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPConf {
 
   val userDB = "db"
   val userName = "Martin"

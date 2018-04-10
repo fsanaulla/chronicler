@@ -1,11 +1,11 @@
 package com.github.fsanaulla.chronicler.akka.handlers
 
-import _root_.akka.http.scaladsl.model.HttpResponse
-import _root_.akka.http.scaladsl.unmarshalling.Unmarshal
+import _root_.akka.http.scaladsl.model.{HttpEntity, HttpResponse}
+import _root_.akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
 import _root_.akka.stream.ActorMaterializer
-import com.github.fsanaulla.chronicler.akka.utils.AkkaContentTypes.AppJson
-import com.github.fsanaulla.core.handlers.JsonHandler
-import spray.json.JsObject
+import akka.util.ByteString
+import com.github.fsanaulla.core.handlers.json.JsonHandler
+import jawn.ast.{JParser, JValue}
 
 import scala.concurrent.Future
 
@@ -18,7 +18,23 @@ private[fsanaulla] trait AkkaJsonHandler extends JsonHandler[HttpResponse] {
 
   protected implicit val mat: ActorMaterializer
 
-  override def getJsBody(response: HttpResponse): Future[JsObject] = {
-    Unmarshal(response.entity.withContentType(AppJson)).to[JsObject]
+  /**
+    * Custom Unmarshaller for Jawn JSON
+    */
+  implicit val unm: Unmarshaller[HttpEntity, JValue] = {
+    Unmarshaller.withMaterializer {
+      implicit ex =>
+        implicit mat =>
+          entity: HttpEntity =>
+            entity.dataBytes
+              .runFold(ByteString.empty)(_ ++ _)
+              .flatMap(db => Future.fromTry(JParser.parseFromString(db.utf8String)))
+    }
   }
+
+
+  override def getJsBody(response: HttpResponse): Future[JValue] = {
+    Unmarshal(response.entity).to[JValue]
+  }
+
 }

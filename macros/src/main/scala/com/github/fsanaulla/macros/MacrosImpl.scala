@@ -1,5 +1,6 @@
 package com.github.fsanaulla.macros
 
+import com.github.fsanaulla.core.model.DeserializationException
 import com.github.fsanaulla.macros.annotations.{field, tag}
 
 import scala.language.experimental.macros
@@ -87,42 +88,42 @@ private[macros] object MacrosImpl {
     val string = typeOf[String].dealias
 
     val params = methods
-      .map(_._1)
-      .sorted
-      .map(v => TermName(v))
-      .map(v => q"$v = $v.value")
-
-    val paramss = methods
-      .sortBy(_._1) // influx return results in alphabetical order
+      .sortBy(_._1)
       .map { case (k, v) => TermName(k) -> v }
       .map {
-        case (name, `bool`) => pq"$name: JsBoolean"
-        case (name, `string`) => pq"$name: JsString"
-        case (name, `int`) => pq"$name: JsNumber"
-        case (name, `long`) => pq"$name: JsNumber"
-        case (name, `double`) => pq"$name: JsNumber"
-        case (_, other) => c.abort(c.enclosingPosition, s"Unknown type $other")
+        case (k, `bool`) => q"$k = $k.asBoolean"
+        case (k, `string`) => q"$k = $k.asString"
+        case (k, `int`) => q"$k = $k.asInt"
+        case (k, `long`) => q"$k = $k.asLong"
+        case (k, `double`) => q"$k = $k.asDouble"
+        case (_, other) => c.abort(c.enclosingPosition, s"Unsupported type $other")
       }
 
+    val paramss = methods
+      .map(_._1)
+      .sorted // influx return results in alphabetical order
+      .map(k => TermName(k))
+      .map(k => pq"$k: JValue")
+
     // success case clause component
-    val successPat = pq"Vector(..$paramss)"
+    val successPat = pq"Array(..$paramss)"
     val successBody = q"new $tpe(..$params)"
     val successCase = cq"$successPat => $successBody"
 
     // failure case clause component
     val failurePat = pq"_"
     val failureMsg = s"Can't deserialize $tpe object"
-    val failureBody = q"throw DeserializationException($failureMsg)"
+    val failureBody = q"throw new DeserializationException($failureMsg)"
     val failureCase = cq"$failurePat => $failureBody"
 
     val cases = successCase :: failureCase :: Nil
 
     q"""
        new InfluxReader[$tpe] {
-          import com.github.fsanaulla.core.utils.Implicits._
-          import spray.json._
+          import jawn.ast.{JValue, JArray}
+          import com.github.fsanaulla.core.model.DeserializationException
 
-          def read(js: JsArray): $tpe = js.elements.tail match { case ..$cases }
+          def read(js: JArray): $tpe = js.vs.tail match { case ..$cases }
        }
       """
   }
@@ -192,45 +193,46 @@ private[macros] object MacrosImpl {
       val string = typeOf[String].dealias
 
       val params = readMethods
-        .map(_._1)
-        .sorted
-        .map(v => TermName(v))
-        .map(v => q"$v = $v.value")
-
-      val paramss = readMethods
-        .sortBy(_._1) // influx return results in alphabetical order
+        .sortBy(_._1)
         .map { case (k, v) => TermName(k) -> v }
         .map {
-          case (name, `bool`) => pq"$name: JsBoolean"
-          case (name, `string`) => pq"$name: JsString"
-          case (name, `int`) => pq"$name: JsNumber"
-          case (name, `long`) => pq"$name: JsNumber"
-          case (name, `double`) => pq"$name: JsNumber"
-          case (_, other) => c.abort(c.enclosingPosition, s"Unknown type $other")
+          case (k, `bool`) => q"$k = $k.asBoolean"
+          case (k, `string`) => q"$k = $k.asString"
+          case (k, `int`) => q"$k = $k.asInt"
+          case (k, `long`) => q"$k = $k.asLong"
+          case (k, `double`) => q"$k = $k.asDouble"
+          case (_, other) => c.abort(c.enclosingPosition, s"Unsupported type $other")
         }
 
+      val paramss = readMethods
+        .map(_._1)
+        .sorted // influx return results in alphabetical order
+        .map(k => TermName(k))
+        .map(k => pq"$k: JValue")
+
       // success case clause component
-      val successPat = pq"Vector(..$paramss)"
+      val successPat = pq"Array(..$paramss)"
       val successBody = q"new $tpe(..$params)"
       val successCase = cq"$successPat => $successBody"
 
       // failure case clause component
       val failurePat = pq"_"
       val failureMsg = s"Can't deserialize $tpe object"
-      val failureBody = q"throw DeserializationException($failureMsg)"
+      val failureBody = q"throw new DeserializationException($failureMsg)"
       val failureCase = cq"$failurePat => $failureBody"
 
+      new DeserializationException("")
       val cases = successCase :: failureCase :: Nil
 
       q"""
-         def read(js: JsArray): $tpe = js.elements.tail match { case ..$cases }
+         def read(js: JArray): $tpe = js.vs.tail match { case ..$cases }
        """
     }
 
     q"""
        new InfluxFormatter[$tpe] {
-          import com.github.fsanaulla.core.utils.Implicits._
-          import spray.json._
+          import jawn.ast.{JValue, JArray}
+          import com.github.fsanaulla.core.model.DeserializationException
 
           ${createWriteMethod(methods)}
           ${createReadMethod(methods)}

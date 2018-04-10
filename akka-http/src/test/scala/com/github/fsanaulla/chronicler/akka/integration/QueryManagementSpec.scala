@@ -2,8 +2,9 @@ package com.github.fsanaulla.chronicler.akka.integration
 
 import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.QueryInfo
-import com.github.fsanaulla.core.test.utils.ResultMatchers._
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.ResultMatchers._
+import com.github.fsanaulla.core.test.TestSpec
+import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 import org.scalatest.Ignore
 
@@ -15,7 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Date: 20.08.17
   */
 @Ignore
-class QueryManagementSpec extends TestSpec with EmbeddedInfluxDB {
+class QueryManagementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPConf {
 
   val testDb = "query_db"
   val cqName = "cq_name"

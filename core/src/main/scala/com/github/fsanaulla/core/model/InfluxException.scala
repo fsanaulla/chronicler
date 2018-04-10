@@ -22,3 +22,5 @@ class InternalServerError(errMsg: String) extends InfluxException(errMsg)
 class UnknownConnectionException(errMsg: String) extends InfluxException(errMsg)
 
 class UnknownResponseException(errMsg: String) extends InfluxException(errMsg)
+
+class DeserializationException(errMsg: String) extends InfluxException(errMsg)

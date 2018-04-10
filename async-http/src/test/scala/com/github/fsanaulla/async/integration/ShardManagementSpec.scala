@@ -2,8 +2,9 @@ package com.github.fsanaulla.async.integration
 
 import com.github.fsanaulla.async.utils.TestHelper._
 import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
-import com.github.fsanaulla.core.model.ShardGroupsInfo
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.model.{ShardGroupsInfo, ShardInfo}
+import com.github.fsanaulla.core.test.TestSpec
+import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -13,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
-class ShardManagementSpec extends TestSpec with EmbeddedInfluxDB {
+class ShardManagementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPConf {
 
   val testDb = "_internal"
 
@@ -25,18 +26,16 @@ class ShardManagementSpec extends TestSpec with EmbeddedInfluxDB {
 
     val shards = influx.showShards().futureValue.queryResult
 
-    shards should not be Nil
-
-    shards.foreach(println)
+    shards should not be Array.empty[ShardInfo]
   }
 
   it should "show shards groupe" in {
 
     val shardGroups = influx.showShardGroups().futureValue.queryResult
 
-    shardGroups should not equal Nil
+    shardGroups should not equal Array.empty[ShardGroupsInfo]
 
-    shardGroups shouldBe a [Seq[_]]
+    shardGroups shouldBe a [Array[_]]
 
     shardGroups.head shouldBe a [ShardGroupsInfo]
 

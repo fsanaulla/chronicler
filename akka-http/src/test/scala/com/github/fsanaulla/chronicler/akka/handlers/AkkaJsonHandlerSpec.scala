@@ -4,13 +4,16 @@ import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import _root_.akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.utils.AkkaContentTypes._
-import com.github.fsanaulla.core.test.utils.TestSpec
-import spray.json.{JsObject, JsonParser}
+import com.github.fsanaulla.core.test.TestSpec
+import jawn.ast.JParser
+
+import scala.concurrent.ExecutionContext
 
 class AkkaJsonHandlerSpec extends TestSpec with AkkaJsonHandler {
 
   implicit val system: ActorSystem = ActorSystem("TestOne")
   implicit val mat: ActorMaterializer = ActorMaterializer()
+  implicit val ex: ExecutionContext = system.dispatcher
 
   val singleStrJson = """{
                       "results": [
@@ -45,7 +48,7 @@ class AkkaJsonHandlerSpec extends TestSpec with AkkaJsonHandler {
 
   val singleHttpResponse: HttpResponse = HttpResponse(entity = HttpEntity(AppJson, singleStrJson))
 
-  val jsResult: JsObject = JsonParser(singleStrJson).asJsObject
+  val jsResult = JParser.parseFromString(singleStrJson).toOption.value
 
   "Akka json handler" should "extract js object from HTTP response" in {
     getJsBody(singleHttpResponse).futureValue shouldEqual jsResult

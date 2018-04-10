@@ -1,8 +1,8 @@
 package com.github.fsanaulla.core.query
 
 import com.github.fsanaulla.core.enums.Destination
-import com.github.fsanaulla.core.handlers.QueryHandler
-import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials}
+import com.github.fsanaulla.core.handlers.query.QueryHandler
+import com.github.fsanaulla.core.model.HasCredentials
 
 /**
   * Created by

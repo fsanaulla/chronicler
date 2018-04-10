@@ -3,32 +3,32 @@ package com.github.fsanaulla.chronicler.akka.api
 import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.model.RequestEntity
 import _root_.akka.stream.ActorMaterializer
-import com.github.fsanaulla.chronicler.akka.io.AkkaReader
+import com.github.fsanaulla.chronicler.akka.io.{AkkaReader, AkkaWriter}
 import com.github.fsanaulla.chronicler.akka.utils.AkkaTypeAlias.Connection
-import com.github.fsanaulla.chronicler.async.io.AkkaWriter
 import com.github.fsanaulla.core.api.MeasurementApi
 import com.github.fsanaulla.core.enums._
 import com.github.fsanaulla.core.model._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.ClassTag
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 03.09.17
   */
-private[fsanaulla] class Measurement[E](dbName: String,
-                                        measurementName: String,
-                                        val credentials: Option[InfluxCredentials])
-                                       (protected implicit val actorSystem: ActorSystem,
+private[fsanaulla] class Measurement[E: ClassTag](dbName: String,
+                                                  measurementName: String,
+                                                  val credentials: Option[InfluxCredentials])
+                                                 (protected implicit val actorSystem: ActorSystem,
                                         protected implicit val mat: ActorMaterializer,
                                         protected implicit val ex: ExecutionContext,
                                         protected implicit val connection: Connection)
     extends MeasurementApi[E, RequestEntity](dbName, measurementName)
-      with HasCredentials
-      with Executable
       with AkkaWriter
-      with AkkaReader {
+      with AkkaReader
+      with HasCredentials
+      with Executable {
 
   import com.github.fsanaulla.chronicler.akka.models.AkkaDeserializers.str2Http
 

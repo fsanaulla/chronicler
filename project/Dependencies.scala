@@ -8,18 +8,20 @@ import sbt._
 object Dependencies {
 
   // core
-  final val sprayJson = "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.11"
+  final val jawn = "org.spire-math" %% "jawn-ast" % "0.12.1"
   final val enums = "com.beachape" %% "enumeratum" % "1.5.13"
 
   // akka-http
-  final val akkaHttp = "com.typesafe.akka" %% "akka-http" % "10.0.11"
+  final val akkaStream = "com.typesafe.akka" %% "akka-stream" % "2.5.11"
+  final val akkaHttp = "com.typesafe.akka" %% "akka-http" % "10.1.0"
 
   // async-http
   final val asyncHttp = "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp
 
   // for testing
-  final val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalaTest % Test
-  final val embedInflux = "com.github.fsanaulla" %% "scalatest-embedinflux" % Versions.scalaTestInflux % Test
+  final val scalaTest = "org.scalatest" %% "scalatest" % "3.0.5" % Test
+  final val embedInflux = "com.github.fsanaulla" %% "scalatest-embedinflux" % "0.1.6" % Test
 
-  final val coreDep = Seq(sprayJson, enums, scalaTest, embedInflux)
+  final val coreDep = Seq(enums, jawn, scalaTest, embedInflux)
+  final val akkaDep = Seq(akkaStream, akkaHttp)
 }

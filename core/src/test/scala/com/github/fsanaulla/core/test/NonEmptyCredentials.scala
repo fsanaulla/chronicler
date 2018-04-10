@@ -1,4 +1,4 @@
-package com.github.fsanaulla.core.test.utils
+package com.github.fsanaulla.core.test
 
 import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials}
 

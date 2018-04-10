@@ -1,9 +1,11 @@
 package com.github.fsanaulla.core.api.management
 
-import com.github.fsanaulla.core.handlers.{QueryHandler, RequestHandler, ResponseHandler}
+import com.github.fsanaulla.core.handlers.RequestHandler
+import com.github.fsanaulla.core.handlers.query.QueryHandler
+import com.github.fsanaulla.core.handlers.response.ResponseHandler
 import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.core.query.ContinuousQuerys
-import com.github.fsanaulla.core.utils.InfluxImplicits._
+import com.github.fsanaulla.core.utils.DefaultInfluxImplicits._
 
 import scala.concurrent.Future
 
@@ -30,7 +32,7 @@ private[fsanaulla] trait ContinuousQueryManagement[R, U, M, E] extends Continuou
       .map(_.find(_.dbName == dbName))
       .map {
         case Some(cqi) => cqi.querys
-        case _ => Nil
+        case _ => Array.empty[ContinuousQuery]
       }
       .map(seq => QueryResult[ContinuousQuery](200, isSuccess = true, seq))
   }
