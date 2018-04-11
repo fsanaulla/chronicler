@@ -20,23 +20,17 @@ private[macros] object MacrosImpl {
   def writer_impl[T: c.WeakTypeTag](c: blackbox.Context): c.universe.Tree = {
     import c.universe._
 
-    def tpDl[A: TypeTag]: c.universe.Type = typeOf[A].dealias
+    def tpdls[A: TypeTag]: c.universe.Type = typeOf[A].dealias
 
     val SUPPORTED_FIELD_TYPES = List(
-      tpDl[Boolean], tpDl[Int], tpDl[Long], tpDl[Double],
-      tpDl[String], tpDl[Option[Boolean]], tpDl[Option[Int]],
-      tpDl[Option[Long]], tpDl[Option[Double]], tpDl[Option[String]]
+      tpdls[Boolean], tpdls[Int], tpdls[Long], tpdls[Double],
+      tpdls[String], tpdls[Option[Boolean]], tpdls[Option[Int]],
+      tpdls[Option[Long]], tpdls[Option[Double]], tpdls[Option[String]]
     )
 
+    /** Is it Option container*/
     def isOption(tpe: c.universe.Type): Boolean =
       tpe.typeConstructor =:= typeOf[Option[_]].typeConstructor
-
-    def isSome(tpe: c.universe.Type): Boolean = tpe.baseType(typeOf[Option[_]].typeSymbol) match {
-      case NoType => println(NoType.dealias)
-        false
-      case ot: TypeRef => println(ot.typeArgs.head)
-        true
-    }
 
     def isSupportedFieldType(tpe: c.universe.Type): Boolean =
       SUPPORTED_FIELD_TYPES.exists(t => t =:= tpe)
@@ -107,6 +101,8 @@ private[macros] object MacrosImpl {
   def reader_impl[T: c.WeakTypeTag](c: blackbox.Context): c.universe.Tree = {
     import c.universe._
 
+    def tpdls[A: TypeTag]: c.universe.Type = typeOf[A].dealias
+
     val tpe = c.weakTypeOf[T]
 
     val methods = tpe.decls.toList collect {
@@ -118,11 +114,16 @@ private[macros] object MacrosImpl {
       c.abort(c.enclosingPosition, "Type parameter must be a case class with more then 1 fields")
     }
 
-    val bool = typeOf[Boolean].dealias
-    val int = typeOf[Int].dealias
-    val long = typeOf[Long].dealias
-    val double = typeOf[Double].dealias
-    val string = typeOf[String].dealias
+    val bool = tpdls[Boolean]
+    val int = tpdls[Int]
+    val long = tpdls[Long]
+    val double = tpdls[Double]
+    val string = tpdls[String]
+    val optBool = tpdls[Option[Boolean]]
+    val optInt = tpdls[Option[Int]]
+    val optLong = tpdls[Option[Long]]
+    val optDouble = tpdls[Option[Double]]
+    val optString = tpdls[Option[String]]
 
     val params = methods
       .sortBy(_._1)
@@ -133,6 +134,11 @@ private[macros] object MacrosImpl {
         case (k, `int`) => q"$k = $k.asInt"
         case (k, `long`) => q"$k = $k.asLong"
         case (k, `double`) => q"$k = $k.asDouble"
+        case (k, `optBool`) => q"$k = $k.getBoolean"
+        case (k, `optString`) => q"$k = $k.getString"
+        case (k, `optInt`) => q"$k = $k.getInt"
+        case (k, `optLong`) => q"$k = $k.getLong"
+        case (k, `optDouble`) => q"$k = $k.getDouble"
         case (_, other) => c.abort(c.enclosingPosition, s"Unsupported type $other")
       }
 
