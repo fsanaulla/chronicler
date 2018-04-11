@@ -20,13 +20,43 @@ private[macros] object MacrosImpl {
   def writer_impl[T: c.WeakTypeTag](c: blackbox.Context): c.universe.Tree = {
     import c.universe._
 
+    def tpDl[A: TypeTag]: c.universe.Type = typeOf[A].dealias
+
+    val SUPPORTED_FIELD_TYPES = List(
+      tpDl[Boolean], tpDl[Int], tpDl[Long], tpDl[Double],
+      tpDl[String], tpDl[Option[Boolean]], tpDl[Option[Int]],
+      tpDl[Option[Long]], tpDl[Option[Double]], tpDl[Option[String]]
+    )
+
+    def isOption(tpe: c.universe.Type): Boolean =
+      tpe.typeConstructor =:= typeOf[Option[_]].typeConstructor
+
+    def isSome(tpe: c.universe.Type): Boolean = tpe.baseType(typeOf[Option[_]].typeSymbol) match {
+      case NoType => println(NoType.dealias)
+        false
+      case ot: TypeRef => println(ot.typeArgs.head)
+        true
+    }
+
+    def isSupportedFieldType(tpe: c.universe.Type): Boolean =
+      SUPPORTED_FIELD_TYPES.exists(t => t =:= tpe)
+
+
     /** Predicate for finding fields of instance marked with '@tag' annotation */
-    def isTag(m: MethodSymbol): Boolean =
-      m.annotations.exists(_.tree.tpe =:= typeOf[tag])
+    def isTag(m: MethodSymbol): Boolean = {
+      if(m.annotations.exists(_.tree.tpe =:= typeOf[tag])) {
+        if (m.returnType =:= typeOf[String]) true
+        else c.abort(c.enclosingPosition, s"@tag ${m.name} has unsupported type ${m.returnType}. Tag must have String type")
+      } else false
+    }
 
     /** Predicate for finding fields of instance marked with '@field' annotation */
-    def isField(m: MethodSymbol): Boolean =
-      m.annotations.exists(_.tree.tpe =:= typeOf[field])
+    def isField(m: MethodSymbol): Boolean = {
+      if (m.annotations.exists(_.tree.tpe =:= typeOf[field])) {
+        if (isSupportedFieldType(m.returnType)) true
+        else c.abort(c.enclosingPosition, s"Unsupported type for @field ${m.name}: ${m.returnType}")
+      } else false
+    }
 
     val tpe = c.weakTypeOf[T]
 
@@ -44,21 +74,28 @@ private[macros] object MacrosImpl {
         q"${m.name.decodedName.toString} -> obj.${m.name}"
     }
 
-    val fields = methods collect {
-      case m: MethodSymbol if isField(m) =>
+    val nonOptFields: List[c.universe.Tree] = methods.collect {
+      case m: MethodSymbol if isField(m) && !isOption(m.returnType) =>
+        q"${m.name.decodedName.toString} -> obj.${m.name}"
+    }
+
+    val optFields: List[c.universe.Tree] = methods.collect {
+      case m: MethodSymbol if isField(m) && isOption(m.returnType) =>
         q"${m.name.decodedName.toString} -> obj.${m.name}"
     }
 
     q"""
        new InfluxWriter[$tpe] {
           def write(obj: $tpe): String = {
-            val tags: Map[String, Any] = Map(..$tags)
-            val fields: Map[String, Any] = Map(..$fields)
+            val tags: String = Map(..$tags).map{case (k, v) => k + "=" + v }.mkString(",")
 
-            val preparedTags = tags map { case (k, v) => k + "=" + v } mkString(",")
-            val preparedFields = fields map { case (k, v) => k + "=" + v } mkString(" ")
+            val nonOptFields: String = Map(..$nonOptFields).map{case (k, v) => k + "=" + v}.mkString(" ")
 
-            preparedTags + " " + preparedFields trim
+            val optFields: String = Map(..$optFields).collect {
+                case (k, v) if v.isDefined => k + "=" + v.get
+            }.mkString(" ")
+
+            tags + " " + nonOptFields + " " + optFields trim
           }
        }"""
   }

@@ -1,19 +1,24 @@
 package com.github.fsanaulla.macros
 
-import com.github.fsanaulla.core.model.InfluxFormatter
 import com.github.fsanaulla.core.test.FlatSpecWithMatchers
-import com.github.fsanaulla.macros.annotations.{field, tag}
-import jawn.ast.{JArray, JNum, JString}
 
 class MacroFormatterSpec extends FlatSpecWithMatchers {
-  case class Test(@tag name: String, @field age: Int)
-  val fm: InfluxFormatter[Test] = Macros.format[Test]
-
-  "Macros.format" should "generate reader" in {
-    fm.read(JArray(Array(JNum(234324), JNum(4), JString("Fz")))) shouldEqual Test("Fz", 4)
-  }
-
-  it should "generate writer" in {
-    fm.write(Test("tName", 65)) shouldEqual "name=tName age=65"
-  }
+//  case class Test(@tag name: String, @field age: Int, @field grade: Option[Double])
+//  val fm: InfluxFormatter[Test] = Macros.format[Test]
+//
+//  "Macros.format" should "read with None" in {
+//    fm.read(JArray(Array(JNum(234324), JNum(4), JString("Fz")))) shouldEqual Test("Fz", 4, None)
+//  }
+//
+//  it should "read with Some" in {
+//    fm.read(JArray(Array(JNum(234324), JNum(4), JString("Fz"), JNum(2.0)))) shouldEqual Test("Fz", 4, Some(2.0))
+//  }
+//
+//  it should "write with None" in {
+//    fm.write(Test("tName", 65, None)) shouldEqual "name=tName age=65"
+//  }
+//
+//  it should "write with Some" in {
+//    fm.write(Test("tName", 65, Some(2.0))) shouldEqual "name=tName age=65 grade=2.0"
+//  }
 }

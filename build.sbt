@@ -87,6 +87,7 @@ lazy val macros = project
   .settings(publishSettings: _*)
   .settings(
     name := "chronicler-macros",
+    scalacOptions += "-print",
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
   ).dependsOn(core % "compile->compile;test->test")
 
