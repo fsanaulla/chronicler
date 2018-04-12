@@ -25,7 +25,7 @@ class AuthenticationUserManagementSpec
 
   val userDB = "db"
   val userName = "some_user"
-  val userPass = "_some_user_pass"
+  val userPass = "some_user_pass"
   val userNPass = "some_new_user_pass"
 
   val admin = "admin"
