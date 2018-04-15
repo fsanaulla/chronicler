@@ -12,11 +12,14 @@ object Dependencies {
   final val enums = "com.beachape" %% "enumeratum" % "1.5.13"
 
   // akka-http
-  final val akkaStream = "com.typesafe.akka" %% "akka-stream" % "2.5.11"
+  final val akkaStream = "com.typesafe.akka" %% "akka-stream" % "2.5.11" % Provided
   final val akkaHttp = "com.typesafe.akka" %% "akka-http" % "10.1.1"
 
   // async-http
   final val asyncHttp = "com.softwaremill.sttp" %% "async-http-client-backend-future" % "1.1.12"
+
+  // macros
+  final def scalaReflect(scalaVersion: String): ModuleID = "org.scala-lang" % "scala-reflect" % scalaVersion
 
   // for testing
   final val scalaTest = "org.scalatest" %% "scalatest" % "3.0.5" % Test

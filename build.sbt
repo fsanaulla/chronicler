@@ -87,7 +87,7 @@ lazy val macros = project
   .settings(publishSettings: _*)
   .settings(
     name := "chronicler-macros",
-    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
+    libraryDependencies += Dependencies.scalaReflect(scalaVersion.value)
   ).dependsOn(core % "compile->compile;test->test")
 
 addCommandAlias("fullTest", ";clean;compile;test:compile;coverage;test;coverageReport")

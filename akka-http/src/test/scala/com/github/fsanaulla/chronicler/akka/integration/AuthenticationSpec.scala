@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 17.08.17
   */
-class AuthenticationUserManagementSpec
+class AuthenticationSpec
   extends TestSpec
     with NonEmptyCredentials
     with EmbeddedInfluxDB
