@@ -97,8 +97,8 @@ addCommandAlias("fullRelease", ";clean;publishSigned;sonatypeRelease")
 addCommandAlias(
   "travisTest",
   ";project core;++ $TRAVIS_SCALA_VERSION fullTest;" +
-  "project macros;++ $TRAVIS_SCALA_VERSION fullTest" +
+  "project macros;++ $TRAVIS_SCALA_VERSION fullTest;" +
   "project udp;++ $TRAVIS_SCALA_VERSION fullTest;" +
   "project akkaHttp;++ $TRAVIS_SCALA_VERSION fullTest;" +
-  "project asyncHttp;++ $TRAVIS_SCALA_VERSION fullTest;"
+  "project asyncHttp;++ $TRAVIS_SCALA_VERSION fullTest"
 )
