@@ -1,6 +1,6 @@
-package com.github.fsanaulla.chronicler.akka.integration
+package com.github.fsanaulla.async.integration
 
-import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
+import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
 import com.github.fsanaulla.core.enums.Privileges
 import com.github.fsanaulla.core.model.{AuthorizationException, UserPrivilegesInfo}
 import com.github.fsanaulla.core.test.ResultMatchers._
@@ -31,9 +31,9 @@ class AuthenticationSpec
   val admin = "admin"
   val adminPass = "admin"
 
-  lazy val influx: InfluxAkkaHttpClient = InfluxDB.connect()
+  lazy val influx: InfluxAsyncHttpClient = InfluxDB.connect()
 
-  lazy val authInflux: InfluxAkkaHttpClient =
+  lazy val authInflux: InfluxAsyncHttpClient =
     InfluxDB.connect("localhost", httpPort, credentials)
 
   "AuthenticationUserManagement" should  "create admin user " in {

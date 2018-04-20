@@ -34,11 +34,10 @@ lazy val chronicler = (project in file("."))
   .settings(publishArtifact := false)
   .aggregate(
     core,
+    macros,
     akkaHttp,
     asyncHttp,
-    udp,
-    macros
-  )
+    udp)
 
 lazy val core = project
   .settings(commonSettings: _*)

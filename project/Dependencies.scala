@@ -22,9 +22,8 @@ object Dependencies {
   final def scalaReflect(scalaVersion: String): ModuleID = "org.scala-lang" % "scala-reflect" % scalaVersion
 
   // for testing
-  final val scalaTest = "org.scalatest" %% "scalatest" % "3.0.5" % Test
   final val embedInflux = "com.github.fsanaulla" %% "scalatest-embedinflux" % "0.1.6" % Test
 
-  final val coreDep = Seq(enums, jawn, scalaTest, embedInflux)
+  final val coreDep = Seq(enums, jawn, embedInflux)
   final val akkaDep = Seq(akkaStream, akkaHttp)
 }
