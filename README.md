@@ -8,8 +8,7 @@
 </div>
 
 # About project
-Chronicler - asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](https://www.influxdata.com/).
-With several implementation, that allow you choose what you want. It support scala `2.11` and `2.12`.
+Chronicler - open-source asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](https://www.influxdata.com/).
 
 
 # Installation

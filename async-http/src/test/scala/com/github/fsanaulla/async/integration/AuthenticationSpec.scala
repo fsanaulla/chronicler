@@ -40,8 +40,6 @@ class AuthenticationSpec
     influx.createAdmin(admin, adminPass).futureValue shouldEqual OkResult
 
     influx.showUsers().futureValue.ex.value shouldBe a[AuthorizationException]
-
-    influx.clone() shouldEqual {}
   }
 
   it should "create database" in {
@@ -50,13 +48,6 @@ class AuthenticationSpec
   it should "create user" in {
     authInflux.createUser(userName, userPass).futureValue shouldEqual OkResult
     authInflux.showUsers().futureValue.queryResult.exists(_.username == userName) shouldEqual true
-  }
-
-  it should "get admin privileges" in {
-    val privs = authInflux.showUserPrivileges(admin).futureValue.queryResult
-
-    privs.length shouldEqual 1
-    privs.exists(_.database == userDB) shouldEqual true
   }
 
   it should "set user password" in {
@@ -78,7 +69,7 @@ class AuthenticationSpec
 
   it should "revoke user privileges" in {
     authInflux.revokePrivileges(userName, userDB, Privileges.READ).futureValue shouldEqual OkResult
-    authInflux.showUserPrivileges(userName).futureValue.queryResult shouldEqual Array.empty[UserPrivilegesInfo]
+    authInflux.showUserPrivileges(userName).futureValue.queryResult shouldEqual Array(UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES))
   }
 
   it should "drop user" in {
