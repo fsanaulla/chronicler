@@ -3,19 +3,12 @@
 # Chronicler
 [![Build Status](https://travis-ci.org/fsanaulla/chronicler.svg?branch=master)](https://travis-ci.org/fsanaulla/chronicler)
 [![Codecov](https://img.shields.io/codecov/c/github/fsanaulla/chronicler.svg)](https://codecov.io/gh/fsanaulla/chronicler)
+![Download](https://img.shields.io/maven-central/v/com.github.fsanaulla/chronicler-core_2.11.svg)
 [![License](http://img.shields.io/:license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 </div>
 
 # About project
-Chronicler - asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](https://www.influxdata.com/).
-With several implementation, that allow you choose what you want. It support scala `2.11` and `2.12`.
-
-| Project | Version |
-| ------------- | ------------- |
-| `chronicler-akka-http` | ![Download](https://img.shields.io/maven-central/v/com.github.fsanaulla/chronicler-akka-http_2.11.svg) |
-| `chronicler-async-http` | ![Download](https://img.shields.io/maven-central/v/com.github.fsanaulla/chronicler-async-http_2.11.svg) |
-| `chronicler-udp` | ![Download](https://img.shields.io/maven-central/v/com.github.fsanaulla/chronicler-udp_2.11.svg) |
-| `chronicler-macros` | ![Download](https://img.shields.io/maven-central/v/com.github.fsanaulla/chronicler-macros_2.11.svg) |
+Chronicler - open-source asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](https://www.influxdata.com/).
 
 
 # Installation

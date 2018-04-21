@@ -51,12 +51,12 @@ class UserManagementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPC
     influx.setPrivileges(userName, userDB, Privileges.READ).futureValue shouldEqual OkResult
     influx.setPrivileges("unknown", userDB, Privileges.READ).futureValue.ex.value.getMessage shouldEqual "user not found"
 
-    influx.showUserPrivileges(userName).futureValue.queryResult shouldEqual Seq(UserPrivilegesInfo(userDB, Privileges.READ))
+    influx.showUserPrivileges(userName).futureValue.queryResult shouldEqual Array(UserPrivilegesInfo(userDB, Privileges.READ))
   }
 
   it should "revoke privileges" in {
     influx.revokePrivileges(userName, userDB, Privileges.READ).futureValue shouldEqual OkResult
-    influx.showUserPrivileges(userName).futureValue.queryResult shouldEqual Seq(UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES))
+    influx.showUserPrivileges(userName).futureValue.queryResult shouldEqual Array(UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES))
   }
 
   it should "disable admin" in {
