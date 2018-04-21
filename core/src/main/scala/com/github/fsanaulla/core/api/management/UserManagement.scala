@@ -17,6 +17,12 @@ private[fsanaulla] trait UserManagement[R, U, M, E] extends UserManagementQuery[
     with HasCredentials
     with Executable =>
 
+  /***
+    * Create new username
+    * @param username - Name for new user
+    * @param password - Password for new user
+    * @return         - Result of execution
+    */
   def createUser(username: String, password: String): Future[Result] = {
     readRequest(createUserQuery(username, password)).flatMap(toResult)
   }
