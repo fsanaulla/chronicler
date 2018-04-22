@@ -123,10 +123,6 @@ private[macros] object MacrosImpl {
     val long = tpdls[Long]
     val double = tpdls[Double]
     val string = tpdls[String]
-    val optBool = tpdls[Option[Boolean]]
-    val optInt = tpdls[Option[Int]]
-    val optLong = tpdls[Option[Long]]
-    val optDouble = tpdls[Option[Double]]
     val optString = tpdls[Option[String]]
 
     val params = methods
@@ -138,11 +134,7 @@ private[macros] object MacrosImpl {
         case (k, `int`) => q"$k = $k.asInt"
         case (k, `long`) => q"$k = $k.asLong"
         case (k, `double`) => q"$k = $k.asDouble"
-        case (k, `optBool`) => q"$k = $k.getBoolean"
-        case (k, `optString`) => q"$k = $k.getString"
-        case (k, `optInt`) => q"$k = $k.getInt"
-        case (k, `optLong`) => q"$k = $k.getLong"
-        case (k, `optDouble`) => q"$k = $k.getDouble"
+        case (k, `optString`) => q"$k = if ($k.isNull) None else $k.getString"
         case (_, other) => c.abort(c.enclosingPosition, s"Unsupported type $other")
       }
 
