@@ -174,47 +174,81 @@ private[macros] object MacrosImpl {
   def format_impl[T: c.WeakTypeTag](c: blackbox.Context): c.universe.Tree = {
     import c.universe._
 
+    def tpdls[A: TypeTag]: c.universe.Type = typeOf[A].dealias
+
     val tpe = c.weakTypeOf[T]
 
     val methods = tpe.decls.toList
 
-    // If `methods` comes up empty we raise a compilation error:
     if (methods.lengthCompare(1) < 0) {
       c.abort(c.enclosingPosition, "Type parameter must be a case class with more then 1 fields")
     }
 
     def createWriteMethod(methods: List[c.universe.Symbol]): c.universe.Tree = {
 
-      /** Predicate for finding fields of instance marked with '@tag' annotation */
-      def isTag(m: MethodSymbol): Boolean =
-        m.annotations.exists(_.tree.tpe =:= typeOf[tag])
-
-      /** Predicate for finding fields of instance marked with '@field' annotation */
-      def isField(m: MethodSymbol): Boolean =
-        m.annotations.exists(_.tree.tpe =:= typeOf[field])
-
-      val writerMethods: List[MethodSymbol] = methods collect {
+      val writeMethods: List[MethodSymbol] = methods collect {
         case m: MethodSymbol if m.isCaseAccessor => m
       }
 
-      val tags = writerMethods collect {
-        case m: MethodSymbol if isTag(m) =>
+      val SUPPORTED_TAGS_TYPES = Seq(tpdls[Option[String]], tpdls[String])
+      val SUPPORTED_FIELD_TYPES = Seq(tpdls[Boolean], tpdls[Int], tpdls[Long], tpdls[Double], tpdls[String])
+
+      /** Is it Option container*/
+      def isOption(tpe: c.universe.Type): Boolean =
+        tpe.typeConstructor =:= typeOf[Option[_]].typeConstructor
+
+      def isSupportedTagType(tpe: c.universe.Type): Boolean =
+        SUPPORTED_TAGS_TYPES.exists(t => t =:= tpe)
+
+      def isSupportedFieldType(tpe: c.universe.Type): Boolean =
+        SUPPORTED_FIELD_TYPES.exists(t => t =:= tpe)
+
+      /** Predicate for finding fields of instance marked with '@tag' annotation */
+      def isTag(m: MethodSymbol): Boolean = {
+        if (m.annotations.exists(_.tree.tpe =:= typeOf[tag])) {
+          if (isSupportedTagType(m.returnType)) true
+          else c.abort(c.enclosingPosition, s"@tag ${m.name} has unsupported type ${m.returnType}. Tag must have String or Optional[String]")
+        } else false
+      }
+
+      /** Predicate for finding fields of instance marked with '@field' annotation */
+      def isField(m: MethodSymbol): Boolean = {
+        if (m.annotations.exists(_.tree.tpe =:= typeOf[field])) {
+          if (isSupportedFieldType(m.returnType)) true
+          else c.abort(c.enclosingPosition, s"Unsupported type for @field ${m.name}: ${m.returnType}")
+        } else false
+      }
+
+      val optTags: List[c.universe.Tree] = writeMethods collect {
+        case m: MethodSymbol if isTag(m) && isOption(m.returnType) =>
           q"${m.name.decodedName.toString} -> obj.${m.name}"
       }
 
-      val fields = writerMethods collect {
+      val nonOptTags: List[c.universe.Tree] = writeMethods collect {
+        case m: MethodSymbol if isTag(m) && !isOption(m.returnType) =>
+          q"${m.name.decodedName.toString} -> obj.${m.name}"
+      }
+
+      val fields = writeMethods collect {
         case m: MethodSymbol if isField(m) =>
           q"${m.name.decodedName.toString} -> obj.${m.name}"
       }
 
+
       q"""def write(obj: $tpe): String = {
-            val tags: Map[String, Any] = Map(..$tags)
-            val fields: Map[String, Any] = Map(..$fields)
+            val fields = Map(..$fields) map { case (k, v) => k + "=" + v } mkString(" ")
 
-            val preparedTags = tags map { case (k, v) => k + "=" + v } mkString(",")
-            val preparedFields = fields map { case (k, v) => k + "=" + v } mkString(" ")
+            val nonOptTags: String = Map(..$nonOptTags) map {
+              case (k, v) => k + "=" + v
+            } mkString(",")
 
-            preparedTags + " " + preparedFields trim
+            val optTags: String = Map(..$optTags) collect {
+                case (k, v) if v.isDefined => k + "=" + v.get
+            } mkString(",")
+
+            val combTags: String = if (optTags.isEmpty) nonOptTags else nonOptTags + "," + optTags
+
+            combTags + " " + fields trim
           }"""
     }
 
@@ -225,11 +259,12 @@ private[macros] object MacrosImpl {
           m.name.decodedName.toString -> m.returnType.dealias
       }
 
-      val bool = typeOf[Boolean].dealias
-      val int = typeOf[Int].dealias
-      val long = typeOf[Long].dealias
-      val double = typeOf[Double].dealias
-      val string = typeOf[String].dealias
+      val bool = tpdls[Boolean]
+      val int = tpdls[Int]
+      val long = tpdls[Long]
+      val double = tpdls[Double]
+      val string = tpdls[String]
+      val optString = tpdls[Option[String]]
 
       val params = readMethods
         .sortBy(_._1)
@@ -240,6 +275,7 @@ private[macros] object MacrosImpl {
           case (k, `int`) => q"$k = $k.asInt"
           case (k, `long`) => q"$k = $k.asLong"
           case (k, `double`) => q"$k = $k.asDouble"
+          case (k, `optString`) => q"$k = if ($k.isNull) None else $k.getString"
           case (_, other) => c.abort(c.enclosingPosition, s"Unsupported type $other")
         }
 
@@ -260,7 +296,6 @@ private[macros] object MacrosImpl {
       val failureBody = q"throw new DeserializationException($failureMsg)"
       val failureCase = cq"$failurePat => $failureBody"
 
-      new DeserializationException("")
       val cases = successCase :: failureCase :: Nil
 
       q"""
