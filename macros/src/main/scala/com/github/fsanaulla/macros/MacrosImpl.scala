@@ -224,25 +224,25 @@ private[macros] object MacrosImpl {
 
       def isMarked(m: MethodSymbol): Boolean = isTag(m) || isField(m)
 
-//      val (tags, fields) = writeMethods
-//        .filter(isMarked)
-//        .span {
-//          case m: MethodSymbol if isTag(m) => true
-//          case _ => false
-//        }
+      val (tagsMethods, fieldsMethods) = writeMethods
+        .filter(isMarked)
+        .span {
+          case m: MethodSymbol if isTag(m) => true
+          case _ => false
+        }
 
-      val optTags: List[c.universe.Tree] = writeMethods collect {
-        case m: MethodSymbol if isTag(m) && isOption(m.returnType) =>
+      val optTags: List[c.universe.Tree] = tagsMethods collect {
+        case m: MethodSymbol if isOption(m.returnType) =>
           q"${m.name.decodedName.toString} -> obj.${m.name}"
       }
 
-      val nonOptTags: List[c.universe.Tree] = writeMethods collect {
-        case m: MethodSymbol if isTag(m) && !isOption(m.returnType) =>
+      val nonOptTags: List[c.universe.Tree] = tagsMethods collect {
+        case m: MethodSymbol if !isOption(m.returnType) =>
           q"${m.name.decodedName.toString} -> obj.${m.name}"
       }
 
-      val fields = writeMethods collect {
-        case m: MethodSymbol if isField(m) =>
+      val fields = fieldsMethods map {
+        m: MethodSymbol =>
           q"${m.name.decodedName.toString} -> obj.${m.name}"
       }
 
