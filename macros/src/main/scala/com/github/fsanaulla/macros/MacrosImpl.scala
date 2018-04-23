@@ -81,19 +81,22 @@ private[macros] object MacrosImpl {
     q"""
        new InfluxWriter[$tpe] {
           def write(obj: $tpe): String = {
-            val fields = Map(..$fields) map { case (k, v) => k + "=" + v } mkString(" ")
+             val fieldsMap: Map[String, Any] = Map(..$fields)
+             val fields = fieldsMap map { case (k, v) => k + "=" + v } mkString(" ")
 
-            val nonOptTags: String = Map(..$nonOptTags) map {
-              case (k, v) => k + "=" + v
-            } mkString(",")
+             val nonOptTagsMap: Map[String, String] = Map(..$nonOptTags)
+             val nonOptTags: String = nonOptTagsMap map {
+                case (k: String, v: String) => k + "=" + v
+             } mkString(",")
 
-            val optTags: String = Map(..$optTags) collect {
-                case (k, v) if v.isDefined => k + "=" + v.get
-            } mkString(",")
+             val optTagsMap: Map[String, Option[String]] = Map(..$optTags)
+             val optTags: String = optTagsMap collect {
+                case (k: String, v: Option[String]) if v.isDefined => k + "=" + v.get
+             } mkString(",")
 
-            val combTags: String = if (optTags.isEmpty) nonOptTags else nonOptTags + "," + optTags
+             val combTags: String = if (optTags.isEmpty) nonOptTags else nonOptTags + "," + optTags
 
-            combTags + " " + fields trim
+             combTags + " " + fields trim
           }
        }"""
   }
@@ -134,7 +137,7 @@ private[macros] object MacrosImpl {
         case (k, `int`) => q"$k = $k.asInt"
         case (k, `long`) => q"$k = $k.asLong"
         case (k, `double`) => q"$k = $k.asDouble"
-        case (k, `optString`) => q"$k = if ($k.isNull) None else $k.getString"
+        case (k, `optString`) => q"$k = $k.getString"
         case (_, other) => c.abort(c.enclosingPosition, s"Unsupported type $other")
       }
 
@@ -176,6 +179,9 @@ private[macros] object MacrosImpl {
 
     def tpdls[A: TypeTag]: c.universe.Type = typeOf[A].dealias
 
+    val SUPPORTED_TAGS_TYPES = Seq(tpdls[Option[String]], tpdls[String])
+    val SUPPORTED_FIELD_TYPES = Seq(tpdls[Boolean], tpdls[Int], tpdls[Long], tpdls[Double], tpdls[String])
+
     val tpe = c.weakTypeOf[T]
 
     val methods = tpe.decls.toList
@@ -189,9 +195,6 @@ private[macros] object MacrosImpl {
       val writeMethods: List[MethodSymbol] = methods collect {
         case m: MethodSymbol if m.isCaseAccessor => m
       }
-
-      val SUPPORTED_TAGS_TYPES = Seq(tpdls[Option[String]], tpdls[String])
-      val SUPPORTED_FIELD_TYPES = Seq(tpdls[Boolean], tpdls[Int], tpdls[Long], tpdls[Double], tpdls[String])
 
       /** Is it Option container*/
       def isOption(tpe: c.universe.Type): Boolean =
@@ -219,6 +222,15 @@ private[macros] object MacrosImpl {
         } else false
       }
 
+      def isMarked(m: MethodSymbol): Boolean = isTag(m) || isField(m)
+
+//      val (tags, fields) = writeMethods
+//        .filter(isMarked)
+//        .span {
+//          case m: MethodSymbol if isTag(m) => true
+//          case _ => false
+//        }
+
       val optTags: List[c.universe.Tree] = writeMethods collect {
         case m: MethodSymbol if isTag(m) && isOption(m.returnType) =>
           q"${m.name.decodedName.toString} -> obj.${m.name}"
@@ -236,14 +248,17 @@ private[macros] object MacrosImpl {
 
 
       q"""def write(obj: $tpe): String = {
-            val fields = Map(..$fields) map { case (k, v) => k + "=" + v } mkString(" ")
+            val fieldsMap: Map[String, Any] = Map(..$fields)
+            val fields = fieldsMap map { case (k, v) => k + "=" + v } mkString(" ")
 
-            val nonOptTags: String = Map(..$nonOptTags) map {
-              case (k, v) => k + "=" + v
+            val nonOptTagsMap: Map[String, String] = Map(..$nonOptTags)
+            val nonOptTags: String = nonOptTagsMap map {
+              case (k: String, v: String) => k + "=" + v
             } mkString(",")
 
-            val optTags: String = Map(..$optTags) collect {
-                case (k, v) if v.isDefined => k + "=" + v.get
+            val optTagsMap: Map[String, Option[String]] = Map(..$optTags)
+            val optTags: String = optTagsMap collect {
+                case (k: String, v: Option[String]) if v.isDefined => k + "=" + v.get
             } mkString(",")
 
             val combTags: String = if (optTags.isEmpty) nonOptTags else nonOptTags + "," + optTags
