@@ -11,7 +11,8 @@ object Dependencies {
   final val coreDep = Seq(
     "com.beachape"         %% "enumeratum"            % "1.5.13",
     "org.spire-math"       %% "jawn-ast"              % "0.12.1",
-    "com.github.fsanaulla" %% "scalatest-embedinflux" % "0.1.6"   % Test
+    "org.scalatest"        %% "scalatest"             % "3.0.5"   % Test,
+    "com.github.fsanaulla" %% "scalatest-embedinflux" % "0.1.7"   % Test
   )
 
   // akka-http

@@ -2,7 +2,7 @@ package com.github.fsanaulla.core.handlers
 
 import com.github.fsanaulla.core.handlers.json.JsonHandlerHelper
 import com.github.fsanaulla.core.test.FlatSpecWithMatchers
-import jawn.ast.{JArray, JNum, JParser, JString}
+import jawn.ast._
 import org.scalatest.OptionValues
 
 class JsonHandlerHelperSpec extends FlatSpecWithMatchers with OptionValues with JsonHandlerHelper {
@@ -20,19 +20,23 @@ class JsonHandlerHelperSpec extends FlatSpecWithMatchers with OptionValues with 
         |                    "name": "cpu_load_short",
         |                    "columns": [
         |                        "time",
+        |                        "name",
         |                        "value"
         |                    ],
         |                    "values": [
         |                        [
         |                            "2015-01-29T21:55:43.702900257Z",
+        |                            "Fz",
         |                            2
         |                        ],
         |                        [
         |                            "2015-01-29T21:55:43.702900257Z",
+        |                            "Rz",
         |                            0.55
         |                        ],
         |                        [
         |                            "2015-06-11T20:46:02Z",
+        |                            null,
         |                            0.64
         |                        ]
         |                    ]
@@ -44,9 +48,9 @@ class JsonHandlerHelperSpec extends FlatSpecWithMatchers with OptionValues with 
       """.stripMargin).toOption.value
 
     val result = Array(
-      JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
-      JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
-      JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
+      JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JString("Fz"), JNum(2))),
+      JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JString("Rz"), JNum(0.55))),
+      JArray(Array(JString("2015-06-11T20:46:02Z"), JNull, JNum(0.64)))
     )
 
     getOptInfluxPoints(json).value shouldEqual result

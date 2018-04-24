@@ -1,9 +1,8 @@
 package com.github.fsanaulla.macros.annotations
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 13.02.18
+/***
+  * Marker for declaring field value for influx point.
+  * Can be only one of primitive type. Or container with primitive value, like Option[Int]
   */
 // https://issues.scala-lang.org/browse/SI-7561
 @scala.annotation.meta.getter
