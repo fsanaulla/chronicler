@@ -78,4 +78,4 @@ res0: Future[Result]
 meas.bulkWrite(Seq(fe, ...))
 res0: Future[Result]
 ```
-To avoid boilerplate code, and headache. Just use [Macros](docs/macros.md).
+To avoid boilerplate code, and headache. Just use [Macros](macros.md).
