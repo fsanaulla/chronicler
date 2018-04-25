@@ -10,7 +10,7 @@ libraryDependencies += "com.github.fsanaulla" %% "chronicler-macros" % <version>
 Feel the power of Macros.
 Let's start from reader example:
 ```
-case class Entity(name: String, age: Int)
+case class Entity(@tag name: String, @field age: Int)
 
 // that's all, after compilation, at this place will apper valid InfluxReader[T]
 implicit val rd: InfluxReader[Entity] = Macros.reader[Entity]
@@ -34,3 +34,6 @@ implicit val fmt = Macros.format[Entity]
 meas.write[Entity](Entity("Martin", 54)
 db.read[Entity]("SELECT * FROM some_meas")
 ```
+In short it's look like:
+1. Mark tags(`@tag`) and fields(`@field`).
+2. Generate reader/writer/formatter.
