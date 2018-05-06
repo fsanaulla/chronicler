@@ -15,7 +15,7 @@ private[fsanaulla] trait JsonHandler[R] extends JsonHandlerHelper with Executabl
   /***
     * Extracting JSON from Response
     * @param response - Response
-    * @return - Extracted JSON
+    * @return         - Extracted JSON
     */
   def getJsBody(response: R): Future[JValue]
 
