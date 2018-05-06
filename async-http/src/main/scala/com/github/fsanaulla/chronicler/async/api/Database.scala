@@ -4,7 +4,7 @@ import java.io.File
 
 import com.github.fsanaulla.chronicler.async.io.{AsyncReader, AsyncWriter}
 import com.github.fsanaulla.core.api.DatabaseApi
-import com.github.fsanaulla.core.enums.{Consistencies, Consistency, Precision, Precisions}
+import com.github.fsanaulla.core.enums._
 import com.github.fsanaulla.core.model._
 import com.softwaremill.sttp.SttpBackend
 

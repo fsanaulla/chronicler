@@ -1,21 +1,19 @@
 package com.github.fsanaulla.chronicler.akka.handlers
 
 import _root_.akka.http.scaladsl.model.HttpResponse
-import com.github.fsanaulla.core.handlers.ResponseHandler
+import com.github.fsanaulla.core.handlers.response.ResponseHandler
 import com.github.fsanaulla.core.model._
-import spray.json.{JsArray, JsObject}
+import jawn.ast.JArray
 
 import scala.concurrent.Future
+import scala.reflect.ClassTag
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[fsanaulla] trait AkkaResponseHandler
-  extends ResponseHandler[HttpResponse]
-    with AkkaJsonHandler
-    with Executable {
+private[fsanaulla] trait AkkaResponseHandler extends ResponseHandler[HttpResponse] with AkkaJsonHandler {
 
   // Simply result's
   def toResult(response: HttpResponse): Future[Result] = {
@@ -34,14 +32,19 @@ private[fsanaulla] trait AkkaResponseHandler
     }
   }
 
-  def toComplexQueryResult[A, B](response: HttpResponse,
-                                 f: (String, Seq[A]) => B)(implicit reader: InfluxReader[A]): Future[QueryResult[B]] = {
+  def toComplexQueryResult[A: ClassTag, B: ClassTag](response: HttpResponse,
+                                                     f: (String, Array[A]) => B)
+                                                    (implicit reader: InfluxReader[A]): Future[QueryResult[B]] = {
     response.status.intValue() match {
       case code if isSuccessful(code) =>
         getJsBody(response)
-          .map(getInfluxInfo[A])
-          .map(seq => seq.map(e => f(e._1, e._2)))
-          .map(seq => QueryResult.successful[B](code, seq))
+          .map(getOptInfluxInfo[A])
+          .map {
+            case Some(arr) =>
+              QueryResult.successful[B](code, arr.map(e => f(e._1, e._2)))
+            case _ =>
+              QueryResult.empty[B](code)
+          }
       case other =>
         errorHandler(other, response)
           .map(ex => QueryResult.failed[B](other, ex))
@@ -49,42 +52,32 @@ private[fsanaulla] trait AkkaResponseHandler
   }
 
   // QUERY RESULT
-  def toQueryJsResult(response: HttpResponse): Future[QueryResult[JsArray]] = {
+  def toQueryJsResult(response: HttpResponse): Future[QueryResult[JArray]] = {
     response.status.intValue() match {
       case code if isSuccessful(code) =>
         getJsBody(response)
-          .map(getInfluxPoints)
-          .map(seq => QueryResult.successful[JsArray](code, seq))
+          .map(getOptInfluxPoints)
+          .map {
+            case Some(seq) => QueryResult.successful[JArray](code, seq)
+            case _ => QueryResult.empty[JArray](code)}
       case other =>
         errorHandler(other, response)
-          .map(ex => QueryResult.failed[JsArray](other, ex))
+          .map(ex => QueryResult.failed[JArray](other, ex))
     }
   }
 
-  def toBulkQueryJsResult(response: HttpResponse): Future[QueryResult[Seq[JsArray]]] = {
+  def toBulkQueryJsResult(response: HttpResponse): Future[QueryResult[Array[JArray]]] = {
     response.status.intValue() match {
       case code if isSuccessful(code) =>
         getJsBody(response)
-          .map(getBulkInfluxValue)
-          .map(seq => QueryResult.successful[Seq[JsArray]](code, seq))
+          .map(getOptBulkInfluxPoints)
+          .map {
+            case Some(seq) => QueryResult.successful[Array[JArray]](code, seq)
+            case _ => QueryResult.empty[Array[JArray]](code)
+          }
       case other =>
         errorHandler(other, response)
-          .map(ex => QueryResult.failed[Seq[JsArray]](other, ex))
+          .map(ex => QueryResult.failed[Array[JArray]](other, ex))
     }
-  }
-
-  def getError(response: HttpResponse): Future[String] = {
-    getJsBody(response)
-      .map(_.getFields("error").head.convertTo[String])
-  }
-
-  def getErrorOpt(response: HttpResponse): Future[Option[String]] = {
-    getJsBody(response)
-      .map(
-        _.getFields("results")
-          .headOption
-          .flatMap(_.convertTo[Seq[JsObject]].headOption)
-          .flatMap(_.fields.get("error"))
-          .map(_.convertTo[String]))
   }
 }

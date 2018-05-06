@@ -1,18 +1,17 @@
 package com.github.fsanaulla.chronicler.async.handlers
 
-import com.github.fsanaulla.core.handlers.ResponseHandler
+import com.github.fsanaulla.core.handlers.response.ResponseHandler
 import com.github.fsanaulla.core.model._
 import com.softwaremill.sttp.Response
-import spray.json.{JsArray, JsObject}
+import jawn.ast.{JArray, JValue}
 
 import scala.concurrent.Future
+import scala.reflect.ClassTag
 
-private[fsanaulla] trait AsyncResponseHandler
-  extends ResponseHandler[Response[JsObject]]
-    with AsyncJsonHandler {
+private[fsanaulla] trait AsyncResponseHandler extends ResponseHandler[Response[JValue]] with AsyncJsonHandler {
 
   // Simply result's
-  def toResult(response: Response[JsObject]): Future[Result] = {
+  def toResult(response: Response[JValue]): Future[Result] = {
     response.code match {
       case code if isSuccessful(code) && code != 204 =>
         getErrorOpt(response) map {
@@ -28,15 +27,19 @@ private[fsanaulla] trait AsyncResponseHandler
     }
   }
 
-  def toComplexQueryResult[A, B](response: Response[JsObject],
-                                 f: (String, Seq[A]) => B)
-                                (implicit reader: InfluxReader[A]): Future[QueryResult[B]] = {
+  def toComplexQueryResult[A: ClassTag, B: ClassTag](response: Response[JValue],
+                                                     f: (String, Array[A]) => B)
+                                                    (implicit reader: InfluxReader[A]): Future[QueryResult[B]] = {
     response.code match {
       case code if isSuccessful(code) =>
         getJsBody(response)
-          .map(getInfluxInfo[A])
-          .map(seq => seq.map(e => f(e._1, e._2)))
-          .map(seq => QueryResult.successful[B](code, seq))
+          .map(getOptInfluxInfo[A])
+          .map {
+            case Some(arr) =>
+              QueryResult.successful[B](code, arr.map(e => f(e._1, e._2)))
+            case _ =>
+              QueryResult.empty[B](code)
+          }
       case other =>
         errorHandler(other, response)
           .map(ex => QueryResult.failed[B](other, ex))
@@ -44,42 +47,32 @@ private[fsanaulla] trait AsyncResponseHandler
   }
 
   // QUERY RESULT
-  def toQueryJsResult(response: Response[JsObject]): Future[QueryResult[JsArray]] = {
+  def toQueryJsResult(response: Response[JValue]): Future[QueryResult[JArray]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
         getJsBody(response)
-          .map(getInfluxPoints)
-          .map(seq => QueryResult.successful[JsArray](code, seq))
+          .map(getOptInfluxPoints)
+          .map {
+            case Some(seq) => QueryResult.successful[JArray](code, seq)
+            case _ => QueryResult.empty[JArray](code)}
       case other =>
         errorHandler(other, response)
-          .map(ex => QueryResult.failed[JsArray](other, ex))
+          .map(ex => QueryResult.failed[JArray](other, ex))
     }
   }
 
-  def toBulkQueryJsResult(response: Response[JsObject]): Future[QueryResult[Seq[JsArray]]] = {
+  def toBulkQueryJsResult(response: Response[JValue]): Future[QueryResult[Array[JArray]]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
         getJsBody(response)
-          .map(getBulkInfluxValue)
-          .map(seq => QueryResult.successful[Seq[JsArray]](code, seq))
+          .map(getOptBulkInfluxPoints)
+          .map {
+            case Some(seq) => QueryResult.successful[Array[JArray]](code, seq)
+            case _ => QueryResult.empty[Array[JArray]](code)
+          }
       case other =>
         errorHandler(other, response)
-          .map(ex => QueryResult.failed[Seq[JsArray]](other, ex))
+          .map(ex => QueryResult.failed[Array[JArray]](other, ex))
     }
-  }
-
-  def getError(response: Response[JsObject]): Future[String] = {
-    getJsBody(response)
-      .map(_.getFields("error").head.convertTo[String])
-  }
-
-  def getErrorOpt(response: Response[JsObject]): Future[Option[String]] = {
-    getJsBody(response)
-      .map(
-        _.getFields("results")
-          .headOption
-          .flatMap(_.convertTo[Seq[JsObject]].headOption)
-          .flatMap(_.fields.get("error"))
-          .map(_.convertTo[String]))
   }
 }

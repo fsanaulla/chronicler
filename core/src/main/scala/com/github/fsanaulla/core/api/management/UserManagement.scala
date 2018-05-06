@@ -1,10 +1,12 @@
 package com.github.fsanaulla.core.api.management
 
 import com.github.fsanaulla.core.enums.Privilege
-import com.github.fsanaulla.core.handlers.{QueryHandler, RequestHandler, ResponseHandler}
+import com.github.fsanaulla.core.handlers.RequestHandler
+import com.github.fsanaulla.core.handlers.query.QueryHandler
+import com.github.fsanaulla.core.handlers.response.ResponseHandler
 import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.core.query.UserManagementQuery
-import com.github.fsanaulla.core.utils.InfluxImplicits._
+import com.github.fsanaulla.core.utils.DefaultInfluxImplicits._
 
 import scala.concurrent.Future
 
@@ -15,6 +17,12 @@ private[fsanaulla] trait UserManagement[R, U, M, E] extends UserManagementQuery[
     with HasCredentials
     with Executable =>
 
+  /***
+    * Create new username
+    * @param username - Name for new user
+    * @param password - Password for new user
+    * @return         - Result of execution
+    */
   def createUser(username: String, password: String): Future[Result] = {
     readRequest(createUserQuery(username, password)).flatMap(toResult)
   }

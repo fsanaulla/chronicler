@@ -1,12 +1,13 @@
 package com.github.fsanaulla.async.handlers
 
+import com.github.fsanaulla.async.utils.Extensions.{RichString, RichTry}
 import com.github.fsanaulla.async.utils.SampleEntitys.singleResult
 import com.github.fsanaulla.chronicler.async.handlers.AsyncResponseHandler
-import com.github.fsanaulla.core.model.{ContinuousQuery, ContinuousQueryInfo}
-import com.github.fsanaulla.core.test.utils.TestSpec
-import com.github.fsanaulla.core.utils.InfluxImplicits._
+import com.github.fsanaulla.core.model.ContinuousQuery
+import com.github.fsanaulla.core.test.TestSpec
+import com.github.fsanaulla.core.utils.DefaultInfluxImplicits._
 import com.softwaremill.sttp.Response
-import spray.json.JsonParser
+import jawn.ast._
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
@@ -17,46 +18,122 @@ import scala.language.postfixOps
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class AsyncResponseHandlerSpec
-  extends TestSpec
-    with AsyncResponseHandler {
+class AsyncResponseHandlerSpec extends TestSpec with AsyncResponseHandler {
 
-  protected val ex: ExecutionContext = ExecutionContext.Implicits.global
+  protected implicit val ex: ExecutionContext = ExecutionContext.Implicits.global
 
   implicit val timeout: FiniteDuration = 1 second
 
-  val singleStrJson = """{
-                      "results": [
-                          {
-                              "statement_id": 0,
-                              "series": [
-                                 {
-                                      "name": "cpu_load_short",
-                                      "columns": [
-                                          "time",
-                                          "value"
-                                      ],
-                                      "values": [
-                                          [
-                                              "2015-01-29T21:55:43.702900257Z",
-                                              2
-                                          ],
-                                          [
-                                              "2015-01-29T21:55:43.702900257Z",
-                                              0.55
-                                          ],
-                                          [
-                                              "2015-06-11T20:46:02Z",
-                                              0.64
-                                          ]
-                                      ]
-                                  }
-                              ]
-                          }
-                      ]
-                  }"""
+  implicit val p: JParser.type = JParser
 
-  val cqStrJson = """{
+
+  "AsyncResponseHandler" should "extract single query result from response" in {
+
+    val singleResponse: Response[JValue] =
+      """
+        |{
+        |    "results": [
+        |        {
+        |            "statement_id": 0,
+        |            "series": [
+        |                {
+        |                    "name": "cpu_load_short",
+        |                    "columns": [
+        |                        "time",
+        |                        "value"
+        |                    ],
+        |                    "values": [
+        |                        [
+        |                            "2015-01-29T21:55:43.702900257Z",
+        |                            2
+        |                        ],
+        |                        [
+        |                            "2015-01-29T21:55:43.702900257Z",
+        |                            0.55
+        |                        ],
+        |                        [
+        |                            "2015-06-11T20:46:02Z",
+        |                            0.64
+        |                        ]
+        |                    ]
+        |                }
+        |            ]
+        |        }
+        |    ]
+        |}
+      """.stripMargin.toResponse
+
+    toQueryJsResult(singleResponse).futureValue.queryResult shouldEqual singleResult
+  }
+
+  it should "extract bulk query results from response" in {
+
+    val bulkResponse: Response[JValue] =
+      """
+        |{
+        |    "results": [
+        |        {
+        |            "statement_id": 0,
+        |            "series": [
+        |                {
+        |                    "name": "cpu_load_short",
+        |                    "columns": [
+        |                        "time",
+        |                        "value"
+        |                    ],
+        |                    "values": [
+        |                        [
+        |                            "2015-01-29T21:55:43.702900257Z",
+        |                            2
+        |                        ],
+        |                        [
+        |                            "2015-01-29T21:55:43.702900257Z",
+        |                            0.55
+        |                        ],
+        |                        [
+        |                            "2015-06-11T20:46:02Z",
+        |                            0.64
+        |                        ]
+        |                    ]
+        |                }
+        |            ]
+        |        },
+        |        {
+        |            "statement_id": 1,
+        |            "series": [
+        |                {
+        |                    "name": "cpu_load_short",
+        |                    "columns": [
+        |                        "time",
+        |                        "count"
+        |                    ],
+        |                    "values": [
+        |                        [
+        |                            "1970-01-01T00:00:00Z",
+        |                            3
+        |                        ]
+        |                    ]
+        |                }
+        |            ]
+        |        }
+        |    ]
+        |}
+      """.stripMargin.toResponse()
+
+    toBulkQueryJsResult(bulkResponse).futureValue.queryResult shouldEqual Array(
+      Array(
+        JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
+        JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
+        JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))),
+      Array(
+        JArray(Array(JString("1970-01-01T00:00:00Z"), JNum(3)))
+      )
+    )
+  }
+
+  it should "cq unpacking" in {
+
+    val cqStrJson = """{
       "results": [
         {
           "statement_id": 0,
@@ -107,32 +184,35 @@ class AsyncResponseHandlerSpec
       ]
     }
   """
+    val cqHttpResponse = Response(p.parseFromString(cqStrJson).toStrEither(cqStrJson), 200, "", Nil, Nil)
 
-  val errJson =
-    """
-    {
-      "results": [
-        {
-          "statement_id": 0,
-          "error": "user not found"
-        }
-      ]
-    }
-  """
-
-  val singleHttpResponse = Response(body = Right(JsonParser(singleStrJson).asJsObject), 200, "", Nil, Nil)
-  val cqHttpResponse = Response(Right(JsonParser(cqStrJson).asJsObject), 200, "", Nil, Nil)
-  val errHttpResponse = Response(Right(JsonParser(errJson).asJsObject), 200, "", Nil, Nil)
-
-  "single query result function" should "correctly work" in {
-    toQueryJsResult(singleHttpResponse).futureValue.queryResult shouldEqual singleResult
+    val cqi = toCqQueryResult(cqHttpResponse).futureValue.queryResult.filter(_.querys.nonEmpty).head
+    cqi.dbName shouldEqual "mydb"
+    cqi.querys.head shouldEqual ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")
   }
 
-  "cq unpacking" should "correctly work" in {
-    toCqQueryResult(cqHttpResponse).futureValue.queryResult.filter(_.querys.nonEmpty).head shouldEqual ContinuousQueryInfo("mydb", Seq(ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")))
+  it should "extract optional error message" in {
+
+    val errorResponse: Response[JValue] =
+      """
+        |{
+        |        "results": [
+        |          {
+        |            "statement_id": 0,
+        |            "error": "user not found"
+        |          }
+        |        ]
+        |}
+      """.stripMargin.toResponse()
+
+    getErrorOpt(errorResponse).futureValue shouldEqual Some("user not found")
   }
 
-  "optError handler" should "correct work" in {
-    getErrorOpt(errHttpResponse).futureValue shouldEqual Some("user not found")
+  it should "extract error message" in {
+
+    val errorResponse: Response[JValue] =
+      """ { "error": "user not found" } """.toResponse()
+
+    getError(errorResponse).futureValue shouldEqual "user not found"
   }
 }

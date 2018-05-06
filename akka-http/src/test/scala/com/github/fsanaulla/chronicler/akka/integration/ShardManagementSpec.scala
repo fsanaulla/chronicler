@@ -2,8 +2,9 @@ package com.github.fsanaulla.chronicler.akka.integration
 
 import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
 import com.github.fsanaulla.core.model.ShardGroupsInfo
-import com.github.fsanaulla.core.test.utils.ResultMatchers._
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.ResultMatchers._
+import com.github.fsanaulla.core.test.TestSpec
+import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -13,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
-class ShardManagementSpec extends TestSpec with EmbeddedInfluxDB {
+class ShardManagementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPConf {
 
   val testDb = "_internal"
 
@@ -36,7 +37,7 @@ class ShardManagementSpec extends TestSpec with EmbeddedInfluxDB {
 
     shardGroups should not equal Nil
 
-    shardGroups shouldBe a [Seq[_]]
+    shardGroups shouldBe a [Array[_]]
 
     shardGroups.head shouldBe a [ShardGroupsInfo]
 

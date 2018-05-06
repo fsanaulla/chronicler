@@ -1,9 +1,7 @@
 package com.github.fsanaulla.macros.annotations
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 13.02.18
+/***
+  * Marker for declaring influx point tag's. Can be only String.
   */
 // https://issues.scala-lang.org/browse/SI-7561
 @scala.annotation.meta.getter

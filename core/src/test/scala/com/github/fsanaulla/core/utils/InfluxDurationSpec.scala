@@ -1,6 +1,6 @@
-package com.github.fsanaulla.core.test
+package com.github.fsanaulla.core.utils
 
-import com.github.fsanaulla.core.test.utils.FlatSpecWithMatchers
+import com.github.fsanaulla.core.test.FlatSpecWithMatchers
 import com.github.fsanaulla.core.utils.InfluxDuration._
 
 /**

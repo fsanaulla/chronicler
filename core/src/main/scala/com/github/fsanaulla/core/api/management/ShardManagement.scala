@@ -1,9 +1,11 @@
 package com.github.fsanaulla.core.api.management
 
-import com.github.fsanaulla.core.handlers.{QueryHandler, RequestHandler, ResponseHandler}
+import com.github.fsanaulla.core.handlers.RequestHandler
+import com.github.fsanaulla.core.handlers.query.QueryHandler
+import com.github.fsanaulla.core.handlers.response.ResponseHandler
 import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.core.query.ShardManagementQuery
-import com.github.fsanaulla.core.utils.InfluxImplicits._
+import com.github.fsanaulla.core.utils.DefaultInfluxImplicits._
 
 import scala.concurrent.Future
 
@@ -32,10 +34,10 @@ private[fsanaulla] trait ShardManagement[R, U, M, E] extends ShardManagementQuer
   }
 
   def getShards(dbName: String): Future[QueryResult[Shard]] = {
-    showShards().map { queryResult =>
-      val seq = queryResult.queryResult.find(_.dbName == dbName).map(_.shards).getOrElse(Nil)
+    showShards().map { qr =>
+      val seq = qr.queryResult.find(_.dbName == dbName).map(_.shards).getOrElse(Array.empty[Shard])
 
-      QueryResult[Shard](queryResult.code, queryResult.isSuccess, seq, queryResult.ex)
+      QueryResult[Shard](qr.code, qr.isSuccess, seq, qr.ex)
     }
   }
 }

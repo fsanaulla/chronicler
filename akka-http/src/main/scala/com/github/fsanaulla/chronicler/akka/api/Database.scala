@@ -5,9 +5,8 @@ import java.io.File
 import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.model.RequestEntity
 import _root_.akka.stream.ActorMaterializer
-import com.github.fsanaulla.chronicler.akka.io.AkkaReader
+import com.github.fsanaulla.chronicler.akka.io.{AkkaReader, AkkaWriter}
 import com.github.fsanaulla.chronicler.akka.utils.AkkaTypeAlias.Connection
-import com.github.fsanaulla.chronicler.async.io.AkkaWriter
 import com.github.fsanaulla.core.api.DatabaseApi
 import com.github.fsanaulla.core.enums.{Consistencies, Consistency, Precision, Precisions}
 import com.github.fsanaulla.core.model._

@@ -5,9 +5,9 @@ import _root_.akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryHandler, AkkaRequestHandler, AkkaResponseHandler}
 import com.github.fsanaulla.core.enums.Epoch
 import com.github.fsanaulla.core.io.ReadOperations
-import com.github.fsanaulla.core.model.{Executable, HasCredentials, InfluxCredentials, QueryResult}
+import com.github.fsanaulla.core.model.{Executable, HasCredentials, QueryResult}
 import com.github.fsanaulla.core.query.DatabaseOperationQuery
-import spray.json.JsArray
+import jawn.ast.JArray
 
 import scala.concurrent.Future
 
@@ -27,7 +27,7 @@ private[fsanaulla] trait AkkaReader
                        query: String,
                        epoch: Epoch,
                        pretty: Boolean,
-                       chunked: Boolean): Future[QueryResult[JsArray]] = {
+                       chunked: Boolean): Future[QueryResult[JArray]] = {
 
     readRequest(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked), GET)
       .flatMap(toQueryJsResult)
@@ -37,7 +37,7 @@ private[fsanaulla] trait AkkaReader
                            queries: Seq[String],
                            epoch: Epoch,
                            pretty: Boolean,
-                           chunked: Boolean): Future[QueryResult[Seq[JsArray]]] = {
+                           chunked: Boolean): Future[QueryResult[Array[JArray]]] = {
     readRequest(readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked), GET)
       .flatMap(toBulkQueryJsResult)
   }

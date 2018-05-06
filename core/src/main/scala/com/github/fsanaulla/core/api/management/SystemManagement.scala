@@ -4,6 +4,7 @@ import com.github.fsanaulla.core.api.{DatabaseApi, MeasurementApi}
 import com.github.fsanaulla.core.model.{Executable, Result}
 
 import scala.concurrent.Future
+import scala.reflect.ClassTag
 
 /**
   * Created by
@@ -26,7 +27,7 @@ trait SystemManagement[E] { self: Executable =>
     * @tparam A - Measurement's time series type
     * @return - Measurement instance of type [A]
     */
-  def measurement[A](dbName: String, measurementName: String): MeasurementApi[A, E]
+  def measurement[A: ClassTag](dbName: String, measurementName: String): MeasurementApi[A, E]
 
   /**
     * Ping InfluxDB

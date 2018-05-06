@@ -4,10 +4,8 @@ import com.github.fsanaulla.core.model.{InfluxFormatter, InfluxReader, InfluxWri
 
 import scala.language.experimental.macros
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 13.02.18
+/***
+  * Provide all necessary method for compile-time code generation
   */
 object Macros {
 

@@ -3,8 +3,9 @@ package com.github.fsanaulla.chronicler.akka.integration
 import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
 import com.github.fsanaulla.core.enums.{Destination, Destinations}
 import com.github.fsanaulla.core.model.Subscription
-import com.github.fsanaulla.core.test.utils.ResultMatchers._
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.ResultMatchers._
+import com.github.fsanaulla.core.test.TestSpec
+import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
 import com.github.fsanaulla.core.utils.InfluxDuration._
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
@@ -15,9 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 21.08.17
   */
-class SubscriptionManagementSpec
-  extends TestSpec
-    with EmbeddedInfluxDB{
+class SubscriptionManagementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPConf {
 
   val subName = "subs"
   val dbName = "async_subs_spec_db"

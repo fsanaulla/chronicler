@@ -34,11 +34,10 @@ lazy val chronicler = (project in file("."))
   .settings(publishArtifact := false)
   .aggregate(
     core,
+    macros,
     akkaHttp,
     asyncHttp,
-    udp,
-    macros
-  )
+    udp)
 
 lazy val core = project
   .settings(commonSettings: _*)
@@ -58,7 +57,7 @@ lazy val akkaHttp = (project in file("akka-http"))
   .settings(
     name := "chronicler-akka-http",
     scalacOptions += "-language:postfixOps",
-    libraryDependencies += Dependencies.akkaHttp
+    libraryDependencies ++= Dependencies.akkaDep
   )
   .dependsOn(core % "compile->compile;test->test")
   .dependsOn(macros % "test->test")
@@ -87,7 +86,7 @@ lazy val macros = project
   .settings(publishSettings: _*)
   .settings(
     name := "chronicler-macros",
-    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
+    libraryDependencies += Dependencies.scalaReflect(scalaVersion.value)
   ).dependsOn(core % "compile->compile;test->test")
 
 addCommandAlias("fullTest", ";clean;compile;test:compile;coverage;test;coverageReport")
@@ -98,17 +97,8 @@ addCommandAlias("fullRelease", ";clean;publishSigned;sonatypeRelease")
 addCommandAlias(
   "travisTest",
   ";project core;++ $TRAVIS_SCALA_VERSION fullTest;" +
-  "project akkaHttp;++ $TRAVIS_SCALA_VERSION fullTest;" +
-  "project asyncHttp;++ $TRAVIS_SCALA_VERSION fullTest;" +
+  "project macros;++ $TRAVIS_SCALA_VERSION fullTest;" +
   "project udp;++ $TRAVIS_SCALA_VERSION fullTest;" +
-  "project macros;++ $TRAVIS_SCALA_VERSION fullTest"
-)
-
-addCommandAlias(
-  "universeRelease",
-  ";project core;+fullRelease;" +
-  "project akkaHttp;+fullRelease;" +
-  "project asyncHttp;+fullRelease;" +
-  "project udp;+fullRelease;" +
-  "project macros;+fullRelease"
+  "project akkaHttp;++ $TRAVIS_SCALA_VERSION fullTest;" +
+  "project asyncHttp;++ $TRAVIS_SCALA_VERSION fullTest"
 )

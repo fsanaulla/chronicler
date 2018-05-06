@@ -6,15 +6,16 @@ import com.github.fsanaulla.core.client.InfluxClient
 import com.github.fsanaulla.core.model.{InfluxCredentials, Result}
 import com.softwaremill.sttp.asynchttpclient.future.AsyncHttpClientFutureBackend
 import com.softwaremill.sttp.{Method, Response, SttpBackend, Uri}
-import spray.json.JsObject
+import jawn.ast.JValue
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.ClassTag
 
 private[fsanaulla] class InfluxAsyncHttpClient(val host: String,
                                                val port: Int,
                                                val credentials: Option[InfluxCredentials])
                                               (implicit val ex: ExecutionContext)
-  extends InfluxClient[Response[JsObject], Uri, Method, String]
+  extends InfluxClient[Response[JValue], Uri, Method, String]
     with AsyncRequestHandler
     with AsyncResponseHandler
     with AsyncQueryHandler {
@@ -35,7 +36,7 @@ private[fsanaulla] class InfluxAsyncHttpClient(val host: String,
     * @tparam A - Measurement's time series type
     * @return - Measurement instance of type [A]
     */
-  override def measurement[A](dbName: String, measurementName: String): Measurement[A] =
+  override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] =
     new Measurement[A](host, port, credentials, dbName, measurementName)
 
   /**

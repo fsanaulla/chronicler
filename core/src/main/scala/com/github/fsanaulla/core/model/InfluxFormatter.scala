@@ -1,6 +1,6 @@
 package com.github.fsanaulla.core.model
 
-import spray.json.JsArray
+import jawn.ast.JArray
 
 import scala.annotation.implicitNotFound
 
@@ -31,5 +31,5 @@ trait InfluxWriter[T] {
   "No InfluxReader found for type ${T}. Try to implement an implicit Readable for this type."
 )
 trait InfluxReader[T] {
-  def read(js: JsArray): T
+  def read(js: JArray): T
 }

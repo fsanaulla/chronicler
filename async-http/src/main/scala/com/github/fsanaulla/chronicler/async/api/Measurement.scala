@@ -7,13 +7,14 @@ import com.github.fsanaulla.core.model._
 import com.softwaremill.sttp.SttpBackend
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.ClassTag
 
-private[fsanaulla] class Measurement[E](val host: String,
-                                        val port: Int,
-                                        val credentials: Option[InfluxCredentials],
-                                        dbName: String,
-                                        measurementName: String)
-                                       (protected implicit val ex: ExecutionContext,
+private[fsanaulla] class Measurement[E: ClassTag](val host: String,
+                                                  val port: Int,
+                                                  val credentials: Option[InfluxCredentials],
+                                                  dbName: String,
+                                                  measurementName: String)
+                                                 (protected implicit val ex: ExecutionContext,
                                         protected implicit val backend: SttpBackend[Future, Nothing])
   extends MeasurementApi[E, String](dbName, measurementName)
     with HasCredentials
@@ -43,7 +44,6 @@ private[fsanaulla] class Measurement[E](val host: String,
            pretty: Boolean = false,
            chunked: Boolean = false)
           (implicit rd: InfluxReader[E]): Future[QueryResult[E]] = {
-    _readJs(dbName, query, epoch, pretty, chunked)
-      .map(qr => QueryResult.successful[E](qr.code, qr.queryResult.map(rd.read)))
+    _readJs(dbName, query, epoch, pretty, chunked).map(_.transform(rd.read))
   }
 }

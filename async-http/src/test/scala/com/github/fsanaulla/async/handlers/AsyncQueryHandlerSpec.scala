@@ -1,7 +1,7 @@
 package com.github.fsanaulla.async.handlers
 
 import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryHandler
-import com.github.fsanaulla.core.test.utils.{EmptyCredentials, TestSpec}
+import com.github.fsanaulla.core.test.{EmptyCredentials, TestSpec}
 
 class AsyncQueryHandlerSpec
   extends TestSpec

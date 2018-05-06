@@ -1,9 +1,10 @@
 package com.github.fsanaulla.async.handlers
 
+import com.github.fsanaulla.async.utils.Extensions.RichTry
 import com.github.fsanaulla.chronicler.async.handlers.AsyncJsonHandler
-import com.github.fsanaulla.core.test.utils.TestSpec
+import com.github.fsanaulla.core.test.TestSpec
 import com.softwaremill.sttp.Response
-import spray.json.{JsObject, JsonParser}
+import jawn.ast.{JParser, JValue}
 
 import scala.concurrent.ExecutionContext
 
@@ -47,72 +48,11 @@ class AsyncJsonHandlerSpec extends TestSpec with AsyncJsonHandler {
                       ]
                   }"""
 
-  val multipleJsonStr =
- """{
-     "results": [
-         {
-             "statement_id": 0,
-             "series": [
-                 {
-                     "name": "cpu_load_short",
-                     "columns": [
-                         "time",
-                         "value"
-                     ],
-                     "values": [
-                         [
-                             "2015-01-29T21:55:43.702900257Z",
-                             2
-                         ],
-                         [
-                             "2015-01-29T21:55:43.702900257Z",
-                             0.55
-                         ],
-                         [
-                             "2015-06-11T20:46:02Z",
-                             0.64
-                         ]
-                     ]
-                 }
-             ]
-         },
-         {
-             "statement_id": 1,
-             "series": [
-                 {
-                     "name": "cpu_load_short",
-                     "columns": [
-                         "time",
-                         "count"
-                     ],
-                     "values": [
-                         [
-                             "1970-01-01T00:00:00Z",
-                             3
-                         ]
-                     ]
-                 }
-             ]
-         }
-     ]
- }"""
+  val resp = Response(body = JParser.parseFromString(singleStrJson).toStrEither(singleStrJson), 200, "", Nil, Nil)
 
-  val singleHttpResponse = Response(body = Right(JsonParser(singleStrJson).asJsObject), 200, "", Nil, Nil)
+  val result: JValue = JParser.parseFromString(singleStrJson).get
 
-  val jsResult: JsObject = JsonParser(singleStrJson).asJsObject
-
-  "Async json handler" should "extract js object from HTTP response" in {
-    getJsBody(singleHttpResponse).futureValue shouldEqual jsResult
-  }
-
-  it should "extract multiple js query result from HTTP response" in {
-    val jsObject = JsonParser(multipleJsonStr).asJsObject
-
-    val res = getBulkInfluxValue(jsObject)
-
-    res.size shouldEqual 2
-    res.head should not equal Nil
-    res.last should not equal Nil
-
+  "AsyncJsonHandler" should "extract JSON from HTTP response" in {
+    getJsBody(resp).futureValue shouldEqual result
   }
 }

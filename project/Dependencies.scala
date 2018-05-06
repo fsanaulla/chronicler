@@ -8,18 +8,22 @@ import sbt._
 object Dependencies {
 
   // core
-  final val sprayJson = "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.11"
-  final val enums = "com.beachape" %% "enumeratum" % "1.5.13"
+  final val coreDep = Seq(
+    "com.beachape"         %% "enumeratum"            % "1.5.13",
+    "org.spire-math"       %% "jawn-ast"              % "0.12.1",
+    "org.scalatest"        %% "scalatest"             % "3.0.5"   % Test,
+    "com.github.fsanaulla" %% "scalatest-embedinflux" % "0.1.7"   % Test
+  )
 
   // akka-http
-  final val akkaHttp = "com.typesafe.akka" %% "akka-http" % "10.0.11"
+  final val akkaDep = Seq(
+    "com.typesafe.akka" %% "akka-stream" % "2.5.11" % Provided,
+    "com.typesafe.akka" %% "akka-http"   % "10.1.1"
+  )
 
   // async-http
-  final val asyncHttp = "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp
+  final val asyncHttp = "com.softwaremill.sttp" %% "async-http-client-backend-future" % "1.1.12"
 
-  // for testing
-  final val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalaTest % Test
-  final val embedInflux = "com.github.fsanaulla" %% "scalatest-embedinflux" % Versions.scalaTestInflux % Test
-
-  final val coreDep = Seq(sprayJson, enums, scalaTest, embedInflux)
+  // macros
+  final def scalaReflect(scalaVersion: String): ModuleID = "org.scala-lang" % "scala-reflect" % scalaVersion
 }
