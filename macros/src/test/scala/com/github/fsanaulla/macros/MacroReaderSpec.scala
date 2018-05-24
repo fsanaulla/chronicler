@@ -7,7 +7,10 @@ import jawn.ast._
 
 class MacroReaderSpec extends FlatSpecWithMatchers {
 
-  case class Test(@tag name: String, @tag surname: Option[String], @field age: Int)
+  case class Test(
+                   @tag name: String,
+                   @tag surname: Option[String],
+                   @field age: Int)
 
   val rd: InfluxReader[Test] = Macros.reader[Test]
 
