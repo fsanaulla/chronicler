@@ -23,14 +23,16 @@ private[fsanaulla] trait AsyncRequestHandler
       }
   }
 
-  override def readRequest(uri: Uri,
+  override def readRequest(
+                            uri: Uri,
                            method: Method,
                            entity: Option[String] = None): Future[Response[JValue]] = (method: @unchecked) match {
     case Method.POST => sttp.post(uri).optBody(entity).response(asJson).send()
     case Method.GET => sttp.get(uri).response(asJson).send()
   }
 
-  override def writeRequest(uri: Uri,
+  override def writeRequest(
+                             uri: Uri,
                             method: Method = defaultMethod,
                             entity: String): Future[Response[JValue]] = (method: @unchecked) match {
     case Method.POST => sttp.post(uri).body(entity).response(asJson).send()

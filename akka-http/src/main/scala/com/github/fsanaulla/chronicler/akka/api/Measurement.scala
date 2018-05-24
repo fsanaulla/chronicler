@@ -37,7 +37,7 @@ private[fsanaulla] class Measurement[E: ClassTag](dbName: String,
             precision: Precision = Precisions.NANOSECONDS,
             retentionPolicy: Option[String] = None)
            (implicit writer: InfluxWriter[E]): Future[Result] = {
-    _write0(entity, consistency, precision, retentionPolicy)
+    write(entity, consistency, precision, retentionPolicy)
   }
 
   def bulkWrite(entitys: Seq[E],
@@ -53,7 +53,7 @@ private[fsanaulla] class Measurement[E: ClassTag](dbName: String,
            pretty: Boolean = false,
            chunked: Boolean = false)
           (implicit rd: InfluxReader[E]): Future[QueryResult[E]] = {
-    _readJs(dbName, query, epoch, pretty, chunked)
+    readJs0(dbName, query, epoch, pretty, chunked)
       .map(qr => QueryResult.successful[E](qr.code, qr.queryResult.map(rd.read)))
   }
 }

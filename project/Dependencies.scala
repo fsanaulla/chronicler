@@ -7,6 +7,10 @@ import sbt._
   */
 object Dependencies {
 
+  object Versions {
+    final val sttp = "1.1.14"
+  }
+
   // core
   final val coreDep = Seq(
     "com.beachape"         %% "enumeratum"            % "1.5.13",
@@ -22,7 +26,10 @@ object Dependencies {
   )
 
   // async-http
-  final val asyncHttp = "com.softwaremill.sttp" %% "async-http-client-backend-future" % "1.1.12"
+  final val asyncHttp = "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp
+
+  // url-http
+  final val urlHttp = "com.softwaremill.sttp" %% "core" % Versions.sttp
 
   // macros
   final def scalaReflect(scalaVersion: String): ModuleID = "org.scala-lang" % "scala-reflect" % scalaVersion

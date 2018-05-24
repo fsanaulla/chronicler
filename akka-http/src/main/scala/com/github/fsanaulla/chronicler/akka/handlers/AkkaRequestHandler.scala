@@ -13,21 +13,16 @@ import scala.concurrent.Future
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[fsanaulla] trait AkkaRequestHandler
-  extends RequestHandler[HttpResponse, Uri, HttpMethod, MessageEntity] {
+private[fsanaulla] trait AkkaRequestHandler extends RequestHandler[Future, HttpResponse, Uri, MessageEntity] {
 
   protected implicit val mat: ActorMaterializer
   protected implicit val connection: Connection
-  protected val defaultMethod: HttpMethod = HttpMethods.POST
 
-  override def readRequest(uri: Uri,
-                           method: HttpMethod,
-                           entity: Option[MessageEntity] = None): Future[HttpResponse] = {
-    println(uri)
+  override def readRequest(uri: Uri, entity: Option[MessageEntity] = None): Future[HttpResponse] = {
     Source
       .single(
         HttpRequest(
-          method = method,
+          method = HttpMethods.GET,
           uri = uri,
           entity = entity.getOrElse(HttpEntity.Empty)
         )
@@ -36,13 +31,11 @@ private[fsanaulla] trait AkkaRequestHandler
       .runWith(Sink.head)
   }
 
-  override def writeRequest(uri: Uri,
-                            method: HttpMethod = defaultMethod,
-                            entity: MessageEntity): Future[HttpResponse] = {
+  override def writeRequest(uri: Uri, entity: MessageEntity): Future[HttpResponse] = {
     Source
       .single(
         HttpRequest(
-          method = method,
+          method = HttpMethods.POST,
           uri = uri,
           entity = entity
         )

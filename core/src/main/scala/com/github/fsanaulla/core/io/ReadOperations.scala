@@ -9,7 +9,7 @@ import scala.concurrent.Future
 /***
   * Trait that define main IO operation for working with DB.
   */
-trait ReadOperations {
+trait ReadOperations[M[_]] {
 
   /**
     * Execute single query from InfluxDB
@@ -20,11 +20,7 @@ trait ReadOperations {
     * @param chunked - Chunked response
     * @return        - Query result, array of JArray
     */
-  def _readJs(dbName: String,
-              query: String,
-              epoch: Epoch,
-              pretty: Boolean,
-              chunked: Boolean): Future[QueryResult[JArray]]
+  def readJs0(dbName: String, query: String, epoch: Epoch, pretty: Boolean, chunked: Boolean): M[QueryResult[JArray]]
 
   /**
     * Execute several queries in one time
@@ -35,10 +31,6 @@ trait ReadOperations {
     * @param chunked - Chunked response
     * @return        - Multiple query results, array of JArray
     */
-  def _bulkReadJs(dbName: String,
-                  queries: Seq[String],
-                  epoch: Epoch,
-                  pretty: Boolean,
-                  chunked: Boolean): Future[QueryResult[Array[JArray]]]
+  def bulkReadJs0(dbName: String, queries: Seq[String], epoch: Epoch, pretty: Boolean, chunked: Boolean): M[QueryResult[Array[JArray]]]
 
 }

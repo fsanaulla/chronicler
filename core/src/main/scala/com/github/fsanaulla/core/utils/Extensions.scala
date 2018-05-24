@@ -4,6 +4,7 @@ import jawn.ast.{JArray, JObject, JValue}
 
 private[fsanaulla] object Extensions {
 
+  /** Extension to simplify parsing JAWN AST */
   implicit class RichJValue(private val jv: JValue) extends AnyVal {
     def arrayValue: Option[Array[JValue]] = jv match {
       case JArray(arr) => Some(arr)

@@ -1,7 +1,7 @@
 package com.github.fsanaulla.core.query
 
 import com.github.fsanaulla.core.enums.{Consistency, Epoch, Precision}
-import com.github.fsanaulla.core.handlers.query.QueryHandler
+import com.github.fsanaulla.core.handlers.QueryHandler
 import com.github.fsanaulla.core.model.HasCredentials
 
 import scala.collection.mutable

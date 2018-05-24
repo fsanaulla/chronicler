@@ -1,21 +1,17 @@
 package com.github.fsanaulla.core.api.management
 
 import com.github.fsanaulla.core.enums.Privilege
-import com.github.fsanaulla.core.handlers.RequestHandler
-import com.github.fsanaulla.core.handlers.query.QueryHandler
-import com.github.fsanaulla.core.handlers.response.ResponseHandler
+import com.github.fsanaulla.core.handlers.{QueryHandler, RequestHandler, ResponseHandler}
 import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.core.query.UserManagementQuery
 import com.github.fsanaulla.core.utils.DefaultInfluxImplicits._
 
-import scala.concurrent.Future
-
-private[fsanaulla] trait UserManagement[R, U, M, E] extends UserManagementQuery[U] {
-  self: RequestHandler[R, U, M, E]
-    with ResponseHandler[R]
+private[fsanaulla] trait UserManagement[M[_], R, U, E] extends UserManagementQuery[U] {
+  self: RequestHandler[M, R, U, E]
+    with ResponseHandler[M, R]
     with QueryHandler[U]
-    with HasCredentials
-    with Executable =>
+    with Mappable[M, R]
+    with HasCredentials =>
 
   /***
     * Create new username
@@ -23,49 +19,49 @@ private[fsanaulla] trait UserManagement[R, U, M, E] extends UserManagementQuery[
     * @param password - Password for new user
     * @return         - Result of execution
     */
-  def createUser(username: String, password: String): Future[Result] = {
-    readRequest(createUserQuery(username, password)).flatMap(toResult)
-  }
+  def createUser(username: String, password: String): M[Result] =
+    m.mapTo(readRequest(createUserQuery(username, password)), toResult)
 
-  def createAdmin(username: String, password: String): Future[Result] = {
-    readRequest(createAdminQuery(username, password)).flatMap(toResult)
-  }
+  /**
+    * Create admin user
+    * @param username - admin name
+    * @param password - admin password
+    * @return         - execution response
+    */
+  def createAdmin(username: String, password: String): M[Result] =
+    m.mapTo(readRequest(createAdminQuery(username, password)), toResult)
 
-  def dropUser(username: String): Future[Result] = {
-    readRequest(dropUserQuery(username)).flatMap(toResult)
-  }
+  /** Drop user */
+  def dropUser(username: String): M[Result] =
+    m.mapTo(readRequest(dropUserQuery(username)), toResult)
 
-  def setUserPassword(username: String, password: String): Future[Result] = {
-    readRequest(setUserPasswordQuery(username, password)).flatMap(toResult)
-  }
+  /** Set password for user */
+  def setUserPassword(username: String, password: String): M[Result] =
+    m.mapTo(readRequest(setUserPasswordQuery(username, password)), toResult)
 
-  def setPrivileges(username: String,
-                    dbName: String,
-                    privilege: Privilege): Future[Result] = {
+  /** Set user privilege on specified database */
+  def setPrivileges(username: String, dbName: String, privilege: Privilege): M[Result] =
+    m.mapTo(readRequest(setPrivilegesQuery(dbName, username, privilege)), toResult)
 
-    readRequest(setPrivilegesQuery(dbName, username, privilege)).flatMap(toResult)
-  }
 
-  def revokePrivileges(username: String,
-                       dbName: String,
-                       privilege: Privilege): Future[Result] = {
+  /** Revoke user privilege on specified datasbase */
+  def revokePrivileges(username: String, dbName: String, privilege: Privilege): M[Result] =
+    m.mapTo(readRequest(revokePrivilegesQuery(dbName, username, privilege)), toResult)
 
-    readRequest(revokePrivilegesQuery(dbName, username, privilege)).flatMap(toResult)
-  }
+  /** Grant admin rights */
+  def makeAdmin(username: String): M[Result] =
+    m.mapTo(readRequest(makeAdminQuery(username)), toResult)
 
-  def makeAdmin(username: String): Future[Result] = {
-    readRequest(makeAdminQuery(username)).flatMap(toResult)
-  }
+  /** Remove admin rights */
+  def disableAdmin(username: String): M[Result] =
+    m.mapTo(readRequest(disableAdminQuery(username)), toResult)
 
-  def disableAdmin(username: String): Future[Result] = {
-    readRequest(disableAdminQuery(username)).flatMap(toResult)
-  }
+  /** Show use lists */
+  def showUsers: M[QueryResult[UserInfo]] =
+    m.mapTo(readRequest(showUsersQuery()), toQueryResult[UserInfo])
 
-  def showUsers(): Future[QueryResult[UserInfo]] = {
-    readRequest(showUsersQuery()).flatMap(toQueryResult[UserInfo])
-  }
+  /** Show user privileges */
+  def showUserPrivileges(username: String): M[QueryResult[UserPrivilegesInfo]] =
+    m.mapTo(readRequest(showUserPrivilegesQuery(username)), toQueryResult[UserPrivilegesInfo])
 
-  def showUserPrivileges(username: String): Future[QueryResult[UserPrivilegesInfo]] = {
-    readRequest(showUserPrivilegesQuery(username)).flatMap(toQueryResult[UserPrivilegesInfo])
-  }
 }

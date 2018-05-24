@@ -7,17 +7,25 @@ import com.github.fsanaulla.core.utils.PointTransformer
 
 import scala.concurrent.Future
 
-private[fsanaulla] abstract class MeasurementApi[E, R](dbName: String,
+/**
+  * Main functionality for measurement api
+  * @param dbName           - measurement database
+  * @param measurementName  - measurement name
+  * @tparam E - Entity type -
+  * @tparam R
+  */
+private[fsanaulla] abstract class MeasurementApi[M[_], E, R](dbName: String,
                                                        measurementName: String)
-  extends WriteOperations[R] with ReadOperations with PointTransformer {
+  extends WriteOperations[M, R] with ReadOperations[M] with PointTransformer {
 
-  final def _write0(entity: E,
+  final def write(
+                   entity: E,
                    consistency: Consistency,
                    precision: Precision,
                    retentionPolicy: Option[String] = None)
-                  (implicit writer: InfluxWriter[E], ds: Deserializer[String, R]): Future[Result] = {
+                 (implicit writer: InfluxWriter[E], ds: Deserializer[String, R]): M[Result] = {
 
-    _write(
+    write0(
       dbName,
       ds.deserialize(toPoint(measurementName, writer.write(entity))),
       consistency,
@@ -26,13 +34,14 @@ private[fsanaulla] abstract class MeasurementApi[E, R](dbName: String,
     )
   }
 
-  final def _bulkWrite0(entitys: Seq[E],
+  final def bulkWrite(
+                       entitys: Seq[E],
                        consistency: Consistency,
                        precision: Precision,
                        retentionPolicy: Option[String] = None)
-                      (implicit writer: InfluxWriter[E], ds: Deserializer[String, R]): Future[Result] = {
+                      (implicit writer: InfluxWriter[E], ds: Deserializer[String, R]): M[Result] = {
 
-    _write(
+    write0(
       dbName,
       ds.deserialize(toPoints(measurementName, entitys.map(writer.write))),
       consistency,

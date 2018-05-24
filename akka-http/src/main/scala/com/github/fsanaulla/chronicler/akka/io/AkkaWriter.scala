@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.akka.io
 
-import akka.http.scaladsl.model.{RequestEntity, Uri}
+import akka.http.scaladsl.model.{HttpMethods, RequestEntity, Uri}
 import akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryHandler, AkkaRequestHandler, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.akka.utils.AkkaTypeAlias.Connection
@@ -24,7 +24,7 @@ private[fsanaulla] trait AkkaWriter
     with AkkaQueryHandler
     with PointTransformer
     with HasCredentials
-    with Executable { self: WriteOperations[RequestEntity] =>
+    with Executable { self: WriteOperations[Future, RequestEntity] =>
 
   protected implicit val mat: ActorMaterializer
   protected implicit val connection: Connection

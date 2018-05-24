@@ -4,7 +4,8 @@ import _root_.akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import _root_.akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
 import _root_.akka.stream.ActorMaterializer
 import akka.util.ByteString
-import com.github.fsanaulla.core.handlers.json.JsonHandler
+import com.github.fsanaulla.core.handlers.JsonHandler
+import com.github.fsanaulla.core.model.Executable
 import jawn.ast.{JParser, JValue}
 
 import scala.concurrent.Future
@@ -14,13 +15,11 @@ import scala.concurrent.Future
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[fsanaulla] trait AkkaJsonHandler extends JsonHandler[HttpResponse] {
+private[fsanaulla] trait AkkaJsonHandler extends JsonHandler[Future, HttpResponse] with Executable {
 
   protected implicit val mat: ActorMaterializer
 
-  /**
-    * Custom Unmarshaller for Jawn JSON
-    */
+  /** Custom Unmarshaller for Jawn JSON */
   implicit val unm: Unmarshaller[HttpEntity, JValue] = {
     Unmarshaller.withMaterializer {
       implicit ex =>
@@ -32,9 +31,12 @@ private[fsanaulla] trait AkkaJsonHandler extends JsonHandler[HttpResponse] {
     }
   }
 
-
-  override def getJsBody(response: HttpResponse): Future[JValue] = {
+  override def getResponseBody(response: HttpResponse): Future[JValue] =
     Unmarshal(response.entity).to[JValue]
-  }
 
+  override def getResponseError(response: HttpResponse): Future[String] =
+    getResponseBody(response).map(_.get("error").asString)
+
+  override def getOptResponseError(response: HttpResponse): Future[Option[String]] =
+    getResponseBody(response).map(_.get("error").getString)
 }

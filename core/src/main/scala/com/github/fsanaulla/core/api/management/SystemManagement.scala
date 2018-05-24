@@ -1,9 +1,8 @@
 package com.github.fsanaulla.core.api.management
 
 import com.github.fsanaulla.core.api.{DatabaseApi, MeasurementApi}
-import com.github.fsanaulla.core.model.{Executable, Result}
+import com.github.fsanaulla.core.model.Result
 
-import scala.concurrent.Future
 import scala.reflect.ClassTag
 
 /**
@@ -11,14 +10,14 @@ import scala.reflect.ClassTag
   * Author: fayaz.sanaulla@gmail.com
   * Date: 08.08.17
   */
-trait SystemManagement[E] { self: Executable =>
+trait SystemManagement[M[_], E] {
 
   /**
     *
     * @param dbName - database name
     * @return Database instance that provide non type safe operations
     */
-  def database(dbName: String): DatabaseApi[E]
+  def database(dbName: String): DatabaseApi[M, E]
 
   /**
     *
@@ -27,10 +26,10 @@ trait SystemManagement[E] { self: Executable =>
     * @tparam A - Measurement's time series type
     * @return - Measurement instance of type [A]
     */
-  def measurement[A: ClassTag](dbName: String, measurementName: String): MeasurementApi[A, E]
+  def measurement[A: ClassTag](dbName: String, measurementName: String): MeasurementApi[M, A, E]
 
   /**
     * Ping InfluxDB
     */
-  def ping(): Future[Result]
+  def ping: M[Result]
 }

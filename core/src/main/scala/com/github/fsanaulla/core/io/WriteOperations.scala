@@ -7,9 +7,10 @@ import scala.concurrent.Future
 
 /***
   * Define basic write operation for communicating with InfluxDB
+  * @tparam M - container type
   * @tparam E - Entity type
   */
-private[fsanaulla] trait WriteOperations[E] {
+trait WriteOperations[M[_], E] {
 
   /**
     * Execute single write to InfluxDB
@@ -20,10 +21,11 @@ private[fsanaulla] trait WriteOperations[E] {
     * @param retentionPolicy - Optional retention policy name
     * @return                - Result of execution
     */
-  def _write(dbName: String,
-             entity: E,
-             consistency: Consistency,
-             precision: Precision,
-             retentionPolicy: Option[String]): Future[Result]
+  def write0(
+              dbName: String,
+              entity: E,
+              consistency: Consistency,
+              precision: Precision,
+              retentionPolicy: Option[String]): M[Result]
 
 }

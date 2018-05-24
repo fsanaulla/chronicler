@@ -4,6 +4,7 @@ import com.github.fsanaulla.core.enums.{Destinations, Privileges}
 import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.core.utils.PrimitiveJawnImplicits._
 import jawn.ast.{JArray, JValue}
+import com.github.fsanaulla.core.utils.Extensions.RichJValue
 
 /**
   * Created by
@@ -64,6 +65,20 @@ object DefaultInfluxImplicits {
     override def read(js: JArray): UserInfo = js.vs match {
       case Array(username: JValue, admin: JValue) =>
         UserInfo(username, admin)
+      case _ =>
+        throw new DeserializationException(s"Can't deserialize $UserInfo object")
+    }
+  }
+
+  implicit object SubscriptionInfoInfluxReader extends InfluxReader[SubscriptionInfo] {
+    override def read(js: JArray): SubscriptionInfo = js.vs match {
+      case Array(dbName: JValue, subscriptions: JArray) =>
+        val subs = subscriptions
+          .arrayValue
+          .map(_.flatMap(_.array).map(SubscriptionInfluxReader.read))
+          .getOrElse(Array.empty[Subscription])
+
+        SubscriptionInfo(dbName, subs)
       case _ =>
         throw new DeserializationException(s"Can't deserialize $UserInfo object")
     }

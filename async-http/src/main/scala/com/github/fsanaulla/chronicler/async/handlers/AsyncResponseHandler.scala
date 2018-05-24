@@ -27,12 +27,13 @@ private[fsanaulla] trait AsyncResponseHandler extends ResponseHandler[Response[J
     }
   }
 
-  def toComplexQueryResult[A: ClassTag, B: ClassTag](response: Response[JValue],
-                                                     f: (String, Array[A]) => B)
+  def toComplexQueryResult[A: ClassTag, B: ClassTag](
+                                                      response: Response[JValue],
+                                                      f: (String, Array[A]) => B)
                                                     (implicit reader: InfluxReader[A]): Future[QueryResult[B]] = {
     response.code match {
       case code if isSuccessful(code) =>
-        getJsBody(response)
+        getResponseBody(response)
           .map(getOptInfluxInfo[A])
           .map {
             case Some(arr) =>
@@ -50,7 +51,7 @@ private[fsanaulla] trait AsyncResponseHandler extends ResponseHandler[Response[J
   def toQueryJsResult(response: Response[JValue]): Future[QueryResult[JArray]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
-        getJsBody(response)
+        getResponseBody(response)
           .map(getOptInfluxPoints)
           .map {
             case Some(seq) => QueryResult.successful[JArray](code, seq)
@@ -64,7 +65,7 @@ private[fsanaulla] trait AsyncResponseHandler extends ResponseHandler[Response[J
   def toBulkQueryJsResult(response: Response[JValue]): Future[QueryResult[Array[JArray]]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
-        getJsBody(response)
+        getResponseBody(response)
           .map(getOptBulkInfluxPoints)
           .map {
             case Some(seq) => QueryResult.successful[Array[JArray]](code, seq)

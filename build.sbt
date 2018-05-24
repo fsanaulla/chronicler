@@ -1,4 +1,4 @@
-import sbt.Keys.{crossScalaVersions, organization, publishArtifact}
+import sbt.Keys.{crossScalaVersions, name, organization, publishArtifact}
 import sbt.url
 
 lazy val commonSettings = Seq(
@@ -35,6 +35,7 @@ lazy val chronicler = (project in file("."))
   .aggregate(
     core,
     macros,
+    urlHttp,
     akkaHttp,
     asyncHttp,
     udp)
@@ -45,41 +46,37 @@ lazy val core = project
   .settings(
     name := "chronicler-core",
     publishArtifact in (Test, packageBin) := true,
-      scalacOptions ++= Seq(
-        "-language:implicitConversions",
-        "-language:postfixOps"),
+    scalacOptions ++= Seq(
+      "-language:implicitConversions",
+      "-language:postfixOps",
+      "-language:higherKinds"),
     libraryDependencies ++= Dependencies.coreDep
   )
 
-lazy val akkaHttp = (project in file("akka-http"))
-  .settings(commonSettings: _*)
-  .settings(publishSettings: _*)
-  .settings(
-    name := "chronicler-akka-http",
-    scalacOptions += "-language:postfixOps",
-    libraryDependencies ++= Dependencies.akkaDep
-  )
-  .dependsOn(core % "compile->compile;test->test")
-  .dependsOn(macros % "test->test")
+lazy val urlHttp = module(
+  "url-http",
+  "chronicler-url-http",
+  Dependencies.urlHttp :: Nil
+)
 
-lazy val asyncHttp = (project in file("async-http"))
-  .settings(commonSettings: _*)
-  .settings(publishSettings: _*)
-  .settings(
-    name := "chronicler-async-http",
-    scalacOptions += "-language:implicitConversions",
-    libraryDependencies += Dependencies.asyncHttp
-  )
-  .dependsOn(core % "compile->compile;test->test")
-  .dependsOn(macros % "test->test")
+lazy val akkaHttp = module(
+  "akka-http",
+  "chronicler-akka-http",
+  Dependencies.akkaDep,
+  "-language:postfixOps" :: "-language:higherKinds" :: Nil
+)
+
+lazy val asyncHttp = module(
+  "async-http",
+  "chronicler-async-http",
+  Dependencies.asyncHttp :: Nil,
+  "-language:implicitConversions" :: "-language:higherKinds" :: Nil)
 
 lazy val udp = project
   .settings(commonSettings: _*)
   .settings(publishSettings: _*)
   .settings(name := "chronicler-udp")
-  .dependsOn(core)
-  .dependsOn(asyncHttp % "test->test")
-  .dependsOn(macros % "test->test")
+  .dependsOn(core, asyncHttp, macros % "test->test")
 
 lazy val macros = project
   .settings(commonSettings: _*)
@@ -88,3 +85,15 @@ lazy val macros = project
     name := "chronicler-macros",
     libraryDependencies += Dependencies.scalaReflect(scalaVersion.value)
   ).dependsOn(core % "compile->compile;test->test")
+
+def module(dir: String, name: String, deps: Seq[sbt.ModuleID] = Nil, scalaOpts: Seq[String] = Nil): Project = {
+  Project(id = name, base = file(dir))
+    .settings(commonSettings: _*)
+    .settings(publishSettings: _*)
+    .settings(
+      scalacOptions ++= scalaOpts,
+      libraryDependencies ++= deps
+    )
+    .dependsOn(core % "compile->compile;test->test")
+    .dependsOn(macros % "test->test")
+}

@@ -23,7 +23,7 @@ private[fsanaulla] class Database(dbName: String, val credentials: Option[Influx
                                   override protected implicit val mat: ActorMaterializer,
                                   override protected implicit val ex: ExecutionContext,
                                   override protected implicit val connection: Connection)
-  extends DatabaseApi[RequestEntity](dbName)
+  extends DatabaseApi[Future, RequestEntity](dbName)
     with AkkaWriter
     with AkkaReader
     with HasCredentials
