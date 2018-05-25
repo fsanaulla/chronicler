@@ -1,6 +1,6 @@
 package com.github.fsanaulla.macros
 
-import com.github.fsanaulla.macros.annotations.{field, tag}
+import com.github.fsanaulla.macros.annotations.{field, tag, timestamp}
 
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
@@ -13,23 +13,48 @@ import scala.reflect.macros.blackbox
 private[macros] class MacrosImpl(val c: blackbox.Context) {
   import c.universe._
 
+  final val TIMESTAMP_TYPE = tpdls[Long]
+
   final val SUPPORTED_TAGS_TYPES =
     Seq(tpdls[Option[String]], tpdls[String])
 
   final val SUPPORTED_FIELD_TYPES =
-    Seq(tpdls[Boolean], tpdls[Int], tpdls[Long], tpdls[Double], tpdls[String])
+    Seq(tpdls[Boolean], tpdls[Int], tpdls[Double], tpdls[String], TIMESTAMP_TYPE)
 
   /** return type dealias */
   def tpdls[A: TypeTag]: c.universe.Type = typeOf[A].dealias
 
-  def createReadMethod(tpe: c.universe.Type): c.universe.Tree = {
-    val methods = tpe.decls.toList collect {
-      case m: MethodSymbol if m.isCaseAccessor =>
-        m.name.decodedName.toString -> m.returnType.dealias
-    }
+  /** Check if this method valid timestamp */
+  def isTimestamp(m: MethodSymbol): Boolean = {
+    if (m.annotations.exists(_.tree.tpe =:= typeOf[timestamp])) {
+      if (m.returnType =:= TIMESTAMP_TYPE) true
+      else c.abort(c.enclosingPosition, s"@timestamp ${m.name} has unsupported type ${m.returnType}. Timestamp must be Long")
+    } else false
+  }
 
-    if (methods.lengthCompare(1) < 0)
-      c.abort(c.enclosingPosition, "Type parameter must be a case class with more then 1 fields")
+  /**
+    * Generate read method for specified type
+    * @param tpe  - for which type
+    * @return     - AST that will be expanded to read method
+    */
+  def createReadMethod(tpe: c.universe.Type): c.universe.Tree = {
+
+    val (ts, othFields) = tpe.decls.toList
+      .collect { case m: MethodSymbol if m.isCaseAccessor => m }
+      .partition(isTimestamp)
+
+    if (ts.size > 1)
+      c.abort(c.enclosingPosition, "Only one field can be marked as @timestamp.")
+
+    if (othFields.lengthCompare(1) < 0)
+      c.abort(c.enclosingPosition, "Type parameter must be a case class with more then 1 fields.")
+
+    val fields = othFields.map(m => m.name.decodedName.toString -> m.returnType.dealias)
+
+    val timestamp = ts
+      .headOption
+      .map(m => TermName(m.name.decodedName.toString) -> m.returnType.dealias)
+      .map {case (k, _) => q"$k = $k.asBoolean"}
 
     val bool = tpdls[Boolean]
     val int = tpdls[Int]
@@ -38,7 +63,7 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
     val string = tpdls[String]
     val optString = tpdls[Option[String]]
 
-    val params = methods
+    val params = fields
       .sortBy(_._1)
       .map { case (k, v) => TermName(k) -> v }
       .map {
@@ -51,15 +76,17 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
         case (_, other) => c.abort(c.enclosingPosition, s"Unsupported type $other")
       }
 
-    val paramss = methods
+    val paramss: List[Tree] = fields
       .map(_._1)
       .sorted // influx return results in alphabetical order
       .map(k => TermName(k))
       .map(k => pq"$k: JValue")
 
+    val tss: Option[c.universe.Tree] = ts.headOption.map(t => pq"${TermName(t)}: JValue")
+
     // success case clause component
-    val successPat = pq"Array(..$paramss)"
-    val successBody = q"new $tpe(..$params)"
+    val successPat = pq"Array(..${if (tss.isDefined) tss.get :: paramss else paramss})"
+    val successBody = q"new $tpe(..${if (timestamp.isDefined) timestamp.get :: params else params})"
     val successCase = cq"$successPat => $successBody"
 
     // failure case clause component
@@ -70,7 +97,8 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
 
     val cases = successCase :: failureCase :: Nil
 
-    q"""def read(js: JArray): $tpe = js.vs.tail match { case ..$cases }"""
+    q"""def read(js: JArray): $tpe =
+        ${if (tss.isDefined) q"js.vs match { case ..$cases }" else q"js.vs.tail match { case ..$cases }"}"""
   }
 
   def createWriteMethod(tpe: c.Type): c.universe.Tree = {
