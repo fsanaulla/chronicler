@@ -16,14 +16,10 @@ class MacroReaderSpec extends FlatSpecWithMatchers {
   val rd: InfluxReader[Test] = Macros.reader[Test]
 
   "Macros.reader" should "read with None" in {
-    rd.read(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(234324), JNum(4), JString("Fz"), JNull))) shouldEqual Test("Fz", None, 4, )
+    rd.read(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull))) shouldEqual Test("Fz", None, 4, 1438715114318570484L)
   }
 
   it should "read with Some" in {
-    rd.read(JArray(Array(JNum(234324), JNum(4), JString("Fz"), JString("Sr")))) shouldEqual Test("Fz", Some("Sr"), 4)
-  }
-
-  it should "read with timestamp" in {
-
+    rd.read(JArray(Array(JString("2015-08-04T19:05:14Z"), JNum(4), JString("Fz"), JString("Sr")))) shouldEqual Test("Fz", Some("Sr"), 4, 1438715114000000000L)
   }
 }

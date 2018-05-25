@@ -39,23 +39,6 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
     */
   def createReadMethod(tpe: c.universe.Type): c.universe.Tree = {
 
-    val (ts, othFields) = tpe.decls.toList
-      .collect { case m: MethodSymbol if m.isCaseAccessor => m }
-      .partition(isTimestamp)
-
-    if (ts.size > 1)
-      c.abort(c.enclosingPosition, "Only one field can be marked as @timestamp.")
-
-    if (othFields.lengthCompare(1) < 0)
-      c.abort(c.enclosingPosition, "Type parameter must be a case class with more then 1 fields.")
-
-    val fields = othFields.map(m => m.name.decodedName.toString -> m.returnType.dealias)
-
-    val timestamp = ts
-      .headOption
-      .map(m => TermName(m.name.decodedName.toString) -> m.returnType.dealias)
-      .map {case (k, _) => q"$k = $k.asBoolean"}
-
     val bool = tpdls[Boolean]
     val int = tpdls[Int]
     val long = tpdls[Long]
@@ -63,7 +46,31 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
     val string = tpdls[String]
     val optString = tpdls[Option[String]]
 
-    val params = fields
+    val (timeField, othFields) = tpe.decls.toList
+      .collect { case m: MethodSymbol if m.isCaseAccessor => m }
+      .partition(isTimestamp)
+
+    if (timeField.size > 1)
+      c.abort(c.enclosingPosition, "Only one field can be marked as @timestamp.")
+
+    if (othFields.lengthCompare(1) < 0)
+      c.abort(c.enclosingPosition, "Type parameter must be a case class with more then 1 fields.")
+
+    val fields = othFields.map(m => m.name.decodedName.toString -> m.returnType.dealias)
+
+    val timestamp = timeField
+      .headOption
+      .map(_.name.decodedName.toString)
+      .map(TermName(_))
+
+
+    val constructorTime: Option[c.universe.Tree] =
+      timestamp.map(k => q"$k = toNanoLong($k.asString)")
+
+    val patternTime: Option[c.universe.Tree] =
+      timestamp.map(t => pq"$t: JValue")
+
+    val constructorParams = fields
       .sortBy(_._1)
       .map { case (k, v) => TermName(k) -> v }
       .map {
@@ -72,33 +79,35 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
         case (k, `int`) => q"$k = $k.asInt"
         case (k, `long`) => q"$k = $k.asLong"
         case (k, `double`) => q"$k = $k.asDouble"
-        case (k, `optString`) => q"$k = if ($k.isNull) None else $k.getString"
+        case (k, `optString`) => q"$k = $k.getString"
         case (_, other) => c.abort(c.enclosingPosition, s"Unsupported type $other")
       }
 
-    val paramss: List[Tree] = fields
+    val patternParams: List[Tree] = fields
       .map(_._1)
       .sorted // influx return results in alphabetical order
       .map(k => TermName(k))
       .map(k => pq"$k: JValue")
 
-    val tss: Option[c.universe.Tree] = ts.headOption.map(t => pq"${TermName(t)}: JValue")
+    val patterns: List[Tree] =
+      patternTime.fold(patternParams)(_ :: patternParams)
+    val constructor: List[Tree] =
+      constructorTime.fold(constructorParams)(_ :: constructorParams)
 
     // success case clause component
-    val successPat = pq"Array(..${if (tss.isDefined) tss.get :: paramss else paramss})"
-    val successBody = q"new $tpe(..${if (timestamp.isDefined) timestamp.get :: params else params})"
+    val successPat = pq"Array(..$patterns)"
+    val successBody = q"new $tpe(..$constructor)"
     val successCase = cq"$successPat => $successBody"
 
     // failure case clause component
     val failurePat = pq"_"
-    val failureMsg = s"Can't deserialize $tpe object"
+    val failureMsg = s"Can't deserialize $tpe object, it's not match $successCase"
     val failureBody = q"throw new DeserializationException($failureMsg)"
     val failureCase = cq"$failurePat => $failureBody"
 
     val cases = successCase :: failureCase :: Nil
 
-    q"""def read(js: JArray): $tpe =
-        ${if (tss.isDefined) q"js.vs match { case ..$cases }" else q"js.vs.tail match { case ..$cases }"}"""
+    q"""def read(js: JArray): $tpe = js.vs match { case ..$cases }"""
   }
 
   def createWriteMethod(tpe: c.Type): c.universe.Tree = {
@@ -198,7 +207,13 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
 
     q"""new InfluxReader[$tpe] {
           import jawn.ast.{JValue, JArray}
+          import java.time.Instant
           import com.github.fsanaulla.core.model.DeserializationException
+
+          def toNanoLong(str: String): Long = {
+            val i = Instant.parse(str)
+            i.getEpochSecond * 1000000000 + i.getNano
+          }
 
           ${createReadMethod(tpe)}
        }"""
