@@ -22,7 +22,7 @@ object Dependencies {
   )
 
   // async-http
-  final val asyncHttp = "com.softwaremill.sttp" %% "async-http-client-backend-future" % "1.1.12"
+  final val asyncHttp = "com.softwaremill.sttp" %% "async-http-client-backend-future" % "1.1.14"
 
   // macros
   final def scalaReflect(scalaVersion: String): ModuleID = "org.scala-lang" % "scala-reflect" % scalaVersion

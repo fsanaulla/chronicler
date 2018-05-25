@@ -16,7 +16,9 @@ object InfluxUDP {
     * @param ex - Execution context
     * @return - InfluxUDPClient
     */
-  def connect(host: String = "localhost", port: Int = 8089)(implicit ex: ExecutionContext): InfluxUDPClient =
+  def connect(host: String = "localhost",
+              port: Int = 8089)
+             (implicit ex: ExecutionContext): InfluxUDPClient =
     new InfluxUDPClient(host, port)
 
 }

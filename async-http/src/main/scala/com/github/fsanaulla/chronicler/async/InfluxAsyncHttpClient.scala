@@ -11,10 +11,9 @@ import jawn.ast.JValue
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
-private[fsanaulla] class InfluxAsyncHttpClient(val host: String,
-                                               val port: Int,
-                                               val credentials: Option[InfluxCredentials])
-                                              (implicit val ex: ExecutionContext)
+class InfluxAsyncHttpClient(val host: String,
+                            val port: Int,
+                            val credentials: Option[InfluxCredentials])(implicit val ex: ExecutionContext)
   extends InfluxClient[Response[JValue], Uri, Method, String]
     with AsyncRequestHandler
     with AsyncResponseHandler

@@ -10,12 +10,12 @@ import com.softwaremill.sttp.SttpBackend
 
 import scala.concurrent.{ExecutionContext, Future}
 
-private[fsanaulla] class Database(val host: String,
-                                  val port: Int,
-                                  val credentials: Option[InfluxCredentials],
-                                  dbName: String)
-                                 (protected implicit val backend: SttpBackend[Future, Nothing],
-                                  protected implicit val ex: ExecutionContext)
+class Database(val host: String,
+               val port: Int,
+               val credentials: Option[InfluxCredentials],
+               dbName: String)
+              (protected implicit val backend: SttpBackend[Future, Nothing],
+               protected implicit val ex: ExecutionContext)
   extends DatabaseApi[String](dbName)
     with HasCredentials
     with Executable
