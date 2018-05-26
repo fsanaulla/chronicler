@@ -58,18 +58,6 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
 
     val fields = othFields.map(m => m.name.decodedName.toString -> m.returnType.dealias)
 
-    val timestamp = timeField
-      .headOption
-      .map(_.name.decodedName.toString)
-      .map(TermName(_))
-
-
-    val constructorTime: Option[c.universe.Tree] =
-      timestamp.map(k => q"$k = toNanoLong($k.asString)")
-
-    val patternTime: Option[c.universe.Tree] =
-      timestamp.map(t => pq"$t: JValue")
-
     val constructorParams = fields
       .sortBy(_._1)
       .map { case (k, v) => TermName(k) -> v }
@@ -89,42 +77,69 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
       .map(k => TermName(k))
       .map(k => pq"$k: JValue")
 
-    val patterns: List[Tree] =
-      patternTime.fold(patternParams)(_ :: patternParams)
-    val constructor: List[Tree] =
-      constructorTime.fold(constructorParams)(_ :: constructorParams)
+    val readMethodDefinition: Tree = if (timeField.nonEmpty) {
 
-    // success case clause component
-    val successPat = pq"Array(..$patterns)"
-    val successBody = q"new $tpe(..$constructor)"
-    val successCase = cq"$successPat => $successBody"
+      val timestamp = TermName(timeField.head.name.decodedName.toString)
 
-    // failure case clause component
-    val failurePat = pq"_"
-    val failureMsg = s"Can't deserialize $tpe object, it's not match $successCase"
-    val failureBody = q"throw new DeserializationException($failureMsg)"
-    val failureCase = cq"$failurePat => $failureBody"
+      val constructorTime: c.universe.Tree = q"$timestamp = toNanoLong($timestamp.asString)"
 
-    val cases = successCase :: failureCase :: Nil
+      val patternTime: c.universe.Tree = pq"$timestamp: JValue"
 
-    q"""def read(js: JArray): $tpe = js.vs match { case ..$cases }"""
-  }
+      val patterns: List[Tree] = patternTime :: patternParams
+      val constructor: List[Tree] = constructorTime :: constructorParams
 
-  def createWriteMethod(tpe: c.Type): c.universe.Tree = {
-    val methods: List[MethodSymbol] = tpe.decls.toList collect {
-      case m: MethodSymbol if m.isCaseAccessor => m
+      // success case clause component
+      val successPat = pq"Array(..$patterns)"
+      val successBody = q"new $tpe(..$constructor)"
+      val successCase = cq"$successPat => $successBody"
+
+      // failure case clause component
+      val failurePat = pq"_"
+      val failureMsg = s"Can't deserialize $tpe object."
+      val failureBody = q"throw new DeserializationException($failureMsg)"
+      val failureCase = cq"$failurePat => $failureBody"
+
+      val cases = successCase :: failureCase :: Nil
+
+      q"js.vs match { case ..$cases }"
+
+    } else {
+
+      // success case clause component
+      val successPat = pq"Array(..$patternParams)"
+      val successBody = q"new $tpe(..$constructorParams)"
+      val successCase = cq"$successPat => $successBody"
+
+      // failure case clause component
+      val failurePat = pq"_"
+      val failureMsg = s"Can't deserialize $tpe object."
+      val failureBody = q"throw new DeserializationException($failureMsg)"
+      val failureCase = cq"$failurePat => $failureBody"
+
+      val cases = successCase :: failureCase :: Nil
+
+      q"js.vs.tail match { case ..$cases }"
     }
 
-    if (methods.lengthCompare(1) < 0)
-      c.abort(c.enclosingPosition, "Type parameter must be a case class with more then 1 fields")
+    q"""def read(js: JArray): $tpe = $readMethodDefinition"""
+  }
+
+  /**
+    * Create write method for specified type
+    * @param tpe - specified type
+    * @return    - AST that will be expanded to write method
+    */
+  def createWriteMethod(tpe: c.Type): c.universe.Tree = {
 
     /** Is it Option container*/
     def isOption(tpe: c.universe.Type): Boolean =
       tpe.typeConstructor =:= typeOf[Option[_]].typeConstructor
 
+    /** Is it valid tag type */
     def isSupportedTagType(tpe: c.universe.Type): Boolean =
       SUPPORTED_TAGS_TYPES.exists(t => t =:= tpe)
 
+    /** Is it valid field type */
     def isSupportedFieldType(tpe: c.universe.Type): Boolean =
       SUPPORTED_FIELD_TYPES.exists(t => t =:= tpe)
 
@@ -144,9 +159,20 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
       } else false
     }
 
+    /** Check method for one of @tag, @field annotaions */
     def isMarked(m: MethodSymbol): Boolean = isTag(m) || isField(m)
 
-    val (tagsMethods, fieldsMethods) = methods
+    val (timeField, othField) = tpe.decls.toList
+      .collect { case m: MethodSymbol if m.isCaseAccessor => m }
+      .partition(isTimestamp)
+
+    if (timeField.size > 1)
+      c.abort(c.enclosingPosition, "Only one field can be marked as @timestamp.")
+
+    if (othField.lengthCompare(1) < 0)
+      c.abort(c.enclosingPosition, "Type parameter must be a case class with more then 1 fields")
+
+    val (tagsMethods, fieldsMethods) = othField
       .filter(isMarked)
       .span {
         case m: MethodSymbol if isTag(m) => true
@@ -168,8 +194,31 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
         q"${m.name.decodedName.toString} -> obj.${m.name}"
     }
 
+    // creation of 4 map in serializing, not the best case
+    timeField
+      .headOption
+      .map(m => q"obj.${m.name}") match {
+        case None =>
+          q"""def write(obj: $tpe): String = {
+                val fieldsMap: Map[String, Any] = Map(..$fields)
+                val fields = fieldsMap map { case (k, v) => k + "=" + v } mkString(" ")
 
-    q"""def write(obj: $tpe): String = {
+                val nonOptTagsMap: Map[String, String] = Map(..$nonOptTags)
+                val nonOptTags: String = nonOptTagsMap map {
+                  case (k: String, v: String) => k + "=" + v
+                } mkString(",")
+
+                val optTagsMap: Map[String, Option[String]] = Map(..$optTags)
+                val optTags: String = optTagsMap collect {
+                  case (k, Some(v)) => k + "=" + v
+                } mkString(",")
+
+                val combTags: String = if (optTags.isEmpty) nonOptTags else nonOptTags + "," + optTags
+
+                combTags + " " + fields trim
+          }"""
+        case Some(t) =>
+          q"""def write(obj: $tpe): String = {
             val fieldsMap: Map[String, Any] = Map(..$fields)
             val fields = fieldsMap map { case (k, v) => k + "=" + v } mkString(" ")
 
@@ -180,13 +229,15 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
 
             val optTagsMap: Map[String, Option[String]] = Map(..$optTags)
             val optTags: String = optTagsMap collect {
-                case (k: String, v: Option[String]) if v.isDefined => k + "=" + v.get
+                case (k, Some(v)) => k + "=" + v
             } mkString(",")
 
             val combTags: String = if (optTags.isEmpty) nonOptTags else nonOptTags + "," + optTags
+            val time: Long = $t
 
-            combTags + " " + fields trim
+            combTags + " " + fields + " " + time trim
           }"""
+      }
   }
 
   /***
@@ -229,7 +280,13 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
     q"""
        new InfluxFormatter[$tpe] {
           import jawn.ast.{JValue, JArray}
+          import java.time.Instant
           import com.github.fsanaulla.core.model.DeserializationException
+
+          def toNanoLong(str: String): Long = {
+            val i = Instant.parse(str)
+            i.getEpochSecond * 1000000000 + i.getNano
+          }
 
           ${createWriteMethod(tpe)}
           ${createReadMethod(tpe)}
