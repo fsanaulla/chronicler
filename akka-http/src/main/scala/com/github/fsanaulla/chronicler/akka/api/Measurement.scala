@@ -17,13 +17,13 @@ import scala.reflect.ClassTag
   * Author: fayaz.sanaulla@gmail.com
   * Date: 03.09.17
   */
-private[fsanaulla] class Measurement[E: ClassTag](dbName: String,
-                                                  measurementName: String,
-                                                  val credentials: Option[InfluxCredentials])
-                                                 (protected implicit val actorSystem: ActorSystem,
-                                        protected implicit val mat: ActorMaterializer,
-                                        protected implicit val ex: ExecutionContext,
-                                        protected implicit val connection: Connection)
+class Measurement[E: ClassTag](dbName: String,
+                               measurementName: String,
+                               val credentials: Option[InfluxCredentials])
+                              (protected implicit val actorSystem: ActorSystem,
+                               protected implicit val mat: ActorMaterializer,
+                               protected implicit val ex: ExecutionContext,
+                               protected implicit val connection: Connection)
     extends MeasurementApi[E, RequestEntity](dbName, measurementName)
       with AkkaWriter
       with AkkaReader

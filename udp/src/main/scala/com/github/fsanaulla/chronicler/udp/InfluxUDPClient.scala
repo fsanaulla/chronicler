@@ -4,7 +4,7 @@ import java.io.File
 import java.net._
 
 import com.github.fsanaulla.chronicler.udp.models.UdpConnection
-import com.github.fsanaulla.core.model.{Executable, InfluxWriter, Point}
+import com.github.fsanaulla.core.model.{InfluxWriter, Point}
 import com.github.fsanaulla.core.utils.PointTransformer
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -15,8 +15,7 @@ import scala.io.Source
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-private[fsanaulla] class InfluxUDPClient(host: String, port: Int)
-                                        (implicit ex: ExecutionContext)
+class InfluxUDPClient(host: String, port: Int)(implicit ex: ExecutionContext)
   extends PointTransformer with AutoCloseable {
 
   import InfluxUDPClient._

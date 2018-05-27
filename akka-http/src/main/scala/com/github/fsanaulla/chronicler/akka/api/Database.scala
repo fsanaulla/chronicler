@@ -18,11 +18,11 @@ import scala.concurrent.{ExecutionContext, Future}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-private[fsanaulla] class Database(dbName: String, val credentials: Option[InfluxCredentials])
-                                 (protected implicit val actorSystem: ActorSystem,
-                                  override protected implicit val mat: ActorMaterializer,
-                                  override protected implicit val ex: ExecutionContext,
-                                  override protected implicit val connection: Connection)
+class Database(dbName: String, val credentials: Option[InfluxCredentials])
+              (protected implicit val actorSystem: ActorSystem,
+               override protected implicit val mat: ActorMaterializer,
+               override protected implicit val ex: ExecutionContext,
+               override protected implicit val connection: Connection)
   extends DatabaseApi[Future, RequestEntity](dbName)
     with AkkaWriter
     with AkkaReader
