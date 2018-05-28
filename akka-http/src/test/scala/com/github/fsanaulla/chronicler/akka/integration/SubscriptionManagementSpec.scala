@@ -41,27 +41,17 @@ class SubscriptionManagementSpec extends TestSpec with EmbeddedInfluxDB with Inf
 
     influx.createSubscription(subName, dbName, rpName, destType, hosts).futureValue shouldEqual OkResult
 
-    influx.showSubscriptions(dbName).futureValue.queryResult shouldEqual Seq(subscription)
+    influx.showSubscriptionsInfo.futureValue.queryResult.map(_.subscriptions) shouldEqual Seq(subscription)
   }
 
-  it should "update subscriptions" in {
-    influx.updateSubscription(subName, dbName, rpName, newDestType, hosts).futureValue shouldEqual OkResult
-
-    influx.showSubscriptions(dbName).futureValue.queryResult shouldEqual Seq(newSubscription)
-  }
 
   it should "drop subscription" in {
     influx.dropSubscription(subName, dbName, rpName).futureValue shouldEqual OkResult
 
-    influx.showSubscriptions(dbName).futureValue.queryResult shouldEqual Nil
+    influx.showSubscriptionsInfo.futureValue.queryResult shouldEqual Nil
 
     influx.dropRetentionPolicy(rpName, dbName).futureValue shouldEqual OkResult
 
-    influx.dropDatabase(dbName).futureValue shouldEqual OkResult
-
-  }
-
-  it should "clear up after all" in {
     influx.dropDatabase(dbName).futureValue shouldEqual OkResult
 
     influx.close() shouldEqual {}

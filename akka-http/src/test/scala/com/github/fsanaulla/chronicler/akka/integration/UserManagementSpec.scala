@@ -31,12 +31,12 @@ class UserManagementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPC
     influx.createDatabase(userDB).futureValue shouldEqual OkResult
 
     influx.createUser(userName, userPass).futureValue shouldEqual OkResult
-    influx.showUsers().futureValue.queryResult.contains(UserInfo(userName, isAdmin = false)) shouldEqual true
+    influx.showUsers.futureValue.queryResult.contains(UserInfo(userName, isAdmin = false)) shouldEqual true
   }
 
   it should "create admin" in {
     influx.createAdmin(admin, adminPass).futureValue shouldEqual OkResult
-    influx.showUsers().futureValue.queryResult.contains(UserInfo(admin, isAdmin = true)) shouldEqual true
+    influx.showUsers.futureValue.queryResult.contains(UserInfo(admin, isAdmin = true)) shouldEqual true
   }
 
   it should "show user privileges" in {
@@ -61,12 +61,12 @@ class UserManagementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPC
 
   it should "disable admin" in {
     influx.disableAdmin(admin).futureValue shouldEqual OkResult
-    influx.showUsers().futureValue.queryResult.contains(UserInfo(admin, isAdmin = false)) shouldEqual true
+    influx.showUsers.futureValue.queryResult.contains(UserInfo(admin, isAdmin = false)) shouldEqual true
   }
 
   it should "make admin" in {
     influx.makeAdmin(admin).futureValue shouldEqual OkResult
-    influx.showUsers().futureValue.queryResult.contains(UserInfo(admin, isAdmin = true)) shouldEqual true
+    influx.showUsers.futureValue.queryResult.contains(UserInfo(admin, isAdmin = true)) shouldEqual true
   }
 
   it should "drop users" in {

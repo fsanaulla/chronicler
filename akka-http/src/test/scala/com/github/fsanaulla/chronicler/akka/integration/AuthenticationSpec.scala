@@ -39,7 +39,7 @@ class AuthenticationSpec
   "AuthenticationUserManagement" should  "create admin user " in {
     influx.createAdmin(admin, adminPass).futureValue shouldEqual OkResult
 
-    influx.showUsers().futureValue.ex.value shouldBe a[AuthorizationException]
+    influx.showUsers.futureValue.ex.value shouldBe a[AuthorizationException]
   }
 
   it should "create database" in {
@@ -47,7 +47,7 @@ class AuthenticationSpec
   }
   it should "create user" in {
     authInflux.createUser(userName, userPass).futureValue shouldEqual OkResult
-    authInflux.showUsers().futureValue.queryResult.exists(_.username == userName) shouldEqual true
+    authInflux.showUsers.futureValue.queryResult.exists(_.username == userName) shouldEqual true
   }
 
   it should "set user password" in {

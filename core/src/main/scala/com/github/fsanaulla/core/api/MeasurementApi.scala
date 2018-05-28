@@ -14,18 +14,17 @@ import scala.concurrent.Future
   * @tparam E - Entity type -
   * @tparam R
   */
-private[fsanaulla] abstract class MeasurementApi[M[_], E, R](dbName: String,
-                                                       measurementName: String)
+private[fsanaulla] abstract class MeasurementApi[M[_], E, R](dbName: String, measurementName: String)
   extends WriteOperations[M, R] with ReadOperations[M] with PointTransformer {
 
-  final def write(
+  final def write0(
                    entity: E,
                    consistency: Consistency,
                    precision: Precision,
                    retentionPolicy: Option[String] = None)
                  (implicit writer: InfluxWriter[E], ds: Deserializer[String, R]): M[Result] = {
 
-    write0(
+    writeTo(
       dbName,
       ds.deserialize(toPoint(measurementName, writer.write(entity))),
       consistency,
@@ -34,14 +33,14 @@ private[fsanaulla] abstract class MeasurementApi[M[_], E, R](dbName: String,
     )
   }
 
-  final def bulkWrite(
+  final def bulkWrite0(
                        entitys: Seq[E],
                        consistency: Consistency,
                        precision: Precision,
                        retentionPolicy: Option[String] = None)
                       (implicit writer: InfluxWriter[E], ds: Deserializer[String, R]): M[Result] = {
 
-    write0(
+    writeTo(
       dbName,
       ds.deserialize(toPoints(measurementName, entitys.map(writer.write))),
       consistency,

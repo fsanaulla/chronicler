@@ -17,11 +17,13 @@ import scala.language.postfixOps
 /**
   * Created by fayaz on 12.07.17.
   */
-class AkkaResponseHandlerSpec extends TestSpec with AkkaResponseHandler {
+class AkkaResponseHandlerSpec
+  extends TestKit(ActorSystem())
+    with TestSpec
+    with AkkaResponseHandler {
 
-  implicit val actorSystem: ActorSystem = ActorSystem("TestActorSystem")
   implicit val mat: ActorMaterializer = ActorMaterializer()
-  implicit val ex: ExecutionContext = actorSystem.dispatcher
+  implicit val ex: ExecutionContext = system.dispatcher
   implicit val timeout: FiniteDuration = 1 second
 
   "AsyncHttpResponseHandler" should "extract single query result from response" in {
@@ -201,7 +203,7 @@ class AkkaResponseHandlerSpec extends TestSpec with AkkaResponseHandler {
         |}
       """.stripMargin.toResponse
 
-    getErrorOpt(errorHttpResponse).futureValue shouldEqual Some("user not found")
+    getOptResponseError(errorHttpResponse).futureValue shouldEqual Some("user not found")
   }
 
   it should "extract error message" in {
@@ -209,6 +211,6 @@ class AkkaResponseHandlerSpec extends TestSpec with AkkaResponseHandler {
     val errorHttpResponse: HttpResponse =
       """ { "error": "user not found" } """.toResponse
 
-    getError(errorHttpResponse).futureValue shouldEqual "user not found"
+    getResponseError(errorHttpResponse).futureValue shouldEqual "user not found"
   }
 }

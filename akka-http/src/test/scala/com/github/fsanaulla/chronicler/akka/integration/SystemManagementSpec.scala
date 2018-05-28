@@ -18,6 +18,6 @@ class SystemManagementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTT
   lazy val influx: InfluxAkkaHttpClient = InfluxDB.connect()
 
   "System api" should "ping InfluxDB" in {
-    influx.ping().futureValue shouldEqual NoContentResult
+    influx.ping.futureValue shouldEqual NoContentResult
   }
 }

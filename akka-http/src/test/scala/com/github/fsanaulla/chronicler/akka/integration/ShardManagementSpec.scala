@@ -24,7 +24,7 @@ class ShardManagementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTP
 
     influx.createDatabase(testDb, shardDuration = Some("1s")).futureValue shouldEqual OkResult
 
-    val shards = influx.showShards().futureValue.queryResult
+    val shards = influx.showShards.futureValue.queryResult
 
     shards should not be Nil
 
@@ -33,7 +33,7 @@ class ShardManagementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTP
 
   it should "show shards groupe" in {
 
-    val shardGroups = influx.showShardGroups().futureValue.queryResult
+    val shardGroups = influx.showShardGroups.futureValue.queryResult
 
     shardGroups should not equal Nil
 

@@ -41,7 +41,7 @@ class MeasurementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPConf
     meas.read(s"SELECT * FROM $measName")
       .futureValue
       .queryResult
-      .size shouldEqual 3
+      .length shouldEqual 3
 
     influx.close() shouldEqual {}
   }

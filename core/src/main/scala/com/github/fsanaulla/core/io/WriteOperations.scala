@@ -21,7 +21,7 @@ trait WriteOperations[M[_], E] {
     * @param retentionPolicy - Optional retention policy name
     * @return                - Result of execution
     */
-  def write0(
+  def writeTo(
               dbName: String,
               entity: E,
               consistency: Consistency,

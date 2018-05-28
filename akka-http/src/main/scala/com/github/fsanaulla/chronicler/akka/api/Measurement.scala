@@ -17,14 +17,15 @@ import scala.reflect.ClassTag
   * Author: fayaz.sanaulla@gmail.com
   * Date: 03.09.17
   */
-class Measurement[E: ClassTag](dbName: String,
-                               measurementName: String,
-                               val credentials: Option[InfluxCredentials])
-                              (protected implicit val actorSystem: ActorSystem,
-                               protected implicit val mat: ActorMaterializer,
-                               protected implicit val ex: ExecutionContext,
-                               protected implicit val connection: Connection)
-    extends MeasurementApi[E, RequestEntity](dbName, measurementName)
+class Measurement[E: ClassTag](
+                                      dbName: String,
+                                      measurementName: String,
+                                      val credentials: Option[InfluxCredentials])
+                                    (protected implicit val actorSystem: ActorSystem,
+                                     protected implicit val mat: ActorMaterializer,
+                                     protected implicit val ex: ExecutionContext,
+                                     protected implicit val connection: Connection)
+    extends MeasurementApi[Future, E, RequestEntity](dbName, measurementName)
       with AkkaWriter
       with AkkaReader
       with HasCredentials
@@ -37,7 +38,7 @@ class Measurement[E: ClassTag](dbName: String,
             precision: Precision = Precisions.NANOSECONDS,
             retentionPolicy: Option[String] = None)
            (implicit writer: InfluxWriter[E]): Future[Result] = {
-    write(entity, consistency, precision, retentionPolicy)
+    write0(entity, consistency, precision, retentionPolicy)
   }
 
   def bulkWrite(entitys: Seq[E],
@@ -45,7 +46,7 @@ class Measurement[E: ClassTag](dbName: String,
                 precision: Precision = Precisions.NANOSECONDS,
                 retentionPolicy: Option[String] = None)
                (implicit writer: InfluxWriter[E]): Future[Result] = {
-    _bulkWrite0(entitys, consistency, precision, retentionPolicy)
+    bulkWrite0(entitys, consistency, precision, retentionPolicy)
   }
 
   def read(query: String,

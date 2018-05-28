@@ -29,7 +29,7 @@ private[fsanaulla] trait AkkaWriter
   protected implicit val mat: ActorMaterializer
   protected implicit val connection: Connection
 
-  def _write(dbName: String,
+  def writeTo(dbName: String,
              entity: RequestEntity,
              consistency: Consistency,
              precision: Precision,
