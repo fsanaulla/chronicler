@@ -1,4 +1,3 @@
-import Dependencies.Versions
 import sbt.Keys.{crossScalaVersions, name, organization, publishArtifact}
 import sbt.url
 
@@ -56,24 +55,20 @@ lazy val core = project
 
 lazy val urlHttp = module(
   "url-http",
-  "chronicler-url-http",
+  "urlHttp",
   Dependencies.urlHttp :: Nil
 )
 
 lazy val akkaHttp = module(
   "akka-http",
-  "chronicler-akka-http",
-  Seq(
-    "com.typesafe.akka" %% "akka-stream"  % Versions.akka % Provided,
-    "com.typesafe.akka" %% "akka-actor"   % Versions.akka % Provided,
-    "com.typesafe.akka" %% "akka-testkit" % Versions.akka % Test,
-    "com.typesafe.akka" %% "akka-http"    % "10.1.1"),
+  "akkaHttp",
+  Dependencies.akkaDep,
   "-language:postfixOps" :: "-language:higherKinds" :: Nil
 )
 
 lazy val asyncHttp = module(
   "async-http",
-  "chronicler-async-http",
+  "asyncHttp",
   Dependencies.asyncHttp :: Nil,
   "-language:implicitConversions" :: "-language:higherKinds" :: Nil)
 
