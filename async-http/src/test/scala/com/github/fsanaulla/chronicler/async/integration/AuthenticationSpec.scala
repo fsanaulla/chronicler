@@ -1,10 +1,10 @@
 package com.github.fsanaulla.chronicler.async.integration
 
 import com.github.fsanaulla.chronicler.async.{Influx, InfluxAsyncHttpClient}
+import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
 import com.github.fsanaulla.core.enums.Privileges
 import com.github.fsanaulla.core.model.{AuthorizationException, UserPrivilegesInfo}
-import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -24,14 +24,13 @@ class AuthenticationSpec extends TestSpec with DockerizedInfluxDB {
   val admin = "admin"
   val adminPass = "admin"
 
-  lazy val influx: InfluxAsyncHttpClient = Influx.connect()
+  lazy val influx: InfluxAsyncHttpClient =
+    Influx.connect(host, port)
 
   lazy val authInflux: InfluxAsyncHttpClient =
     Influx.connect(host, port, Some(creds))
 
-  "AuthenticationUserManagement" should  "create admin user " in {
-    influx.createAdmin(admin, adminPass).futureValue shouldEqual OkResult
-
+  "AuthenticationManagement" should  "create admin user " in {
     influx.showUsers.futureValue.ex.value shouldBe a[AuthorizationException]
   }
 

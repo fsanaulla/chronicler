@@ -7,7 +7,7 @@ import scala.concurrent.ExecutionContext
   * Author: fayaz.sanaulla@gmail.com
   * Date: 14.03.18
   */
-object InfluxUDP {
+object Influx {
 
   /***
     * Constructor for creating UDP client

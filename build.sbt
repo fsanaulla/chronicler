@@ -88,7 +88,10 @@ lazy val asyncHttp = module(
 lazy val udp = project
   .settings(commonSettings: _*)
   .settings(publishSettings: _*)
-  .settings(name := "chronicler-udp")
+  .settings(
+    name := "chronicler-udp",
+    libraryDependencies += "com.github.fsanaulla" %% "scalatest-embedinflux" % "0.1.7" % Test
+  )
   .dependsOn(core, asyncHttp, macros, testing % "test->test")
 
 lazy val macros = project

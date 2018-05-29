@@ -15,7 +15,8 @@ import scala.io.Source
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-class InfluxUDPClient(host: String, port: Int)(implicit ex: ExecutionContext)
+class InfluxUDPClient(host: String, port: Int)
+                     (implicit ex: ExecutionContext)
   extends PointTransformer with AutoCloseable {
 
   import InfluxUDPClient._
