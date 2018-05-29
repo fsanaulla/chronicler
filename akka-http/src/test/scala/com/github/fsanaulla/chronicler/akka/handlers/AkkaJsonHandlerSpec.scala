@@ -2,17 +2,26 @@ package com.github.fsanaulla.chronicler.akka.handlers
 
 import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.model.{HttpEntity, HttpResponse}
-import akka.testing.Testkit
+import akka.stream.ActorMaterializer
+import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.utils.AkkaContentTypes.AppJson
 import com.github.fsanaulla.core.test.TestSpec
 import jawn.ast._
+import org.scalatest.BeforeAndAfterAll
+
+import scala.concurrent.ExecutionContext
 
 class AkkaJsonHandlerSpec
   extends TestKit(ActorSystem())
     with TestSpec
-    with AkkaJsonHandler {
+    with AkkaJsonHandler
+    with BeforeAndAfterAll {
+
+  implicit val mat: ActorMaterializer = ActorMaterializer()
+  implicit val ex: ExecutionContext = system.dispatcher
 
   override def afterAll: Unit = {
+    super.afterAll()
     TestKit.shutdownActorSystem(system)
   }
 

@@ -3,6 +3,7 @@ package com.github.fsanaulla.chronicler.akka.handlers
 import _root_.akka.actor.ActorSystem
 import _root_.akka.stream.ActorMaterializer
 import akka.http.scaladsl.model.HttpResponse
+import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.utils.Extensions.RichString
 import com.github.fsanaulla.chronicler.akka.utils.SampleEntitys.singleResult
 import com.github.fsanaulla.core.model.ContinuousQuery
