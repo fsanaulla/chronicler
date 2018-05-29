@@ -1,7 +1,7 @@
 package com.github.fsanaulla.macros
 
+import com.github.fsanaulla.chronicler.testing.FlatSpecWithMatchers
 import com.github.fsanaulla.core.model.InfluxReader
-import com.github.fsanaulla.core.test.FlatSpecWithMatchers
 import com.github.fsanaulla.macros.annotations.{field, tag, timestamp}
 import jawn.ast._
 

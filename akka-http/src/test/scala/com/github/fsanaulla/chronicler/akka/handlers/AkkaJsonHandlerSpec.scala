@@ -5,7 +5,7 @@ import _root_.akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import akka.stream.ActorMaterializer
 import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.utils.AkkaContentTypes.AppJson
-import com.github.fsanaulla.core.test.TestSpec
+import com.github.fsanaulla.chronicler.testing.TestSpec
 import jawn.ast._
 import org.scalatest.BeforeAndAfterAll
 

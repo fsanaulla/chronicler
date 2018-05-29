@@ -3,9 +3,9 @@ package com.github.fsanaulla.chronicler.akka.unit
 import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryHandler
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
+import com.github.fsanaulla.chronicler.testing.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.github.fsanaulla.core.enums.{Consistencies, Epochs, Precisions}
 import com.github.fsanaulla.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.core.test.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 
 /**
   * Created by

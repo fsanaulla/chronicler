@@ -1,8 +1,14 @@
 package com.github.fsanaulla.chronicler.akka.handlers
 
-import com.github.fsanaulla.core.test.{EmptyCredentials, TestSpec}
+import com.github.fsanaulla.chronicler.testing.TestSpec
+import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials}
 
-class AkkaQueryHandlerSpec extends TestSpec with EmptyCredentials with AkkaQueryHandler {
+class AkkaQueryHandlerSpec
+  extends TestSpec
+    with AkkaQueryHandler
+    with HasCredentials {
+
+  override val credentials: Option[InfluxCredentials] = None
 
   "Query handler" should "properly generate URI" in {
     val queryMap = scala.collection.mutable.Map[String, String](

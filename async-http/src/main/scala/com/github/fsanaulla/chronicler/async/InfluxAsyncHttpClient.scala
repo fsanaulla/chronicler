@@ -3,9 +3,9 @@ package com.github.fsanaulla.chronicler.async
 import com.github.fsanaulla.chronicler.async.api.{Database, Measurement}
 import com.github.fsanaulla.chronicler.async.handlers._
 import com.github.fsanaulla.core.client.InfluxClient
-import com.github.fsanaulla.core.model.{InfluxCredentials, Result}
+import com.github.fsanaulla.core.model.{InfluxCredentials, Mapper, Result}
 import com.softwaremill.sttp.asynchttpclient.future.AsyncHttpClientFutureBackend
-import com.softwaremill.sttp.{Method, Response, SttpBackend, Uri}
+import com.softwaremill.sttp.{Response, SttpBackend, Uri}
 import jawn.ast.JValue
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -14,12 +14,17 @@ import scala.reflect.ClassTag
 class InfluxAsyncHttpClient(val host: String,
                             val port: Int,
                             val credentials: Option[InfluxCredentials])(implicit val ex: ExecutionContext)
-  extends InfluxClient[Response[JValue], Uri, Method, String]
+  extends InfluxClient[Future, Response[JValue], Uri, String]
     with AsyncRequestHandler
     with AsyncResponseHandler
     with AsyncQueryHandler {
 
   protected implicit val backend: SttpBackend[Future, Nothing] = AsyncHttpClientFutureBackend()
+
+  override val m: Mapper[Future, Response[JValue]] = new Mapper[Future, Response[JValue]] {
+    override def mapTo[B](resp: Future[Response[JValue]], f: Response[JValue] => Future[B]): Future[B] = resp.flatMap(f)
+  }
+
   /**
     *
     * @param dbName - database name
@@ -42,7 +47,7 @@ class InfluxAsyncHttpClient(val host: String,
     * Ping InfluxDB
     */
   override def ping(): Future[Result] =
-    readRequest(buildQuery("/ping", Map.empty[String, String]), Method.GET).flatMap(toResult)
+    readRequest(buildQuery("/ping", Map.empty[String, String])).flatMap(toResult)
 
   /**
     * Close HTTP connection

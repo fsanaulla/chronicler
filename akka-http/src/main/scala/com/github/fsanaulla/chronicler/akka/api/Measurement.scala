@@ -33,28 +33,29 @@ class Measurement[E: ClassTag](
 
   import com.github.fsanaulla.chronicler.akka.models.AkkaDeserializers.str2Http
 
-  def write(entity: E,
-            consistency: Consistency = Consistencies.ONE,
-            precision: Precision = Precisions.NANOSECONDS,
-            retentionPolicy: Option[String] = None)
-           (implicit writer: InfluxWriter[E]): Future[Result] = {
+  def write(
+             entity: E,
+             consistency: Consistency = Consistencies.ONE,
+             precision: Precision = Precisions.NANOSECONDS,
+             retentionPolicy: Option[String] = None)
+           (implicit writer: InfluxWriter[E]): Future[Result] =
     write0(entity, consistency, precision, retentionPolicy)
-  }
 
-  def bulkWrite(entitys: Seq[E],
-                consistency: Consistency = Consistencies.ONE,
-                precision: Precision = Precisions.NANOSECONDS,
-                retentionPolicy: Option[String] = None)
-               (implicit writer: InfluxWriter[E]): Future[Result] = {
+
+  def bulkWrite(
+                 entitys: Seq[E],
+                 consistency: Consistency = Consistencies.ONE,
+                 precision: Precision = Precisions.NANOSECONDS,
+                 retentionPolicy: Option[String] = None)
+               (implicit writer: InfluxWriter[E]): Future[Result] =
     bulkWrite0(entitys, consistency, precision, retentionPolicy)
-  }
+
 
   def read(query: String,
            epoch: Epoch = Epochs.NANOSECONDS,
            pretty: Boolean = false,
            chunked: Boolean = false)
-          (implicit rd: InfluxReader[E]): Future[QueryResult[E]] = {
-    readJs0(dbName, query, epoch, pretty, chunked)
-      .map(qr => QueryResult.successful[E](qr.code, qr.queryResult.map(rd.read)))
-  }
+          (implicit reader: InfluxReader[E]): Future[QueryResult[E]] =
+    readJs0(dbName, query, epoch, pretty, chunked).map(_.map(reader.read))
+
 }

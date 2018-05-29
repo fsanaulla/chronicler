@@ -2,11 +2,10 @@ package com.github.fsanaulla.chronicler.akka.integration
 
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
-import com.github.fsanaulla.chronicler.akka.utils.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
+import com.github.fsanaulla.chronicler.testing.ResultMatchers._
+import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
 import com.github.fsanaulla.core.model.ShardGroupsInfo
-import com.github.fsanaulla.core.test.ResultMatchers._
-import com.github.fsanaulla.core.test.TestSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -15,7 +14,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
-class ShardManagementSpec extends TestKit(ActorSystem()) with TestSpec with DockerizedInfluxDB {
+class ShardManagementSpec
+  extends TestKit(ActorSystem())
+    with TestSpec
+    with DockerizedInfluxDB {
 
   val testDb = "_internal"
 

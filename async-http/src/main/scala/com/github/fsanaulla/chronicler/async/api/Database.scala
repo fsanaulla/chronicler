@@ -9,14 +9,16 @@ import com.github.fsanaulla.core.model._
 import com.softwaremill.sttp.SttpBackend
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.ClassTag
 
-class Database(val host: String,
-               val port: Int,
-               val credentials: Option[InfluxCredentials],
-               dbName: String)
+class Database(
+                val host: String,
+                val port: Int,
+                val credentials: Option[InfluxCredentials],
+                dbName: String)
               (protected implicit val backend: SttpBackend[Future, Nothing],
                protected implicit val ex: ExecutionContext)
-  extends DatabaseApi[String](dbName)
+  extends DatabaseApi[Future, String](dbName)
     with HasCredentials
     with Executable
     with AsyncWriter
@@ -58,5 +60,14 @@ class Database(val host: String,
                       precision: Precision = Precisions.NANOSECONDS,
                       retentionPolicy: Option[String] = None): Future[Result] = {
     bulkWritePoints0(points, consistency, precision, retentionPolicy)
+  }
+
+  override def read[A: ClassTag](
+                                  query: String,
+                                  epoch: Epoch,
+                                  pretty: Boolean,
+                                  chunked: Boolean)
+                                (implicit reader: InfluxReader[A]): Future[QueryResult[A]] = {
+    readJs(query, epoch, pretty, chunked).map(_.map(reader.read))
   }
 }

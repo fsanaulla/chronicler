@@ -34,6 +34,7 @@ lazy val chronicler = (project in file("."))
   .settings(publishArtifact := false)
   .aggregate(
     core,
+    testing,
     macros,
     urlHttp,
     akkaHttp,
@@ -45,13 +46,25 @@ lazy val core = project
   .settings(publishSettings: _*)
   .settings(
     name := "chronicler-core",
-    publishArtifact in (Test, packageBin) := true,
     scalacOptions ++= Seq(
       "-language:implicitConversions",
       "-language:postfixOps",
       "-language:higherKinds"),
     libraryDependencies ++= Dependencies.coreDep
   )
+
+lazy val testing = project
+  .settings(commonSettings: _*)
+  .settings(publishSettings: _*)
+  .settings(
+    name := "chronicler-testing",
+    scalacOptions ++= Seq(
+      "-language:implicitConversions",
+      "-language:postfixOps",
+      "-language:higherKinds"),
+    libraryDependencies ++= Dependencies.testingDeps
+  )
+  .dependsOn(core % "compile->compile")
 
 lazy val urlHttp = module(
   "url-http",
@@ -76,7 +89,7 @@ lazy val udp = project
   .settings(commonSettings: _*)
   .settings(publishSettings: _*)
   .settings(name := "chronicler-udp")
-  .dependsOn(core, asyncHttp, macros % "test->test")
+  .dependsOn(core, asyncHttp, macros, testing % "test->test")
 
 lazy val macros = project
   .settings(commonSettings: _*)
@@ -84,7 +97,9 @@ lazy val macros = project
   .settings(
     name := "chronicler-macros",
     libraryDependencies += Dependencies.scalaReflect(scalaVersion.value)
-  ).dependsOn(core % "compile->compile;test->test")
+  )
+  .dependsOn(core % "compile->compile;test->test")
+  .dependsOn(testing % "test->test")
 
 def module(dir: String, name: String, deps: Seq[sbt.ModuleID] = Nil, scalaOpts: Seq[String] = Nil): Project = {
   Project(id = name, base = file(dir))
@@ -95,5 +110,5 @@ def module(dir: String, name: String, deps: Seq[sbt.ModuleID] = Nil, scalaOpts: 
       libraryDependencies ++= deps
     )
     .dependsOn(core % "compile->compile;test->test")
-    .dependsOn(macros % "test->test")
+    .dependsOn(macros, testing % "test->test")
 }

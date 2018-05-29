@@ -16,9 +16,9 @@ private[fsanaulla] trait AsyncWriter
     with AsyncResponseHandler
     with AsyncQueryHandler
     with PointTransformer
-    with HasCredentials { self: WriteOperations[String] =>
+    with HasCredentials { self: WriteOperations[Future, String] =>
 
-  override def _write(dbName: String,
+  override def writeTo(dbName: String,
                       entity: String,
                       consistency: Consistency,
                       precision: Precision,

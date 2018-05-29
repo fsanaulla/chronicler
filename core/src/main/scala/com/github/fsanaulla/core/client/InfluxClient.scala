@@ -14,7 +14,6 @@ private[fsanaulla] trait InfluxClient[M[_], R, U, E]
     with ResponseHandler[M, R]
     with QueryHandler[U]
     with Mappable[M, R]
-    with HasCredentials
     with SystemManagement[M, E]
     with DatabaseManagement[M, R, U, E]
     with UserManagement[M, R, U, E]
@@ -23,4 +22,4 @@ private[fsanaulla] trait InfluxClient[M[_], R, U, E]
     with ContinuousQueryManagement[M, R, U, E]
     with ShardManagement[M, R, U, E]
     with SubscriptionManagement[M, R, U, E]
-    with AutoCloseable
+    with AutoCloseable { self: HasCredentials => }
