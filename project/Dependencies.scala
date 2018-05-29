@@ -17,7 +17,8 @@ object Dependencies {
     "com.beachape"         %% "enumeratum"            % "1.5.13",
     "org.spire-math"       %% "jawn-ast"              % "0.12.1",
     "org.scalatest"        %% "scalatest"             % "3.0.5"   % Test,
-    "com.github.fsanaulla" %% "scalatest-embedinflux" % "0.1.7"   % Test
+//    "com.github.fsanaulla" %% "scalatest-embedinflux" % "0.1.7"   % Test,
+    "org.testcontainers"   %  "influxdb"              % "1.7.3"
   )
 
   // akka-http

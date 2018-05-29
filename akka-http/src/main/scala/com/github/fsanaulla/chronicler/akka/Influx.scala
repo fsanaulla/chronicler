@@ -10,7 +10,7 @@ import scala.concurrent.ExecutionContext
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-object InfluxDB {
+object Influx {
 
   /**
     * Create HTTP client for InfluxDB

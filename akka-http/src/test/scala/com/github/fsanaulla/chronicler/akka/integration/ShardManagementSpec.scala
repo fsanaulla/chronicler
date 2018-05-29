@@ -1,11 +1,12 @@
 package com.github.fsanaulla.chronicler.akka.integration
 
-import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
+import akka.actor.ActorSystem
+import akka.testkit.TestKit
+import com.github.fsanaulla.chronicler.akka.utils.DockerizedInfluxDB
+import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
 import com.github.fsanaulla.core.model.ShardGroupsInfo
 import com.github.fsanaulla.core.test.ResultMatchers._
 import com.github.fsanaulla.core.test.TestSpec
-import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
-import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -14,11 +15,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
-class ShardManagementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPConf {
+class ShardManagementSpec extends TestKit(ActorSystem()) with TestSpec with DockerizedInfluxDB {
 
   val testDb = "_internal"
 
-  lazy val influx: InfluxAkkaHttpClient = InfluxDB.connect()
+  lazy val influx: InfluxAkkaHttpClient =
+    Influx.connect(host = host, port = port, system = system, credentials = Some(creds))
 
   "shard operations" should "show shards" in {
 

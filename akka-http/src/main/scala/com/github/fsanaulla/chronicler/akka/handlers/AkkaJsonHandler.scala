@@ -3,9 +3,10 @@ package com.github.fsanaulla.chronicler.akka.handlers
 import _root_.akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import _root_.akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
 import _root_.akka.stream.ActorMaterializer
-import akka.util.ByteString
+import _root_.akka.util.ByteString
 import com.github.fsanaulla.core.handlers.JsonHandler
 import com.github.fsanaulla.core.model.Executable
+import com.github.fsanaulla.core.utils.Extensions.RichJValue
 import jawn.ast.{JParser, JValue}
 
 import scala.concurrent.Future
@@ -38,5 +39,7 @@ private[fsanaulla] trait AkkaJsonHandler extends JsonHandler[Future, HttpRespons
     getResponseBody(response).map(_.get("error").asString)
 
   override def getOptResponseError(response: HttpResponse): Future[Option[String]] =
-    getResponseBody(response).map(_.get("error").getString)
+    getResponseBody(response)
+      .map(_.get("results").arrayValue.flatMap(_.headOption))
+      .map(_.flatMap(_.get("error").getString))
 }

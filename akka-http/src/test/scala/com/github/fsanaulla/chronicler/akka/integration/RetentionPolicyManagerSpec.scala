@@ -1,12 +1,13 @@
 package com.github.fsanaulla.chronicler.akka.integration
 
-import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
+import akka.actor.ActorSystem
+import akka.testkit.TestKit
+import com.github.fsanaulla.chronicler.akka.utils.DockerizedInfluxDB
+import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
 import com.github.fsanaulla.core.model.RetentionPolicyInfo
 import com.github.fsanaulla.core.test.ResultMatchers._
 import com.github.fsanaulla.core.test.TestSpec
-import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
 import com.github.fsanaulla.core.utils.InfluxDuration._
-import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -15,11 +16,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class RetentionPolicyManagerSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPConf {
+class RetentionPolicyManagerSpec extends TestKit(ActorSystem()) with TestSpec with DockerizedInfluxDB {
 
   val rpDB = "db"
 
-  lazy val influx: InfluxAkkaHttpClient = InfluxDB.connect()
+  lazy val influx: InfluxAkkaHttpClient =
+    Influx.connect(host = host, port = port, system = system, credentials = Some(creds))
 
   "Retention policy" should "create retention policy" in {
     influx.createDatabase(rpDB).futureValue shouldEqual OkResult

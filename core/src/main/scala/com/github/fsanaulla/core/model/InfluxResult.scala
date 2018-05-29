@@ -48,7 +48,8 @@ case class QueryResult[A](
                            ex: Option[Throwable] = None) extends InfluxResult {
 
   /** map inner result entities */
-  def map[B: ClassTag](f: A => B): QueryResult[B] = QueryResult[B](code, isSuccess, Array.empty[B], ex)
+  def map[B: ClassTag](f: A => B): QueryResult[B] =
+    QueryResult[B](code, isSuccess, queryResult.map(f), ex)
 }
 
 object QueryResult {

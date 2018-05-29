@@ -40,7 +40,7 @@ private[fsanaulla] trait SubscriptionManagement[M[_], R, U, E] extends Subscript
 
   /** Show list of subscription info */
   def showSubscriptionsInfo: M[QueryResult[SubscriptionInfo]] =
-    m.mapTo(readRequest(showSubscriptionsQuery()), toQueryResult[SubscriptionInfo])
+    m.mapTo(readRequest(showSubscriptionsQuery()), toSubscriptionQueryResult)
 
 //  /** Show subscription by database name */
 //  def showSubscription(dbName: String): Future[QueryResult[Subscription]] = {

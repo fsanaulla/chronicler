@@ -73,5 +73,5 @@ class Database(dbName: String, val credentials: Option[InfluxCredentials])
                         pretty: Boolean = false,
                         chunked: Boolean = false)
                        (implicit reader: InfluxReader[A]): Future[QueryResult[A]] =
-    readJs(query, epoch, pretty, chunked).map(res => res.map(reader.read))
+    readJs(query, epoch, pretty, chunked).map(_.map(reader.read))
 }
