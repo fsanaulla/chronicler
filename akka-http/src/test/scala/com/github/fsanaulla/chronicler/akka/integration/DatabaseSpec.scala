@@ -2,16 +2,16 @@ package com.github.fsanaulla.chronicler.akka.integration
 
 import java.io.File
 
+import akka.actor.ActorSystem
+import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.api.Database
 import com.github.fsanaulla.chronicler.akka.utils.SampleEntitys._
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
-import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
+import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
+import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
 import com.github.fsanaulla.core.model.Point
-import com.github.fsanaulla.core.test.ResultMatchers._
-import com.github.fsanaulla.core.test.TestSpec
-import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
 import com.github.fsanaulla.core.utils.Extensions.RichJValue
-import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
+import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import jawn.ast.JArray
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -21,11 +21,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 02.03.18
   */
-class DatabaseSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPConf {
+class DatabaseSpec
+  extends TestKit(ActorSystem())
+    with TestSpec
+    with FutureHandler
+    with DockerizedInfluxDB {
 
   val testDB = "db"
 
-  lazy val influx: InfluxAkkaHttpClient = InfluxDB.connect()
+  lazy val influx: InfluxAkkaHttpClient =
+    Influx.connect(host = host, port = port, system = system, credentials = Some(creds))
 
   lazy val db: Database = influx.database(testDB)
 

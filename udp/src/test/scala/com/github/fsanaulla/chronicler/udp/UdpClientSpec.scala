@@ -2,10 +2,10 @@ package com.github.fsanaulla.chronicler.udp
 
 import java.io.File
 
+import com.github.fsanaulla.chronicler.async.InfluxAsyncHttpClient
 import com.github.fsanaulla.chronicler.async.api.Database
-import com.github.fsanaulla.chronicler.async.{InfluxAsyncHttpClient, InfluxDB}
+import com.github.fsanaulla.chronicler.testing.{FutureHandler, TestSpec}
 import com.github.fsanaulla.core.model.{InfluxFormatter, Point}
-import com.github.fsanaulla.core.test.TestSpec
 import com.github.fsanaulla.core.testing.configurations.InfluxUDPConf
 import com.github.fsanaulla.macros.Macros
 import com.github.fsanaulla.macros.annotations.{field, tag}
@@ -18,12 +18,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 24.02.18
   */
-class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf {
+class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf with FutureHandler {
   import UdpClientSpec._
   
-  lazy val influxUdp: InfluxUDPClient = InfluxUDP.connect()
+  lazy val influxUdp: InfluxUDPClient =
+    com.github.fsanaulla.chronicler.udp.Influx.connect()
 
-  lazy val influxHttp: InfluxAsyncHttpClient = InfluxDB.connect()
+  lazy val influxHttp: InfluxAsyncHttpClient =
+    com.github.fsanaulla.chronicler.async.Influx.connect()
 
   lazy val udp: Database = influxHttp.database("udp")
 

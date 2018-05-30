@@ -5,22 +5,22 @@ package com.github.fsanaulla.core.model
   * Author: fayaz.sanaulla@gmail.com
   * Date: 31.07.17
   */
-abstract class InfluxException(errMsg: String) extends Throwable(errMsg)
+abstract sealed class InfluxException(errMsg: String) extends Throwable(errMsg)
 
-class OperationException(errMsg: String) extends InfluxException(errMsg)
+final class OperationException(errMsg: String) extends InfluxException(errMsg)
 
-class BadRequestException(errMsg: String) extends InfluxException(errMsg)
+final class BadRequestException(errMsg: String) extends InfluxException(errMsg)
 
-class ResourceNotFoundException(errMsg: String) extends InfluxException(errMsg)
+final class ResourceNotFoundException(errMsg: String) extends InfluxException(errMsg)
 
-class AuthorizationException(errMsg: String) extends InfluxException(errMsg)
+final class AuthorizationException(errMsg: String) extends InfluxException(errMsg)
 
-class ConnectionException(errMsg: String) extends InfluxException(errMsg)
+final class ConnectionException(errMsg: String) extends InfluxException(errMsg)
 
-class InternalServerError(errMsg: String) extends InfluxException(errMsg)
+final class InternalServerError(errMsg: String) extends InfluxException(errMsg)
 
-class UnknownConnectionException(errMsg: String) extends InfluxException(errMsg)
+final class UnknownConnectionException(errMsg: String) extends InfluxException(errMsg)
 
-class UnknownResponseException(errMsg: String) extends InfluxException(errMsg)
+final class UnknownResponseException(errMsg: String) extends InfluxException(errMsg)
 
-class DeserializationException(errMsg: String) extends InfluxException(errMsg)
+final class DeserializationException(errMsg: String) extends InfluxException(errMsg)

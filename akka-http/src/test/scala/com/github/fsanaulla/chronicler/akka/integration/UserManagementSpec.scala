@@ -1,12 +1,12 @@
 package com.github.fsanaulla.chronicler.akka.integration
 
-import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
+import akka.actor.ActorSystem
+import akka.testkit.TestKit
+import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
+import com.github.fsanaulla.chronicler.testing.ResultMatchers._
+import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
 import com.github.fsanaulla.core.enums.Privileges
 import com.github.fsanaulla.core.model.{UserInfo, UserPrivilegesInfo}
-import com.github.fsanaulla.core.test.ResultMatchers._
-import com.github.fsanaulla.core.test.TestSpec
-import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
-import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -15,7 +15,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UserManagementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPConf {
+class UserManagementSpec
+  extends TestKit(ActorSystem())
+    with TestSpec
+    with FutureHandler
+    with DockerizedInfluxDB {
 
   val userDB = "db"
   val userName = "Martin"
@@ -25,18 +29,19 @@ class UserManagementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPC
   val admin = "Admin"
   val adminPass = "admin_pass"
 
-  lazy val influx: InfluxAkkaHttpClient = InfluxDB.connect()
+  lazy val influx: InfluxAkkaHttpClient =
+    Influx.connect(host = host, port = port, system = system, credentials = Some(creds))
 
   "User management operation" should "create user" in {
     influx.createDatabase(userDB).futureValue shouldEqual OkResult
 
     influx.createUser(userName, userPass).futureValue shouldEqual OkResult
-    influx.showUsers().futureValue.queryResult.contains(UserInfo(userName, isAdmin = false)) shouldEqual true
+    influx.showUsers.futureValue.queryResult.contains(UserInfo(userName, isAdmin = false)) shouldEqual true
   }
 
   it should "create admin" in {
     influx.createAdmin(admin, adminPass).futureValue shouldEqual OkResult
-    influx.showUsers().futureValue.queryResult.contains(UserInfo(admin, isAdmin = true)) shouldEqual true
+    influx.showUsers.futureValue.queryResult.contains(UserInfo(admin, isAdmin = true)) shouldEqual true
   }
 
   it should "show user privileges" in {
@@ -61,12 +66,12 @@ class UserManagementSpec extends TestSpec with EmbeddedInfluxDB with InfluxHTTPC
 
   it should "disable admin" in {
     influx.disableAdmin(admin).futureValue shouldEqual OkResult
-    influx.showUsers().futureValue.queryResult.contains(UserInfo(admin, isAdmin = false)) shouldEqual true
+    influx.showUsers.futureValue.queryResult.contains(UserInfo(admin, isAdmin = false)) shouldEqual true
   }
 
   it should "make admin" in {
     influx.makeAdmin(admin).futureValue shouldEqual OkResult
-    influx.showUsers().futureValue.queryResult.contains(UserInfo(admin, isAdmin = true)) shouldEqual true
+    influx.showUsers.futureValue.queryResult.contains(UserInfo(admin, isAdmin = true)) shouldEqual true
   }
 
   it should "drop users" in {

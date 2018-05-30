@@ -8,10 +8,11 @@ import _root_.akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.io.{AkkaReader, AkkaWriter}
 import com.github.fsanaulla.chronicler.akka.utils.AkkaTypeAlias.Connection
 import com.github.fsanaulla.core.api.DatabaseApi
-import com.github.fsanaulla.core.enums.{Consistencies, Consistency, Precision, Precisions}
+import com.github.fsanaulla.core.enums._
 import com.github.fsanaulla.core.model._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.ClassTag
 
 /**
   * Created by
@@ -23,7 +24,7 @@ class Database(dbName: String, val credentials: Option[InfluxCredentials])
                override protected implicit val mat: ActorMaterializer,
                override protected implicit val ex: ExecutionContext,
                override protected implicit val connection: Connection)
-  extends DatabaseApi[RequestEntity](dbName)
+  extends DatabaseApi[Future, RequestEntity](dbName)
     with AkkaWriter
     with AkkaReader
     with HasCredentials
@@ -66,4 +67,11 @@ class Database(dbName: String, val credentials: Option[InfluxCredentials])
                       retentionPolicy: Option[String] = None): Future[Result] = {
     bulkWritePoints0(points, consistency, precision, retentionPolicy)
   }
+
+  def read[A: ClassTag](query: String,
+                        epoch: Epoch = Epochs.NANOSECONDS,
+                        pretty: Boolean = false,
+                        chunked: Boolean = false)
+                       (implicit reader: InfluxReader[A]): Future[QueryResult[A]] =
+    readJs(query, epoch, pretty, chunked).map(_.map(reader.read))
 }

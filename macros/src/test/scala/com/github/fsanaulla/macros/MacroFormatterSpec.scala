@@ -1,7 +1,7 @@
 package com.github.fsanaulla.macros
 
+import com.github.fsanaulla.chronicler.testing.FlatSpecWithMatchers
 import com.github.fsanaulla.core.model.InfluxFormatter
-import com.github.fsanaulla.core.test.FlatSpecWithMatchers
 import com.github.fsanaulla.macros.annotations.{field, tag, timestamp}
 import jawn.ast.{JArray, JNull, JNum, JString}
 
@@ -29,12 +29,12 @@ class MacroFormatterSpec extends FlatSpecWithMatchers {
   it should "write with None" in {
     fm
       .write(Test("tName", None, 65, 1438715114318570484L))
-      .shouldEqual("name=tName age=65 1438715114318570484")
+      .shouldEqual("name=tName age=65i 1438715114318570484")
   }
 
   it should "write with Some" in {
     fm
       .write(Test("tName", Some("Sz"), 65, 1438715114318570484L))
-      .shouldEqual("name=tName,surname=Sz age=65 1438715114318570484")
+      .shouldEqual("name=tName,surname=Sz age=65i 1438715114318570484")
   }
 }

@@ -1,14 +1,30 @@
 <div align="center">
 
 # Chronicler
-[![CircleCI](https://circleci.com/gh/fsanaulla/chronicler.svg?style=shield)](https://circleci.com/gh/fsanaulla/chronicler)
-![Download](https://img.shields.io/maven-central/v/com.github.fsanaulla/chronicler-core_2.11.svg)
+[![Build Status](https://travis-ci.org/fsanaulla/chronicler.svg?branch=master)](https://travis-ci.org/fsanaulla/chronicler)
+[![Codecov](https://img.shields.io/codecov/c/github/fsanaulla/chronicler.svg)](https://codecov.io/gh/fsanaulla/chronicler)
+[Download](https://img.shields.io/maven-central/v/com.github.fsanaulla/chronicler-core_2.11.svg)
 [![License](http://img.shields.io/:license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 </div>
 
 # About project
-Chronicler - open-source asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](https://www.influxdata.com/).
+Chronicler - open-source [Scala](https://www.scala-lang.org/) tool for [InfluxDB](https://www.influxdata.com/).
 
+# Components
+There are several components for use.
+
+## Components
+ - **core** module. Contain all necessary prmitives for other components.
+ - client modules:
+    - HTTP:
+        - async clients:
+            - **akka-http** - [akka](https://akka.io/) based client.
+            - **async-http** - [netty](https://netty.io/) based client
+        - sync clients
+            - **url-http** - [HttpUrlConnection](https://docs.oracle.com/javase/8/docs/api/java/net/HttpURLConnection.html) based client.
+    - UDP
+        - **udp** - [datagram socket](https://docs.oracle.com/javase/8/docs/api/java/net/DatagramSocket.html) based client        
+ - **macros** module. Provide compile-time macros for creating serializers and deserializers.       
 
 # Installation
 Add to your dependencies list in `build.sbt`:
@@ -18,6 +34,9 @@ libraryDependencies += "com.github.fsanaulla" %% "chronicler-akka-http" % <versi
 
 // for Netty based client
 libraryDependencies += "com.github.fsanaulla" %% "chronicler-async-http" % <version>
+
+// for UrlHttp based client
+libraryDependencies += "com.github.fsanaulla" %% "chronicler-url-http" % <version>
 
 // for UDP protocol client
 libraryDependencies += "com.github.fsanaulla" %% "chronicler-udp" % <version>
@@ -29,7 +48,7 @@ libraryDependencies += "com.github.fsanaulla" %% "chronicler-macros" % <version>
 
 | Task | Description | Status |
 | ------------- | ------------- | ---------- |
-| Netty based client | multiple backed type | Completed |
+| Several client | multiple backed type | Completed |
 | Macro Formaters | Allow generating `InfluxReader[T]`, `InfluxWriter[T]` at compile time | Completed |
 | Spark integration | Adding support for Spark -> InfluxDB pipeline | Not started |
 | Type safe query DSL | Flexible method for query building | Not started |

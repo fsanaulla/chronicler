@@ -17,14 +17,15 @@ import scala.reflect.ClassTag
   * Author: fayaz.sanaulla@gmail.com
   * Date: 03.09.17
   */
-class Measurement[E: ClassTag](dbName: String,
-                               measurementName: String,
-                               val credentials: Option[InfluxCredentials])
-                              (protected implicit val actorSystem: ActorSystem,
-                               protected implicit val mat: ActorMaterializer,
-                               protected implicit val ex: ExecutionContext,
-                               protected implicit val connection: Connection)
-    extends MeasurementApi[E, RequestEntity](dbName, measurementName)
+class Measurement[E: ClassTag](
+                                      dbName: String,
+                                      measurementName: String,
+                                      val credentials: Option[InfluxCredentials])
+                                    (protected implicit val actorSystem: ActorSystem,
+                                     protected implicit val mat: ActorMaterializer,
+                                     protected implicit val ex: ExecutionContext,
+                                     protected implicit val connection: Connection)
+    extends MeasurementApi[Future, E, RequestEntity](dbName, measurementName)
       with AkkaWriter
       with AkkaReader
       with HasCredentials
@@ -32,28 +33,29 @@ class Measurement[E: ClassTag](dbName: String,
 
   import com.github.fsanaulla.chronicler.akka.models.AkkaDeserializers.str2Http
 
-  def write(entity: E,
-            consistency: Consistency = Consistencies.ONE,
-            precision: Precision = Precisions.NANOSECONDS,
-            retentionPolicy: Option[String] = None)
-           (implicit writer: InfluxWriter[E]): Future[Result] = {
-    _write0(entity, consistency, precision, retentionPolicy)
-  }
+  def write(
+             entity: E,
+             consistency: Consistency = Consistencies.ONE,
+             precision: Precision = Precisions.NANOSECONDS,
+             retentionPolicy: Option[String] = None)
+           (implicit writer: InfluxWriter[E]): Future[Result] =
+    write0(entity, consistency, precision, retentionPolicy)
 
-  def bulkWrite(entitys: Seq[E],
-                consistency: Consistency = Consistencies.ONE,
-                precision: Precision = Precisions.NANOSECONDS,
-                retentionPolicy: Option[String] = None)
-               (implicit writer: InfluxWriter[E]): Future[Result] = {
-    _bulkWrite0(entitys, consistency, precision, retentionPolicy)
-  }
+
+  def bulkWrite(
+                 entitys: Seq[E],
+                 consistency: Consistency = Consistencies.ONE,
+                 precision: Precision = Precisions.NANOSECONDS,
+                 retentionPolicy: Option[String] = None)
+               (implicit writer: InfluxWriter[E]): Future[Result] =
+    bulkWrite0(entitys, consistency, precision, retentionPolicy)
+
 
   def read(query: String,
            epoch: Epoch = Epochs.NANOSECONDS,
            pretty: Boolean = false,
            chunked: Boolean = false)
-          (implicit rd: InfluxReader[E]): Future[QueryResult[E]] = {
-    _readJs(dbName, query, epoch, pretty, chunked)
-      .map(qr => QueryResult.successful[E](qr.code, qr.queryResult.map(rd.read)))
-  }
+          (implicit reader: InfluxReader[E]): Future[QueryResult[E]] =
+    readJs0(dbName, query, epoch, pretty, chunked).map(_.map(reader.read))
+
 }

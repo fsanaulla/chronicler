@@ -12,11 +12,11 @@ sealed trait InfluxField {
 }
 
 case class StringField(key: String, value: String) extends InfluxField {
-  override def toString: String = key + "=" + value
+  override def toString: String = key + "=" + "\"" + value + "\""
 }
 
 case class IntField(key: String, value: Int) extends InfluxField {
-  override def toString: String = key + "=" + value
+  override def toString: String = key + "=" + value + "i"
 }
 
 case class LongField(key: String, value: Long) extends InfluxField {
@@ -41,31 +41,31 @@ case class Point(measurement: String,
                  time: Long = -1L) {
 
   def addTag(key: String, value: String): Point = {
-    copy(tags = InfluxTag(key, value) :: tags)
+    copy(tags = tags :+ InfluxTag(key, value))
   }
 
   def addField(key: String, value: String): Point = {
-    copy(fields = StringField(key, value) :: fields)
+    copy(fields = fields :+ StringField(key, value))
   }
 
   def addField(key: String, value: Int): Point = {
-    copy(fields = IntField(key, value) :: fields)
+    copy(fields = fields :+ IntField(key, value))
   }
 
   def addField(key: String, value: Long): Point = {
-    copy(fields = LongField(key, value) :: fields)
+    copy(fields = fields :+ LongField(key, value))
   }
 
   def addField(key: String, value: Double): Point = {
-    copy(fields = DoubleField(key, value) :: fields)
+    copy(fields = fields :+ DoubleField(key, value))
   }
 
   def addField(key: String, value: Boolean): Point = {
-    copy(fields = BooleanField(key, value) :: fields)
+    copy(fields = fields :+ BooleanField(key, value))
   }
 
   def addField(key: String, value: Char): Point = {
-    copy(fields = CharField(key, value) :: fields)
+    copy(fields = fields :+ CharField(key, value))
   }
 
   def serialize: String = {

@@ -2,7 +2,6 @@ package com.github.fsanaulla.chronicler.akka
 
 import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.Http
-import _root_.akka.http.scaladsl.model.HttpMethods.GET
 import _root_.akka.http.scaladsl.model._
 import _root_.akka.stream.{ActorMaterializer, StreamTcpException}
 import com.github.fsanaulla.chronicler.akka.api.{Database, Measurement}
@@ -20,15 +19,19 @@ import scala.util.{Failure, Success}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-class InfluxAkkaHttpClient(host: String,
-                           port: Int,
-                           val credentials: Option[InfluxCredentials])
-                          (implicit val ex: ExecutionContext, val system: ActorSystem)
-    extends InfluxClient[HttpResponse, Uri, HttpMethod, RequestEntity]
+final class InfluxAkkaHttpClient(
+                                  host: String,
+                                  port: Int,
+                                  val credentials: Option[InfluxCredentials])
+                                (implicit val ex: ExecutionContext, val system: ActorSystem)
+    extends InfluxClient[Future, HttpResponse, Uri, RequestEntity]
       with AkkaRequestHandler
       with AkkaResponseHandler
-      with AkkaQueryHandler
-      with HasCredentials {
+      with AkkaQueryHandler {
+
+  override val m: Mapper[Future, HttpResponse] = new Mapper[Future, HttpResponse] {
+    override def mapTo[B](resp: Future[HttpResponse], f: HttpResponse => Future[B]): Future[B] = resp.flatMap(f)
+  }
 
   protected implicit val mat: ActorMaterializer = ActorMaterializer()
   protected implicit val connection: Connection = Http().outgoingConnection(host, port) recover {
@@ -58,9 +61,8 @@ class InfluxAkkaHttpClient(host: String,
   /**
     * Ping InfluxDB
     */
-  override def ping(): Future[Result] = {
-    readRequest("/ping", GET).flatMap(toResult)
-  }
+  override def ping: Future[Result] =
+    m.mapTo(readRequest("/ping"), toResult)
 
   /**
     * Close HTTP connection

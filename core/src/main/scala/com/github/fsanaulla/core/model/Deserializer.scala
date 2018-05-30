@@ -1,5 +1,14 @@
 package com.github.fsanaulla.core.model
 
-private[fsanaulla] trait Deserializer[A, E] {
-  def deserialize(obj: A): E
+/**
+  * Entity transformer
+  */
+private[fsanaulla] trait Deserializer[From, To] {
+
+  /**
+    * Transform entity to request enityt
+    * @param obj - entity which should be transformed
+    * @return    - request entity
+    */
+  def deserialize(obj: From): To
 }

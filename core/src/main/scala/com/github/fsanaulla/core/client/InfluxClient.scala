@@ -1,22 +1,25 @@
 package com.github.fsanaulla.core.client
 
 import com.github.fsanaulla.core.api.management._
-import com.github.fsanaulla.core.handlers.RequestHandler
-import com.github.fsanaulla.core.handlers.query.QueryHandler
-import com.github.fsanaulla.core.handlers.response.ResponseHandler
-import com.github.fsanaulla.core.model.{Executable, HasCredentials}
-
-private[fsanaulla] trait InfluxClient[R, U, M, E]
-  extends SystemManagement[E]
-    with DatabaseManagement[R, U, M, E]
-    with UserManagement[R, U, M, E]
-    with QuerysManagement[R, U, M, E]
-    with RetentionPolicyManagement[R, U, M, E]
-    with ContinuousQueryManagement[R, U, M, E]
-    with ShardManagement[R, U, M, E]
-    with SubscriptionManagement[R, U, M, E]
-    with HasCredentials
-    with Executable
-    with AutoCloseable {
-  self: RequestHandler[R, U, M, E] with ResponseHandler[R] with QueryHandler[U] =>
+import com.github.fsanaulla.core.handlers.{
+  QueryHandler,
+  RequestHandler,
+  ResponseHandler
 }
+import com.github.fsanaulla.core.model.{HasCredentials, Mappable}
+
+/** Base client trait that combine functional */
+private[fsanaulla] trait InfluxClient[M[_], R, U, E]
+    extends RequestHandler[M, R, U, E]
+    with ResponseHandler[M, R]
+    with QueryHandler[U]
+    with Mappable[M, R]
+    with SystemManagement[M, E]
+    with DatabaseManagement[M, R, U, E]
+    with UserManagement[M, R, U, E]
+    with QuerysManagement[M, R, U, E]
+    with RetentionPolicyManagement[M, R, U, E]
+    with ContinuousQueryManagement[M, R, U, E]
+    with ShardManagement[M, R, U, E]
+    with SubscriptionManagement[M, R, U, E]
+    with AutoCloseable { self: HasCredentials => }

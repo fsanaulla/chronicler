@@ -1,12 +1,12 @@
 package com.github.fsanaulla.chronicler.akka.integration
 
-import com.github.fsanaulla.chronicler.akka.{InfluxAkkaHttpClient, InfluxDB}
+import akka.actor.ActorSystem
+import akka.testkit.TestKit
+import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
+import com.github.fsanaulla.chronicler.testing.ResultMatchers._
+import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
 import com.github.fsanaulla.core.enums.Privileges
 import com.github.fsanaulla.core.model.{AuthorizationException, UserPrivilegesInfo}
-import com.github.fsanaulla.core.test.ResultMatchers._
-import com.github.fsanaulla.core.test.{NonEmptyCredentials, TestSpec}
-import com.github.fsanaulla.core.testing.configurations.InfluxHTTPConf
-import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -16,12 +16,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Date: 17.08.17
   */
 class AuthenticationSpec
-  extends TestSpec
-    with NonEmptyCredentials
-    with EmbeddedInfluxDB
-    with InfluxHTTPConf {
-
-  override def auth: Boolean = true
+  extends TestKit(ActorSystem())
+    with TestSpec
+    with FutureHandler
+    with DockerizedInfluxDB {
 
   val userDB = "db"
   val userName = "some_user"
@@ -31,15 +29,14 @@ class AuthenticationSpec
   val admin = "admin"
   val adminPass = "admin"
 
-  lazy val influx: InfluxAkkaHttpClient = InfluxDB.connect()
+  lazy val influx: InfluxAkkaHttpClient =
+    Influx.connect(host, port, None, system)
 
   lazy val authInflux: InfluxAkkaHttpClient =
-    InfluxDB.connect("localhost", httpPort, credentials)
+    Influx.connect(host = host, port = port, system = system, credentials = Some(creds))
 
   "AuthenticationUserManagement" should  "create admin user " in {
-    influx.createAdmin(admin, adminPass).futureValue shouldEqual OkResult
-
-    influx.showUsers().futureValue.ex.value shouldBe a[AuthorizationException]
+    influx.showUsers.futureValue.ex.value shouldBe a[AuthorizationException]
   }
 
   it should "create database" in {
@@ -47,7 +44,7 @@ class AuthenticationSpec
   }
   it should "create user" in {
     authInflux.createUser(userName, userPass).futureValue shouldEqual OkResult
-    authInflux.showUsers().futureValue.queryResult.exists(_.username == userName) shouldEqual true
+    authInflux.showUsers.futureValue.queryResult.exists(_.username == userName) shouldEqual true
   }
 
   it should "set user password" in {
@@ -77,5 +74,6 @@ class AuthenticationSpec
     authInflux.dropUser(admin).futureValue shouldEqual OkResult
 
     authInflux.close() shouldEqual {}
+    influx.close()
   }
 }

@@ -1,31 +1,29 @@
 package com.github.fsanaulla.core.api.management
 
-import com.github.fsanaulla.core.handlers.RequestHandler
-import com.github.fsanaulla.core.handlers.query.QueryHandler
-import com.github.fsanaulla.core.handlers.response.ResponseHandler
+import com.github.fsanaulla.core.handlers.{QueryHandler, RequestHandler, ResponseHandler}
 import com.github.fsanaulla.core.model._
 import com.github.fsanaulla.core.query.QuerysManagementQuery
 import com.github.fsanaulla.core.utils.DefaultInfluxImplicits._
-
-import scala.concurrent.Future
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-private[fsanaulla] trait QuerysManagement[R, U, M, E] extends QuerysManagementQuery[U] {
-  self: RequestHandler[R, U, M, E]
-    with ResponseHandler[R]
+private[fsanaulla] trait QuerysManagement[M[_], R, U, E] extends QuerysManagementQuery[U] {
+  self: RequestHandler[M, R, U, E]
+    with ResponseHandler[M, R]
     with QueryHandler[U]
-    with HasCredentials
-    with Executable =>
+    with Mappable[M, R]
+    with HasCredentials =>
 
-  def showQueries(): Future[QueryResult[QueryInfo]] = {
-    readRequest(showQuerysQuery()).flatMap(toQueryResult[QueryInfo])
-  }
+  /** Show list of queries */
+  def showQueries: M[QueryResult[QueryInfo]] =
+    m.mapTo(readRequest(showQuerysQuery()), toQueryResult[QueryInfo])
 
-  def killQuery(queryId: Int): Future[Result] = {
-    readRequest(killQueryQuery(queryId)).flatMap(toResult)
-  }
+
+  /** Kill query */
+  def killQuery(queryId: Int): M[Result] =
+    m.mapTo(readRequest(killQueryQuery(queryId)), toResult)
+
 }
