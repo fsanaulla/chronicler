@@ -6,7 +6,23 @@
 </div>
 
 # About project
-Chronicler - open-source asynchronous [Scala](https://www.scala-lang.org/) client library for [InfluxDB](https://www.influxdata.com/).
+Chronicler - open-source [Scala](https://www.scala-lang.org/) tool for [InfluxDB](https://www.influxdata.com/).
+
+# Components
+There are several components for use.
+
+## Components
+ - **core** module. Contain all necessary prmitives for other components.
+ - client modules:
+    - HTTP:
+        - async clients:
+            - **akka-http** - [akka](https://akka.io/) based client.
+            - **async-http** - [netty](https://netty.io/) based client
+        - sync clients
+            - **url-http** - [HttpUrlConnection](https://docs.oracle.com/javase/8/docs/api/java/net/HttpURLConnection.html) based client.
+    - UDP
+        - **udp** - [datagram socket](https://docs.oracle.com/javase/8/docs/api/java/net/DatagramSocket.html) based client        
+ - **macros** module. Provide compile-time macros for creating serializers and deserializers.       
 
 
 # Installation
