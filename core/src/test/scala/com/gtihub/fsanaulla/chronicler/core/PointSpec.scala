@@ -13,6 +13,6 @@ class PointSpec extends FlatSpec with Matchers {
       .addField("adult", value = true)
       .addField("weight", 75.6)
 
-    p.serialize shouldEqual "test,city=London name=\"Jivi\" age=22i adult=true weight=75.5"
+    p.serialize shouldEqual "test,city=London name=\"Jivi\" age=22i adult=true weight=75.6"
   }
 }
