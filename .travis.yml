@@ -13,4 +13,7 @@ services:
   - docker
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION clean compile test
+  - sbt ++$TRAVIS_SCALA_VERSION clean compile test:compile coverage test coverageReport
+  
+after_success:
+ - bash <(curl -s https://codecov.io/bash)
