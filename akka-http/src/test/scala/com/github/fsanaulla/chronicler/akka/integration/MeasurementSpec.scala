@@ -7,7 +7,7 @@ import com.github.fsanaulla.chronicler.akka.utils.SampleEntitys._
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper.{FakeEntity, _}
 import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
+import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -19,6 +19,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class MeasurementSpec
   extends TestKit(ActorSystem())
     with TestSpec
+    with FutureHandler
     with DockerizedInfluxDB {
 
   val safeDB = "db"

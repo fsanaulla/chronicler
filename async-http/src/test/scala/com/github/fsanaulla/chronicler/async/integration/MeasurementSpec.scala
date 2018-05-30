@@ -5,7 +5,7 @@ import com.github.fsanaulla.chronicler.async.utils.SampleEntitys._
 import com.github.fsanaulla.chronicler.async.utils.TestHelper.{FakeEntity, _}
 import com.github.fsanaulla.chronicler.async.{Influx, InfluxAsyncHttpClient}
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
+import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 28.09.17
   */
-class MeasurementSpec extends TestSpec with DockerizedInfluxDB {
+class MeasurementSpec extends TestSpec with FutureHandler with DockerizedInfluxDB {
 
   val safeDB = "db"
   val measName = "meas"

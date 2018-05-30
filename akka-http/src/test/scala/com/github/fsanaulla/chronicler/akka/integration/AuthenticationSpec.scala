@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
+import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
 import com.github.fsanaulla.core.enums.Privileges
 import com.github.fsanaulla.core.model.{AuthorizationException, UserPrivilegesInfo}
 
@@ -18,6 +18,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class AuthenticationSpec
   extends TestKit(ActorSystem())
     with TestSpec
+    with FutureHandler
     with DockerizedInfluxDB {
 
   val userDB = "db"

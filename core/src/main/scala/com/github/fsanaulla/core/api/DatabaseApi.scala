@@ -11,7 +11,6 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
 private[fsanaulla] abstract class DatabaseApi[M[_], E](dbName: String)
-                                                      (implicit ex: ExecutionContext)
   extends ReadOperations[M] with WriteOperations[M, E] {
 
   def read[A: ClassTag](query: String,

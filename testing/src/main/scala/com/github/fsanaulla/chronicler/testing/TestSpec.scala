@@ -7,4 +7,4 @@ import org.scalatest.OptionValues
   * Author: fayaz.sanaulla@gmail.com
   * Date: 11.08.17
   */
-trait TestSpec extends FlatSpecWithMatchers with FutureHandler with OptionValues
+trait TestSpec extends FlatSpecWithMatchers with OptionValues

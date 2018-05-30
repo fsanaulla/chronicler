@@ -2,7 +2,7 @@ package com.github.fsanaulla.chronicler.async.integration
 
 import com.github.fsanaulla.chronicler.async.{Influx, InfluxAsyncHttpClient}
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
+import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
 import com.github.fsanaulla.core.model.{ShardGroupsInfo, ShardInfo}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
-class ShardManagementSpec extends TestSpec with DockerizedInfluxDB {
+class ShardManagementSpec extends TestSpec with DockerizedInfluxDB with FutureHandler {
 
   val testDb = "_internal"
 

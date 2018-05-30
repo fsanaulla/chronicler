@@ -2,7 +2,7 @@ package com.github.fsanaulla.chronicler.async.integration
 
 import com.github.fsanaulla.chronicler.async.{Influx, InfluxAsyncHttpClient}
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
+import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
 import com.github.fsanaulla.core.enums.{Destination, Destinations}
 import com.github.fsanaulla.core.model.Subscription
 import com.github.fsanaulla.core.utils.InfluxDuration._
@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 21.08.17
   */
-class SubscriptionManagementSpec extends TestSpec with DockerizedInfluxDB{
+class SubscriptionManagementSpec extends TestSpec with DockerizedInfluxDB with FutureHandler {
 
   val subName = "subs"
   val dbName = "async_subs_spec_db"

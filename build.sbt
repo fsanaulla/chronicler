@@ -82,7 +82,7 @@ lazy val akkaHttp = module(
 lazy val asyncHttp = module(
   "async-http",
   "asyncHttp",
-  Dependencies.asyncHttp :: Nil,
+  Dependencies.asyncHttp,
   "-language:implicitConversions" :: "-language:higherKinds" :: Nil)
 
 lazy val udp = project

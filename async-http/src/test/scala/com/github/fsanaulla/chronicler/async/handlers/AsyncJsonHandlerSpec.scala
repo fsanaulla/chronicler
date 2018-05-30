@@ -1,7 +1,7 @@
 package com.github.fsanaulla.chronicler.async.handlers
 
-import com.github.fsanaulla.chronicler.async.utils.Extensions.RichTry
-import com.github.fsanaulla.chronicler.testing.TestSpec
+import com.github.fsanaulla.chronicler.async.utils.TestExtensions.RichTry
+import com.github.fsanaulla.chronicler.testing.{FutureHandler, TestSpec}
 import com.softwaremill.sttp.Response
 import jawn.ast._
 
@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContext
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class AsyncJsonHandlerSpec extends TestSpec with AsyncJsonHandler {
+class AsyncJsonHandlerSpec extends TestSpec with AsyncJsonHandler with FutureHandler {
 
   override implicit val ex: ExecutionContext = ExecutionContext.Implicits.global
 

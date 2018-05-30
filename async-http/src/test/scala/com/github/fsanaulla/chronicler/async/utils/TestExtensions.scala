@@ -10,7 +10,7 @@ import scala.util.{Success, Try}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 07.04.18
   */
-object Extensions {
+object TestExtensions {
 
   implicit class RichTry[A](private val tr: Try[A]) extends AnyVal {
     def toStrEither(str: String): Either[String, A] = tr match {

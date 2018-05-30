@@ -8,7 +8,7 @@ import com.github.fsanaulla.chronicler.akka.api.Database
 import com.github.fsanaulla.chronicler.akka.utils.SampleEntitys._
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
 import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
+import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
 import com.github.fsanaulla.core.model.Point
 import com.github.fsanaulla.core.utils.Extensions.RichJValue
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
@@ -24,6 +24,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class DatabaseSpec
   extends TestKit(ActorSystem())
     with TestSpec
+    with FutureHandler
     with DockerizedInfluxDB {
 
   val testDB = "db"

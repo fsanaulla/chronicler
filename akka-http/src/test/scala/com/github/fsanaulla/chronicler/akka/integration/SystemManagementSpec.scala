@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
+import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -16,6 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class SystemManagementSpec
   extends TestKit(ActorSystem())
     with TestSpec
+    with FutureHandler
     with DockerizedInfluxDB {
 
   lazy val influx: InfluxAkkaHttpClient =

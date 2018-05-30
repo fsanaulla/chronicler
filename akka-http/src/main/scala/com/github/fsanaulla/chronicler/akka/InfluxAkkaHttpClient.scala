@@ -19,11 +19,11 @@ import scala.util.{Failure, Success}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-class InfluxAkkaHttpClient(host: String,
-                           port: Int,
-                           val credentials: Option[InfluxCredentials])
-                          (implicit val ex: ExecutionContext,
-                           val system: ActorSystem)
+final class InfluxAkkaHttpClient(
+                                  host: String,
+                                  port: Int,
+                                  val credentials: Option[InfluxCredentials])
+                                (implicit val ex: ExecutionContext, val system: ActorSystem)
     extends InfluxClient[Future, HttpResponse, Uri, RequestEntity]
       with AkkaRequestHandler
       with AkkaResponseHandler

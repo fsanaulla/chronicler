@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
+import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
 import com.github.fsanaulla.core.enums.{Destination, Destinations}
 import com.github.fsanaulla.core.model.Subscription
 import com.github.fsanaulla.core.utils.InfluxDuration._
@@ -19,6 +19,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class SubscriptionManagementSpec
   extends TestKit(ActorSystem())
     with TestSpec
+    with FutureHandler
     with DockerizedInfluxDB {
 
   val subName = "subs"

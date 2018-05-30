@@ -5,7 +5,7 @@ import java.io.File
 import com.github.fsanaulla.chronicler.async.api.Database
 import com.github.fsanaulla.chronicler.async.utils.TestHelper.FakeEntity
 import com.github.fsanaulla.chronicler.async.{Influx, InfluxAsyncHttpClient}
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
+import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
 import com.github.fsanaulla.core.model.Point
 import com.github.fsanaulla.core.utils.Extensions.RichJValue
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
@@ -19,7 +19,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 28.09.17
   */
-class DatabaseSpec extends TestSpec with DockerizedInfluxDB {
+class DatabaseSpec extends TestSpec with FutureHandler with DockerizedInfluxDB {
 
   val testDB = "db"
 

@@ -6,7 +6,7 @@ import akka.http.scaladsl.model.HttpResponse
 import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.utils.Extensions.RichString
 import com.github.fsanaulla.chronicler.akka.utils.SampleEntitys.singleResult
-import com.github.fsanaulla.chronicler.testing.TestSpec
+import com.github.fsanaulla.chronicler.testing.{FutureHandler, TestSpec}
 import com.github.fsanaulla.core.model.ContinuousQuery
 import com.github.fsanaulla.core.utils.DefaultInfluxImplicits._
 import jawn.ast.{JArray, JNum, JString}
@@ -21,6 +21,7 @@ import scala.language.postfixOps
 class AkkaResponseHandlerSpec
   extends TestKit(ActorSystem())
     with TestSpec
+    with FutureHandler
     with AkkaResponseHandler {
 
   implicit val mat: ActorMaterializer = ActorMaterializer()

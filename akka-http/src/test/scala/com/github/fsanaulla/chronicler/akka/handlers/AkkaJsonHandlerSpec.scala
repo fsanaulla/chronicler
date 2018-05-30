@@ -5,7 +5,7 @@ import _root_.akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import akka.stream.ActorMaterializer
 import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.utils.AkkaContentTypes.AppJson
-import com.github.fsanaulla.chronicler.testing.TestSpec
+import com.github.fsanaulla.chronicler.testing.{FutureHandler, TestSpec}
 import jawn.ast._
 import org.scalatest.BeforeAndAfterAll
 
@@ -14,6 +14,7 @@ import scala.concurrent.ExecutionContext
 class AkkaJsonHandlerSpec
   extends TestKit(ActorSystem())
     with TestSpec
+    with FutureHandler
     with AkkaJsonHandler
     with BeforeAndAfterAll {
 

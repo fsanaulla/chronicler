@@ -1,8 +1,8 @@
 package com.github.fsanaulla.chronicler.async.handlers
 
-import com.github.fsanaulla.chronicler.async.utils.Extensions.{RichString, RichTry}
+import com.github.fsanaulla.chronicler.async.utils.TestExtensions.{RichString, RichTry}
 import com.github.fsanaulla.chronicler.async.utils.SampleEntitys.singleResult
-import com.github.fsanaulla.chronicler.testing.TestSpec
+import com.github.fsanaulla.chronicler.testing.{FutureHandler, TestSpec}
 import com.github.fsanaulla.core.model.ContinuousQuery
 import com.github.fsanaulla.core.utils.DefaultInfluxImplicits._
 import com.softwaremill.sttp.Response
@@ -17,7 +17,7 @@ import scala.language.postfixOps
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class AsyncResponseHandlerSpec extends TestSpec with AsyncResponseHandler {
+class AsyncResponseHandlerSpec extends TestSpec with AsyncResponseHandler with FutureHandler {
 
   protected implicit val ex: ExecutionContext = ExecutionContext.Implicits.global
 

@@ -2,6 +2,7 @@ package com.github.fsanaulla.core.model
 
 import scala.concurrent.Future
 import scala.reflect.ClassTag
+import scala.util.{Success, Try}
 
 /**
   * Created by
@@ -31,6 +32,8 @@ object Result {
   def failed(code: Int, ex: Throwable): Result = Result(code, isSuccess = false, Some(ex))
   /** Successfully created result inside compiled Future */
   def successfulFuture(code: Int): Future[Result] = Future.successful(successful(code))
+  /** Successfully created result inside scala.util.Success */
+  def successfulTry(code: Int): Try[Result] = Success(successful(code))
 }
 
 /**
