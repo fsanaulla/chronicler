@@ -26,7 +26,6 @@ There are several components for use.
         - **udp** - [datagram socket](https://docs.oracle.com/javase/8/docs/api/java/net/DatagramSocket.html) based client        
  - **macros** module. Provide compile-time macros for creating serializers and deserializers.       
 
-
 # Installation
 Add to your dependencies list in `build.sbt`:
 ```
@@ -35,6 +34,9 @@ libraryDependencies += "com.github.fsanaulla" %% "chronicler-akka-http" % <versi
 
 // for Netty based client
 libraryDependencies += "com.github.fsanaulla" %% "chronicler-async-http" % <version>
+
+// for UrlHttp based client
+libraryDependencies += "com.github.fsanaulla" %% "chronicler-url-http" % <version>
 
 // for UDP protocol client
 libraryDependencies += "com.github.fsanaulla" %% "chronicler-udp" % <version>
