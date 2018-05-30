@@ -1,8 +1,10 @@
-import sbt.Keys.{crossScalaVersions, name, organization, publishArtifact}
+import sbt.Keys.{crossScalaVersions, libraryDependencies, name, organization, publishArtifact}
 import sbt.url
 
+val scalaVers = "2.12.6"
+
 lazy val commonSettings = Seq(
-  scalaVersion := "2.12.6",
+  scalaVersion := scalaVers,
   organization := "com.github.fsanaulla",
   scalacOptions ++= Seq("-deprecation", "-feature"),
   crossScalaVersions := Seq("2.11.8", scalaVersion.value),
@@ -41,77 +43,75 @@ lazy val chronicler = (project in file("."))
     asyncHttp,
     udp)
 
-lazy val core = project
-  .settings(commonSettings: _*)
-  .settings(publishSettings: _*)
-  .settings(
-    name := "chronicler-core",
-    scalacOptions ++= Seq(
-      "-language:implicitConversions",
-      "-language:postfixOps",
-      "-language:higherKinds"),
-    libraryDependencies ++= Dependencies.coreDep
-  )
+lazy val core = module(
+  "core",
+  "core",
+  Dependencies.coreDep,
+  "-language:implicitConversions" ::
+  "-language:postfixOps" ::
+  "-language:higherKinds" :: Nil
+)
 
-lazy val testing = project
-  .settings(commonSettings: _*)
-  .settings(publishSettings: _*)
-  .settings(
-    name := "chronicler-testing",
-    scalacOptions ++= Seq(
-      "-language:implicitConversions",
-      "-language:postfixOps",
-      "-language:higherKinds"),
-    libraryDependencies ++= Dependencies.testingDeps
-  )
-  .dependsOn(core % "compile->compile")
+lazy val testing = module(
+  "testing",
+  "testing",
+  Dependencies.testingDeps
+).dependsOn(core % "compile->compile")
 
 lazy val urlHttp = module(
-  "url-http",
   "urlHttp",
+  "url-http",
   Dependencies.urlHttp :: Nil
-)
+).dependsOn(core % "compile->compile;test->test")
+ .dependsOn(macros, testing % "test->test")
 
 lazy val akkaHttp = module(
-  "akka-http",
   "akkaHttp",
+  "akka-http",
   Dependencies.akkaDep,
   "-language:postfixOps" :: "-language:higherKinds" :: Nil
-)
+).dependsOn(core % "compile->compile;test->test")
+ .dependsOn(macros, testing % "test->test")
 
 lazy val asyncHttp = module(
-  "async-http",
   "asyncHttp",
+  "async-http",
   Dependencies.asyncHttp,
-  "-language:implicitConversions" :: "-language:higherKinds" :: Nil)
+  "-language:implicitConversions" :: "-language:higherKinds" :: Nil
+).dependsOn(core % "compile->compile;test->test")
+ .dependsOn(macros, testing % "test->test")
 
-lazy val udp = project
-  .settings(commonSettings: _*)
-  .settings(publishSettings: _*)
-  .settings(
-    name := "chronicler-udp",
-    libraryDependencies += "com.github.fsanaulla" %% "scalatest-embedinflux" % "0.1.7" % Test
-  )
-  .dependsOn(core, asyncHttp, macros, testing % "test->test")
+lazy val udp = module(
+  "udp",
+  "udp",
+  Dependencies.udpDep :: Nil
+).dependsOn(core, asyncHttp, macros, testing % "test->test")
 
-lazy val macros = project
-  .settings(commonSettings: _*)
-  .settings(publishSettings: _*)
-  .settings(
-    name := "chronicler-macros",
-    libraryDependencies += Dependencies.scalaReflect(scalaVersion.value)
-  )
-  .dependsOn(core % "compile->compile;test->test")
-  .dependsOn(testing % "test->test")
+lazy val macros = module(
+  "macros",
+  "macros",
+  Dependencies.scalaReflect(scalaVers) :: Nil
+).dependsOn(core % "compile->compile;test->test")
+ .dependsOn(testing % "test->test")
 
-def module(dir: String, name: String, deps: Seq[sbt.ModuleID] = Nil, scalaOpts: Seq[String] = Nil): Project = {
-  Project(id = name, base = file(dir))
+/**
+  * Define chronicler module
+  * @param sbtName   - sbt name, used in sbt shell sessions
+  * @param dirName   - module location
+  * @param deps      - module dependencies
+  * @param scalaOpts - module scalac options
+  * @return          - SBT project
+  */
+def module(sbtName: String,
+           dirName: String,
+           deps: Seq[sbt.ModuleID] = Nil,
+           scalaOpts: Seq[String] = Nil): Project = {
+  Project(id = sbtName, base = file(dirName))
     .settings(commonSettings: _*)
     .settings(publishSettings: _*)
     .settings(
+      name := "chronicler-" + dirName,
       scalacOptions ++= scalaOpts,
       libraryDependencies ++= deps
     )
-    .dependsOn(core % "compile->compile;test->test")
-    .dependsOn(macros, testing % "test->test")
 }

@@ -45,4 +45,7 @@ object Dependencies {
 
   // macros
   final def scalaReflect(scalaVersion: String): ModuleID = "org.scala-lang" % "scala-reflect" % scalaVersion
+
+  // udp
+  final val udpDep = "com.github.fsanaulla" %% "scalatest-embedinflux" % "0.1.7" % Test
 }
