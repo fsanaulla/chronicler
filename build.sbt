@@ -1,17 +1,15 @@
 import sbt.Keys.{crossScalaVersions, libraryDependencies, name, organization, publishArtifact}
 import sbt.url
 
-val scalaVers = "2.12.6"
-
 lazy val commonSettings = Seq(
-  scalaVersion := scalaVers,
+  scalaVersion := "2.12.6",
   organization := "com.github.fsanaulla",
   scalacOptions ++= Seq("-deprecation", "-feature"),
   crossScalaVersions := Seq("2.11.8", scalaVersion.value),
   homepage := Some(url("https://github.com/fsanaulla/chronicler")),
   licenses += "Apache-2.0" -> url("https://opensource.org/licenses/Apache-2.0"),
   developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla")),
-  parallelExecution := false
+  parallelExecution in Test := false
 )
 
 lazy val publishSettings = Seq(
@@ -33,6 +31,7 @@ lazy val publishSettings = Seq(
 )
 
 lazy val chronicler = (project in file("."))
+  .settings(commonSettings: _*)
   .settings(publishArtifact := false)
   .aggregate(
     core,
@@ -40,8 +39,9 @@ lazy val chronicler = (project in file("."))
     macros,
     urlHttp,
     akkaHttp,
-    asyncHttp,
-    udp)
+    asyncHttp
+//    udp
+  )
 
 lazy val core = module(
   "core",
@@ -87,12 +87,16 @@ lazy val udp = module(
   Dependencies.udpDep :: Nil
 ).dependsOn(core, asyncHttp, macros, testing % "test->test")
 
-lazy val macros = module(
-  "macros",
-  "macros",
-  Dependencies.scalaReflect(scalaVers) :: Nil
-).dependsOn(core % "compile->compile;test->test")
- .dependsOn(testing % "test->test")
+lazy val macros = project
+  .in(file("macros"))
+  .settings(commonSettings: _*)
+  .settings(publishSettings: _*)
+  .settings(
+    name := "chronicler-macros",
+    libraryDependencies ++= Dependencies.scalaReflect(scalaVersion.value) :: Nil
+  )
+  .dependsOn(core % "compile->compile;test->test")
+  .dependsOn(testing % "test->test")
 
 /**
   * Define chronicler module
