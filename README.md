@@ -46,7 +46,7 @@ libraryDependencies += "com.github.fsanaulla" %% "chronicler-macros" % <version>
 
 | Task | Description | Status |
 | ------------- | ------------- | ---------- |
-| Netty based client | multiple backed type | Completed |
+| Several client | multiple backed type | Completed |
 | Macro Formaters | Allow generating `InfluxReader[T]`, `InfluxWriter[T]` at compile time | Completed |
 | Spark integration | Adding support for Spark -> InfluxDB pipeline | Not started |
 | Type safe query DSL | Flexible method for query building | Not started |

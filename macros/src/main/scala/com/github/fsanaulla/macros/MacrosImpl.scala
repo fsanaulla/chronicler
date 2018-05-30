@@ -201,7 +201,11 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
         case None =>
           q"""def write(obj: $tpe): String = {
                 val fieldsMap: Map[String, Any] = Map(..$fields)
-                val fields = fieldsMap map { case (k, v) => k + "=" + v } mkString(" ")
+                val fields = fieldsMap map {
+                  case (k, v: String) => k + "=" + "\"" + v + "\""
+                  case (k, v: Int) => k + "=" + v + "i"
+                  case (k, v) => k + "=" + v
+                } mkString(" ")
 
                 val nonOptTagsMap: Map[String, String] = Map(..$nonOptTags)
                 val nonOptTags: String = nonOptTagsMap map {
@@ -220,7 +224,11 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
         case Some(t) =>
           q"""def write(obj: $tpe): String = {
             val fieldsMap: Map[String, Any] = Map(..$fields)
-            val fields = fieldsMap map { case (k, v) => k + "=" + v } mkString(" ")
+            val fields = fieldsMap map {
+               case (k, v: String) => k + "=" + "\"" + v + "\""
+               case (k, v: Int) => k + "=" + v + "i"
+               case (k, v) => k + "=" + v
+            } mkString(" ")
 
             val nonOptTagsMap: Map[String, String] = Map(..$nonOptTags)
             val nonOptTags: String = nonOptTagsMap map {
