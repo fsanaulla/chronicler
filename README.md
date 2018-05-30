@@ -1,8 +1,7 @@
 <div align="center">
 
 # Chronicler
-[![CircleCI](https://circleci.com/gh/fsanaulla/chronicler.svg?style=shield)](https://circleci.com/gh/fsanaulla/chronicler)
-![Download](https://img.shields.io/maven-central/v/com.github.fsanaulla/chronicler-core_2.11.svg)
+[![Build Status](https://travis-ci.org/fsanaulla/chronicler.svg?branch=master)](https://travis-ci.org/fsanaulla/chronicler)![Download](https://img.shields.io/maven-central/v/com.github.fsanaulla/chronicler-core_2.11.svg)
 [![License](http://img.shields.io/:license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 </div>
 
