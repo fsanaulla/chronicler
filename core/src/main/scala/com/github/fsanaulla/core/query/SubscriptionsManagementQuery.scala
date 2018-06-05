@@ -12,23 +12,23 @@ import com.github.fsanaulla.core.model.HasCredentials
 private[fsanaulla] trait SubscriptionsManagementQuery[U] {
   self: QueryHandler[U] with HasCredentials =>
 
-  def createSubscriptionQuery(subsName: String,
-                              dbName: String,
-                              rpName: String,
-                              destinationType: Destination,
-                              addresses: Seq[String]): U = {
+  final def createSubscriptionQuery(subsName: String,
+                                    dbName: String,
+                                    rpName: String,
+                                    destinationType: Destination,
+                                    addresses: Seq[String]): U = {
 
     val addressesStr = addresses.map(str => s"\'$str\'").mkString(", ")
     buildQuery("/query", buildQueryParams(s"CREATE SUBSCRIPTION $subsName ON $dbName.$rpName DESTINATIONS $destinationType $addressesStr"))
   }
 
-  def dropSubscriptionQuery(subsName: String,
-                                      dbName: String,
-                                      rpName: String): U = {
+  final def dropSubscriptionQuery(subsName: String,
+                                  dbName: String,
+                                  rpName: String): U =
     buildQuery("/query", buildQueryParams(s"DROP SUBSCRIPTION $subsName ON $dbName.$rpName"))
-  }
 
-  def showSubscriptionsQuery(): U = {
+
+  final def showSubscriptionsQuery(): U =
     buildQuery("/query", buildQueryParams("SHOW SUBSCRIPTIONS"))
-  }
+
 }

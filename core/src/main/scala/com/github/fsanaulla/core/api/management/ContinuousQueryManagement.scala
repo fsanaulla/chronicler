@@ -25,13 +25,13 @@ private[fsanaulla] trait ContinuousQueryManagement[M[_], R, U, E] extends Contin
     * @param query  - query
     * @return
     */
-  def createCQ(dbName: String, cqName: String, query: String): M[Result] = {
+  final def createCQ(dbName: String, cqName: String, query: String): M[Result] = {
     require(validCQQuery(query), "Query required INTO and GROUP BY clause")
     m.mapTo(readRequest(uri = createCQQuery(dbName, cqName, query)), toResult)
   }
 
   /** Show continuous query information */
-  def showCQs: M[QueryResult[ContinuousQueryInfo]] =
+  final def showCQs: M[QueryResult[ContinuousQueryInfo]] =
     m.mapTo(readRequest(uri = showCQQuery()), toCqQueryResult)
 
 //  def showCQ(dbName: String): M[QueryResult[ContinuousQuery]] = {
@@ -51,7 +51,7 @@ private[fsanaulla] trait ContinuousQueryManagement[M[_], R, U, E] extends Contin
     * @param cqName - continuous query name
     * @return       - execution result
     */
-  def dropCQ(dbName: String, cqName: String): M[Result] =
+  final def dropCQ(dbName: String, cqName: String): M[Result] =
     m.mapTo(readRequest(uri = dropCQQuery(dbName, cqName)), toResult)
 
 //  def updateCQ(dbName: String, cqName: String, query: String): M[Result] = {

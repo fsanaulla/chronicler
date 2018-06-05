@@ -11,14 +11,14 @@ import com.github.fsanaulla.core.model.HasCredentials
 private[fsanaulla] trait ContinuousQuerys[U] {
   self: QueryHandler[U] with HasCredentials =>
 
-  def showCQQuery(): U =
+  final def showCQQuery(): U =
     buildQuery("/query", buildQueryParams("SHOW CONTINUOUS QUERIES"))
 
-  def dropCQQuery(dbName: String, cqName: String): U = {
+  final def dropCQQuery(dbName: String, cqName: String): U = {
     buildQuery("/query", buildQueryParams(s"DROP CONTINUOUS QUERY $cqName ON $dbName"))
   }
 
-  def createCQQuery(dbName: String, cqName: String, query: String): U = {
+  final def createCQQuery(dbName: String, cqName: String, query: String): U = {
     buildQuery("/query", buildQueryParams(s"CREATE CONTINUOUS QUERY $cqName ON $dbName BEGIN $query END"))
   }
 }

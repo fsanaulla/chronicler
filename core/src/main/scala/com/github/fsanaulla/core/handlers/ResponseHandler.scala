@@ -3,7 +3,6 @@ package com.github.fsanaulla.core.handlers
 import com.github.fsanaulla.core.model._
 import jawn.ast.JArray
 
-import scala.concurrent.Future
 import scala.reflect.ClassTag
 
 /**
@@ -73,7 +72,7 @@ private[fsanaulla] trait ResponseHandler[M[_], R] {
     * @param reader - implicit influx reader, predefined
     * @return - CQ results
     */
-  def toCqQueryResult(response: R)(implicit reader: InfluxReader[ContinuousQuery]): M[QueryResult[ContinuousQueryInfo]] = {
+  final def toCqQueryResult(response: R)(implicit reader: InfluxReader[ContinuousQuery]): M[QueryResult[ContinuousQueryInfo]] = {
     toComplexQueryResult[ContinuousQuery, ContinuousQueryInfo](
       response,
       (name: String, arr: Array[ContinuousQuery]) => ContinuousQueryInfo(name, arr)
@@ -86,7 +85,7 @@ private[fsanaulla] trait ResponseHandler[M[_], R] {
     * @param reader - implicit influx reader, predefined
     * @return - Shard info  results
     */
-  def toShardQueryResult(response: R)(implicit reader: InfluxReader[Shard]): M[QueryResult[ShardInfo]] = {
+  final def toShardQueryResult(response: R)(implicit reader: InfluxReader[Shard]): M[QueryResult[ShardInfo]] = {
     toComplexQueryResult[Shard, ShardInfo](
       response,
       (name: String, arr: Array[Shard]) => ShardInfo(name, arr)
@@ -99,7 +98,7 @@ private[fsanaulla] trait ResponseHandler[M[_], R] {
     * @param reader - implicit influx reader, predefined
     * @return - Subscription info  results
     */
-  def toSubscriptionQueryResult(response: R)(implicit reader: InfluxReader[Subscription]): M[QueryResult[SubscriptionInfo]] = {
+  final def toSubscriptionQueryResult(response: R)(implicit reader: InfluxReader[Subscription]): M[QueryResult[SubscriptionInfo]] = {
     toComplexQueryResult[Subscription, SubscriptionInfo](
       response,
       (name: String, arr: Array[Subscription]) => SubscriptionInfo(name, arr)
@@ -112,7 +111,7 @@ private[fsanaulla] trait ResponseHandler[M[_], R] {
     * @param reader - implicit influx reader, predefined
     * @return - Shard group info  results
     */
-  def toShardGroupQueryResult(response: R)(implicit reader: InfluxReader[ShardGroup]): M[QueryResult[ShardGroupsInfo]] = {
+  final def toShardGroupQueryResult(response: R)(implicit reader: InfluxReader[ShardGroup]): M[QueryResult[ShardGroupsInfo]] = {
     toComplexQueryResult[ShardGroup, ShardGroupsInfo](
       response,
       (name: String, arr: Array[ShardGroup]) => ShardGroupsInfo(name, arr)

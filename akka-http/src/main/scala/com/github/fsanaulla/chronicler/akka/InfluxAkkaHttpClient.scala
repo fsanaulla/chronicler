@@ -54,9 +54,9 @@ final class InfluxAkkaHttpClient(
     * @tparam A - Measurement's time series type
     * @return - Measurement instance of type [A]
     */
-  override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] = {
+  override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] =
     new Measurement[A](dbName, measurementName, credentials)
-  }
+
 
   /**
     * Ping InfluxDB
@@ -71,8 +71,8 @@ final class InfluxAkkaHttpClient(
     Http()
       .shutdownAllConnectionPools()
       .onComplete {
-        case Success(_) => println("Successfully stopped")
-        case Failure(exc) => println(s"Failure when closing ${exc.getCause}")
+        case Success(_) => _
+        case Failure(exc) => throw exc
       }
   }
 
@@ -81,11 +81,9 @@ final class InfluxAkkaHttpClient(
     */
   def closeAll(): Unit = {
     close()
-    system
-      .terminate()
-      .onComplete {
-        case Success(_) => println("ActorSystem was successfully terminated")
-        case Failure(exc) => println(s"Failure while closing ${exc.getCause}")
+    system.terminate().onComplete {
+      case Success(_) => {}
+      case Failure(exc) => throw exc
     }
   }
 }

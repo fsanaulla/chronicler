@@ -14,7 +14,7 @@ import scala.collection.mutable
 private[fsanaulla] trait DatabaseOperationQuery[U] {
   self: QueryHandler[U] with HasCredentials =>
 
-  def writeToInfluxQuery(dbName: String,
+  final def writeToInfluxQuery(dbName: String,
                          consistency: Consistency,
                          precision: Precision,
                          retentionPolicy: Option[String]): U = {
@@ -32,7 +32,7 @@ private[fsanaulla] trait DatabaseOperationQuery[U] {
     buildQuery("/write", buildQueryParams(queryParams))
   }
 
-  def readFromInfluxSingleQuery(dbName: String,
+  final def readFromInfluxSingleQuery(dbName: String,
                                           query: String,
                                           epoch: Epoch,
                                           pretty: Boolean,
@@ -49,7 +49,7 @@ private[fsanaulla] trait DatabaseOperationQuery[U] {
     buildQuery("/query", buildQueryParams(queryParams))
   }
 
-  def readFromInfluxBulkQuery(dbName: String,
+  final def readFromInfluxBulkQuery(dbName: String,
                               queries: Seq[String],
                               epoch: Epoch,
                               pretty: Boolean,

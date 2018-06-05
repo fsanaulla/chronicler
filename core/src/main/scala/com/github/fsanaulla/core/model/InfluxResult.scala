@@ -23,7 +23,7 @@ sealed trait InfluxResult {
   * @param isSuccess - is it complete successfully
   * @param ex        - optional exception
   */
-case class Result(code: Int, isSuccess: Boolean, ex: Option[Throwable] = None) extends InfluxResult
+final case class Result(code: Int, isSuccess: Boolean, ex: Option[Throwable] = None) extends InfluxResult
 
 object Result {
   /** Create successful result entity */
@@ -44,7 +44,7 @@ object Result {
   * @param ex          - optional exception
   * @tparam A          - which entity should be retrieved from query request
   */
-case class QueryResult[A](
+final case class QueryResult[A](
                            code: Int,
                            isSuccess: Boolean,
                            queryResult: Array[A],

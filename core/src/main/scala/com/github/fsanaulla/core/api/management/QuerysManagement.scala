@@ -18,12 +18,12 @@ private[fsanaulla] trait QuerysManagement[M[_], R, U, E] extends QuerysManagemen
     with HasCredentials =>
 
   /** Show list of queries */
-  def showQueries: M[QueryResult[QueryInfo]] =
+  final def showQueries: M[QueryResult[QueryInfo]] =
     m.mapTo(readRequest(showQuerysQuery()), toQueryResult[QueryInfo])
 
 
   /** Kill query */
-  def killQuery(queryId: Int): M[Result] =
+  final def killQuery(queryId: Int): M[Result] =
     m.mapTo(readRequest(killQueryQuery(queryId)), toResult)
 
 }

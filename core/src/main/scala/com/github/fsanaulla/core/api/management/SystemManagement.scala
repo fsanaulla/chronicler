@@ -12,6 +12,9 @@ import scala.reflect.ClassTag
   */
 trait SystemManagement[M[_], E] {
 
+  /** Ping InfluxDB */
+  def ping: M[Result]
+
   /**
     *
     * @param dbName - database name
@@ -27,9 +30,4 @@ trait SystemManagement[M[_], E] {
     * @return - Measurement instance of type [A]
     */
   def measurement[A: ClassTag](dbName: String, measurementName: String): MeasurementApi[M, A, E]
-
-  /**
-    * Ping InfluxDB
-    */
-  def ping: M[Result]
 }

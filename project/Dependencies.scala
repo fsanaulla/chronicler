@@ -11,20 +11,21 @@ object Dependencies {
     final val sttp = "1.1.14"
     final val akka = "2.5.12"
     final val netty = "4.1.22.Final"
+    final val scalaTest = "3.0.5"
   }
 
   // testing
   final val testingDeps = Seq(
-    "org.jetbrains"        % "annotations" % "15.0", // to solve evicted warning
-    "org.scalatest"        %% "scalatest"  % "3.0.5",
-    "org.testcontainers"   %  "influxdb"   % "1.7.3" exclude("org.jetbrains", "annotations")
+    "org.jetbrains"        %  "annotations" % "15.0", // to solve evicted warning
+    "org.scalatest"        %% "scalatest"   % Versions.scalaTest,
+    "org.testcontainers"   %  "influxdb"    % "1.7.3" exclude("org.jetbrains", "annotations")
   )
 
   // core
   final val coreDep = Seq(
-    "com.beachape"         %% "enumeratum" % "1.5.13",
-    "org.spire-math"       %% "jawn-ast"   % "0.12.1",
-    "org.scalatest"        %% "scalatest"  % "3.0.5" % Test
+    "com.beachape"   %% "enumeratum" % "1.5.13",
+    "org.spire-math" %% "jawn-ast"   % "0.12.1",
+    "org.scalatest"  %% "scalatest"  % Versions.scalaTest % Test
   )
 
   // akka-http
@@ -37,7 +38,7 @@ object Dependencies {
 
   // async-http
   final val asyncHttp = Seq(
-    "io.netty"              % "netty-handler"                     % Versions.netty, // to solve evicted warning
+    "io.netty"              %  "netty-handler"                    % Versions.netty, // to solve evicted warning
     "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp exclude("io.netty", "netty-handler")
   )
 

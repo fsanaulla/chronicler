@@ -36,27 +36,27 @@ private[fsanaulla] trait DatabaseManagement[M[_], R, U, E] extends DataManagemen
 
 
   /** Drop database */
-  def dropDatabase(dbName: String): M[Result] =
+  final def dropDatabase(dbName: String): M[Result] =
     m.mapTo(readRequest(dropDatabaseQuery(dbName)), toResult)
 
   /** Drop measurement */
-  def dropMeasurement(dbName: String, measurementName: String): M[Result] =
+  final def dropMeasurement(dbName: String, measurementName: String): M[Result] =
     m.mapTo(readRequest(dropMeasurementQuery(dbName, measurementName)), toResult)
 
   /** Show measurements */
-  def showMeasurement(dbName: String): M[QueryResult[String]] =
+  final def showMeasurement(dbName: String): M[QueryResult[String]] =
     m.mapTo(readRequest(showMeasurementQuery(dbName)), toQueryResult[String])
 
   /** Show database list */
-  def showDatabases(): M[QueryResult[String]] =
+  final def showDatabases(): M[QueryResult[String]] =
     m.mapTo(readRequest(showDatabasesQuery()), toQueryResult[String])
 
   /** Show field tags list */
-  def showFieldKeys(dbName: String, measurementName: String): M[QueryResult[FieldInfo]] =
+  final def showFieldKeys(dbName: String, measurementName: String): M[QueryResult[FieldInfo]] =
     m.mapTo(readRequest(showFieldKeysQuery(dbName, measurementName)), toQueryResult[FieldInfo])
 
   /** Show tags keys list */
-  def showTagKeys(
+  final def showTagKeys(
                    dbName: String,
                    measurementName: String,
                    whereClause: Option[String] = None,
@@ -65,7 +65,7 @@ private[fsanaulla] trait DatabaseManagement[M[_], R, U, E] extends DataManagemen
     m.mapTo(readRequest(showTagKeysQuery(dbName, measurementName, whereClause, limit, offset)), toQueryResult[String])
 
   /** Show tag values list */
-  def showTagValues(dbName: String,
+  final def showTagValues(dbName: String,
                     measurementName: String,
                     withKey: Seq[String],
                     whereClause: Option[String] = None,

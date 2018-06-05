@@ -27,7 +27,7 @@ private[fsanaulla] trait SubscriptionManagement[M[_], R, U, E] extends Subscript
     * @param addresses       - subscription addresses
     * @return                - execution result
     */
-  def createSubscription(subsName: String,
+  final def createSubscription(subsName: String,
                          dbName: String,
                          rpName: String = "autogen",
                          destinationType: Destination,
@@ -35,11 +35,11 @@ private[fsanaulla] trait SubscriptionManagement[M[_], R, U, E] extends Subscript
     m.mapTo(readRequest(createSubscriptionQuery(subsName, dbName, rpName, destinationType, addresses)), toResult)
 
   /** Drop subscription */
-  def dropSubscription(subName: String, dbName: String, rpName: String): M[Result] =
+  final def dropSubscription(subName: String, dbName: String, rpName: String): M[Result] =
     m.mapTo(readRequest(dropSubscriptionQuery(subName, dbName, rpName)), toResult)
 
   /** Show list of subscription info */
-  def showSubscriptionsInfo: M[QueryResult[SubscriptionInfo]] =
+  final def showSubscriptionsInfo: M[QueryResult[SubscriptionInfo]] =
     m.mapTo(readRequest(showSubscriptionsQuery()), toSubscriptionQueryResult)
 
 //  /** Show subscription by database name */

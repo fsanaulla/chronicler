@@ -11,15 +11,15 @@ import com.github.fsanaulla.core.model.HasCredentials
 private[fsanaulla] trait ShardManagementQuery[U] {
   self: QueryHandler[U] with HasCredentials =>
 
-  def dropShardQuery(shardId: Int): U = {
+  final def dropShardQuery(shardId: Int): U = {
     buildQuery("/query", buildQueryParams(s"DROP SHARD $shardId"))
   }
 
-  def showShardsQuery(): U = {
+  final def showShardsQuery(): U = {
     buildQuery("/query", buildQueryParams("SHOW SHARDS"))
   }
 
-  def showShardGroupsQuery(): U = {
+  final def showShardGroupsQuery(): U = {
     buildQuery("/query", buildQueryParams("SHOW SHARD GROUPS"))
   }
 

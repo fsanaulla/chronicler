@@ -1,30 +1,49 @@
 <div align="center">
 
 # Chronicler
+Open-source [Scala](https://www.scala-lang.org/) client tool for [InfluxDB](https://www.influxdata.com/).
+
 [![Build Status](https://travis-ci.org/fsanaulla/chronicler.svg?branch=master)](https://travis-ci.org/fsanaulla/chronicler)
 [![Codecov](https://img.shields.io/codecov/c/github/fsanaulla/chronicler.svg)](https://codecov.io/gh/fsanaulla/chronicler)
 [Download](https://img.shields.io/maven-central/v/com.github.fsanaulla/chronicler-core_2.11.svg)
 [![License](http://img.shields.io/:license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 </div>
 
-# About project
-Chronicler - open-source [Scala](https://www.scala-lang.org/) tool for [InfluxDB](https://www.influxdata.com/).
-
 # Components
 There are several components for use.
 
-## Components
- - **core** module. Contain all necessary prmitives for other components.
- - client modules:
-    - HTTP:
-        - async clients:
-            - **akka-http** - [akka](https://akka.io/) based client.
-            - **async-http** - [netty](https://netty.io/) based client
-        - sync clients
-            - **url-http** - [HttpUrlConnection](https://docs.oracle.com/javase/8/docs/api/java/net/HttpURLConnection.html) based client.
-    - UDP
-        - **udp** - [datagram socket](https://docs.oracle.com/javase/8/docs/api/java/net/DatagramSocket.html) based client        
- - **macros** module. Provide compile-time macros for creating serializers and deserializers.       
+ | Module | Description | 
+| ------------- | ------------- |
+| core | primitives for other modules | 
+| macros | compile-time generating of `InfluxReader`, `InfluxWriter`, `InfluxFormatter`|
+| akka-http | async HTTP client based on akka-http backend |
+| async-client | async HTTP client based on async-client backend |
+| url-http| sync HTTP client based on URLConnection backend |
+| udp | UDP client|
+
+# Dependencies
+**Core**:
+- [enumeratum](https://github.com/lloydmeta/enumeratum) better scala enumerators
+- [jawn](https://github.com/non/jawn) as a base for JSON operation
+
+**Macros**:
+- core
+- scala-reflect
+
+**Akka-HTTP**:
+- core
+- [akka-http](https://github.com/akka/akka-http)
+
+**Async-HTTP**:
+- core
+- [sttp](https://github.com/softwaremill/sttp) - async-client backend
+
+**Url-HTTP**:
+- core
+- [sttp](https://github.com/softwaremill/sttp) - url-conn backend
+
+**UDP**
+- core
 
 # Installation
 Add to your dependencies list in `build.sbt`:
@@ -44,14 +63,6 @@ libraryDependencies += "com.github.fsanaulla" %% "chronicler-udp" % <version>
 // macros extension
 libraryDependencies += "com.github.fsanaulla" %% "chronicler-macros" % <version>
 ```
-# Roadmap
-
-| Task | Description | Status |
-| ------------- | ------------- | ---------- |
-| Several client | multiple backed type | Completed |
-| Macro Formaters | Allow generating `InfluxReader[T]`, `InfluxWriter[T]` at compile time | Completed |
-| Spark integration | Adding support for Spark -> InfluxDB pipeline | Not started |
-| Type safe query DSL | Flexible method for query building | Not started |
 
 # Table of content
 1. [Get started](docs/get_started.md)
@@ -66,4 +77,3 @@ libraryDependencies += "com.github.fsanaulla" %% "chronicler-macros" % <version>
 10. [Response handling](docs/response_handling.md)
 11. [Macros](docs/macros.md)
 12. [Utils](docs/utils.md)
-

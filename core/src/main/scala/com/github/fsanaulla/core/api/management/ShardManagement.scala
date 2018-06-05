@@ -18,15 +18,15 @@ private[fsanaulla] trait ShardManagement[M[_], R, U, E] extends ShardManagementQ
     with HasCredentials =>
 
   /** Drop shard */
-  def dropShard(shardId: Int): M[Result] =
+  final def dropShard(shardId: Int): M[Result] =
     m.mapTo(readRequest(dropShardQuery(shardId)), toResult)
 
   /** Show shard groups */
-  def showShardGroups: M[QueryResult[ShardGroupsInfo]] =
+  final def showShardGroups: M[QueryResult[ShardGroupsInfo]] =
     m.mapTo(readRequest(showShardGroupsQuery()), toShardGroupQueryResult)
 
   /** Show shards */
-  def showShards: M[QueryResult[ShardInfo]] =
+  final def showShards: M[QueryResult[ShardInfo]] =
     m.mapTo(readRequest(showShardsQuery()), toShardQueryResult)
 
 //  def getShards(dbName: String): Future[QueryResult[Shard]] = {

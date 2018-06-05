@@ -11,7 +11,7 @@ import scala.collection.mutable
 private[fsanaulla] trait DataManagementQuery[U] {
   self: QueryHandler[U] with HasCredentials =>
 
-  def createDatabaseQuery(dbName: String,
+  final def createDatabaseQuery(dbName: String,
                           duration: Option[String],
                           replication: Option[Int],
                           shardDuration: Option[String],
@@ -44,35 +44,35 @@ private[fsanaulla] trait DataManagementQuery[U] {
     buildQuery("/query", buildQueryParams(sb.toString()))
   }
 
-  def dropDatabaseQuery(dbName: String): U = {
+  final def dropDatabaseQuery(dbName: String): U = {
     buildQuery("/query", buildQueryParams(s"DROP DATABASE $dbName"))
   }
 
-  def dropSeriesQuery(dbName: String, seriesName: String): U = {
+  final def dropSeriesQuery(dbName: String, seriesName: String): U = {
     buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DROP SERIES FROM $seriesName")))
   }
 
-  def dropMeasurementQuery(dbName: String, measurementName: String): U = {
+  final def dropMeasurementQuery(dbName: String, measurementName: String): U = {
     buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DROP MEASUREMENT $measurementName")))
   }
 
-  def deleteAllSeriesQuery(dbName: String, seriesName: String): U = {
+  final def deleteAllSeriesQuery(dbName: String, seriesName: String): U = {
     buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DELETE FROM $seriesName")))
   }
 
-  def showMeasurementQuery(dbName: String): U = {
+  final def showMeasurementQuery(dbName: String): U = {
     buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"SHOW MEASUREMENTS")))
   }
 
-  def showDatabasesQuery(): U = {
+  final def showDatabasesQuery(): U = {
     buildQuery("/query", buildQueryParams(s"SHOW DATABASES"))
   }
 
-  def showFieldKeysQuery(dbName: String, measurementName: String): U = {
+  final def showFieldKeysQuery(dbName: String, measurementName: String): U = {
     buildQuery("/query", buildQueryParams(s"SHOW FIELD KEYS ON $dbName FROM $measurementName"))
   }
 
-  def showTagKeysQuery(dbName: String,
+  final def showTagKeysQuery(dbName: String,
                        measurementName: String,
                        whereClause: Option[String],
                        limit: Option[Int],
@@ -99,7 +99,7 @@ private[fsanaulla] trait DataManagementQuery[U] {
     buildQuery("/query", buildQueryParams(sb.toString()))
   }
 
-  def showTagValuesQuery(dbName: String,
+  final def showTagValuesQuery(dbName: String,
                          measurementName: String,
                          withKey: Seq[String],
                          whereClause: Option[String],

@@ -11,11 +11,11 @@ import com.github.fsanaulla.core.model.HasCredentials
 private[fsanaulla] trait QuerysManagementQuery[U] {
   self: QueryHandler[U] with HasCredentials =>
 
-  def showQuerysQuery(): U = {
+  final def showQuerysQuery(): U = {
     buildQuery("/query", buildQueryParams("SHOW QUERIES"))
   }
 
-  def killQueryQuery(queryId: Int): U = {
+  final def killQueryQuery(queryId: Int): U = {
     buildQuery("/query", buildQueryParams(s"KILL QUERY $queryId"))
   }
 
