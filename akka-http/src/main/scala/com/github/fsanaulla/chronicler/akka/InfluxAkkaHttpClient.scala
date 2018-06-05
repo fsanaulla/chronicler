@@ -71,7 +71,7 @@ final class InfluxAkkaHttpClient(
     Http()
       .shutdownAllConnectionPools()
       .onComplete {
-        case Success(_) => _
+        case Success(_) =>
         case Failure(exc) => throw exc
       }
   }
@@ -82,7 +82,7 @@ final class InfluxAkkaHttpClient(
   def closeAll(): Unit = {
     close()
     system.terminate().onComplete {
-      case Success(_) => {}
+      case Success(_) =>
       case Failure(exc) => throw exc
     }
   }
