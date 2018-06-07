@@ -66,6 +66,7 @@ libraryDependencies += "com.github.fsanaulla" %% "chronicler-macros" % <version>
 
 ## Get started
 Let's take a look on a simply example of usage. In this example we will use `async-http` client and `macros`.
+
 Sbt file looks like:
 ```
 lazy val chronicler: String = "0.2.4"
@@ -75,6 +76,7 @@ libraryDependencies ++= Seq(
    "com.github.fsanaulla" %% "chronicler-macros"     % chronicler
 )
 ```
+Our code:
 ```scala
 import com.github.fsanaulla.chronicler.async.{Influx, InfluxAsyncHttpClient}
 import com.github.fsanaulla.macros.annotations.{field, tag, timestamp}
