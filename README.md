@@ -118,8 +118,13 @@ val measurement: Measurement[Resume] =
   influx.measurement[Resume](databaseName, measurementName)
   
 // let's write into measurement
-val resume = 
-  Resume("dasdasfsadf", "Jame", "Lanni", "Scala developer", Some(25), 4.5, 12312312L)
+val resume = Resume("dasdasfsadf",
+                    "Jame",
+                    "Lanni",
+                    "Scala developer",
+                    Some(25),
+                    4.5,
+                    System.currentTimeMillis() * 1000000)
   
 // insert entity  
 measurement.write(resume).onComplete {
