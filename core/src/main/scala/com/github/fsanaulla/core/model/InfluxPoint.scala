@@ -55,6 +55,9 @@ final case class Point(
   def addField(key: String, value: Boolean): Point = copy(fields = fields :+ BooleanField(key, value))
   def addField(key: String, value: Char): Point = copy(fields = fields :+ CharField(key, value))
 
+  /** You need to specify time in nanosecond precision */
+  def addTimestamp(time: Long): Point = copy(time = time)
+
   def serialize: String = {
     val sb = StringBuilder.newBuilder
 

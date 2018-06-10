@@ -1,4 +1,17 @@
 # Write operation 
+
+**Important**
+
+Influx use timestamp in nanosecond precision. Don't forget to transform your time.
+```
+val wrongTs = System.currentTimeMillis() // not right
+val rightTs = wrongTs * 1000000
+
+// or just not specify it, and InfluxServer will generate it himself.
+
+```
+
+## Write syntax
 First of all create database connection. In this situation we choose non type safe connection
 ```
 val db = influx.database("db")
