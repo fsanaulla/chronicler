@@ -128,7 +128,7 @@ measurement.write(resume).onComplete {
 }
 
 // retrieve entity
-val result: Array[Resume] = measurement.read("SELECT * FROM $measurement").onComplete {
+val result: Array[Resume] = measurement.read("SELECT * FROM $measurementName").onComplete {
   case Success(qr) if qr.isSuccess => qr.queryResult
   case _ => // handle failure
 }
