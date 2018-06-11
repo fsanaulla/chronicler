@@ -1,4 +1,4 @@
-package com.github.fsanaulla.macros.annotations
+package com.github.fsanaulla.chronicler.macros.annotations
 
 /***
   * Marker for declaring field value for influx point.

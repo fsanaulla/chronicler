@@ -17,6 +17,6 @@ class PointSpec extends FlatSpec with Matchers {
       .addField("weight", 75.6)
       .addTimestamp(ts)
 
-    p.serialize shouldEqual "test,city=London name=\"Jivi\" age=22i adult=true weight=75.6" + s" $ts"
+    p.serialize shouldEqual "test,city=London name=\"Jivi\",age=22i,adult=true,weight=75.6" + s" $ts"
   }
 }

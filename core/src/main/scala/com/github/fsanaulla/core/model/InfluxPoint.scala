@@ -64,7 +64,7 @@ final case class Point(
     sb.append(measurement).append(",")
     sb.append(tags.map(tag => tag.key + "=" + tag.value).mkString(","))
     sb.append(" ")
-    sb.append(fields.map(_.toString).mkString(" "))
+    sb.append(fields.map(_.toString).mkString(","))
 
     if (time != -1L) {
       sb.append(" ").append(time)
