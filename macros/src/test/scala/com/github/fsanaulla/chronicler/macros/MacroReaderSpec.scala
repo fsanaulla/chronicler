@@ -1,8 +1,8 @@
-package com.github.fsanaulla.macros
+package com.github.fsanaulla.chronicler.macros
 
+import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
 import com.github.fsanaulla.chronicler.testing.FlatSpecWithMatchers
 import com.github.fsanaulla.core.model.InfluxReader
-import com.github.fsanaulla.macros.annotations.{field, tag, timestamp}
 import jawn.ast._
 
 class MacroReaderSpec extends FlatSpecWithMatchers {

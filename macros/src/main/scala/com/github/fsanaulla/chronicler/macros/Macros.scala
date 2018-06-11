@@ -1,4 +1,4 @@
-package com.github.fsanaulla.macros
+package com.github.fsanaulla.chronicler.macros
 
 import com.github.fsanaulla.core.model.{InfluxFormatter, InfluxReader, InfluxWriter}
 

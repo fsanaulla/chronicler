@@ -1,9 +1,9 @@
 package com.github.fsanaulla.chronicler.akka.utils
 
 import akka.http.scaladsl.model.Uri
+import com.github.fsanaulla.chronicler.macros.Macros
+import com.github.fsanaulla.chronicler.macros.annotations.{field, tag}
 import com.github.fsanaulla.core.model._
-import com.github.fsanaulla.macros.Macros
-import com.github.fsanaulla.macros.annotations.{field, tag}
 
 /**
   * Created by fayaz on 11.07.17.

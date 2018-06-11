@@ -1,4 +1,4 @@
-package com.github.fsanaulla.macros.annotations
+package com.github.fsanaulla.chronicler.macros.annotations
 
 /***
   * Marker for declaring influx point tag's. Can be only String.

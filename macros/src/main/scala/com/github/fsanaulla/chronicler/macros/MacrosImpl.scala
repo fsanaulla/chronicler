@@ -1,6 +1,6 @@
-package com.github.fsanaulla.macros
+package com.github.fsanaulla.chronicler.macros
 
-import com.github.fsanaulla.macros.annotations.{field, tag, timestamp}
+import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
 
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
@@ -205,7 +205,7 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
                   case (k, v: String) => k + "=" + "\"" + v + "\""
                   case (k, v: Int) => k + "=" + v + "i"
                   case (k, v) => k + "=" + v
-                } mkString(" ")
+                } mkString(",")
 
                 val nonOptTagsMap: Map[String, String] = Map(..$nonOptTags)
                 val nonOptTags: String = nonOptTagsMap map {
@@ -228,7 +228,7 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
                case (k, v: String) => k + "=" + "\"" + v + "\""
                case (k, v: Int) => k + "=" + v + "i"
                case (k, v) => k + "=" + v
-            } mkString(" ")
+            } mkString(",")
 
             val nonOptTagsMap: Map[String, String] = Map(..$nonOptTags)
             val nonOptTags: String = nonOptTagsMap map {

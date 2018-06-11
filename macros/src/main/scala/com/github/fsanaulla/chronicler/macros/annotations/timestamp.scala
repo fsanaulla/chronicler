@@ -1,4 +1,4 @@
-package com.github.fsanaulla.macros.annotations
+package com.github.fsanaulla.chronicler.macros.annotations
 
 /** Mark field that will be used as timestamp in InfluxDB.
   * It can be optional, in this case will be used default
