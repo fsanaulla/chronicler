@@ -13,7 +13,7 @@ Open-source [Scala](https://www.scala-lang.org/) client tool for [InfluxDB](http
 ## Components
 There are several components for use.
 
- | Module | Description | 
+| Module | Description | 
 | ------------- | ------------- |
 | core | primitives for other modules | 
 | macros | compile-time generating of `InfluxReader`, `InfluxWriter`, `InfluxFormatter`|
