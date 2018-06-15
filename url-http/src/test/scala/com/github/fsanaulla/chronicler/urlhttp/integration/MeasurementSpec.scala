@@ -30,7 +30,7 @@ class MeasurementSpec extends TestSpec with DockerizedInfluxDB with TryValues {
 
     meas.read(s"SELECT * FROM $measName")
       .success.value
-      .result shouldEqual Array(singleEntity)
+      .queryResult shouldEqual Array(singleEntity)
   }
 
   it should "make safe bulk write" in {
@@ -38,7 +38,7 @@ class MeasurementSpec extends TestSpec with DockerizedInfluxDB with TryValues {
 
     meas.read(s"SELECT * FROM $measName")
       .success.value
-      .result
+      .queryResult
       .length shouldEqual 3
 
     influx.close() shouldEqual {}

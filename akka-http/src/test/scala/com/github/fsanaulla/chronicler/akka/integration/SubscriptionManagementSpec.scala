@@ -42,18 +42,18 @@ class SubscriptionManagementSpec
 
     influx.createRetentionPolicy(rpName, dbName, duration, 1, Some(duration)).futureValue shouldEqual OkResult
 
-    influx.showDatabases().futureValue.result.contains(dbName) shouldEqual true
+    influx.showDatabases().futureValue.queryResult.contains(dbName) shouldEqual true
 
     influx.createSubscription(subName, dbName, rpName, destType, hosts).futureValue shouldEqual OkResult
 
-    influx.showSubscriptionsInfo.futureValue.result.head.subscriptions shouldEqual Array(subscription)
+    influx.showSubscriptionsInfo.futureValue.queryResult.head.subscriptions shouldEqual Array(subscription)
   }
 
 
   it should "drop subscription" in {
     influx.dropSubscription(subName, dbName, rpName).futureValue shouldEqual OkResult
 
-    influx.showSubscriptionsInfo.futureValue.result shouldEqual Nil
+    influx.showSubscriptionsInfo.futureValue.queryResult shouldEqual Nil
 
     influx.dropRetentionPolicy(rpName, dbName).futureValue shouldEqual OkResult
 

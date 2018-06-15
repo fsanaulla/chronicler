@@ -55,8 +55,7 @@ private[chronicler] trait JsonHandler[M[_], R] {
           .get("values")
           .arrayValue
           .flatMap(_.headOption)
-          .flatMap(_.arrayValue)
-          .map(arr => JArray(arr.tail))
+          .flatMap(_.array)
 
         tags.getOrElse(Array.empty[String]) -> values.getOrElse(JArray.empty)
       })

@@ -23,7 +23,7 @@ sealed trait InfluxResult {
   * @tparam A
   */
 sealed trait ReadResult[A] extends InfluxResult {
-  def result: Array[A]
+  def queryResult: Array[A]
   def groupedResult: Array[(Array[String], A)]
 }
 
@@ -50,18 +50,18 @@ object WriteResult {
   * Entity to represent query result response
   * @param code        - HTTP response code
   * @param isSuccess   - is it complete successfully
-  * @param result      - array of queried results
+  * @param queryResult      - array of queried results
   * @param ex          - optional exception
   * @tparam A          - which entity should be retrieved from query request
   */
 final case class QueryResult[A](
                                  code: Int,
                                  isSuccess: Boolean,
-                                 result: Array[A],
+                                 queryResult: Array[A],
                                  ex: Option[Throwable] = None) extends ReadResult[A] {
 
   def map[B: ClassTag](f: A => B): QueryResult[B] =
-    QueryResult[B](code, isSuccess, result.map(f), ex)
+    QueryResult[B](code, isSuccess, queryResult.map(f), ex)
 
   override def groupedResult: Array[(Array[String], A)] =
     throw new UnsupportedOperationException("Grouped result unsupported in query result")
@@ -94,7 +94,7 @@ final case class GroupedResult[A](
   def map[B: ClassTag](f: A => B): GroupedResult[B] =
     GroupedResult[B](code, isSuccess, groupedResult.map(p => p._1 -> f(p._2)), ex)
 
-  override def result: Array[A] =
+  override def queryResult: Array[A] =
     throw new UnsupportedOperationException("Query result unsupported in grouped result")
 }
 

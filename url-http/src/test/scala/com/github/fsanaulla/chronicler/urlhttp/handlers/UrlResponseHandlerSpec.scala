@@ -56,7 +56,7 @@ class UrlResponseHandlerSpec extends TestSpec with UrlResponseHandler with TryVa
         |}
       """.stripMargin.toResponse
 
-    toQueryJsResult(singleResponse).success.value.result shouldEqual singleResult
+    toQueryJsResult(singleResponse).success.value.queryResult shouldEqual singleResult
   }
 
   it should "extract bulk query results from response" in {
@@ -113,7 +113,7 @@ class UrlResponseHandlerSpec extends TestSpec with UrlResponseHandler with TryVa
         |}
       """.stripMargin.toResponse()
 
-    toBulkQueryJsResult(bulkResponse).success.value.result shouldEqual Array(
+    toBulkQueryJsResult(bulkResponse).success.value.queryResult shouldEqual Array(
       Array(
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
@@ -179,7 +179,7 @@ class UrlResponseHandlerSpec extends TestSpec with UrlResponseHandler with TryVa
   """
     val cqHttpResponse = Response(p.parseFromString(cqStrJson).toStrEither(cqStrJson), 200, "", Nil, Nil)
 
-    val cqi = toCqQueryResult(cqHttpResponse).success.value.result.filter(_.querys.nonEmpty).head
+    val cqi = toCqQueryResult(cqHttpResponse).success.value.queryResult.filter(_.querys.nonEmpty).head
     cqi.dbName shouldEqual "mydb"
     cqi.querys.head shouldEqual ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")
   }

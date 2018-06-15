@@ -40,7 +40,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf wi
     udp
       .read[Test]("SELECT * FROM cpu")
       .futureValue
-      .result shouldEqual Array(t)
+      .queryResult shouldEqual Array(t)
   }
 
   it should "bulk write" in {
@@ -54,7 +54,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf wi
     udp
       .read[Test]("SELECT * FROM cpu1")
       .futureValue
-      .result shouldEqual Array(t, t1)
+      .queryResult shouldEqual Array(t, t1)
   }
 
 
@@ -70,7 +70,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf wi
     udp
       .read[Test]("SELECT * FROM cpu")
       .futureValue
-      .result
+      .queryResult
       .length shouldEqual 2
   }
 
@@ -90,7 +90,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf wi
     udp
       .read[Test]("SELECT * FROM cpu2")
       .futureValue
-      .result shouldEqual Array(Test("d", 2), Test("e", 3))
+      .queryResult shouldEqual Array(Test("d", 2), Test("e", 3))
   }
 
   it should "write native" in {
@@ -101,7 +101,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf wi
     udp
       .read[Test]("SELECT * FROM cpu")
       .futureValue
-      .result
+      .queryResult
       .length shouldEqual 3
   }
 
@@ -113,7 +113,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf wi
     udp
       .read[Test]("SELECT * FROM cpu3")
       .futureValue
-      .result shouldEqual Array(Test("b", 5), Test("v", 3))
+      .queryResult shouldEqual Array(Test("b", 5), Test("v", 3))
   }
 
   it should "write from file" in {
@@ -122,7 +122,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf wi
 
     udp.readJs("SELECT * FROM test1")
       .futureValue
-      .result
+      .queryResult
       .length shouldEqual 3
   }
 

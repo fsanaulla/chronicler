@@ -38,7 +38,7 @@ class DatabaseSpec
     influx.createDatabase(testDB).futureValue shouldEqual OkResult
 
     db.writeFromFile(new File(getClass.getResource("/points.txt").getPath)).futureValue shouldEqual NoContentResult
-    db.readJs("SELECT * FROM test1").futureValue.result.length shouldEqual 3
+    db.readJs("SELECT * FROM test1").futureValue.queryResult.length shouldEqual 3
   }
 
   it should "write points" in {
@@ -56,10 +56,10 @@ class DatabaseSpec
       .addField("age", 36)
 
     db.writePoint(point1).futureValue shouldEqual NoContentResult
-    db.read[FakeEntity]("SELECT * FROM test2").futureValue.result shouldEqual Array(FakeEntity("Male", "Martin", "Odersky", 54))
+    db.read[FakeEntity]("SELECT * FROM test2").futureValue.queryResult shouldEqual Array(FakeEntity("Male", "Martin", "Odersky", 54))
 
     db.bulkWritePoints(Array(point1, point2)).futureValue shouldEqual NoContentResult
-    db.read[FakeEntity]("SELECT * FROM test2").futureValue.result shouldEqual Array(FakeEntity("Male", "Martin", "Odersky", 54), FakeEntity("Male", "Jame", "Franko", 36), FakeEntity("Male", "Martin", "Odersky", 54))
+    db.read[FakeEntity]("SELECT * FROM test2").futureValue.queryResult shouldEqual Array(FakeEntity("Male", "Martin", "Odersky", 54), FakeEntity("Male", "Jame", "Franko", 36), FakeEntity("Male", "Martin", "Odersky", 54))
   }
 
   it should "read multiple query results" in {
@@ -71,29 +71,29 @@ class DatabaseSpec
       )
     ).futureValue
 
-    multiQuery.result.length shouldEqual 2
-    multiQuery.result shouldBe a[Array[_]]
+    multiQuery.queryResult.length shouldEqual 2
+    multiQuery.queryResult shouldBe a[Array[_]]
 
-    multiQuery.result.head.length shouldEqual 3
-    multiQuery.result.head shouldBe a[Array[_]]
-    multiQuery.result.head.head shouldBe a[JArray]
+    multiQuery.queryResult.head.length shouldEqual 3
+    multiQuery.queryResult.head shouldBe a[Array[_]]
+    multiQuery.queryResult.head.head shouldBe a[JArray]
 
-    multiQuery.result.last.length shouldEqual 1
-    multiQuery.result.last shouldBe a[Array[_]]
-    multiQuery.result.last.head shouldBe a[JArray]
+    multiQuery.queryResult.last.length shouldEqual 1
+    multiQuery.queryResult.last shouldBe a[Array[_]]
+    multiQuery.queryResult.last.head shouldBe a[JArray]
 
     multiQuery
-      .result
+      .queryResult
       .map(_.map(_.arrayValue.value.tail)) shouldEqual largeMultiJsonEntity.map(_.map(_.arrayValue.value.tail))
   }
 
   it should "write native represented entities" in {
 
     db.writeNative("test3,sex=Male,firstName=Jame,lastName=Lannister age=48").futureValue shouldEqual NoContentResult
-    db.read[FakeEntity]("SELECT * FROM test3").futureValue.result shouldEqual Array(FakeEntity("Male", "Jame", "Lannister", 48))
+    db.read[FakeEntity]("SELECT * FROM test3").futureValue.queryResult shouldEqual Array(FakeEntity("Male", "Jame", "Lannister", 48))
 
     db.bulkWriteNative(Array("test4,sex=Male,firstName=Jon,lastName=Snow age=24", "test4,sex=Female,firstName=Deny,lastName=Targaryen age=25")).futureValue shouldEqual NoContentResult
-    db.read[FakeEntity]("SELECT * FROM test4").futureValue.result shouldEqual Array(FakeEntity("Female", "Deny", "Targaryen", 25), FakeEntity("Male", "Jon", "Snow", 24))
+    db.read[FakeEntity]("SELECT * FROM test4").futureValue.queryResult shouldEqual Array(FakeEntity("Female", "Deny", "Targaryen", 25), FakeEntity("Male", "Jon", "Snow", 24))
 
   }
 
@@ -107,7 +107,7 @@ class DatabaseSpec
       .readJs("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"")
       .futureValue
       .groupedResult
-      .map { case (k, v) => k.toSeq -> v } shouldEqual Array(Seq("Male") -> JArray(Array(JNum(49))))
+      .map { case (k, v) => k.toSeq -> v } shouldEqual Array(Seq("Male") -> JArray(Array(JNum(0), JNum(49))))
 
     influx.close() shouldEqual {}
   }

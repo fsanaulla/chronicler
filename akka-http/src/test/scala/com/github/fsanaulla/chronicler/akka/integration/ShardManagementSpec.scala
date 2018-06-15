@@ -29,7 +29,7 @@ class ShardManagementSpec
 
     influx.createDatabase(testDb, shardDuration = Some("1s")).futureValue shouldEqual OkResult
 
-    val shards = influx.showShards.futureValue.result
+    val shards = influx.showShards.futureValue.queryResult
 
     shards should not be Nil
 
@@ -38,7 +38,7 @@ class ShardManagementSpec
 
   it should "show shards groupe" in {
 
-    val shardGroups = influx.showShardGroups.futureValue.result
+    val shardGroups = influx.showShardGroups.futureValue.queryResult
 
     shardGroups should not equal Nil
 

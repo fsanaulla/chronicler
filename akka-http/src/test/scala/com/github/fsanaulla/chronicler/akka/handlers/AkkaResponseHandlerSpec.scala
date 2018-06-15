@@ -64,7 +64,7 @@ class AkkaResponseHandlerSpec
         |}
       """.stripMargin.toResponse
 
-    toQueryJsResult(singleHttpResponse).futureValue.result shouldEqual singleResult
+    toQueryJsResult(singleHttpResponse).futureValue.queryResult shouldEqual singleResult
   }
 
   it should "extract bulk query results from response" in {
@@ -121,7 +121,7 @@ class AkkaResponseHandlerSpec
         |}
       """.stripMargin.toResponse
 
-    toBulkQueryJsResult(bulkHttpResponse).futureValue.result shouldEqual Array(
+    toBulkQueryJsResult(bulkHttpResponse).futureValue.queryResult shouldEqual Array(
       Array(
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
@@ -186,7 +186,7 @@ class AkkaResponseHandlerSpec
     }
   """.toResponse
 
-    val cqi = toCqQueryResult(cqResponse).futureValue.result.filter(_.querys.nonEmpty).head
+    val cqi = toCqQueryResult(cqResponse).futureValue.queryResult.filter(_.querys.nonEmpty).head
     cqi.dbName shouldEqual "mydb"
     cqi.querys.head shouldEqual ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")
   }

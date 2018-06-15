@@ -31,7 +31,7 @@ class MeasurementSpec extends TestSpec with FutureHandler with DockerizedInfluxD
 
     meas.read(s"SELECT * FROM $measName")
       .futureValue
-      .result shouldEqual Array(singleEntity)
+      .queryResult shouldEqual Array(singleEntity)
   }
 
   it should "make safe bulk write" in {
@@ -39,7 +39,7 @@ class MeasurementSpec extends TestSpec with FutureHandler with DockerizedInfluxD
 
     meas.read(s"SELECT * FROM $measName")
       .futureValue
-      .result
+      .queryResult
       .length shouldEqual 3
 
     influx.close() shouldEqual {}

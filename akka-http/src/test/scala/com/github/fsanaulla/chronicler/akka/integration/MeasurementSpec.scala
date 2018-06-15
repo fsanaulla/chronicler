@@ -37,7 +37,7 @@ class MeasurementSpec
 
     meas.read(s"SELECT * FROM $measName")
       .futureValue
-      .result shouldEqual Seq(singleEntity)
+      .queryResult shouldEqual Seq(singleEntity)
   }
 
   it should "bulk write" in {
@@ -45,7 +45,7 @@ class MeasurementSpec
 
     meas.read(s"SELECT * FROM $measName")
       .futureValue
-      .result
+      .queryResult
       .length shouldEqual 3
 
     influx.close() shouldEqual {}

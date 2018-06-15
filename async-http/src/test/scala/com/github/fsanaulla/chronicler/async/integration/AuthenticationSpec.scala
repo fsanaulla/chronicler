@@ -39,7 +39,7 @@ class AuthenticationSpec extends TestSpec with DockerizedInfluxDB with FutureHan
   }
   it should "create user" in {
     authInflux.createUser(userName, userPass).futureValue shouldEqual OkResult
-    authInflux.showUsers.futureValue.result.exists(_.username == userName) shouldEqual true
+    authInflux.showUsers.futureValue.queryResult.exists(_.username == userName) shouldEqual true
   }
 
   it should "set user password" in {
@@ -51,7 +51,7 @@ class AuthenticationSpec extends TestSpec with DockerizedInfluxDB with FutureHan
   }
 
   it should "get user privileges" in {
-    val userPrivs = authInflux.showUserPrivileges(userName).futureValue.result
+    val userPrivs = authInflux.showUserPrivileges(userName).futureValue.queryResult
 
     userPrivs.length shouldEqual 1
     userPrivs.exists { upi =>
@@ -61,7 +61,7 @@ class AuthenticationSpec extends TestSpec with DockerizedInfluxDB with FutureHan
 
   it should "revoke user privileges" in {
     authInflux.revokePrivileges(userName, userDB, Privileges.READ).futureValue shouldEqual OkResult
-    authInflux.showUserPrivileges(userName).futureValue.result shouldEqual Array(UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES))
+    authInflux.showUserPrivileges(userName).futureValue.queryResult shouldEqual Array(UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES))
   }
 
   it should "drop user" in {

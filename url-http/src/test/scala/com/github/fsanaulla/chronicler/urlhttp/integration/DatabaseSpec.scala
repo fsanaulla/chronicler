@@ -35,7 +35,7 @@ class DatabaseSpec extends TestSpec with DockerizedInfluxDB with TryValues {
     
     db.readJs("SELECT * FROM test1")
       .success.value
-      .result
+      .queryResult
       .length shouldEqual 3
   }
 
@@ -55,13 +55,13 @@ class DatabaseSpec extends TestSpec with DockerizedInfluxDB with TryValues {
     
     db.read[FakeEntity]("SELECT * FROM test2")
       .success.value
-      .result shouldEqual Array(FakeEntity("Martin", "Odersky", 54))
+      .queryResult shouldEqual Array(FakeEntity("Martin", "Odersky", 54))
 
     db.bulkWritePoints(Array(point1, point2)).success.value shouldEqual NoContentResult
     
     db.read[FakeEntity]("SELECT * FROM test2")
       .success.value
-      .result shouldEqual Array(FakeEntity("Martin", "Odersky", 54), FakeEntity("Jame", "Franko", 36), FakeEntity("Martin", "Odersky", 54))
+      .queryResult shouldEqual Array(FakeEntity("Martin", "Odersky", 54), FakeEntity("Jame", "Franko", 36), FakeEntity("Martin", "Odersky", 54))
   }
 
   it should "retrieve multiple request" in {
@@ -73,19 +73,19 @@ class DatabaseSpec extends TestSpec with DockerizedInfluxDB with TryValues {
       )
     ).success.value
 
-    multiQuery.result.length shouldEqual 2
-    multiQuery.result shouldBe a[Array[_]]
+    multiQuery.queryResult.length shouldEqual 2
+    multiQuery.queryResult shouldBe a[Array[_]]
 
-    multiQuery.result.head.length shouldEqual 3
-    multiQuery.result.head shouldBe a[Array[_]]
-    multiQuery.result.head.head shouldBe a[JArray]
+    multiQuery.queryResult.head.length shouldEqual 3
+    multiQuery.queryResult.head shouldBe a[Array[_]]
+    multiQuery.queryResult.head.head shouldBe a[JArray]
 
-    multiQuery.result.last.length shouldEqual 1
-    multiQuery.result.last shouldBe a[Array[_]]
-    multiQuery.result.last.head shouldBe a[JArray]
+    multiQuery.queryResult.last.length shouldEqual 1
+    multiQuery.queryResult.last shouldBe a[Array[_]]
+    multiQuery.queryResult.last.head shouldBe a[JArray]
 
     multiQuery
-      .result
+      .queryResult
       .map(_.map(_.arrayValue.value.tail)) shouldEqual largeMultiJsonEntity.map(_.map(_.arrayValue.value.tail))
   }
 
@@ -95,15 +95,13 @@ class DatabaseSpec extends TestSpec with DockerizedInfluxDB with TryValues {
     
     db.read[FakeEntity]("SELECT * FROM test3")
       .success.value
-      .result shouldEqual Array(FakeEntity("Jame", "Lannister", 48))
+      .queryResult shouldEqual Array(FakeEntity("Jame", "Lannister", 48))
 
     db.bulkWriteNative(Seq("test4,firstName=Jon,lastName=Snow age=24", "test4,firstName=Deny,lastName=Targaryen age=25")).success.value shouldEqual NoContentResult
 
     db.read[FakeEntity]("SELECT * FROM test4")
       .success.value
-      .result shouldEqual Array(FakeEntity("Deny", "Targaryen", 25), FakeEntity("Jon", "Snow", 24))
-
-    influx.close() shouldEqual {}
+      .queryResult shouldEqual Array(FakeEntity("Deny", "Targaryen", 25), FakeEntity("Jon", "Snow", 24))
   }
 
   it should "return grouped result by sex and sum of ages" in {
@@ -118,7 +116,7 @@ class DatabaseSpec extends TestSpec with DockerizedInfluxDB with TryValues {
       .success
       .value
       .groupedResult
-      .map { case (k, v) => k.toSeq -> v } shouldEqual Array(Seq("Male") -> JArray(Array(JNum(49))))
+      .map { case (k, v) => k.toSeq -> v } shouldEqual Array(Seq("Male") -> JArray(Array(JNum(0), JNum(49))))
 
     influx.close() shouldEqual {}
   }

@@ -22,14 +22,14 @@ class ShardManagementSpec extends TestSpec with DockerizedInfluxDB with TryValue
 
     influx.createDatabase(testDb, shardDuration = Some("1s")).success.value shouldEqual OkResult
 
-    val shards = influx.showShards.success.value.result
+    val shards = influx.showShards.success.value.queryResult
 
     shards should not be Array.empty[ShardInfo]
   }
 
   it should "show shards groupe" in {
 
-    val shardGroups = influx.showShardGroups.success.value.result
+    val shardGroups = influx.showShardGroups.success.value.queryResult
 
     shardGroups should not equal Array.empty[ShardGroupsInfo]
 
