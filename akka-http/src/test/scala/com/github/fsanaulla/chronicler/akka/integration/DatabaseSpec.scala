@@ -106,7 +106,8 @@ class DatabaseSpec
     db
       .readJs("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"")
       .futureValue
-      .groupedResult shouldEqual Array(Array("Male") -> JArray(Array(JNum(49))))
+      .groupedResult
+      .map { case (k, v) => k.toSeq -> v } shouldEqual Array(Seq("Male") -> JArray(Array(JNum(49))))
 
     influx.close() shouldEqual {}
   }

@@ -10,7 +10,7 @@ import com.github.fsanaulla.chronicler.urlhttp.api.Database
 import com.github.fsanaulla.chronicler.urlhttp.utils.SampleEntitys.largeMultiJsonEntity
 import com.github.fsanaulla.chronicler.urlhttp.utils.TestHelper.FakeEntity
 import com.github.fsanaulla.chronicler.urlhttp.{Influx, InfluxUrlHttpClient}
-import jawn.ast.JArray
+import jawn.ast.{JArray, JNum}
 import org.scalatest.TryValues
 
 /**
@@ -102,6 +102,23 @@ class DatabaseSpec extends TestSpec with DockerizedInfluxDB with TryValues {
     db.read[FakeEntity]("SELECT * FROM test4")
       .success.value
       .result shouldEqual Array(FakeEntity("Deny", "Targaryen", 25), FakeEntity("Jon", "Snow", 24))
+
+    influx.close() shouldEqual {}
+  }
+
+  it should "return grouped result by sex and sum of ages" in {
+
+    db
+      .bulkWriteNative(Array("test5,sex=Male,firstName=Jon,lastName=Snow age=24", "test5,sex=Male,firstName=Rainer,lastName=Targaryen age=25"))
+      .success
+      .value shouldEqual NoContentResult
+
+    db
+      .readJs("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"")
+      .success
+      .value
+      .groupedResult
+      .map { case (k, v) => k.toSeq -> v } shouldEqual Array(Seq("Male") -> JArray(Array(JNum(49))))
 
     influx.close() shouldEqual {}
   }

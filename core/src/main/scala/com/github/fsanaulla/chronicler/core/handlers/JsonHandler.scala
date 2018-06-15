@@ -51,7 +51,12 @@ private[chronicler] trait JsonHandler[M[_], R] {
       .map(_.flatMap(_.obj))
       .map(_.map { obj =>
         val tags = obj.get("tags").obj.map(_.vs.values.map(_.asString).toArray.sorted)
-        val values = obj.get("values").arrayValue.flatMap(_.headOption).flatMap(_.array)
+        val values = obj
+          .get("values")
+          .arrayValue
+          .flatMap(_.headOption)
+          .flatMap(_.arrayValue)
+          .map(arr => JArray(arr.tail))
 
         tags.getOrElse(Array.empty[String]) -> values.getOrElse(JArray.empty)
       })
