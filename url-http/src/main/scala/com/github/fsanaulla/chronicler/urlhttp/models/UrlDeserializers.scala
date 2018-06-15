@@ -2,7 +2,7 @@ package com.github.fsanaulla.chronicler.urlhttp.models
 
 import java.io.File
 
-import com.github.fsanaulla.core.model.{Deserializer, Point}
+import com.github.fsanaulla.chronicler.core.model.{Deserializer, Point}
 
 import scala.io.Source
 

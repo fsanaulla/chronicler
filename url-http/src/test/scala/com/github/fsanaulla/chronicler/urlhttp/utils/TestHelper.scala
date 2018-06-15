@@ -2,9 +2,9 @@ package com.github.fsanaulla.chronicler.urlhttp.utils
 
 import java.net.URLEncoder
 
+import com.github.fsanaulla.chronicler.core.model.{AuthorizationException, InfluxCredentials, InfluxFormatter, WriteResult}
 import com.github.fsanaulla.chronicler.macros.Macros
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag}
-import com.github.fsanaulla.core.model._
 
 /**
   * Created by fayaz on 11.07.17.
@@ -16,7 +16,7 @@ object TestHelper {
   }
 
   final val currentNanoTime: Long = System.currentTimeMillis() * 1000000
-  final val AuthErrorResult = Result(401, isSuccess = false, Some(new AuthorizationException("unable to parse authentication credentials")))
+  final val AuthErrorResult = WriteResult(401, isSuccess = false, Some(new AuthorizationException("unable to parse authentication credentials")))
 
   case class FakeEntity(@tag firstName: String,
                         @tag lastName: String,

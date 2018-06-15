@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.testing
 
-import com.github.fsanaulla.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import org.scalatest.{BeforeAndAfterAll, Suite}
 import org.testcontainers.containers.InfluxDBContainer
 

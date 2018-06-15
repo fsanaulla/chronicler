@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.api.Measurement
 import com.github.fsanaulla.chronicler.akka.utils.SampleEntitys._
-import com.github.fsanaulla.chronicler.akka.utils.TestHelper.{FakeEntity, _}
+import com.github.fsanaulla.chronicler.akka.utils.TestHelper.FakeEntity
 import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}

@@ -1,8 +1,6 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
-import com.github.fsanaulla.core.model.InfluxCredentials
-
-import scala.concurrent.ExecutionContext
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 
 object Influx {
 

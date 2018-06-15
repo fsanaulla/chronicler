@@ -3,9 +3,9 @@ package com.github.fsanaulla.chronicler.akka.integration
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
+import com.github.fsanaulla.chronicler.core.model.ShardGroupsInfo
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
-import com.github.fsanaulla.core.model.ShardGroupsInfo
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

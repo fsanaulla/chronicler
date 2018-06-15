@@ -4,10 +4,10 @@ import java.io.File
 
 import com.github.fsanaulla.chronicler.async.InfluxAsyncHttpClient
 import com.github.fsanaulla.chronicler.async.api.Database
+import com.github.fsanaulla.chronicler.core.model.{InfluxFormatter, Point}
 import com.github.fsanaulla.chronicler.macros.Macros
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag}
 import com.github.fsanaulla.chronicler.testing.{FutureHandler, TestSpec}
-import com.github.fsanaulla.core.model.{InfluxFormatter, Point}
 import com.github.fsanaulla.core.testing.configurations.InfluxUDPConf
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 

@@ -6,9 +6,9 @@ import akka.http.scaladsl.model.HttpResponse
 import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.utils.Extensions.RichString
 import com.github.fsanaulla.chronicler.akka.utils.SampleEntitys.singleResult
+import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
+import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
 import com.github.fsanaulla.chronicler.testing.{FutureHandler, TestSpec}
-import com.github.fsanaulla.core.model.ContinuousQuery
-import com.github.fsanaulla.core.utils.DefaultInfluxImplicits._
 import jawn.ast.{JArray, JNum, JString}
 
 import scala.concurrent.ExecutionContext
@@ -28,7 +28,7 @@ class AkkaResponseHandlerSpec
   implicit val ex: ExecutionContext = system.dispatcher
   implicit val timeout: FiniteDuration = 1 second
 
-  "AsyncHttpResponseHandler" should "extract single query result from response" in {
+  "AsyncHttpResponseHandler" should "extract single query queryResult from response" in {
 
     val singleHttpResponse: HttpResponse =
       """

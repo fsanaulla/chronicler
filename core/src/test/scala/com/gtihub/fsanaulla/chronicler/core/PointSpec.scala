@@ -1,6 +1,6 @@
 package com.gtihub.fsanaulla.chronicler.core
 
-import com.github.fsanaulla.core.model.Point
+import com.github.fsanaulla.chronicler.core.model.Point
 import org.scalatest.{FlatSpec, Matchers}
 
 class PointSpec extends FlatSpec with Matchers {

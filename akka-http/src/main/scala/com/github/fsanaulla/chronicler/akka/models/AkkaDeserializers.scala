@@ -6,14 +6,14 @@ import _root_.akka.http.scaladsl.model.{HttpEntity, RequestEntity}
 import _root_.akka.stream.scaladsl.FileIO
 import _root_.akka.util.ByteString
 import com.github.fsanaulla.chronicler.akka.utils.AkkaContentTypes.OctetStream
-import com.github.fsanaulla.core.model.{Deserializer, Point}
+import com.github.fsanaulla.chronicler.core.model.{Deserializer, Point}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[fsanaulla] object AkkaDeserializers {
+private[akka] object AkkaDeserializers {
 
   implicit val str2Http: Deserializer[String, RequestEntity] = new Deserializer[String, RequestEntity] {
     def deserialize(obj: String) = HttpEntity(ByteString(obj))

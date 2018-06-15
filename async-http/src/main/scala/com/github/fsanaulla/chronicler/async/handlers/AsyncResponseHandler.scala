@@ -1,34 +1,34 @@
 package com.github.fsanaulla.chronicler.async.handlers
 
-import com.github.fsanaulla.core.handlers.ResponseHandler
-import com.github.fsanaulla.core.model._
+import com.github.fsanaulla.chronicler.core.handlers.ResponseHandler
+import com.github.fsanaulla.chronicler.core.model._
 import com.softwaremill.sttp.Response
 import jawn.ast.{JArray, JValue}
 
 import scala.concurrent.Future
 import scala.reflect.ClassTag
 
-private[fsanaulla] trait AsyncResponseHandler extends ResponseHandler[Future, Response[JValue]] with AsyncJsonHandler {
+private[async] trait AsyncResponseHandler extends ResponseHandler[Future, Response[JValue]] with AsyncJsonHandler {
 
   // Simply result's
-  def toResult(response: Response[JValue]): Future[Result] = {
+  override def toResult(response: Response[JValue]): Future[WriteResult] = {
     response.code match {
       case code if isSuccessful(code) && code != 204 =>
         getOptResponseError(response) map {
           case Some(msg) =>
-            Result.failed(code, new OperationException(msg))
+            WriteResult.failed(code, new OperationException(msg))
           case _ =>
-            Result.successful(code)
+            WriteResult.successful(code)
         }
       case 204 =>
-        Result.successfulFuture(204)
+        WriteResult.successfulFuture(204)
       case other =>
         errorHandler(response, other)
-          .map(ex => Result.failed(other, ex))
+          .map(ex => WriteResult.failed(other, ex))
     }
   }
 
-  def toComplexQueryResult[A: ClassTag, B: ClassTag](
+  override def toComplexQueryResult[A: ClassTag, B: ClassTag](
                                                       response: Response[JValue],
                                                       f: (String, Array[A]) => B)
                                                     (implicit reader: InfluxReader[A]): Future[QueryResult[B]] = {
@@ -48,12 +48,11 @@ private[fsanaulla] trait AsyncResponseHandler extends ResponseHandler[Future, Re
     }
   }
 
-  // QUERY RESULT
-  def toQueryJsResult(response: Response[JValue]): Future[QueryResult[JArray]] = {
+  override def toQueryJsResult(response: Response[JValue]): Future[QueryResult[JArray]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
         getResponseBody(response)
-          .map(getOptInfluxPoints)
+          .map(getOptQueryResult)
           .map {
             case Some(seq) => QueryResult.successful[JArray](code, seq)
             case _ => QueryResult.empty[JArray](code)}
@@ -63,7 +62,21 @@ private[fsanaulla] trait AsyncResponseHandler extends ResponseHandler[Future, Re
     }
   }
 
-  def toBulkQueryJsResult(response: Response[JValue]): Future[QueryResult[Array[JArray]]] = {
+  override def toGroupedJsResult(response: Response[JValue]): Future[GroupedResult[JArray]] = {
+    response.code.intValue() match {
+      case code if isSuccessful(code) =>
+        getResponseBody(response)
+          .map(getOptGropedResult)
+          .map {
+            case Some(arr) => GroupedResult.successful[JArray](code, arr)
+            case _ => GroupedResult.empty[JArray](code)}
+      case other =>
+        errorHandler(response, other)
+          .map(ex => GroupedResult.failed[JArray](other, ex))
+    }
+  }
+
+  override def toBulkQueryJsResult(response: Response[JValue]): Future[QueryResult[Array[JArray]]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
         getResponseBody(response)

@@ -3,10 +3,10 @@ package com.github.fsanaulla.chronicler.akka.integration
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
+import com.github.fsanaulla.chronicler.core.enums.Privileges
+import com.github.fsanaulla.chronicler.core.model.{AuthorizationException, UserPrivilegesInfo}
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
-import com.github.fsanaulla.core.enums.Privileges
-import com.github.fsanaulla.core.model.{AuthorizationException, UserPrivilegesInfo}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

@@ -2,7 +2,7 @@ package com.github.fsanaulla.chronicler.async.integration
 
 import com.github.fsanaulla.chronicler.async.api.Measurement
 import com.github.fsanaulla.chronicler.async.utils.SampleEntitys._
-import com.github.fsanaulla.chronicler.async.utils.TestHelper.{FakeEntity, _}
+import com.github.fsanaulla.chronicler.async.utils.TestHelper.FakeEntity
 import com.github.fsanaulla.chronicler.async.{Influx, InfluxAsyncHttpClient}
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}

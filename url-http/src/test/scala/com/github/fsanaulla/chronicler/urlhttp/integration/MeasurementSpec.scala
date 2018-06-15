@@ -3,9 +3,9 @@ package com.github.fsanaulla.chronicler.urlhttp.integration
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
 import com.github.fsanaulla.chronicler.urlhttp.api.Measurement
+import com.github.fsanaulla.chronicler.urlhttp.utils.SampleEntitys._
 import com.github.fsanaulla.chronicler.urlhttp.utils.TestHelper.FakeEntity
 import com.github.fsanaulla.chronicler.urlhttp.{Influx, InfluxUrlHttpClient}
-import com.github.fsanaulla.chronicler.urlhttp.utils.SampleEntitys._
 import org.scalatest.TryValues
 
 /**

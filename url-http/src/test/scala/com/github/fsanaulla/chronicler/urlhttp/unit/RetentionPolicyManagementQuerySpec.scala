@@ -1,10 +1,10 @@
 package com.github.fsanaulla.chronicler.urlhttp.unit
 
+import com.github.fsanaulla.chronicler.core.query.RetentionPolicyManagementQuery
+import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
 import com.github.fsanaulla.chronicler.testing.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.github.fsanaulla.chronicler.urlhttp.handlers.UrlQueryHandler
 import com.github.fsanaulla.chronicler.urlhttp.utils.TestHelper._
-import com.github.fsanaulla.core.query.RetentionPolicyManagementQuery
-import com.github.fsanaulla.core.utils.InfluxDuration._
 import com.softwaremill.sttp.Uri
 
 import scala.language.postfixOps

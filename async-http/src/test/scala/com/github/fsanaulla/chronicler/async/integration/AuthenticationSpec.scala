@@ -1,10 +1,10 @@
 package com.github.fsanaulla.chronicler.async.integration
 
 import com.github.fsanaulla.chronicler.async.{Influx, InfluxAsyncHttpClient}
+import com.github.fsanaulla.chronicler.core.enums.Privileges
+import com.github.fsanaulla.chronicler.core.model.{AuthorizationException, UserPrivilegesInfo}
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
-import com.github.fsanaulla.core.enums.Privileges
-import com.github.fsanaulla.core.model.{AuthorizationException, UserPrivilegesInfo}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

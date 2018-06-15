@@ -1,10 +1,10 @@
 package com.github.fsanaulla.chronicler.urlhttp.integration
 
+import com.github.fsanaulla.chronicler.core.enums.Privileges
+import com.github.fsanaulla.chronicler.core.model.{UserInfo, UserPrivilegesInfo}
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
 import com.github.fsanaulla.chronicler.urlhttp.Influx
-import com.github.fsanaulla.core.enums.Privileges
-import com.github.fsanaulla.core.model.{UserInfo, UserPrivilegesInfo}
 import org.scalatest.TryValues
 
 /**

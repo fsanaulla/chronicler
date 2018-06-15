@@ -6,7 +6,7 @@ import jawn.ast.{JArray, JNum, JString}
 object SampleEntitys {
 
   // INTEGRATION SPEC ENTITYS
-  val singleEntity = FakeEntity("Martin", "Odersky", 58)
+  val singleEntity = FakeEntity("Male", "Martin", "Odersky", 58)
 
   val singleJsonEntity =
     JArray(Array(
@@ -16,7 +16,7 @@ object SampleEntitys {
       JString("Odersky"))
     )
 
-  val multiEntitys = Array(FakeEntity("Harold", "Lois", 44), FakeEntity("Harry", "Potter", 21))
+  val multiEntitys = Array(FakeEntity("Male", "Harold", "Lois", 44), FakeEntity("Male", "Harry", "Potter", 21))
 
   val multiJsonEntity = Array(
     JArray(Array(
@@ -43,24 +43,28 @@ object SampleEntitys {
         JNum(currentNanoTime),
         JNum(54),
         JString("Martin"),
-        JString("Odersky"))),
+        JString("Odersky"),
+        JString("Male"))),
       JArray(Array(
         JNum(currentNanoTime),
         JNum(36),
         JString("Jame"),
-        JString("Franko"))),
+        JString("Franko"),
+        JString("Male"))),
       JArray(Array(
         JNum(currentNanoTime),
         JNum(54),
         JString("Martin"),
-        JString("Odersky")))
+        JString("Odersky"),
+        JString("Male")))
     ),
     Array(
       JArray(Array(
         JNum(currentNanoTime),
         JNum(36),
         JString("Jame"),
-        JString("Franko")))
+        JString("Franko"),
+        JString("Male")))
     )
   )
 

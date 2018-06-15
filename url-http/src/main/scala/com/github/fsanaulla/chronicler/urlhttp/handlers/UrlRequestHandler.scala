@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.urlhttp.handlers
 
-import com.github.fsanaulla.core.handlers.RequestHandler
+import com.github.fsanaulla.chronicler.core.handlers.RequestHandler
 import com.softwaremill.sttp._
 import jawn.ast.{JNull, JParser, JValue}
 

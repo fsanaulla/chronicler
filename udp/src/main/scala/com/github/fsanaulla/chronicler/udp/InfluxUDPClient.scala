@@ -3,9 +3,9 @@ package com.github.fsanaulla.chronicler.udp
 import java.io.File
 import java.net._
 
+import com.github.fsanaulla.chronicler.core.model.{InfluxWriter, Point}
+import com.github.fsanaulla.chronicler.core.utils.PointTransformer
 import com.github.fsanaulla.chronicler.udp.models.UdpConnection
-import com.github.fsanaulla.core.model.{InfluxWriter, Point}
-import com.github.fsanaulla.core.utils.PointTransformer
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.io.Source

@@ -6,9 +6,9 @@ import _root_.akka.http.scaladsl.model._
 import _root_.akka.stream.{ActorMaterializer, StreamTcpException}
 import com.github.fsanaulla.chronicler.akka.api.{Database, Measurement}
 import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryHandler, AkkaRequestHandler, AkkaResponseHandler}
-import com.github.fsanaulla.chronicler.akka.utils.AkkaTypeAlias.Connection
-import com.github.fsanaulla.core.client.InfluxClient
-import com.github.fsanaulla.core.model._
+import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
+import com.github.fsanaulla.chronicler.core.client.InfluxClient
+import com.github.fsanaulla.chronicler.core.model._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
@@ -61,7 +61,7 @@ final class InfluxAkkaHttpClient(
   /**
     * Ping InfluxDB
     */
-  override def ping: Future[Result] =
+  override def ping: Future[WriteResult] =
     m.mapTo(readRequest("/ping"), toResult)
 
   /**

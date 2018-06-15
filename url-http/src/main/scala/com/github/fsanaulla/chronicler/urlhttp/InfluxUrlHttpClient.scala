@@ -1,9 +1,9 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
+import com.github.fsanaulla.chronicler.core.client.InfluxClient
+import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, Mapper, WriteResult}
 import com.github.fsanaulla.chronicler.urlhttp.api.{Database, Measurement}
 import com.github.fsanaulla.chronicler.urlhttp.handlers.{UrlQueryHandler, UrlRequestHandler, UrlResponseHandler}
-import com.github.fsanaulla.core.client.InfluxClient
-import com.github.fsanaulla.core.model.{InfluxCredentials, Mapper, Result}
 import com.softwaremill.sttp.{Response, SttpBackend, TryHttpURLConnectionBackend, Uri}
 import jawn.ast.JValue
 
@@ -46,7 +46,7 @@ final class InfluxUrlHttpClient(
   /**
     * Ping InfluxDB
     */
-  override def ping: Try[Result] =
+  override def ping: Try[WriteResult] =
     readRequest(buildQuery("/ping", Map.empty[String, String])).flatMap(toResult)
 
   override def close(): Unit = backend.close()

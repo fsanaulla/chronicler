@@ -1,14 +1,14 @@
 package com.github.fsanaulla.chronicler.akka.io
 
-import akka.http.scaladsl.model.{HttpMethods, RequestEntity, Uri}
+import akka.http.scaladsl.model.{RequestEntity, Uri}
 import akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryHandler, AkkaRequestHandler, AkkaResponseHandler}
-import com.github.fsanaulla.chronicler.akka.utils.AkkaTypeAlias.Connection
-import com.github.fsanaulla.core.enums.{Consistency, Precision}
-import com.github.fsanaulla.core.io.WriteOperations
-import com.github.fsanaulla.core.model.{Executable, HasCredentials, Result}
-import com.github.fsanaulla.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.core.utils.PointTransformer
+import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
+import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
+import com.github.fsanaulla.chronicler.core.io.WriteOperations
+import com.github.fsanaulla.chronicler.core.model.{Executable, HasCredentials, WriteResult}
+import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
+import com.github.fsanaulla.chronicler.core.utils.PointTransformer
 
 import scala.concurrent.Future
 
@@ -17,7 +17,7 @@ import scala.concurrent.Future
   * Author: fayaz.sanaulla@gmail.com
   * Date: 03.09.17
   */
-private[fsanaulla] trait AkkaWriter
+private[akka] trait AkkaWriter
   extends DatabaseOperationQuery[Uri]
     with AkkaRequestHandler
     with AkkaResponseHandler
@@ -33,7 +33,7 @@ private[fsanaulla] trait AkkaWriter
              entity: RequestEntity,
              consistency: Consistency,
              precision: Precision,
-             retentionPolicy: Option[String]): Future[Result] = {
+             retentionPolicy: Option[String]): Future[WriteResult] = {
 
     writeRequest(
       uri = writeToInfluxQuery(

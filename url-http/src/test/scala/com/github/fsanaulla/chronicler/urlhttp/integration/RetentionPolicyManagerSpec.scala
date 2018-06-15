@@ -1,10 +1,10 @@
 package com.github.fsanaulla.chronicler.urlhttp.integration
 
+import com.github.fsanaulla.chronicler.core.model.RetentionPolicyInfo
+import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
 import com.github.fsanaulla.chronicler.urlhttp.Influx
-import com.github.fsanaulla.core.model.RetentionPolicyInfo
-import com.github.fsanaulla.core.utils.InfluxDuration._
 import org.scalatest.TryValues
 
 import scala.language.postfixOps

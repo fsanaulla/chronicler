@@ -1,9 +1,9 @@
 package com.github.fsanaulla.chronicler.async.integration
 
 import com.github.fsanaulla.chronicler.async.{Influx, InfluxAsyncHttpClient}
+import com.github.fsanaulla.chronicler.core.model.{ShardGroupsInfo, ShardInfo}
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
-import com.github.fsanaulla.core.model.{ShardGroupsInfo, ShardInfo}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

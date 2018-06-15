@@ -3,14 +3,14 @@ package com.github.fsanaulla.chronicler.async.integration
 import java.io.File
 
 import com.github.fsanaulla.chronicler.async.api.Database
+import com.github.fsanaulla.chronicler.async.utils.SampleEntitys.largeMultiJsonEntity
 import com.github.fsanaulla.chronicler.async.utils.TestHelper.FakeEntity
 import com.github.fsanaulla.chronicler.async.{Influx, InfluxAsyncHttpClient}
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
-import com.github.fsanaulla.core.model.Point
-import com.github.fsanaulla.core.utils.Extensions.RichJValue
+import com.github.fsanaulla.chronicler.core.model.Point
+import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
-import jawn.ast.JArray
-import com.github.fsanaulla.chronicler.async.utils.SampleEntitys.largeMultiJsonEntity
+import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
+import jawn.ast.{JArray, JNum}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -103,6 +103,19 @@ class DatabaseSpec extends TestSpec with FutureHandler with DockerizedInfluxDB {
     db.read[FakeEntity]("SELECT * FROM test4")
       .futureValue
       .queryResult shouldEqual Array(FakeEntity("Deny", "Targaryen", 25), FakeEntity("Jon", "Snow", 24))
+  }
+
+  it should "return grouped result by sex and sum of ages" in {
+
+    db
+      .bulkWriteNative(Array("test5,sex=Male,firstName=Jon,lastName=Snow age=24", "test5,sex=Male,firstName=Rainer,lastName=Targaryen age=25"))
+      .futureValue shouldEqual NoContentResult
+
+    db
+      .readJs("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"")
+      .futureValue
+      .groupedResult
+      .map { case (k, v) => k.toSeq -> v } shouldEqual Array(Seq("Male") -> JArray(Array(JNum(0), JNum(49))))
 
     influx.close() shouldEqual {}
   }

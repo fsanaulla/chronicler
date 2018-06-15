@@ -1,11 +1,11 @@
 package com.github.fsanaulla.chronicler.urlhttp.integration
 
+import com.github.fsanaulla.chronicler.core.enums.{Destination, Destinations}
+import com.github.fsanaulla.chronicler.core.model.Subscription
+import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
 import com.github.fsanaulla.chronicler.urlhttp.{Influx, InfluxUrlHttpClient}
-import com.github.fsanaulla.core.enums.{Destination, Destinations}
-import com.github.fsanaulla.core.model.Subscription
-import com.github.fsanaulla.core.utils.InfluxDuration._
 import org.scalatest.TryValues
 
 /**

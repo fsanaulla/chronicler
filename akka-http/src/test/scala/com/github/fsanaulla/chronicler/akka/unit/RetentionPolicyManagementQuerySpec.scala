@@ -3,9 +3,9 @@ package com.github.fsanaulla.chronicler.akka.unit
 import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryHandler
 import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
+import com.github.fsanaulla.chronicler.core.query.RetentionPolicyManagementQuery
+import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
 import com.github.fsanaulla.chronicler.testing.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
-import com.github.fsanaulla.core.query.RetentionPolicyManagementQuery
-import com.github.fsanaulla.core.utils.InfluxDuration._
 
 /**
   * Created by

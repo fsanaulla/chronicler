@@ -4,9 +4,9 @@ import _root_.akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import _root_.akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
 import _root_.akka.stream.ActorMaterializer
 import _root_.akka.util.ByteString
-import com.github.fsanaulla.core.handlers.JsonHandler
-import com.github.fsanaulla.core.model.Executable
-import com.github.fsanaulla.core.utils.Extensions.RichJValue
+import com.github.fsanaulla.chronicler.core.handlers.JsonHandler
+import com.github.fsanaulla.chronicler.core.model.Executable
+import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
 import jawn.ast.{JParser, JValue}
 
 import scala.concurrent.Future
@@ -16,7 +16,7 @@ import scala.concurrent.Future
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[fsanaulla] trait AkkaJsonHandler extends JsonHandler[Future, HttpResponse] with Executable {
+private[akka] trait AkkaJsonHandler extends JsonHandler[Future, HttpResponse] with Executable {
 
   protected implicit val mat: ActorMaterializer
 

@@ -1,8 +1,8 @@
 package com.github.fsanaulla.chronicler.macros
 
+import com.github.fsanaulla.chronicler.core.model.InfluxWriter
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
 import com.github.fsanaulla.chronicler.testing.FlatSpecWithMatchers
-import com.github.fsanaulla.core.model.InfluxWriter
 
 class MacroWriterSpec extends FlatSpecWithMatchers {
 
