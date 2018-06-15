@@ -3,8 +3,6 @@ package com.github.fsanaulla.chronicler.async.integration
 import com.github.fsanaulla.chronicler.async.{Influx, InfluxAsyncHttpClient}
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
-import com.github.fsanaulla.core.model.RetentionPolicyInfo
-import com.github.fsanaulla.core.utils.InfluxDuration._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.postfixOps
@@ -26,12 +24,12 @@ class RetentionPolicyManagerSpec extends TestSpec with DockerizedInfluxDB with F
 
     influx.showDatabases()
       .futureValue
-      .queryResult
+      .result
       .contains(rpDB) shouldEqual true
 
     influx.createRetentionPolicy("test", rpDB, 2 hours, 2, Some(2 hours), default = true).futureValue shouldEqual OkResult
 
-    influx.showRetentionPolicies(rpDB).futureValue.queryResult.contains(RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true)) shouldEqual true
+    influx.showRetentionPolicies(rpDB).futureValue.result.contains(RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true)) shouldEqual true
 
   }
 
@@ -40,23 +38,23 @@ class RetentionPolicyManagerSpec extends TestSpec with DockerizedInfluxDB with F
 
     influx.showRetentionPolicies(rpDB)
       .futureValue
-      .queryResult shouldEqual Array(RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true))
+      .result shouldEqual Array(RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true))
   }
 
   it should "update retention policy" in {
     influx.updateRetentionPolicy("test", rpDB, Some(3 hours)).futureValue shouldEqual OkResult
 
-    influx.showRetentionPolicies(rpDB).futureValue.queryResult shouldEqual Array(RetentionPolicyInfo("test", "3h0m0s", "2h0m0s", 2, default = true))
+    influx.showRetentionPolicies(rpDB).futureValue.result shouldEqual Array(RetentionPolicyInfo("test", "3h0m0s", "2h0m0s", 2, default = true))
   }
 
   it should "clean up everything" in {
     influx.dropRetentionPolicy("test", rpDB).futureValue shouldEqual OkResult
 
-    influx.showRetentionPolicies(rpDB).futureValue.queryResult shouldEqual Nil
+    influx.showRetentionPolicies(rpDB).futureValue.result shouldEqual Nil
 
     influx.dropDatabase(rpDB).futureValue shouldEqual OkResult
 
-    influx.showDatabases().futureValue.queryResult.contains(rpDB) shouldEqual false
+    influx.showDatabases().futureValue.result.contains(rpDB) shouldEqual false
   }
 
   it should "clear up after all" in {

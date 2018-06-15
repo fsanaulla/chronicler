@@ -3,11 +3,11 @@ package com.github.fsanaulla.chronicler.akka.integration
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
+import com.github.fsanaulla.chronicler.core.enums.{Destination, Destinations}
+import com.github.fsanaulla.chronicler.core.model.Subscription
+import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
-import com.github.fsanaulla.core.enums.{Destination, Destinations}
-import com.github.fsanaulla.core.model.Subscription
-import com.github.fsanaulla.core.utils.InfluxDuration._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -42,18 +42,18 @@ class SubscriptionManagementSpec
 
     influx.createRetentionPolicy(rpName, dbName, duration, 1, Some(duration)).futureValue shouldEqual OkResult
 
-    influx.showDatabases().futureValue.queryResult.contains(dbName) shouldEqual true
+    influx.showDatabases().futureValue.result.contains(dbName) shouldEqual true
 
     influx.createSubscription(subName, dbName, rpName, destType, hosts).futureValue shouldEqual OkResult
 
-    influx.showSubscriptionsInfo.futureValue.queryResult.head.subscriptions shouldEqual Array(subscription)
+    influx.showSubscriptionsInfo.futureValue.result.head.subscriptions shouldEqual Array(subscription)
   }
 
 
   it should "drop subscription" in {
     influx.dropSubscription(subName, dbName, rpName).futureValue shouldEqual OkResult
 
-    influx.showSubscriptionsInfo.futureValue.queryResult shouldEqual Nil
+    influx.showSubscriptionsInfo.futureValue.result shouldEqual Nil
 
     influx.dropRetentionPolicy(rpName, dbName).futureValue shouldEqual OkResult
 

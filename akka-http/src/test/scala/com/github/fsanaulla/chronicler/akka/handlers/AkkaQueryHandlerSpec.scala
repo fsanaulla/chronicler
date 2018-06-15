@@ -1,7 +1,7 @@
 package com.github.fsanaulla.chronicler.akka.handlers
 
+import com.github.fsanaulla.chronicler.core.model.{HasCredentials, InfluxCredentials}
 import com.github.fsanaulla.chronicler.testing.TestSpec
-import com.github.fsanaulla.core.model.{HasCredentials, InfluxCredentials}
 
 class AkkaQueryHandlerSpec
   extends TestSpec

@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.api.Measurement
 import com.github.fsanaulla.chronicler.akka.utils.SampleEntitys._
-import com.github.fsanaulla.chronicler.akka.utils.TestHelper.{FakeEntity, _}
+import com.github.fsanaulla.chronicler.akka.utils.TestHelper.FakeEntity
 import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
@@ -37,7 +37,7 @@ class MeasurementSpec
 
     meas.read(s"SELECT * FROM $measName")
       .futureValue
-      .queryResult shouldEqual Seq(singleEntity)
+      .result shouldEqual Seq(singleEntity)
   }
 
   it should "bulk write" in {
@@ -45,7 +45,7 @@ class MeasurementSpec
 
     meas.read(s"SELECT * FROM $measName")
       .futureValue
-      .queryResult
+      .result
       .length shouldEqual 3
 
     influx.close() shouldEqual {}

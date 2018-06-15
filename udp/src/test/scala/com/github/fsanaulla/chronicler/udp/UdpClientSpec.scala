@@ -4,10 +4,10 @@ import java.io.File
 
 import com.github.fsanaulla.chronicler.async.InfluxAsyncHttpClient
 import com.github.fsanaulla.chronicler.async.api.Database
+import com.github.fsanaulla.chronicler.core.model.{InfluxFormatter, Point}
 import com.github.fsanaulla.chronicler.macros.Macros
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag}
 import com.github.fsanaulla.chronicler.testing.{FutureHandler, TestSpec}
-import com.github.fsanaulla.core.model.{InfluxFormatter, Point}
 import com.github.fsanaulla.core.testing.configurations.InfluxUDPConf
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 
@@ -40,7 +40,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf wi
     udp
       .read[Test]("SELECT * FROM cpu")
       .futureValue
-      .queryResult shouldEqual Array(t)
+      .result shouldEqual Array(t)
   }
 
   it should "bulk write" in {
@@ -54,7 +54,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf wi
     udp
       .read[Test]("SELECT * FROM cpu1")
       .futureValue
-      .queryResult shouldEqual Array(t, t1)
+      .result shouldEqual Array(t, t1)
   }
 
 
@@ -70,7 +70,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf wi
     udp
       .read[Test]("SELECT * FROM cpu")
       .futureValue
-      .queryResult
+      .result
       .length shouldEqual 2
   }
 
@@ -90,7 +90,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf wi
     udp
       .read[Test]("SELECT * FROM cpu2")
       .futureValue
-      .queryResult shouldEqual Array(Test("d", 2), Test("e", 3))
+      .result shouldEqual Array(Test("d", 2), Test("e", 3))
   }
 
   it should "write native" in {
@@ -101,7 +101,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf wi
     udp
       .read[Test]("SELECT * FROM cpu")
       .futureValue
-      .queryResult
+      .result
       .length shouldEqual 3
   }
 
@@ -113,7 +113,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf wi
     udp
       .read[Test]("SELECT * FROM cpu3")
       .futureValue
-      .queryResult shouldEqual Array(Test("b", 5), Test("v", 3))
+      .result shouldEqual Array(Test("b", 5), Test("v", 3))
   }
 
   it should "write from file" in {
@@ -122,7 +122,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf wi
 
     udp.readJs("SELECT * FROM test1")
       .futureValue
-      .queryResult
+      .result
       .length shouldEqual 3
   }
 

@@ -2,10 +2,10 @@ package com.github.fsanaulla.chronicler.akka.io
 
 import _root_.akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryHandler, AkkaRequestHandler, AkkaResponseHandler}
-import com.github.fsanaulla.core.enums.Epoch
-import com.github.fsanaulla.core.io.ReadOperations
-import com.github.fsanaulla.core.model.{Executable, HasCredentials, QueryResult}
-import com.github.fsanaulla.core.query.DatabaseOperationQuery
+import com.github.fsanaulla.chronicler.core.enums.Epoch
+import com.github.fsanaulla.chronicler.core.io.ReadOperations
+import com.github.fsanaulla.chronicler.core.model.{Executable, HasCredentials, QueryResult, ReadResult}
+import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
 import jawn.ast.JArray
 
 import scala.concurrent.Future
@@ -15,7 +15,7 @@ import scala.concurrent.Future
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[fsanaulla] trait AkkaReader
+private[akka] trait AkkaReader
   extends AkkaRequestHandler
     with AkkaResponseHandler
     with AkkaQueryHandler
@@ -27,8 +27,14 @@ private[fsanaulla] trait AkkaReader
                         query: String,
                         epoch: Epoch,
                         pretty: Boolean,
-                        chunked: Boolean): Future[QueryResult[JArray]] =
-    readRequest(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)).flatMap(toQueryJsResult)
+                        chunked: Boolean): Future[ReadResult[JArray]] = {
+    val executionResult = readRequest(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked))
+
+    query match {
+      case q: String if q.contains("GROUP BY") => executionResult.flatMap(toGroupedJsResult)
+      case _ => executionResult.flatMap(toQueryJsResult)
+    }
+  }
 
 
   override def bulkReadJs0(

@@ -4,10 +4,11 @@ import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.model.RequestEntity
 import _root_.akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.io.{AkkaReader, AkkaWriter}
-import com.github.fsanaulla.chronicler.akka.utils.AkkaTypeAlias.Connection
-import com.github.fsanaulla.core.api.MeasurementApi
-import com.github.fsanaulla.core.enums._
-import com.github.fsanaulla.core.model._
+import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
+import com.github.fsanaulla.chronicler.core.api.MeasurementApi
+import com.github.fsanaulla.chronicler.core.enums._
+import com.github.fsanaulla.chronicler.core.model._
+import jawn.ast.JArray
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
@@ -17,7 +18,7 @@ import scala.reflect.ClassTag
   * Author: fayaz.sanaulla@gmail.com
   * Date: 03.09.17
   */
-class Measurement[E: ClassTag](
+final class Measurement[E: ClassTag](
                                       dbName: String,
                                       measurementName: String,
                                       val credentials: Option[InfluxCredentials])
@@ -31,14 +32,12 @@ class Measurement[E: ClassTag](
       with HasCredentials
       with Executable {
 
-  import com.github.fsanaulla.chronicler.akka.models.AkkaDeserializers.str2Http
-
   def write(
              entity: E,
              consistency: Consistency = Consistencies.ONE,
              precision: Precision = Precisions.NANOSECONDS,
              retentionPolicy: Option[String] = None)
-           (implicit writer: InfluxWriter[E]): Future[Result] =
+           (implicit writer: InfluxWriter[E]): Future[WriteResult] =
     write0(entity, consistency, precision, retentionPolicy)
 
 
@@ -47,7 +46,7 @@ class Measurement[E: ClassTag](
                  consistency: Consistency = Consistencies.ONE,
                  precision: Precision = Precisions.NANOSECONDS,
                  retentionPolicy: Option[String] = None)
-               (implicit writer: InfluxWriter[E]): Future[Result] =
+               (implicit writer: InfluxWriter[E]): Future[WriteResult] =
     bulkWrite0(entitys, consistency, precision, retentionPolicy)
 
 
@@ -55,7 +54,10 @@ class Measurement[E: ClassTag](
            epoch: Epoch = Epochs.NANOSECONDS,
            pretty: Boolean = false,
            chunked: Boolean = false)
-          (implicit reader: InfluxReader[E]): Future[QueryResult[E]] =
-    readJs0(dbName, query, epoch, pretty, chunked).map(_.map(reader.read))
+          (implicit reader: InfluxReader[E]): Future[ReadResult[E]] =
+    readJs0(dbName, query, epoch, pretty, chunked) map {
+      case qr: QueryResult[JArray] => qr.map(reader.read)
+      case gr: GroupedResult[JArray] => gr.map(reader.read)
+    }
 
 }

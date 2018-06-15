@@ -6,9 +6,8 @@ import akka.http.scaladsl.model.HttpResponse
 import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.utils.Extensions.RichString
 import com.github.fsanaulla.chronicler.akka.utils.SampleEntitys.singleResult
+import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
 import com.github.fsanaulla.chronicler.testing.{FutureHandler, TestSpec}
-import com.github.fsanaulla.core.model.ContinuousQuery
-import com.github.fsanaulla.core.utils.DefaultInfluxImplicits._
 import jawn.ast.{JArray, JNum, JString}
 
 import scala.concurrent.ExecutionContext
@@ -28,7 +27,7 @@ class AkkaResponseHandlerSpec
   implicit val ex: ExecutionContext = system.dispatcher
   implicit val timeout: FiniteDuration = 1 second
 
-  "AsyncHttpResponseHandler" should "extract single query result from response" in {
+  "AsyncHttpResponseHandler" should "extract single query queryResult from response" in {
 
     val singleHttpResponse: HttpResponse =
       """
@@ -64,7 +63,7 @@ class AkkaResponseHandlerSpec
         |}
       """.stripMargin.toResponse
 
-    toQueryJsResult(singleHttpResponse).futureValue.queryResult shouldEqual singleResult
+    toQueryJsResult(singleHttpResponse).futureValue.result shouldEqual singleResult
   }
 
   it should "extract bulk query results from response" in {
@@ -121,7 +120,7 @@ class AkkaResponseHandlerSpec
         |}
       """.stripMargin.toResponse
 
-    toBulkQueryJsResult(bulkHttpResponse).futureValue.queryResult shouldEqual Array(
+    toBulkQueryJsResult(bulkHttpResponse).futureValue.result shouldEqual Array(
       Array(
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
@@ -186,7 +185,7 @@ class AkkaResponseHandlerSpec
     }
   """.toResponse
 
-    val cqi = toCqQueryResult(cqResponse).futureValue.queryResult.filter(_.querys.nonEmpty).head
+    val cqi = toCqQueryResult(cqResponse).futureValue.result.filter(_.querys.nonEmpty).head
     cqi.dbName shouldEqual "mydb"
     cqi.querys.head shouldEqual ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")
   }

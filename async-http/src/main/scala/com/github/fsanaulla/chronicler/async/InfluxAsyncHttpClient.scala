@@ -2,8 +2,6 @@ package com.github.fsanaulla.chronicler.async
 
 import com.github.fsanaulla.chronicler.async.api.{Database, Measurement}
 import com.github.fsanaulla.chronicler.async.handlers._
-import com.github.fsanaulla.core.client.InfluxClient
-import com.github.fsanaulla.core.model.{InfluxCredentials, Mapper, Result}
 import com.softwaremill.sttp.asynchttpclient.future.AsyncHttpClientFutureBackend
 import com.softwaremill.sttp.{Response, SttpBackend, Uri}
 import jawn.ast.JValue
@@ -46,7 +44,7 @@ final class InfluxAsyncHttpClient(val host: String,
   /**
     * Ping InfluxDB
     */
-  override def ping(): Future[Result] =
+  override def ping(): Future[WriteResult] =
     readRequest(buildQuery("/ping", Map.empty[String, String])).flatMap(toResult)
 
   /**

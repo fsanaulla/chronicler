@@ -267,7 +267,7 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
     q"""new InfluxReader[$tpe] {
           import jawn.ast.{JValue, JArray}
           import java.time.Instant
-          import com.github.fsanaulla.core.model.DeserializationException
+          import com.github.fsanaulla.chronicler.core.model.DeserializationException
 
           def toNanoLong(str: String): Long = {
             val i = Instant.parse(str)
@@ -289,7 +289,7 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
        new InfluxFormatter[$tpe] {
           import jawn.ast.{JValue, JArray}
           import java.time.Instant
-          import com.github.fsanaulla.core.model.DeserializationException
+          import com.github.fsanaulla.chronicler.core.model.DeserializationException
 
           def toNanoLong(str: String): Long = {
             val i = Instant.parse(str)

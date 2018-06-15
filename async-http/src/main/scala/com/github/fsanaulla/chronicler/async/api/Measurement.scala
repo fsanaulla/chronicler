@@ -1,9 +1,6 @@
 package com.github.fsanaulla.chronicler.async.api
 
 import com.github.fsanaulla.chronicler.async.io.{AsyncReader, AsyncWriter}
-import com.github.fsanaulla.core.api.MeasurementApi
-import com.github.fsanaulla.core.enums._
-import com.github.fsanaulla.core.model._
 import com.softwaremill.sttp.SttpBackend
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -21,14 +18,12 @@ class Measurement[E: ClassTag](val host: String,
     with AsyncWriter
     with AsyncReader {
 
-  import com.github.fsanaulla.chronicler.async.models.AsyncDeserializers._
-
   def write(
              entity: E,
              consistency: Consistency = Consistencies.ONE,
              precision: Precision = Precisions.NANOSECONDS,
              retentionPolicy: Option[String] = None)
-           (implicit writer: InfluxWriter[E]): Future[Result] =
+           (implicit writer: InfluxWriter[E]): Future[WriteResult] =
     write0(entity, consistency, precision, retentionPolicy)
 
 
@@ -37,7 +32,7 @@ class Measurement[E: ClassTag](val host: String,
                  consistency: Consistency = Consistencies.ONE,
                  precision: Precision = Precisions.NANOSECONDS,
                  retentionPolicy: Option[String] = None)
-               (implicit writer: InfluxWriter[E]): Future[Result] =
+               (implicit writer: InfluxWriter[E]): Future[WriteResult] =
     bulkWrite0(entitys, consistency, precision, retentionPolicy)
 
 

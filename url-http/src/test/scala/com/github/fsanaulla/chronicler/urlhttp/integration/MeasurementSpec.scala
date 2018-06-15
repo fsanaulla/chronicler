@@ -3,9 +3,9 @@ package com.github.fsanaulla.chronicler.urlhttp.integration
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
 import com.github.fsanaulla.chronicler.urlhttp.api.Measurement
+import com.github.fsanaulla.chronicler.urlhttp.utils.SampleEntitys._
 import com.github.fsanaulla.chronicler.urlhttp.utils.TestHelper.FakeEntity
 import com.github.fsanaulla.chronicler.urlhttp.{Influx, InfluxUrlHttpClient}
-import com.github.fsanaulla.chronicler.urlhttp.utils.SampleEntitys._
 import org.scalatest.TryValues
 
 /**
@@ -30,7 +30,7 @@ class MeasurementSpec extends TestSpec with DockerizedInfluxDB with TryValues {
 
     meas.read(s"SELECT * FROM $measName")
       .success.value
-      .queryResult shouldEqual Array(singleEntity)
+      .result shouldEqual Array(singleEntity)
   }
 
   it should "make safe bulk write" in {
@@ -38,7 +38,7 @@ class MeasurementSpec extends TestSpec with DockerizedInfluxDB with TryValues {
 
     meas.read(s"SELECT * FROM $measName")
       .success.value
-      .queryResult
+      .result
       .length shouldEqual 3
 
     influx.close() shouldEqual {}

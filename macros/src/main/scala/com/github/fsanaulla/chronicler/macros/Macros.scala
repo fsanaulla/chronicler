@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.macros
 
-import com.github.fsanaulla.core.model.{InfluxFormatter, InfluxReader, InfluxWriter}
+import com.github.fsanaulla.chronicler.core.model.{InfluxFormatter, InfluxReader, InfluxWriter}
 
 import scala.language.experimental.macros
 

@@ -3,9 +3,6 @@ package com.github.fsanaulla.chronicler.async.integration
 import com.github.fsanaulla.chronicler.async.{Influx, InfluxAsyncHttpClient}
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
-import com.github.fsanaulla.core.enums.{Destination, Destinations}
-import com.github.fsanaulla.core.model.Subscription
-import com.github.fsanaulla.core.utils.InfluxDuration._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -36,11 +33,11 @@ class SubscriptionManagementSpec extends TestSpec with DockerizedInfluxDB with F
 
     influx.createRetentionPolicy(rpName, dbName, duration, 1, Some(duration)).futureValue shouldEqual OkResult
 
-    influx.showDatabases().futureValue.queryResult.contains(dbName) shouldEqual true
+    influx.showDatabases().futureValue.result.contains(dbName) shouldEqual true
 
     influx.createSubscription(subName, dbName, rpName, destType, hosts).futureValue shouldEqual OkResult
 
-    influx.showSubscriptionsInfo.futureValue.queryResult.head.subscriptions shouldEqual Array(subscription)
+    influx.showSubscriptionsInfo.futureValue.result.head.subscriptions shouldEqual Array(subscription)
   }
 
   it should "drop subscription" in {

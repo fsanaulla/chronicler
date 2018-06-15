@@ -3,8 +3,6 @@ package com.github.fsanaulla.chronicler.urlhttp.integration
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
 import com.github.fsanaulla.chronicler.urlhttp.{Influx, InfluxUrlHttpClient}
-import com.github.fsanaulla.core.enums.Privileges
-import com.github.fsanaulla.core.model.{AuthorizationException, UserPrivilegesInfo}
 import org.scalatest.TryValues
 
 /**
@@ -38,7 +36,7 @@ class AuthenticationSpec extends TestSpec with DockerizedInfluxDB with TryValues
   }
   it should "create user" in {
     authInflux.createUser(userName, userPass).success.value shouldEqual OkResult
-    authInflux.showUsers.success.value.queryResult.exists(_.username == userName) shouldEqual true
+    authInflux.showUsers.success.value.result.exists(_.username == userName) shouldEqual true
   }
 
   it should "set user password" in {
@@ -50,7 +48,7 @@ class AuthenticationSpec extends TestSpec with DockerizedInfluxDB with TryValues
   }
 
   it should "get user privileges" in {
-    val userPrivs = authInflux.showUserPrivileges(userName).success.value.queryResult
+    val userPrivs = authInflux.showUserPrivileges(userName).success.value.result
 
     userPrivs.length shouldEqual 1
     userPrivs.exists { upi =>
@@ -60,7 +58,7 @@ class AuthenticationSpec extends TestSpec with DockerizedInfluxDB with TryValues
 
   it should "revoke user privileges" in {
     authInflux.revokePrivileges(userName, userDB, Privileges.READ).success.value shouldEqual OkResult
-    authInflux.showUserPrivileges(userName).success.value.queryResult shouldEqual Array(UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES))
+    authInflux.showUserPrivileges(userName).success.value.result shouldEqual Array(UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES))
   }
 
   it should "drop user" in {

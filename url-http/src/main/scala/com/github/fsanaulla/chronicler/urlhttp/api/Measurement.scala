@@ -1,9 +1,6 @@
 package com.github.fsanaulla.chronicler.urlhttp.api
 
 import com.github.fsanaulla.chronicler.urlhttp.io.{UrlReader, UrlWriter}
-import com.github.fsanaulla.core.api.MeasurementApi
-import com.github.fsanaulla.core.enums._
-import com.github.fsanaulla.core.model._
 import com.softwaremill.sttp.SttpBackend
 
 import scala.reflect.ClassTag
@@ -20,14 +17,12 @@ class Measurement[E: ClassTag](val host: String,
     with UrlWriter
     with UrlReader {
 
-  import com.github.fsanaulla.chronicler.urlhttp.models.UrlDeserializers._
-
   def write(
              entity: E,
              consistency: Consistency = Consistencies.ONE,
              precision: Precision = Precisions.NANOSECONDS,
              retentionPolicy: Option[String] = None)
-           (implicit writer: InfluxWriter[E]): Try[Result] =
+           (implicit writer: InfluxWriter[E]): Try[WriteResult] =
     write0(entity, consistency, precision, retentionPolicy)
 
 
@@ -36,7 +31,7 @@ class Measurement[E: ClassTag](val host: String,
                  consistency: Consistency = Consistencies.ONE,
                  precision: Precision = Precisions.NANOSECONDS,
                  retentionPolicy: Option[String] = None)
-               (implicit writer: InfluxWriter[E]): Try[Result] =
+               (implicit writer: InfluxWriter[E]): Try[WriteResult] =
     bulkWrite0(entitys, consistency, precision, retentionPolicy)
 
 

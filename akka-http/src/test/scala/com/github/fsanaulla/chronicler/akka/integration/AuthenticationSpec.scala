@@ -3,10 +3,10 @@ package com.github.fsanaulla.chronicler.akka.integration
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
+import com.github.fsanaulla.chronicler.core.enums.Privileges
+import com.github.fsanaulla.chronicler.core.model.{AuthorizationException, UserPrivilegesInfo}
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
-import com.github.fsanaulla.core.enums.Privileges
-import com.github.fsanaulla.core.model.{AuthorizationException, UserPrivilegesInfo}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -44,7 +44,7 @@ class AuthenticationSpec
   }
   it should "create user" in {
     authInflux.createUser(userName, userPass).futureValue shouldEqual OkResult
-    authInflux.showUsers.futureValue.queryResult.exists(_.username == userName) shouldEqual true
+    authInflux.showUsers.futureValue.result.exists(_.username == userName) shouldEqual true
   }
 
   it should "set user password" in {
@@ -56,7 +56,7 @@ class AuthenticationSpec
   }
 
   it should "get user privileges" in {
-    val userPrivs = authInflux.showUserPrivileges(userName).futureValue.queryResult
+    val userPrivs = authInflux.showUserPrivileges(userName).futureValue.result
 
     userPrivs.length shouldEqual 1
     userPrivs.exists { upi =>
@@ -66,7 +66,7 @@ class AuthenticationSpec
 
   it should "revoke user privileges" in {
     authInflux.revokePrivileges(userName, userDB, Privileges.READ).futureValue shouldEqual OkResult
-    authInflux.showUserPrivileges(userName).futureValue.queryResult shouldEqual Array(UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES))
+    authInflux.showUserPrivileges(userName).futureValue.result shouldEqual Array(UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES))
   }
 
   it should "drop user" in {

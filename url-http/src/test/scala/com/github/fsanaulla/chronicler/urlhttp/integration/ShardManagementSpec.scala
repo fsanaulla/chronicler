@@ -3,7 +3,6 @@ package com.github.fsanaulla.chronicler.urlhttp.integration
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
 import com.github.fsanaulla.chronicler.urlhttp.{Influx, InfluxUrlHttpClient}
-import com.github.fsanaulla.core.model.{ShardGroupsInfo, ShardInfo}
 import org.scalatest.TryValues
 
 /**
@@ -22,14 +21,14 @@ class ShardManagementSpec extends TestSpec with DockerizedInfluxDB with TryValue
 
     influx.createDatabase(testDb, shardDuration = Some("1s")).success.value shouldEqual OkResult
 
-    val shards = influx.showShards.success.value.queryResult
+    val shards = influx.showShards.success.value.result
 
     shards should not be Array.empty[ShardInfo]
   }
 
   it should "show shards groupe" in {
 
-    val shardGroups = influx.showShardGroups.success.value.queryResult
+    val shardGroups = influx.showShardGroups.success.value.result
 
     shardGroups should not equal Array.empty[ShardGroupsInfo]
 

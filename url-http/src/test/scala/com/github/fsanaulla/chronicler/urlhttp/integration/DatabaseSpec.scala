@@ -4,12 +4,10 @@ import java.io.File
 
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
-import com.github.fsanaulla.chronicler.urlhttp.{Influx, InfluxUrlHttpClient}
 import com.github.fsanaulla.chronicler.urlhttp.api.Database
-import com.github.fsanaulla.chronicler.urlhttp.utils.TestHelper.FakeEntity
-import com.github.fsanaulla.core.model.Point
-import com.github.fsanaulla.core.utils.Extensions.RichJValue
 import com.github.fsanaulla.chronicler.urlhttp.utils.SampleEntitys.largeMultiJsonEntity
+import com.github.fsanaulla.chronicler.urlhttp.utils.TestHelper.FakeEntity
+import com.github.fsanaulla.chronicler.urlhttp.{Influx, InfluxUrlHttpClient}
 import jawn.ast.JArray
 import org.scalatest.TryValues
 
@@ -35,7 +33,7 @@ class DatabaseSpec extends TestSpec with DockerizedInfluxDB with TryValues {
     
     db.readJs("SELECT * FROM test1")
       .success.value
-      .queryResult
+      .result
       .length shouldEqual 3
   }
 
@@ -55,13 +53,13 @@ class DatabaseSpec extends TestSpec with DockerizedInfluxDB with TryValues {
     
     db.read[FakeEntity]("SELECT * FROM test2")
       .success.value
-      .queryResult shouldEqual Array(FakeEntity("Martin", "Odersky", 54))
+      .result shouldEqual Array(FakeEntity("Martin", "Odersky", 54))
 
     db.bulkWritePoints(Array(point1, point2)).success.value shouldEqual NoContentResult
     
     db.read[FakeEntity]("SELECT * FROM test2")
       .success.value
-      .queryResult shouldEqual Array(FakeEntity("Martin", "Odersky", 54), FakeEntity("Jame", "Franko", 36), FakeEntity("Martin", "Odersky", 54))
+      .result shouldEqual Array(FakeEntity("Martin", "Odersky", 54), FakeEntity("Jame", "Franko", 36), FakeEntity("Martin", "Odersky", 54))
   }
 
   it should "retrieve multiple request" in {
@@ -73,19 +71,19 @@ class DatabaseSpec extends TestSpec with DockerizedInfluxDB with TryValues {
       )
     ).success.value
 
-    multiQuery.queryResult.length shouldEqual 2
-    multiQuery.queryResult shouldBe a[Array[_]]
+    multiQuery.result.length shouldEqual 2
+    multiQuery.result shouldBe a[Array[_]]
 
-    multiQuery.queryResult.head.length shouldEqual 3
-    multiQuery.queryResult.head shouldBe a[Array[_]]
-    multiQuery.queryResult.head.head shouldBe a[JArray]
+    multiQuery.result.head.length shouldEqual 3
+    multiQuery.result.head shouldBe a[Array[_]]
+    multiQuery.result.head.head shouldBe a[JArray]
 
-    multiQuery.queryResult.last.length shouldEqual 1
-    multiQuery.queryResult.last shouldBe a[Array[_]]
-    multiQuery.queryResult.last.head shouldBe a[JArray]
+    multiQuery.result.last.length shouldEqual 1
+    multiQuery.result.last shouldBe a[Array[_]]
+    multiQuery.result.last.head shouldBe a[JArray]
 
     multiQuery
-      .queryResult
+      .result
       .map(_.map(_.arrayValue.value.tail)) shouldEqual largeMultiJsonEntity.map(_.map(_.arrayValue.value.tail))
   }
 
@@ -95,13 +93,13 @@ class DatabaseSpec extends TestSpec with DockerizedInfluxDB with TryValues {
     
     db.read[FakeEntity]("SELECT * FROM test3")
       .success.value
-      .queryResult shouldEqual Array(FakeEntity("Jame", "Lannister", 48))
+      .result shouldEqual Array(FakeEntity("Jame", "Lannister", 48))
 
     db.bulkWriteNative(Seq("test4,firstName=Jon,lastName=Snow age=24", "test4,firstName=Deny,lastName=Targaryen age=25")).success.value shouldEqual NoContentResult
 
     db.read[FakeEntity]("SELECT * FROM test4")
       .success.value
-      .queryResult shouldEqual Array(FakeEntity("Deny", "Targaryen", 25), FakeEntity("Jon", "Snow", 24))
+      .result shouldEqual Array(FakeEntity("Deny", "Targaryen", 25), FakeEntity("Jon", "Snow", 24))
 
     influx.close() shouldEqual {}
   }

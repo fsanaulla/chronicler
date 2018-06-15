@@ -1,7 +1,7 @@
 package com.github.fsanaulla.chronicler.akka
 
 import akka.actor.ActorSystem
-import com.github.fsanaulla.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 
 import scala.concurrent.ExecutionContext
 
@@ -21,10 +21,10 @@ object Influx {
     * @param system - implicit actor system, by default will create new one
     * @return - InfluxAkkaHttpClient
     */
-  def connect(host: String = "localhost",
-              port: Int = 8086,
-              credentials: Option[InfluxCredentials] = None,
-              system: ActorSystem = ActorSystem())
-             (implicit ex: ExecutionContext) =
+  final def connect(host: String = "localhost",
+                    port: Int = 8086,
+                    credentials: Option[InfluxCredentials] = None,
+                    system: ActorSystem = ActorSystem())
+                   (implicit ex: ExecutionContext) =
     new InfluxAkkaHttpClient(host, port, credentials)(ex, system)
 }

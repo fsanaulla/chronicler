@@ -2,7 +2,7 @@ package com.github.fsanaulla.chronicler.async.integration
 
 import com.github.fsanaulla.chronicler.async.api.Measurement
 import com.github.fsanaulla.chronicler.async.utils.SampleEntitys._
-import com.github.fsanaulla.chronicler.async.utils.TestHelper.{FakeEntity, _}
+import com.github.fsanaulla.chronicler.async.utils.TestHelper.FakeEntity
 import com.github.fsanaulla.chronicler.async.{Influx, InfluxAsyncHttpClient}
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
@@ -31,7 +31,7 @@ class MeasurementSpec extends TestSpec with FutureHandler with DockerizedInfluxD
 
     meas.read(s"SELECT * FROM $measName")
       .futureValue
-      .queryResult shouldEqual Array(singleEntity)
+      .result shouldEqual Array(singleEntity)
   }
 
   it should "make safe bulk write" in {
@@ -39,7 +39,7 @@ class MeasurementSpec extends TestSpec with FutureHandler with DockerizedInfluxD
 
     meas.read(s"SELECT * FROM $measName")
       .futureValue
-      .queryResult
+      .result
       .length shouldEqual 3
 
     influx.close() shouldEqual {}

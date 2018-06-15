@@ -1,9 +1,9 @@
 package com.github.fsanaulla.chronicler.akka.utils
 
 import akka.http.scaladsl.model.Uri
+import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.macros.Macros
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag}
-import com.github.fsanaulla.core.model._
 
 /**
   * Created by fayaz on 11.07.17.
@@ -12,7 +12,8 @@ object TestHelper {
 
   final val currentNanoTime: Long = System.currentTimeMillis() * 1000000
 
-  case class FakeEntity(@tag firstName: String,
+  case class FakeEntity(@tag sex: String,
+                        @tag firstName: String,
                         @tag lastName: String,
                         @field age: Int)
 

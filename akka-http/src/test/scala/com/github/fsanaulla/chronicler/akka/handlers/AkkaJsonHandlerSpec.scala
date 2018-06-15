@@ -7,7 +7,7 @@ import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.utils.AkkaContentTypes.AppJson
 import com.github.fsanaulla.chronicler.testing.{FutureHandler, TestSpec}
 import jawn.ast._
-import org.scalatest.BeforeAndAfterAll
+import org.scalatest.{BeforeAndAfterAll, TryValues}
 
 import scala.concurrent.ExecutionContext
 
@@ -16,7 +16,8 @@ class AkkaJsonHandlerSpec
     with TestSpec
     with FutureHandler
     with AkkaJsonHandler
-    with BeforeAndAfterAll {
+    with BeforeAndAfterAll
+    with TryValues {
 
   implicit val mat: ActorMaterializer = ActorMaterializer()
   implicit val ex: ExecutionContext = system.dispatcher
@@ -113,7 +114,7 @@ class AkkaJsonHandlerSpec
       JArray(Array(JString("2015-06-11T20:46:02Z"), JNull, JNum(0.64)))
     )
 
-    getOptInfluxPoints(json).value shouldEqual result
+    getOptQueryResult(json).value shouldEqual result
   }
 
   it should "extract bulk query result from JSON" in {
@@ -236,6 +237,67 @@ class AkkaJsonHandlerSpec
       JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
       JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
       JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
+    )
+  }
+
+  it should "extract grouped result" in {
+    val json = JParser.parseFromString(
+      """
+        |{
+        |   "results": [
+        |     {
+        |         "statement_id": 0,
+        |         "series": [
+        |           {
+        |             "name": "cpu_load_short",
+        |             "tags": {
+        |               "host": "server01",
+        |               "region": "us-west"
+        |             },
+        |             "columns": [
+        |               "time",
+        |               "mean"
+        |             ],
+        |             "values": [
+        |               [
+        |                 "1970-01-01T00:00:00Z",
+        |                 0.69
+        |               ]
+        |             ]
+        |           },
+        |           {
+        |             "name": "cpu_load_short",
+        |             "tags": {
+        |               "host": "server02",
+        |               "region": "us-west"
+        |             },
+        |             "columns": [
+        |               "time",
+        |               "mean"
+        |             ],
+        |             "values": [
+        |               [
+        |                 "1970-01-01T00:00:00Z",
+        |                 0.73
+        |               ]
+        |             ]
+        |           }
+        |         ]
+        |     }
+        |   ]
+        |}
+      """.stripMargin).success.value
+
+    val optResult = getOptGropedResult(json)
+
+    optResult should not be None
+
+    val result = optResult.value
+    result.length shouldEqual 2
+
+    result.map { case (k, v) => k.toList -> v}.toList shouldEqual List(
+     List("server01", "us-west") -> JArray(Array(JString("1970-01-01T00:00:00Z"), JNum(0.69))),
+     List("server02", "us-west") -> JArray(Array(JString("1970-01-01T00:00:00Z"), JNum(0.73)))
     )
   }
 }

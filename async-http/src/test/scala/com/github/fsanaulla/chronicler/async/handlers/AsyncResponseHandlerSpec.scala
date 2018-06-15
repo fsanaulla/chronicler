@@ -1,10 +1,8 @@
 package com.github.fsanaulla.chronicler.async.handlers
 
-import com.github.fsanaulla.chronicler.async.utils.TestExtensions.{RichString, RichTry}
 import com.github.fsanaulla.chronicler.async.utils.SampleEntitys.singleResult
+import com.github.fsanaulla.chronicler.async.utils.TestExtensions.{RichString, RichTry}
 import com.github.fsanaulla.chronicler.testing.{FutureHandler, TestSpec}
-import com.github.fsanaulla.core.model.ContinuousQuery
-import com.github.fsanaulla.core.utils.DefaultInfluxImplicits._
 import com.softwaremill.sttp.Response
 import jawn.ast._
 
@@ -62,7 +60,7 @@ class AsyncResponseHandlerSpec extends TestSpec with AsyncResponseHandler with F
         |}
       """.stripMargin.toResponse
 
-    toQueryJsResult(singleResponse).futureValue.queryResult shouldEqual singleResult
+    toQueryJsResult(singleResponse).futureValue.result shouldEqual singleResult
   }
 
   it should "extract bulk query results from response" in {
@@ -119,7 +117,7 @@ class AsyncResponseHandlerSpec extends TestSpec with AsyncResponseHandler with F
         |}
       """.stripMargin.toResponse()
 
-    toBulkQueryJsResult(bulkResponse).futureValue.queryResult shouldEqual Array(
+    toBulkQueryJsResult(bulkResponse).futureValue.result shouldEqual Array(
       Array(
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
@@ -185,7 +183,7 @@ class AsyncResponseHandlerSpec extends TestSpec with AsyncResponseHandler with F
   """
     val cqHttpResponse = Response(p.parseFromString(cqStrJson).toStrEither(cqStrJson), 200, "", Nil, Nil)
 
-    val cqi = toCqQueryResult(cqHttpResponse).futureValue.queryResult.filter(_.querys.nonEmpty).head
+    val cqi = toCqQueryResult(cqHttpResponse).futureValue.result.filter(_.querys.nonEmpty).head
     cqi.dbName shouldEqual "mydb"
     cqi.querys.head shouldEqual ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")
   }

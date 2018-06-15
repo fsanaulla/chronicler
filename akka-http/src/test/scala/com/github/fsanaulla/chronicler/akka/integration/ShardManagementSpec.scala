@@ -3,9 +3,9 @@ package com.github.fsanaulla.chronicler.akka.integration
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
+import com.github.fsanaulla.chronicler.core.model.ShardGroupsInfo
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
-import com.github.fsanaulla.core.model.ShardGroupsInfo
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -29,7 +29,7 @@ class ShardManagementSpec
 
     influx.createDatabase(testDb, shardDuration = Some("1s")).futureValue shouldEqual OkResult
 
-    val shards = influx.showShards.futureValue.queryResult
+    val shards = influx.showShards.futureValue.result
 
     shards should not be Nil
 
@@ -38,7 +38,7 @@ class ShardManagementSpec
 
   it should "show shards groupe" in {
 
-    val shardGroups = influx.showShardGroups.futureValue.queryResult
+    val shardGroups = influx.showShardGroups.futureValue.result
 
     shardGroups should not equal Nil
 

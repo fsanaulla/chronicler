@@ -98,7 +98,7 @@ class UrlJsonHandlerSpec extends TestSpec with UrlJsonHandler with TryValues {
       JArray(Array(JString("2015-06-11T20:46:02Z"), JNull, JNum(0.64)))
     )
 
-    getOptInfluxPoints(json).value shouldEqual result
+    getOptQueryResult(json).value shouldEqual result
   }
 
   it should "extract bulk query result from JSON" in {

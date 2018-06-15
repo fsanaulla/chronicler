@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.testing
 
-import com.github.fsanaulla.core.model.{AuthorizationException, Result}
+import com.github.fsanaulla.chronicler.core.model.{AuthorizationException, WriteResult}
 
 /**
   * Created by
@@ -9,7 +9,7 @@ import com.github.fsanaulla.core.model.{AuthorizationException, Result}
   */
 object ResultMatchers {
 
-  final val OkResult = Result(200, isSuccess = true)
-  final val NoContentResult = Result(204, isSuccess = true)
-  final val AuthErrorResult = Result(401, isSuccess = false, Some(new AuthorizationException("unable to parse authentication credentials")))
+  final val OkResult = WriteResult(200, isSuccess = true)
+  final val NoContentResult = WriteResult(204, isSuccess = true)
+  final val AuthErrorResult = WriteResult(401, isSuccess = false, Some(new AuthorizationException("unable to parse authentication credentials")))
 }
