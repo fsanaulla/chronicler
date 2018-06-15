@@ -2,13 +2,18 @@ package com.github.fsanaulla.chronicler.urlhttp.api
 
 import java.io.File
 
+import com.github.fsanaulla.chronicler.core.api.DatabaseApi
+import com.github.fsanaulla.chronicler.core.enums._
+import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.urlhttp.io.{UrlReader, UrlWriter}
+import com.github.fsanaulla.chronicler.urlhttp.models.UrlDeserializers._
 import com.softwaremill.sttp.SttpBackend
+import jawn.ast.JArray
 
 import scala.reflect.ClassTag
 import scala.util.Try
 
-class Database(
+final class Database(
                 val host: String,
                 val port: Int,
                 val credentials: Option[InfluxCredentials],
@@ -60,7 +65,10 @@ class Database(
                                   epoch: Epoch,
                                   pretty: Boolean,
                                   chunked: Boolean)
-                                (implicit reader: InfluxReader[A]): Try[QueryResult[A]] = {
-    readJs(query, epoch, pretty, chunked).map(_.map(reader.read))
+                                (implicit reader: InfluxReader[A]): Try[ReadResult[A]] = {
+    readJs(query, epoch, pretty, chunked) map {
+      case qr: QueryResult[JArray] => qr.map(reader.read)
+      case gr: GroupedResult[JArray] => gr.map(reader.read)
+    }
   }
 }

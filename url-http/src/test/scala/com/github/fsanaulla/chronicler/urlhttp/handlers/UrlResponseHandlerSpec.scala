@@ -1,5 +1,7 @@
 package com.github.fsanaulla.chronicler.urlhttp.handlers
 
+import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
+import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
 import com.github.fsanaulla.chronicler.testing.TestSpec
 import com.github.fsanaulla.chronicler.urlhttp.utils.Extensions.{RichString, RichTry}
 import com.github.fsanaulla.chronicler.urlhttp.utils.SampleEntitys.singleResult

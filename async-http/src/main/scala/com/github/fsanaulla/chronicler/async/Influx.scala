@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.async
 
-import com.github.fsanaulla.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 
 import scala.concurrent.ExecutionContext
 

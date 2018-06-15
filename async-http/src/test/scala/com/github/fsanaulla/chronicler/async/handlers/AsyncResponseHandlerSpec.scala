@@ -2,6 +2,8 @@ package com.github.fsanaulla.chronicler.async.handlers
 
 import com.github.fsanaulla.chronicler.async.utils.SampleEntitys.singleResult
 import com.github.fsanaulla.chronicler.async.utils.TestExtensions.{RichString, RichTry}
+import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
+import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
 import com.github.fsanaulla.chronicler.testing.{FutureHandler, TestSpec}
 import com.softwaremill.sttp.Response
 import jawn.ast._

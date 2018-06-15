@@ -6,6 +6,8 @@ import com.github.fsanaulla.chronicler.async.api.Database
 import com.github.fsanaulla.chronicler.async.utils.SampleEntitys.largeMultiJsonEntity
 import com.github.fsanaulla.chronicler.async.utils.TestHelper.FakeEntity
 import com.github.fsanaulla.chronicler.async.{Influx, InfluxAsyncHttpClient}
+import com.github.fsanaulla.chronicler.core.model.Point
+import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
 import jawn.ast.JArray

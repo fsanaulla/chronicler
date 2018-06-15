@@ -2,9 +2,9 @@ package com.github.fsanaulla.chronicler.async.unit
 
 import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryHandler
 import com.github.fsanaulla.chronicler.async.utils.TestHelper._
+import com.github.fsanaulla.chronicler.core.query.RetentionPolicyManagementQuery
+import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
 import com.github.fsanaulla.chronicler.testing.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
-import com.github.fsanaulla.core.query.RetentionPolicyManagementQuery
-import com.github.fsanaulla.core.utils.InfluxDuration._
 import com.softwaremill.sttp.Uri
 
 import scala.language.postfixOps

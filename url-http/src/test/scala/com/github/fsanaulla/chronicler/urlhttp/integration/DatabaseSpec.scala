@@ -2,6 +2,8 @@ package com.github.fsanaulla.chronicler.urlhttp.integration
 
 import java.io.File
 
+import com.github.fsanaulla.chronicler.core.model.Point
+import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
 import com.github.fsanaulla.chronicler.urlhttp.api.Database

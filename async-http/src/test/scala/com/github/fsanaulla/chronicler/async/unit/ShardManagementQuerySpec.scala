@@ -2,8 +2,8 @@ package com.github.fsanaulla.chronicler.async.unit
 
 import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryHandler
 import com.github.fsanaulla.chronicler.async.utils.TestHelper._
+import com.github.fsanaulla.chronicler.core.query.ShardManagementQuery
 import com.github.fsanaulla.chronicler.testing.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
-import com.github.fsanaulla.core.query.ShardManagementQuery
 import com.softwaremill.sttp.Uri
 
 /**

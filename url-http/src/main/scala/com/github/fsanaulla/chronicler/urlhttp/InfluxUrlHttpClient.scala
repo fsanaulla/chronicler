@@ -1,5 +1,7 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
+import com.github.fsanaulla.chronicler.core.client.InfluxClient
+import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, Mapper, WriteResult}
 import com.github.fsanaulla.chronicler.urlhttp.api.{Database, Measurement}
 import com.github.fsanaulla.chronicler.urlhttp.handlers.{UrlQueryHandler, UrlRequestHandler, UrlResponseHandler}
 import com.softwaremill.sttp.{Response, SttpBackend, TryHttpURLConnectionBackend, Uri}

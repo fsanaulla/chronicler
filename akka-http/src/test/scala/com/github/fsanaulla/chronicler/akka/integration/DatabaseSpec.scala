@@ -98,10 +98,15 @@ class DatabaseSpec
   }
 
   it should "return grouped result by sex and sum of ages" in {
+
     db
-      .readJs("SELECT SUM(\"age\") FROM \"test2\" GROUP BY \"sex\"")
+      .bulkWriteNative(Array("test5,sex=Male,firstName=Jon,lastName=Snow age=24", "test5,sex=Male,firstName=Rainer,lastName=Targaryen age=25"))
+      .futureValue shouldEqual NoContentResult
+
+    db
+      .readJs("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"")
       .futureValue
-      .groupedResult shouldEqual Array(Array("Male") -> JArray(Array(JNum(90))))
+      .groupedResult shouldEqual Array(Array("Male") -> JArray(Array(JNum(49))))
 
     influx.close() shouldEqual {}
   }

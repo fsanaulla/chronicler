@@ -6,6 +6,7 @@ import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.model.RequestEntity
 import _root_.akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.io.{AkkaReader, AkkaWriter}
+import com.github.fsanaulla.chronicler.akka.models.AkkaDeserializers._
 import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
 import com.github.fsanaulla.chronicler.core.api.DatabaseApi
 import com.github.fsanaulla.chronicler.core.enums._

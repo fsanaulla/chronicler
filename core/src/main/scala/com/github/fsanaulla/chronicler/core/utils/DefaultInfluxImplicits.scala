@@ -2,6 +2,7 @@ package com.github.fsanaulla.chronicler.core.utils
 
 import com.github.fsanaulla.chronicler.core.enums.{Destinations, Privileges}
 import com.github.fsanaulla.chronicler.core.model._
+import com.github.fsanaulla.chronicler.core.utils.PrimitiveJawnImplicits._
 import jawn.ast.{JArray, JValue}
 
 /**

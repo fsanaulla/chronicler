@@ -2,6 +2,7 @@ package com.github.fsanaulla.chronicler.async.utils
 
 import java.net.URLEncoder
 
+import com.github.fsanaulla.chronicler.core.model.{AuthorizationException, InfluxCredentials, InfluxFormatter, WriteResult}
 import com.github.fsanaulla.chronicler.macros.Macros
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag}
 

@@ -4,6 +4,7 @@ import com.github.fsanaulla.chronicler.core.enums.Privilege
 import com.github.fsanaulla.chronicler.core.handlers.{QueryHandler, RequestHandler, ResponseHandler}
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.UserManagementQuery
+import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
 
 private[fsanaulla] trait UserManagement[M[_], R, U, E] extends UserManagementQuery[U] {
   self: RequestHandler[M, R, U, E]

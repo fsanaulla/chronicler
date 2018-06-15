@@ -1,5 +1,7 @@
 package com.github.fsanaulla.chronicler.urlhttp.integration
 
+import com.github.fsanaulla.chronicler.core.enums.Privileges
+import com.github.fsanaulla.chronicler.core.model.{AuthorizationException, UserPrivilegesInfo}
 import com.github.fsanaulla.chronicler.testing.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
 import com.github.fsanaulla.chronicler.urlhttp.{Influx, InfluxUrlHttpClient}

@@ -4,6 +4,7 @@ import com.github.fsanaulla.chronicler.core.enums.Destination
 import com.github.fsanaulla.chronicler.core.handlers.{QueryHandler, RequestHandler, ResponseHandler}
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.SubscriptionsManagementQuery
+import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
 
 /**
   * Created by

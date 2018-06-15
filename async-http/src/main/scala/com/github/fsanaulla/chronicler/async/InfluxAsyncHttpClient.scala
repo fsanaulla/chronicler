@@ -2,6 +2,8 @@ package com.github.fsanaulla.chronicler.async
 
 import com.github.fsanaulla.chronicler.async.api.{Database, Measurement}
 import com.github.fsanaulla.chronicler.async.handlers._
+import com.github.fsanaulla.chronicler.core.client.InfluxClient
+import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, Mapper, WriteResult}
 import com.softwaremill.sttp.asynchttpclient.future.AsyncHttpClientFutureBackend
 import com.softwaremill.sttp.{Response, SttpBackend, Uri}
 import jawn.ast.JValue

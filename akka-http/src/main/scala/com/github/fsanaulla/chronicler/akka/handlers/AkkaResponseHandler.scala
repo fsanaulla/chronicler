@@ -52,7 +52,6 @@ private[akka] trait AkkaResponseHandler extends ResponseHandler[Future, HttpResp
     }
   }
 
-  // QUERY RESULT
   override def toQueryJsResult(response: HttpResponse): Future[QueryResult[JArray]] = {
     response.status.intValue() match {
       case code if isSuccessful(code) =>
@@ -67,7 +66,6 @@ private[akka] trait AkkaResponseHandler extends ResponseHandler[Future, HttpResp
     }
   }
 
-  // QUERY RESULT
   override def toGroupedJsResult(response: HttpResponse): Future[GroupedResult[JArray]] = {
     response.status.intValue() match {
       case code if isSuccessful(code) =>

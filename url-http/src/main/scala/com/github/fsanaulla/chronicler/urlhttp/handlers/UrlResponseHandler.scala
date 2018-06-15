@@ -1,5 +1,7 @@
 package com.github.fsanaulla.chronicler.urlhttp.handlers
 
+import com.github.fsanaulla.chronicler.core.handlers.ResponseHandler
+import com.github.fsanaulla.chronicler.core.model._
 import com.softwaremill.sttp.Response
 import jawn.ast.{JArray, JValue}
 
@@ -8,8 +10,7 @@ import scala.util.Try
 
 private[fsanaulla] trait UrlResponseHandler extends ResponseHandler[Try, Response[JValue]] with UrlJsonHandler {
 
-  // Simply result's
-  def toResult(response: Response[JValue]): Try[WriteResult] = {
+  override def toResult(response: Response[JValue]): Try[WriteResult] = {
     response.code match {
       case code if isSuccessful(code) && code != 204 =>
         getOptResponseError(response) map {
@@ -26,7 +27,7 @@ private[fsanaulla] trait UrlResponseHandler extends ResponseHandler[Try, Respons
     }
   }
 
-  def toComplexQueryResult[A: ClassTag, B: ClassTag](
+  override def toComplexQueryResult[A: ClassTag, B: ClassTag](
                                                       response: Response[JValue],
                                                       f: (String, Array[A]) => B)
                                                     (implicit reader: InfluxReader[A]): Try[QueryResult[B]] = {
@@ -46,8 +47,7 @@ private[fsanaulla] trait UrlResponseHandler extends ResponseHandler[Try, Respons
     }
   }
 
-  // QUERY RESULT
-  def toQueryJsResult(response: Response[JValue]): Try[QueryResult[JArray]] = {
+  override def toQueryJsResult(response: Response[JValue]): Try[QueryResult[JArray]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
         getResponseBody(response)
@@ -61,7 +61,21 @@ private[fsanaulla] trait UrlResponseHandler extends ResponseHandler[Try, Respons
     }
   }
 
-  def toBulkQueryJsResult(response: Response[JValue]): Try[QueryResult[Array[JArray]]] = {
+  override def toGroupedJsResult(response: Response[JValue]): Try[GroupedResult[JArray]] = {
+    response.code.intValue() match {
+      case code if isSuccessful(code) =>
+        getResponseBody(response)
+          .map(getOptGropedResult)
+          .map {
+            case Some(arr) => GroupedResult.successful[JArray](code, arr)
+            case _ => GroupedResult.empty[JArray](code)}
+      case other =>
+        errorHandler(response, other)
+          .map(ex => GroupedResult.failed[JArray](other, ex))
+    }
+  }
+
+  override def toBulkQueryJsResult(response: Response[JValue]): Try[QueryResult[Array[JArray]]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
         getResponseBody(response)

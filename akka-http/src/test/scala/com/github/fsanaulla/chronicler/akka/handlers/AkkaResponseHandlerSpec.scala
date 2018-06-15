@@ -7,6 +7,7 @@ import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.utils.Extensions.RichString
 import com.github.fsanaulla.chronicler.akka.utils.SampleEntitys.singleResult
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
+import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
 import com.github.fsanaulla.chronicler.testing.{FutureHandler, TestSpec}
 import jawn.ast.{JArray, JNum, JString}
 

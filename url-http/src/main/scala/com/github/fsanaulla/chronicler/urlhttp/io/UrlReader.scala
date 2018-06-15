@@ -1,10 +1,10 @@
 package com.github.fsanaulla.chronicler.urlhttp.io
 
+import com.github.fsanaulla.chronicler.core.enums.Epoch
+import com.github.fsanaulla.chronicler.core.io.ReadOperations
+import com.github.fsanaulla.chronicler.core.model.{HasCredentials, QueryResult, ReadResult}
+import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
 import com.github.fsanaulla.chronicler.urlhttp.handlers.{UrlQueryHandler, UrlRequestHandler, UrlResponseHandler}
-import com.github.fsanaulla.core.enums.Epoch
-import com.github.fsanaulla.core.io.ReadOperations
-import com.github.fsanaulla.core.model.{HasCredentials, QueryResult}
-import com.github.fsanaulla.core.query.DatabaseOperationQuery
 import com.softwaremill.sttp.Uri
 import jawn.ast.JArray
 
@@ -21,9 +21,13 @@ private[fsanaulla] trait UrlReader
                        query: String,
                        epoch: Epoch,
                        pretty: Boolean,
-                       chunked: Boolean): Try[QueryResult[JArray]] = {
-    val _query = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
-    readRequest(_query).flatMap(toQueryJsResult)
+                       chunked: Boolean): Try[ReadResult[JArray]] = {
+    val executionResult = readRequest(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked))
+
+    query match {
+      case q: String if q.contains("GROUP BY") => executionResult.flatMap(toGroupedJsResult)
+      case _ => executionResult.flatMap(toQueryJsResult)
+    }
   }
 
   override def bulkReadJs0(dbName: String,
