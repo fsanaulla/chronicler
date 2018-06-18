@@ -97,7 +97,7 @@ lazy val macros = project
     libraryDependencies ++= Dependencies.scalaReflect(scalaVersion.value) :: Nil
   )
   .dependsOn(core % "compile->compile;test->test")
-  .dependsOn(testing % "test->test")
+  .dependsOn(unitTesting % "test->test")
 
 /**
   * Define chronicler module
@@ -120,3 +120,11 @@ def module(sbtName: String,
       libraryDependencies ++= deps
     )
 }
+
+lazy val itTesting = project
+  .in(file("testing/it"))
+
+lazy val unitTesting = project
+  .in(file("testing/unit"))
+  .settings(libraryDependencies += Dependencies.scalaTest)
+  .dependsOn(core % "compile->compile")
