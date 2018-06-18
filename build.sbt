@@ -9,7 +9,7 @@ lazy val commonSettings = Seq(
   homepage := Some(url("https://github.com/fsanaulla/chronicler")),
   licenses += "Apache-2.0" -> url("https://opensource.org/licenses/Apache-2.0"),
   developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla")),
-  parallelExecution in Test := false
+  parallelExecution in IntegrationTest := false
 )
 
 lazy val publishSettings = Seq(
@@ -39,8 +39,8 @@ lazy val chronicler = (project in file("."))
     macros,
     urlHttp,
     akkaHttp,
-    asyncHttp
-//    udp
+    asyncHttp,
+    udp
   )
 
 
@@ -56,15 +56,29 @@ lazy val core = module(
 lazy val testing = module(
   "testing",
   "testing",
-  Dependencies.testingDeps
+  Dependencies.itTestingDeps
 ).dependsOn(core % "compile->compile")
 
-lazy val urlHttp = module(
-  "urlHttp",
-  "url-http",
-  Dependencies.urlHttp :: Nil
-).dependsOn(core % "compile->compile;test->test")
- .dependsOn(macros, testing % "test->test")
+//lazy val urlHttp = module(
+//  "urlHttp",
+//  "url-http",
+//  Dependencies.urlHttp :: Nil
+//).dependsOn(core % "compile->compile;test->test")
+// .dependsOn(macros, testing % "test->test")
+
+lazy val urlHttp = project
+  .in(file("url-http"))
+  .configs(IntegrationTest)
+  .settings(Defaults.itSettings)
+  .settings(commonSettings: _*)
+  .settings(publishSettings: _*)
+  .settings(
+    name := "chronicler-url-http",
+    libraryDependencies += Dependencies.urlHttp
+  )
+  .dependsOn(core % "compile->compile;test->test")
+  .dependsOn(unitTesting % "test->test")
+  .dependsOn(itTesting % "it->test")
 
 lazy val akkaHttp = module(
   "akkaHttp",
@@ -97,7 +111,7 @@ lazy val macros = project
     libraryDependencies ++= Dependencies.scalaReflect(scalaVersion.value) :: Nil
   )
   .dependsOn(core % "compile->compile;test->test")
-  .dependsOn(unitTesting % "test->test")
+  .dependsOn(unitTesting % "compile->test")
 
 /**
   * Define chronicler module
@@ -123,6 +137,8 @@ def module(sbtName: String,
 
 lazy val itTesting = project
   .in(file("testing/it"))
+  .settings(libraryDependencies ++= Dependencies.itTestingDeps)
+  .dependsOn(core, macros % "compile->compile")
 
 lazy val unitTesting = project
   .in(file("testing/unit"))

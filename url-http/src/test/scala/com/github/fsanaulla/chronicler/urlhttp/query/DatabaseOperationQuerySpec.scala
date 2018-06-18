@@ -1,8 +1,8 @@
-package com.github.fsanaulla.chronicler.urlhttp.unit
+package com.github.fsanaulla.chronicler.urlhttp.query
 
 import com.github.fsanaulla.chronicler.core.enums.{Consistencies, Epochs, Precisions}
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.chronicler.testing.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
+import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.github.fsanaulla.chronicler.urlhttp.handlers.UrlQueryHandler
 import com.github.fsanaulla.chronicler.urlhttp.utils.TestHelper._
 import com.softwaremill.sttp.Uri

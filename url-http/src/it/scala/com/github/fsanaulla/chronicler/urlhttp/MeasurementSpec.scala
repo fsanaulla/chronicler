@@ -1,11 +1,10 @@
-package com.github.fsanaulla.chronicler.urlhttp.integration
+package com.github.fsanaulla.chronicler.urlhttp
 
-import com.github.fsanaulla.chronicler.testing.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
+import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
+import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity}
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+import com.github.fsanaulla.chronicler.urlhttp.SampleEntitys._
 import com.github.fsanaulla.chronicler.urlhttp.api.Measurement
-import com.github.fsanaulla.chronicler.urlhttp.utils.SampleEntitys._
-import com.github.fsanaulla.chronicler.urlhttp.utils.TestHelper.FakeEntity
-import com.github.fsanaulla.chronicler.urlhttp.{Influx, InfluxUrlHttpClient}
 import org.scalatest.TryValues
 
 /**
@@ -13,7 +12,7 @@ import org.scalatest.TryValues
   * Author: fayaz.sanaulla@gmail.com
   * Date: 28.09.17
   */
-class MeasurementSpec extends TestSpec with DockerizedInfluxDB with TryValues {
+class MeasurementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with TryValues {
 
   val safeDB = "db"
   val measName = "meas"

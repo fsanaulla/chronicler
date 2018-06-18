@@ -1,24 +1,24 @@
-package com.github.fsanaulla.chronicler.urlhttp.integration
+package com.github.fsanaulla.chronicler.urlhttp
 
 import java.io.File
 
 import com.github.fsanaulla.chronicler.core.model.Point
 import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
-import com.github.fsanaulla.chronicler.testing.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
+import com.github.fsanaulla.chronicler.testing.it.FakeEntity.fmt
+import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
+import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity}
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+import com.github.fsanaulla.chronicler.urlhttp.SampleEntitys.largeMultiJsonEntity
 import com.github.fsanaulla.chronicler.urlhttp.api.Database
-import com.github.fsanaulla.chronicler.urlhttp.utils.SampleEntitys.largeMultiJsonEntity
-import com.github.fsanaulla.chronicler.urlhttp.utils.TestHelper.FakeEntity
-import com.github.fsanaulla.chronicler.urlhttp.{Influx, InfluxUrlHttpClient}
 import jawn.ast.{JArray, JNum}
-import org.scalatest.TryValues
+import org.scalatest.{OptionValues, TryValues}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 28.09.17
   */
-class DatabaseSpec extends TestSpec with DockerizedInfluxDB with TryValues {
+class DatabaseSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with TryValues with OptionValues {
 
   val testDB = "db"
 

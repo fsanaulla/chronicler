@@ -1,11 +1,11 @@
-package com.github.fsanaulla.chronicler.urlhttp.integration
+package com.github.fsanaulla.chronicler.urlhttp
 
 import com.github.fsanaulla.chronicler.core.enums.{Destination, Destinations}
 import com.github.fsanaulla.chronicler.core.model.Subscription
 import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
-import com.github.fsanaulla.chronicler.testing.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
-import com.github.fsanaulla.chronicler.urlhttp.{Influx, InfluxUrlHttpClient}
+import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
+import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.OkResult
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import org.scalatest.TryValues
 
 /**
@@ -13,7 +13,7 @@ import org.scalatest.TryValues
   * Author: fayaz.sanaulla@gmail.com
   * Date: 21.08.17
   */
-class SubscriptionManagementSpec extends TestSpec with DockerizedInfluxDB with TryValues {
+class SubscriptionManagementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with TryValues {
 
   val subName = "subs"
   val dbName = "async_subs_spec_db"

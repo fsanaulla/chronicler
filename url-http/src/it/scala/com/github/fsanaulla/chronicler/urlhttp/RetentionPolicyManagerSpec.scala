@@ -1,10 +1,10 @@
-package com.github.fsanaulla.chronicler.urlhttp.integration
+package com.github.fsanaulla.chronicler.urlhttp
 
 import com.github.fsanaulla.chronicler.core.model.RetentionPolicyInfo
 import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
-import com.github.fsanaulla.chronicler.testing.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
-import com.github.fsanaulla.chronicler.urlhttp.Influx
+import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
+import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import org.scalatest.TryValues
 
 import scala.language.postfixOps
@@ -14,7 +14,7 @@ import scala.language.postfixOps
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class RetentionPolicyManagerSpec extends TestSpec with DockerizedInfluxDB with TryValues {
+class RetentionPolicyManagerSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with TryValues {
 
   val rpDB = "db"
 

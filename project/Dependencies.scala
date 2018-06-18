@@ -17,7 +17,7 @@ object Dependencies {
   final val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalaTest
 
   // testing
-  final val testingDeps = Seq(
+  final val itTestingDeps = Seq(
     "org.jetbrains"        %  "annotations" % "15.0", // to solve evicted warning
     "org.testcontainers"   %  "influxdb"    % "1.7.3" exclude("org.jetbrains", "annotations")
   ) :+ scalaTest

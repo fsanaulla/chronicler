@@ -1,9 +1,9 @@
-package com.github.fsanaulla.chronicler.urlhttp.integration
+package com.github.fsanaulla.chronicler.urlhttp
 
 import com.github.fsanaulla.chronicler.core.model.{ShardGroupsInfo, ShardInfo}
-import com.github.fsanaulla.chronicler.testing.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, TestSpec}
-import com.github.fsanaulla.chronicler.urlhttp.{Influx, InfluxUrlHttpClient}
+import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
+import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.OkResult
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import org.scalatest.TryValues
 
 /**
@@ -11,7 +11,7 @@ import org.scalatest.TryValues
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
-class ShardManagementSpec extends TestSpec with DockerizedInfluxDB with TryValues {
+class ShardManagementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with TryValues {
 
   val testDb = "_internal"
 

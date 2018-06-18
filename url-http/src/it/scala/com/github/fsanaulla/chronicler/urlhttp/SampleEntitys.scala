@@ -1,9 +1,11 @@
-package com.github.fsanaulla.chronicler.urlhttp.utils
+package com.github.fsanaulla.chronicler.urlhttp
 
-import TestHelper._
+import com.github.fsanaulla.chronicler.testing.it.FakeEntity
 import jawn.ast.{JArray, JNum, JString}
 
 object SampleEntitys {
+
+  final val currentNanoTime: Long = System.currentTimeMillis() * 1000000
 
   // INTEGRATION SPEC ENTITYS
   val singleEntity = FakeEntity("Martin", "Odersky", 58)
