@@ -7,9 +7,11 @@ import com.github.fsanaulla.chronicler.async.api.Database
 import com.github.fsanaulla.chronicler.core.model.{InfluxFormatter, Point}
 import com.github.fsanaulla.chronicler.macros.Macros
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag}
-import com.github.fsanaulla.chronicler.testing.{FutureHandler, TestSpec}
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.github.fsanaulla.core.testing.configurations.InfluxUDPConf
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.time.{Second, Seconds, Span}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -18,8 +20,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 24.02.18
   */
-class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf with FutureHandler {
+class UdpClientSpec extends FlatSpecWithMatchers with EmbeddedInfluxDB with InfluxUDPConf with ScalaFutures {
   import UdpClientSpec._
+
+  implicit val pc: PatienceConfig = PatienceConfig(Span(20, Seconds), Span(1, Second))
   
   lazy val influxUdp: InfluxUDPClient =
     com.github.fsanaulla.chronicler.udp.Influx.connect()
@@ -33,7 +37,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf wi
 
     val t = Test("f", 1)
 
-    influxUdp.write[Test]("cpu", t).futureValue shouldEqual {}
+    influxUdp.write[Test]("cpu", t) shouldEqual {}
 
     Thread.sleep(3000)
 
@@ -47,7 +51,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf wi
     val t = Test("f", 1)
     val t1 = Test("g", 2)
 
-    influxUdp.bulkWrite[Test]("cpu1", t :: t1 :: Nil).futureValue shouldEqual {}
+    influxUdp.bulkWrite[Test]("cpu1", t :: t1 :: Nil) shouldEqual {}
 
     Thread.sleep(3000)
 
@@ -63,7 +67,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf wi
       .addTag("name", "d")
       .addField("age", 2)
 
-    influxUdp.writePoint(p).futureValue shouldEqual {}
+    influxUdp.writePoint(p) shouldEqual {}
 
     Thread.sleep(3000)
 
@@ -83,7 +87,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf wi
       .addTag("name", "e")
       .addField("age", 3)
 
-    influxUdp.bulkWritePoints(p :: p1 :: Nil).futureValue shouldEqual {}
+    influxUdp.bulkWritePoints(p :: p1 :: Nil) shouldEqual {}
 
     Thread.sleep(3000)
 
@@ -117,8 +121,7 @@ class UdpClientSpec extends TestSpec with EmbeddedInfluxDB with InfluxUDPConf wi
   }
 
   it should "write from file" in {
-    influxUdp.writeFromFile(new File(getClass.getResource("/points.txt").getPath))
-      .futureValue shouldEqual {}
+    influxUdp.writeFromFile(new File(getClass.getResource("/points.txt").getPath)) shouldEqual {}
 
     udp.readJs("SELECT * FROM test1")
       .futureValue

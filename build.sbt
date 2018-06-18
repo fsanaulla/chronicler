@@ -96,11 +96,19 @@ lazy val asyncHttp = module(
 ).dependsOn(core % "compile->compile;test->test")
  .dependsOn(macros, testing % "test->test")
 
-lazy val udp = module(
-  "udp",
-  "udp",
-  Dependencies.udpDep :: Nil
-).dependsOn(core, asyncHttp, macros, testing % "test->test")
+lazy val udp = project
+  .in(file("udp"))
+  .configs(IntegrationTest)
+  .settings(Defaults.itSettings)
+  .settings(commonSettings: _*)
+  .settings(publishSettings: _*)
+  .settings(
+    name := "chronicler-udp",
+    libraryDependencies += Dependencies.udpDep,
+    test in Test := {}
+  )
+  .dependsOn(core, asyncHttp, macros, unitTesting % "it->test")
+
 
 lazy val macros = project
   .in(file("macros"))

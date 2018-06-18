@@ -5,9 +5,7 @@ import java.net._
 
 import com.github.fsanaulla.chronicler.core.model.{InfluxWriter, Point}
 import com.github.fsanaulla.chronicler.core.utils.PointTransformer
-import com.github.fsanaulla.chronicler.udp.models.UdpConnection
 
-import scala.concurrent.{ExecutionContext, Future}
 import scala.io.Source
 
 /**
@@ -16,54 +14,53 @@ import scala.io.Source
   * Date: 27.08.17
   */
 final class InfluxUDPClient(host: String, port: Int)
-                           (implicit ex: ExecutionContext)
-  extends PointTransformer with AutoCloseable {
+  extends PointTransformer
+    with AutoCloseable {
 
   import InfluxUDPClient._
 
   private implicit val conn: UdpConnection = UdpConnection(InetAddress.getByName(host), port)
 
-  def writeNative(point: String): Future[Unit] =
+  def writeNative(point: String): Unit =
     send(buildDatagram(point.getBytes()))
 
 
-  def bulkWriteNative(points: Seq[String]): Future[Unit] =
+  def bulkWriteNative(points: Seq[String]): Unit =
     send(buildDatagram(points.mkString("\n").getBytes()))
 
 
-  def write[T](measurement: String, entity: T)(implicit writer: InfluxWriter[T]): Future[Unit] = {
+  def write[T](measurement: String, entity: T)(implicit writer: InfluxWriter[T]): Unit = {
     val sendEntity = toPoint(measurement, writer.write(entity)).getBytes()
 
     send(buildDatagram(sendEntity))
   }
 
-  def bulkWrite[T](measurement: String, entitys: Seq[T])(implicit writer: InfluxWriter[T]): Future[Unit] = {
+  def bulkWrite[T](measurement: String, entitys: Seq[T])(implicit writer: InfluxWriter[T]): Unit = {
     val sendEntity = toPoints(measurement, entitys.map(writer.write)).getBytes()
 
     send(buildDatagram(sendEntity))
   }
 
-  def writeFromFile(file: File): Future[Unit] = {
+  def writeFromFile(file: File): Unit = {
     val sendData = Source.fromFile(file).getLines().mkString("\n").getBytes()
 
     send(buildDatagram(sendData))
   }
 
-  def writePoint(point: Point): Future[Unit] =
+  def writePoint(point: Point): Unit =
     send(buildDatagram(point.serialize.getBytes()))
 
-  def bulkWritePoints(points: Seq[Point]): Future[Unit] =
+  def bulkWritePoints(points: Seq[Point]): Unit =
     send(buildDatagram(points.map(_.serialize).mkString("\n").getBytes()))
 
   def close(): Unit = socket.close()
 }
 
-private[fsanaulla] object InfluxUDPClient {
+private[udp] object InfluxUDPClient {
   private val socket = new DatagramSocket()
 
   def buildDatagram(msg: Array[Byte])(implicit conn: UdpConnection): DatagramPacket =
     new DatagramPacket(msg, msg.length, conn.address, conn.port)
 
-  def send(dp: DatagramPacket)(implicit ex: ExecutionContext): Future[Unit] =
-    Future { socket.send(dp) }
+  def send(dp: DatagramPacket): Unit = socket.send(dp)
 }
