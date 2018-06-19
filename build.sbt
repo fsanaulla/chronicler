@@ -73,13 +73,31 @@ lazy val urlHttp = project
   .dependsOn(unitTesting % "test->test")
   .dependsOn(itTesting % "it->test")
 
-lazy val akkaHttp = module(
-  "akkaHttp",
-  "akka-http",
-  Dependencies.akkaDep,
-  "-language:postfixOps" :: "-language:higherKinds" :: Nil
-).dependsOn(core % "compile->compile;test->test")
- .dependsOn(macros, testing % "test->test")
+lazy val akkaHttp = project
+  .in(file("akka-http"))
+  .configs(IntegrationTest)
+  .settings(Defaults.itSettings)
+  .settings(commonSettings: _*)
+  .settings(publishSettings: _*)
+  .settings(
+    name := "chronicler-akka-http",
+    scalacOptions ++= Seq(
+      "-language:postfixOps",
+      "-language:higherKinds"
+    ),
+    libraryDependencies ++= Dependencies.akkaDep
+  )
+  .dependsOn(core % "compile->compile;test->test")
+  .dependsOn(unitTesting % "compile->test")
+  .dependsOn(itTesting % "compile->test")
+
+//lazy val akkaHttp = module(
+//  "akkaHttp",
+//  "akka-http",
+//  Dependencies.akkaDep,
+//  "-language:postfixOps" :: "-language:higherKinds" :: Nil
+//).dependsOn(core % "compile->compile;test->test")
+// .dependsOn(macros, testing % "test->test")
 
 lazy val asyncHttp = project
   .in(file("async-http"))

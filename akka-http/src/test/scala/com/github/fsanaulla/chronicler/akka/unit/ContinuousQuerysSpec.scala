@@ -1,10 +1,10 @@
 package com.github.fsanaulla.chronicler.akka.unit
 
 import akka.http.scaladsl.model.Uri
+import com.github.fsanaulla.chronicler.akka.TestHelper._
 import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryHandler
-import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
 import com.github.fsanaulla.chronicler.core.query.ContinuousQuerys
-import com.github.fsanaulla.chronicler.testing.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
+import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 
 /**
   * Created by

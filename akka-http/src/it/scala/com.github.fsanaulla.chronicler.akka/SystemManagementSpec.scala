@@ -1,10 +1,10 @@
-package com.github.fsanaulla.chronicler.akka.integration
+package com.github.fsanaulla.chronicler.akka
 
-import akka.actor.ActorSystem
-import akka.testkit.TestKit
-import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
-import com.github.fsanaulla.chronicler.testing.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
+import _root_.akka.actor.ActorSystem
+import _root_.akka.testkit.TestKit
+import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.NoContentResult
+import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -15,8 +15,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class SystemManagementSpec
   extends TestKit(ActorSystem())
-    with TestSpec
-    with FutureHandler
+    with FlatSpecWithMatchers
+    with Futures
     with DockerizedInfluxDB {
 
   lazy val influx: InfluxAkkaHttpClient =

@@ -4,11 +4,11 @@ import _root_.akka.actor.ActorSystem
 import _root_.akka.stream.ActorMaterializer
 import akka.http.scaladsl.model.HttpResponse
 import akka.testkit.TestKit
-import com.github.fsanaulla.chronicler.akka.utils.Extensions.RichString
-import com.github.fsanaulla.chronicler.akka.utils.SampleEntitys.singleResult
+import com.github.fsanaulla.chronicler.akka.Extensions.RichString
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
 import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
-import com.github.fsanaulla.chronicler.testing.{FutureHandler, TestSpec}
+import com.github.fsanaulla.chronicler.testing.it.Futures
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import jawn.ast.{JArray, JNum, JString}
 
 import scala.concurrent.ExecutionContext
@@ -20,8 +20,8 @@ import scala.language.postfixOps
   */
 class AkkaResponseHandlerSpec
   extends TestKit(ActorSystem())
-    with TestSpec
-    with FutureHandler
+    with FlatSpecWithMatchers
+    with Futures
     with AkkaResponseHandler {
 
   implicit val mat: ActorMaterializer = ActorMaterializer()
@@ -64,7 +64,19 @@ class AkkaResponseHandlerSpec
         |}
       """.stripMargin.toResponse
 
-    toQueryJsResult(singleHttpResponse).futureValue.queryResult shouldEqual singleResult
+    val result = Array(
+      JArray(Array(
+        JString("2015-01-29T21:55:43.702900257Z"),
+        JNum(2))),
+      JArray(Array(
+        JString("2015-01-29T21:55:43.702900257Z"),
+        JNum(0.55))),
+      JArray(Array(
+        JString("2015-06-11T20:46:02Z"),
+        JNum(0.64)))
+    )
+
+    toQueryJsResult(singleHttpResponse).futureValue.queryResult shouldEqual result
   }
 
   it should "extract bulk query results from response" in {

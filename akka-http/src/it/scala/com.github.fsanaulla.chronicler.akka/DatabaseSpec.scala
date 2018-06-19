@@ -1,17 +1,17 @@
-package com.github.fsanaulla.chronicler.akka.integration
+package com.github.fsanaulla.chronicler.akka
 
 import java.io.File
 
-import akka.actor.ActorSystem
-import akka.testkit.TestKit
+import _root_.akka.actor.ActorSystem
+import _root_.akka.testkit.TestKit
+import com.github.fsanaulla.chronicler.akka.SampleEntitys._
+import com.github.fsanaulla.chronicler.akka.TestHelper._
 import com.github.fsanaulla.chronicler.akka.api.Database
-import com.github.fsanaulla.chronicler.akka.utils.SampleEntitys._
-import com.github.fsanaulla.chronicler.akka.utils.TestHelper._
-import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
 import com.github.fsanaulla.chronicler.core.model.Point
 import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
-import com.github.fsanaulla.chronicler.testing.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
+import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
+import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import jawn.ast.{JArray, JNum}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -23,8 +23,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class DatabaseSpec
   extends TestKit(ActorSystem())
-    with TestSpec
-    with FutureHandler
+    with FlatSpecWithMatchers
+    with Futures
     with DockerizedInfluxDB {
 
   val testDB = "db"
@@ -84,7 +84,7 @@ class DatabaseSpec
 
     multiQuery
       .queryResult
-      .map(_.map(_.arrayValue.value.tail)) shouldEqual largeMultiJsonEntity.map(_.map(_.arrayValue.value.tail))
+      .map(_.map(_.arrayValue.get.tail)) shouldEqual largeMultiJsonEntity.map(_.map(_.arrayValue.get.tail))
   }
 
   it should "write native represented entities" in {

@@ -1,12 +1,12 @@
-package com.github.fsanaulla.chronicler.akka.integration
+package com.github.fsanaulla.chronicler.akka
 
-import akka.actor.ActorSystem
-import akka.testkit.TestKit
-import com.github.fsanaulla.chronicler.akka.{Influx, InfluxAkkaHttpClient}
+import _root_.akka.actor.ActorSystem
+import _root_.akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.core.enums.Privileges
 import com.github.fsanaulla.chronicler.core.model.{AuthorizationException, UserPrivilegesInfo}
-import com.github.fsanaulla.chronicler.testing.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
+import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
+import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -17,8 +17,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class AuthenticationSpec
   extends TestKit(ActorSystem())
-    with TestSpec
-    with FutureHandler
+    with FlatSpecWithMatchers
+    with Futures
     with DockerizedInfluxDB {
 
   val userDB = "db"
@@ -36,7 +36,7 @@ class AuthenticationSpec
     Influx.connect(host = host, port = port, system = system, credentials = Some(creds))
 
   "AuthenticationUserManagement" should  "create admin user " in {
-    influx.showUsers.futureValue.ex.value shouldBe a[AuthorizationException]
+    influx.showUsers.futureValue.ex.get shouldBe a[AuthorizationException]
   }
 
   it should "create database" in {

@@ -1,4 +1,4 @@
-package com.github.fsanaulla.chronicler.akka.utils
+package com.github.fsanaulla.chronicler.akka
 
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import com.github.fsanaulla.chronicler.akka.utils.AkkaContentTypes.AppJson

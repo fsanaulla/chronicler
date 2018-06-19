@@ -1,6 +1,6 @@
-package com.github.fsanaulla.chronicler.akka.utils
+package com.github.fsanaulla.chronicler.akka
 
-import com.github.fsanaulla.chronicler.akka.utils.TestHelper.{FakeEntity, currentNanoTime}
+import com.github.fsanaulla.chronicler.akka.TestHelper.{FakeEntity, currentNanoTime}
 import jawn.ast.{JArray, JNum, JString}
 
 object SampleEntitys {
