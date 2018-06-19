@@ -1,10 +1,10 @@
-package com.github.fsanaulla.chronicler.async.integration
+package com.github.fsanaulla.chronicler.async
 
-import com.github.fsanaulla.chronicler.async.{Influx, InfluxAsyncHttpClient}
 import com.github.fsanaulla.chronicler.core.enums.Privileges
 import com.github.fsanaulla.chronicler.core.model.{UserInfo, UserPrivilegesInfo}
-import com.github.fsanaulla.chronicler.testing.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
+import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.OkResult
+import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -13,7 +13,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UserManagementSpec extends TestSpec with DockerizedInfluxDB with FutureHandler {
+class UserManagementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with Futures {
 
   val userDB = "db"
   val userName = "Martin"
@@ -48,7 +48,7 @@ class UserManagementSpec extends TestSpec with DockerizedInfluxDB with FutureHan
 
   it should "set privileges" in {
     influx.setPrivileges(userName, userDB, Privileges.READ).futureValue shouldEqual OkResult
-    influx.setPrivileges("unknown", userDB, Privileges.READ).futureValue.ex.value.getMessage shouldEqual "user not found"
+    influx.setPrivileges("unknown", userDB, Privileges.READ).futureValue.ex.get.getMessage shouldEqual "user not found"
 
     influx.showUserPrivileges(userName).futureValue.queryResult shouldEqual Array(UserPrivilegesInfo(userDB, Privileges.READ))
   }

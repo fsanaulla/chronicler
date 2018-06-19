@@ -1,4 +1,4 @@
-package com.github.fsanaulla.chronicler.async.utils
+package com.github.fsanaulla.chronicler.async
 
 import com.softwaremill.sttp.Response
 import jawn.ast.{JParser, JValue}

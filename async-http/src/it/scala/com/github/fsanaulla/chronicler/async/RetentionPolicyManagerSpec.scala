@@ -1,10 +1,10 @@
-package com.github.fsanaulla.chronicler.async.integration
+package com.github.fsanaulla.chronicler.async
 
-import com.github.fsanaulla.chronicler.async.{Influx, InfluxAsyncHttpClient}
 import com.github.fsanaulla.chronicler.core.model.RetentionPolicyInfo
 import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
-import com.github.fsanaulla.chronicler.testing.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
+import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
+import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.postfixOps
@@ -14,7 +14,7 @@ import scala.language.postfixOps
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class RetentionPolicyManagerSpec extends TestSpec with DockerizedInfluxDB with FutureHandler {
+class RetentionPolicyManagerSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with Futures {
 
   val rpDB = "db"
 

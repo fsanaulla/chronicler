@@ -1,7 +1,7 @@
 package com.github.fsanaulla.chronicler.urlhttp.handlers
 
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
-import com.github.fsanaulla.chronicler.urlhttp.utils.Extensions.RichTry
+import com.github.fsanaulla.chronicler.urlhttp.Extensions.RichTry
 import com.softwaremill.sttp.Response
 import jawn.ast._
 import org.scalatest.{OptionValues, TryValues}

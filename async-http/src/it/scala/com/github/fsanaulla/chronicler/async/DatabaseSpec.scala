@@ -1,15 +1,14 @@
-package com.github.fsanaulla.chronicler.async.integration
+package com.github.fsanaulla.chronicler.async
 
 import java.io.File
 
+import com.github.fsanaulla.chronicler.async.SampleEntitys.largeMultiJsonEntity
 import com.github.fsanaulla.chronicler.async.api.Database
-import com.github.fsanaulla.chronicler.async.utils.SampleEntitys.largeMultiJsonEntity
-import com.github.fsanaulla.chronicler.async.utils.TestHelper.FakeEntity
-import com.github.fsanaulla.chronicler.async.{Influx, InfluxAsyncHttpClient}
 import com.github.fsanaulla.chronicler.core.model.Point
 import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
-import com.github.fsanaulla.chronicler.testing.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.{DockerizedInfluxDB, FutureHandler, TestSpec}
+import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
+import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity, Futures}
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import jawn.ast.{JArray, JNum}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -19,7 +18,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 28.09.17
   */
-class DatabaseSpec extends TestSpec with FutureHandler with DockerizedInfluxDB {
+class DatabaseSpec extends FlatSpecWithMatchers with Futures with DockerizedInfluxDB {
 
   val testDB = "db"
 
@@ -87,7 +86,7 @@ class DatabaseSpec extends TestSpec with FutureHandler with DockerizedInfluxDB {
 
     multiQuery
       .queryResult
-      .map(_.map(_.arrayValue.value.tail)) shouldEqual largeMultiJsonEntity.map(_.map(_.arrayValue.value.tail))
+      .map(_.map(_.arrayValue.get.tail)) shouldEqual largeMultiJsonEntity.map(_.map(_.arrayValue.get.tail))
   }
 
   it should "write native" in {

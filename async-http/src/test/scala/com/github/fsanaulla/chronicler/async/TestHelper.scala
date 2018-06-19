@@ -1,10 +1,8 @@
-package com.github.fsanaulla.chronicler.async.utils
+package com.github.fsanaulla.chronicler.async
 
 import java.net.URLEncoder
 
-import com.github.fsanaulla.chronicler.core.model.{AuthorizationException, InfluxCredentials, InfluxFormatter, WriteResult}
-import com.github.fsanaulla.chronicler.macros.Macros
-import com.github.fsanaulla.chronicler.macros.annotations.{field, tag}
+import com.github.fsanaulla.chronicler.core.model.{AuthorizationException, InfluxCredentials, WriteResult}
 
 /**
   * Created by fayaz on 11.07.17.
@@ -15,14 +13,7 @@ object TestHelper {
     def encode: String = URLEncoder.encode(str)
   }
 
-  final val currentNanoTime: Long = System.currentTimeMillis() * 1000000
   final val AuthErrorResult = WriteResult(401, isSuccess = false, Some(new AuthorizationException("unable to parse authentication credentials")))
-
-  case class FakeEntity(@tag firstName: String,
-                        @tag lastName: String,
-                        @field age: Int)
-
-  implicit val fmt: InfluxFormatter[FakeEntity] = Macros.format[FakeEntity]
 
   def queryTesterAuth(query: String)(credentials: InfluxCredentials): String =
     s"http://localhost:8086/query?q=${query.encode}&p=${credentials.password.encode}&u=${credentials.username.encode}"

@@ -1,9 +1,9 @@
 package com.github.fsanaulla.chronicler.async.handlers
 
-import com.github.fsanaulla.chronicler.testing.{EmptyCredentials, TestSpec}
+import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers}
 
 class AsyncQueryHandlerSpec
-  extends TestSpec
+  extends FlatSpecWithMatchers
     with EmptyCredentials
     with AsyncQueryHandler {
 

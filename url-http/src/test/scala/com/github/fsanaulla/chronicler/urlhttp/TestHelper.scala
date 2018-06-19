@@ -1,4 +1,4 @@
-package com.github.fsanaulla.chronicler.urlhttp.utils
+package com.github.fsanaulla.chronicler.urlhttp
 
 import java.net.URLEncoder
 

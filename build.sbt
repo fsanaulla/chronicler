@@ -59,13 +59,6 @@ lazy val testing = module(
   Dependencies.itTestingDeps
 ).dependsOn(core % "compile->compile")
 
-//lazy val urlHttp = module(
-//  "urlHttp",
-//  "url-http",
-//  Dependencies.urlHttp :: Nil
-//).dependsOn(core % "compile->compile;test->test")
-// .dependsOn(macros, testing % "test->test")
-
 lazy val urlHttp = project
   .in(file("url-http"))
   .configs(IntegrationTest)
@@ -88,13 +81,23 @@ lazy val akkaHttp = module(
 ).dependsOn(core % "compile->compile;test->test")
  .dependsOn(macros, testing % "test->test")
 
-lazy val asyncHttp = module(
-  "asyncHttp",
-  "async-http",
-  Dependencies.asyncHttp,
-  "-language:implicitConversions" :: "-language:higherKinds" :: Nil
-).dependsOn(core % "compile->compile;test->test")
- .dependsOn(macros, testing % "test->test")
+lazy val asyncHttp = project
+  .in(file("async-http"))
+  .configs(IntegrationTest)
+  .settings(Defaults.itSettings)
+  .settings(commonSettings: _*)
+  .settings(publishSettings: _*)
+  .settings(
+    name := "chronicler-async-http",
+    scalacOptions ++= Seq(
+      "-language:implicitConversions",
+      "-language:higherKinds"
+    ),
+    libraryDependencies ++= Dependencies.asyncHttp
+  )
+  .dependsOn(core % "compile->compile;test->test")
+  .dependsOn(unitTesting % "compile->test")
+  .dependsOn(itTesting % "compile->test")
 
 lazy val udp = project
   .in(file("udp"))

@@ -1,10 +1,11 @@
 package com.github.fsanaulla.chronicler.async.handlers
 
-import com.github.fsanaulla.chronicler.async.utils.TestExtensions.RichTry
-import com.github.fsanaulla.chronicler.testing.{FutureHandler, TestSpec}
+import com.github.fsanaulla.chronicler.async.TestExtensions.RichTry
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.softwaremill.sttp.Response
 import jawn.ast._
-import org.scalatest.TryValues
+import org.scalatest.OptionValues
+import org.scalatest.concurrent.ScalaFutures
 
 import scala.concurrent.ExecutionContext
 
@@ -13,7 +14,7 @@ import scala.concurrent.ExecutionContext
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class AsyncJsonHandlerSpec extends TestSpec with AsyncJsonHandler with FutureHandler with TryValues {
+class AsyncJsonHandlerSpec extends FlatSpecWithMatchers with AsyncJsonHandler with ScalaFutures with OptionValues {
 
   override implicit val ex: ExecutionContext = ExecutionContext.Implicits.global
 
@@ -274,7 +275,7 @@ class AsyncJsonHandlerSpec extends TestSpec with AsyncJsonHandler with FutureHan
         |     }
         |   ]
         |}
-      """.stripMargin).success.value
+      """.stripMargin).toOption.value
 
     val optResult = getOptGropedResult(json)
 

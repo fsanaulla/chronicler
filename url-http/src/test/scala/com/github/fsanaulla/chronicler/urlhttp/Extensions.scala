@@ -1,4 +1,4 @@
-package com.github.fsanaulla.chronicler.urlhttp.utils
+package com.github.fsanaulla.chronicler.urlhttp
 
 import com.softwaremill.sttp.Response
 import jawn.ast.{JParser, JValue}

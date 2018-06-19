@@ -3,8 +3,8 @@ package com.github.fsanaulla.chronicler.urlhttp.query
 import com.github.fsanaulla.chronicler.core.enums.Destinations
 import com.github.fsanaulla.chronicler.core.query.SubscriptionsManagementQuery
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
+import com.github.fsanaulla.chronicler.urlhttp.TestHelper._
 import com.github.fsanaulla.chronicler.urlhttp.handlers.UrlQueryHandler
-import com.github.fsanaulla.chronicler.urlhttp.utils.TestHelper._
 import com.softwaremill.sttp.Uri
 
 /**
