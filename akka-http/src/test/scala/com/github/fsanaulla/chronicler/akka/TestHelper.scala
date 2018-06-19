@@ -1,23 +1,12 @@
 package com.github.fsanaulla.chronicler.akka
 
-import akka.http.scaladsl.model.Uri
+import _root_.akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.core.model._
-import com.github.fsanaulla.chronicler.macros.Macros
-import com.github.fsanaulla.chronicler.macros.annotations.{field, tag}
 
 /**
   * Created by fayaz on 11.07.17.
   */
 object TestHelper {
-
-  final val currentNanoTime: Long = System.currentTimeMillis() * 1000000
-
-  case class FakeEntity(@tag sex: String,
-                        @tag firstName: String,
-                        @tag lastName: String,
-                        @field age: Int)
-
-  implicit val fmt: InfluxFormatter[FakeEntity] = Macros.format[FakeEntity]
 
   def queryTesterAuth(query: String)(credentials: InfluxCredentials): Uri =
     Uri("/query").withQuery(Uri.Query("q" -> query, "p" -> credentials.username, "u" -> credentials.username))

@@ -1,9 +1,11 @@
 package com.github.fsanaulla.chronicler.akka
 
-import com.github.fsanaulla.chronicler.akka.TestHelper.{FakeEntity, currentNanoTime}
+import com.github.fsanaulla.chronicler.testing.it.FakeEntity
 import jawn.ast.{JArray, JNum, JString}
 
 object SampleEntitys {
+
+  final val currentNanoTime: Long = System.currentTimeMillis() * 1000000
 
   // INTEGRATION SPEC ENTITYS
   val singleEntity = FakeEntity("Male", "Martin", "Odersky", 58)

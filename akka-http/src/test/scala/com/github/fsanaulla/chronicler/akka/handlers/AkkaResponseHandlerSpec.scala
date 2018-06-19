@@ -1,13 +1,13 @@
 package com.github.fsanaulla.chronicler.akka.handlers
 
 import _root_.akka.actor.ActorSystem
+import _root_.akka.http.scaladsl.model.HttpResponse
 import _root_.akka.stream.ActorMaterializer
-import akka.http.scaladsl.model.HttpResponse
-import akka.testkit.TestKit
+import _root_.akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.Extensions.RichString
+import com.github.fsanaulla.chronicler.akka.FuturesHandler
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
 import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
-import com.github.fsanaulla.chronicler.testing.it.Futures
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import jawn.ast.{JArray, JNum, JString}
 
@@ -21,7 +21,7 @@ import scala.language.postfixOps
 class AkkaResponseHandlerSpec
   extends TestKit(ActorSystem())
     with FlatSpecWithMatchers
-    with Futures
+    with FuturesHandler
     with AkkaResponseHandler {
 
   implicit val mat: ActorMaterializer = ActorMaterializer()

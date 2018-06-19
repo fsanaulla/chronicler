@@ -3,10 +3,9 @@ package com.github.fsanaulla.chronicler.akka
 import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.SampleEntitys._
-import com.github.fsanaulla.chronicler.akka.TestHelper.FakeEntity
 import com.github.fsanaulla.chronicler.akka.api.Measurement
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
+import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity, Futures}
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 
 import scala.concurrent.ExecutionContext.Implicits.global

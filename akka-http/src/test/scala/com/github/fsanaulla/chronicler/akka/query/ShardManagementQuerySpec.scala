@@ -1,6 +1,6 @@
-package com.github.fsanaulla.chronicler.akka.unit
+package com.github.fsanaulla.chronicler.akka.query
 
-import akka.http.scaladsl.model.Uri
+import _root_.akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.TestHelper._
 import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryHandler
 import com.github.fsanaulla.chronicler.core.query.ShardManagementQuery

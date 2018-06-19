@@ -26,14 +26,14 @@ object Dependencies {
   final val coreDep = Seq(
     "com.beachape"   %% "enumeratum" % "1.5.13",
     "org.spire-math" %% "jawn-ast"   % "0.12.1",
-    "org.scalatest"  %% "scalatest"  % Versions.scalaTest % Test
+    "org.scalatest"  %% "scalatest"  % Versions.scalaTest % "test"
   )
 
   // akka-http
   final val akkaDep = Seq(
     "com.typesafe.akka" %% "akka-stream"  % Versions.akka % Provided,
     "com.typesafe.akka" %% "akka-actor"   % Versions.akka % Provided,
-    "com.typesafe.akka" %% "akka-testkit" % Versions.akka % Test,
+    "com.typesafe.akka" %% "akka-testkit" % Versions.akka % "test,it",
     "com.typesafe.akka" %% "akka-http"    % "10.1.1"
   )
 
