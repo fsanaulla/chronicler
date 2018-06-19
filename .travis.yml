@@ -13,13 +13,7 @@ services:
   - docker
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION &&
-        project core clean compile test:compile coverage test coverageReport &&
-        project macros clean compile test:compile coverage test &&
-        project asyncHttp clean compile test:compile coverage test coverage it:compile it:test coverageReport &&
-        project udp clean compile coverage it:compile it:test coverageReport
-        project urlHttp clean compile test:compile coverage test coverage it:compile it:test coverageReport &&
-        project akkaHttp clean compile test:compile coverage test coverage it:compile it:test coverageReport
+  - sbt ++$TRAVIS_SCALA_VERSION coreTest macrosTest asyncTest udpTest urlTest akkaTest
   
 after_success:
  - bash <(curl -s https://codecov.io/bash)

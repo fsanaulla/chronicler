@@ -131,11 +131,11 @@ lazy val macros = project
   .dependsOn(unitTesting % "test->test")
 
 lazy val itTesting = project
-  .in(file("testing/it"))
+  .in(file("tests/it-testing"))
   .settings(libraryDependencies ++= Dependencies.itTestingDeps)
   .dependsOn(core, macros % "compile->compile")
 
 lazy val unitTesting = project
-  .in(file("testing/unit"))
+  .in(file("tests/unit-testing"))
   .settings(libraryDependencies += Dependencies.scalaTest)
   .dependsOn(core % "compile->compile")
