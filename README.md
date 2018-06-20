@@ -70,7 +70,7 @@ Let's take a look on a simply example of usage. In this example we will use `asy
 
 Sbt file looks like:
 ```
-lazy val chronicler: String = "0.2.4"
+lazy val chronicler: String = "latest"
 
 libraryDependencies ++= Seq(
    "com.github.fsanaulla" %% "chronicler-async-http" % chronicler,
