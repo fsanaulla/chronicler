@@ -33,14 +33,19 @@ class DatabaseSpec
 
   lazy val db: Database = influx.database(testDB)
 
-  "Database api" should "write from file" in {
+  "Database API" should "write data from file" in {
     influx.createDatabase(testDB).futureValue shouldEqual OkResult
 
-    db.writeFromFile(new File(getClass.getResource("/points.txt").getPath)).futureValue shouldEqual NoContentResult
-    db.readJs("SELECT * FROM test1").futureValue.queryResult.length shouldEqual 3
+    db.writeFromFile(new File(getClass.getResource("/points.txt").getPath))
+      .futureValue shouldEqual NoContentResult
+
+    db.readJs("SELECT * FROM test1")
+      .futureValue
+      .queryResult
+      .length shouldEqual 3
   }
 
-  it should "write points" in {
+  it should "write 2 points represented entities" in {
 
     val point1 = Point("test2")
       .addTag("sex", "Male")
@@ -55,13 +60,19 @@ class DatabaseSpec
       .addField("age", 36)
 
     db.writePoint(point1).futureValue shouldEqual NoContentResult
-    db.read[FakeEntity]("SELECT * FROM test2").futureValue.queryResult shouldEqual Array(FakeEntity("Male", "Martin", "Odersky", 54))
+
+    db.read[FakeEntity]("SELECT * FROM test2")
+      .futureValue
+      .queryResult shouldEqual Array(FakeEntity("Martin", "Odersky", 54))
 
     db.bulkWritePoints(Array(point1, point2)).futureValue shouldEqual NoContentResult
-    db.read[FakeEntity]("SELECT * FROM test2").futureValue.queryResult shouldEqual Array(FakeEntity("Male", "Martin", "Odersky", 54), FakeEntity("Male", "Jame", "Franko", 36), FakeEntity("Male", "Martin", "Odersky", 54))
+
+    db.read[FakeEntity]("SELECT * FROM test2")
+      .futureValue
+      .queryResult shouldEqual Array(FakeEntity("Martin", "Odersky", 54), FakeEntity("Jame", "Franko", 36), FakeEntity("Martin", "Odersky", 54))
   }
 
-  it should "read multiple query results" in {
+  it should "retrieve multiple request" in {
 
     val multiQuery = db.bulkReadJs(
       Array(
@@ -86,14 +97,19 @@ class DatabaseSpec
       .map(_.map(_.arrayValue.get.tail)) shouldEqual largeMultiJsonEntity.map(_.map(_.arrayValue.get.tail))
   }
 
-  it should "write native represented entities" in {
+  it should "write native" in {
 
     db.writeNative("test3,sex=Male,firstName=Jame,lastName=Lannister age=48").futureValue shouldEqual NoContentResult
-    db.read[FakeEntity]("SELECT * FROM test3").futureValue.queryResult shouldEqual Array(FakeEntity("Male", "Jame", "Lannister", 48))
 
-    db.bulkWriteNative(Array("test4,sex=Male,firstName=Jon,lastName=Snow age=24", "test4,sex=Female,firstName=Deny,lastName=Targaryen age=25")).futureValue shouldEqual NoContentResult
-    db.read[FakeEntity]("SELECT * FROM test4").futureValue.queryResult shouldEqual Array(FakeEntity("Female", "Deny", "Targaryen", 25), FakeEntity("Male", "Jon", "Snow", 24))
+    db.read[FakeEntity]("SELECT * FROM test3")
+      .futureValue
+      .queryResult shouldEqual Array(FakeEntity("Jame", "Lannister", 48))
 
+    db.bulkWriteNative(Seq("test4,sex=Male,firstName=Jon,lastName=Snow age=24", "test4,sex=Female,firstName=Deny,lastName=Targaryen age=25")).futureValue shouldEqual NoContentResult
+
+    db.read[FakeEntity]("SELECT * FROM test4")
+      .futureValue
+      .queryResult shouldEqual Array(FakeEntity("Female", "Deny", "Targaryen", 25), FakeEntity("Jon", "Snow", 24))
   }
 
   it should "return grouped result by sex and sum of ages" in {

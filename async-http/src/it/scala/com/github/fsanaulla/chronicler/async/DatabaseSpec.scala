@@ -42,11 +42,13 @@ class DatabaseSpec extends FlatSpecWithMatchers with Futures with DockerizedInfl
   it should "write 2 points represented entities" in {
 
     val point1 = Point("test2")
+      .addTag("sex", "Male")
       .addTag("firstName", "Martin")
       .addTag("lastName", "Odersky")
       .addField("age", 54)
 
     val point2 = Point("test2")
+      .addTag("sex", "Male")
       .addTag("firstName", "Jame")
       .addTag("lastName", "Franko")
       .addField("age", 36)
@@ -91,17 +93,17 @@ class DatabaseSpec extends FlatSpecWithMatchers with Futures with DockerizedInfl
 
   it should "write native" in {
 
-    db.writeNative("test3,firstName=Jame,lastName=Lannister age=48").futureValue shouldEqual NoContentResult
+    db.writeNative("test3,sex=Male,firstName=Jame,lastName=Lannister age=48").futureValue shouldEqual NoContentResult
     
     db.read[FakeEntity]("SELECT * FROM test3")
       .futureValue
       .queryResult shouldEqual Array(FakeEntity("Jame", "Lannister", 48))
 
-    db.bulkWriteNative(Seq("test4,firstName=Jon,lastName=Snow age=24", "test4,firstName=Deny,lastName=Targaryen age=25")).futureValue shouldEqual NoContentResult
+    db.bulkWriteNative(Seq("test4,sex=Male,firstName=Jon,lastName=Snow age=24", "test4,sex=Female,firstName=Deny,lastName=Targaryen age=25")).futureValue shouldEqual NoContentResult
 
     db.read[FakeEntity]("SELECT * FROM test4")
       .futureValue
-      .queryResult shouldEqual Array(FakeEntity("Deny", "Targaryen", 25), FakeEntity("Jon", "Snow", 24))
+      .queryResult shouldEqual Array(FakeEntity("Female", "Deny", "Targaryen", 25), FakeEntity("Jon", "Snow", 24))
   }
 
   it should "return grouped result by sex and sum of ages" in {

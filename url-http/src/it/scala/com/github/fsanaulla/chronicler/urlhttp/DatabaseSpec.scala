@@ -31,10 +31,12 @@ class DatabaseSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with Try
     influx.createDatabase(testDB).success.value shouldEqual OkResult
 
     db.writeFromFile(new File(getClass.getResource("/points.txt").getPath))
-      .success.value shouldEqual NoContentResult
-    
+      .success
+      .value shouldEqual NoContentResult
+
     db.readJs("SELECT * FROM test1")
-      .success.value
+      .success
+      .value
       .queryResult
       .length shouldEqual 3
   }
@@ -42,25 +44,29 @@ class DatabaseSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with Try
   it should "write 2 points represented entities" in {
 
     val point1 = Point("test2")
+      .addTag("sex", "Male")
       .addTag("firstName", "Martin")
       .addTag("lastName", "Odersky")
       .addField("age", 54)
 
     val point2 = Point("test2")
+      .addTag("sex", "Male")
       .addTag("firstName", "Jame")
       .addTag("lastName", "Franko")
       .addField("age", 36)
 
     db.writePoint(point1).success.value shouldEqual NoContentResult
-    
+
     db.read[FakeEntity]("SELECT * FROM test2")
-      .success.value
+      .success
+      .value
       .queryResult shouldEqual Array(FakeEntity("Martin", "Odersky", 54))
 
     db.bulkWritePoints(Array(point1, point2)).success.value shouldEqual NoContentResult
-    
+
     db.read[FakeEntity]("SELECT * FROM test2")
-      .success.value
+      .success
+      .value
       .queryResult shouldEqual Array(FakeEntity("Martin", "Odersky", 54), FakeEntity("Jame", "Franko", 36), FakeEntity("Martin", "Odersky", 54))
   }
 
@@ -86,35 +92,33 @@ class DatabaseSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with Try
 
     multiQuery
       .queryResult
-      .map(_.map(_.arrayValue.value.tail)) shouldEqual largeMultiJsonEntity.map(_.map(_.arrayValue.value.tail))
+      .map(_.map(_.arrayValue.get.tail)) shouldEqual largeMultiJsonEntity.map(_.map(_.arrayValue.get.tail))
   }
 
   it should "write native" in {
 
-    db.writeNative("test3,firstName=Jame,lastName=Lannister age=48").success.value shouldEqual NoContentResult
-    
+    db.writeNative("test3,sex=Male,firstName=Jame,lastName=Lannister age=48").success.value shouldEqual NoContentResult
+
     db.read[FakeEntity]("SELECT * FROM test3")
       .success.value
       .queryResult shouldEqual Array(FakeEntity("Jame", "Lannister", 48))
 
-    db.bulkWriteNative(Seq("test4,firstName=Jon,lastName=Snow age=24", "test4,firstName=Deny,lastName=Targaryen age=25")).success.value shouldEqual NoContentResult
+    db.bulkWriteNative(Seq("test4,sex=Male,firstName=Jon,lastName=Snow age=24", "test4,sex=Female,firstName=Deny,lastName=Targaryen age=25")).success.value shouldEqual NoContentResult
 
     db.read[FakeEntity]("SELECT * FROM test4")
       .success.value
-      .queryResult shouldEqual Array(FakeEntity("Deny", "Targaryen", 25), FakeEntity("Jon", "Snow", 24))
+      .queryResult shouldEqual Array(FakeEntity("Female", "Deny", "Targaryen", 25), FakeEntity("Jon", "Snow", 24))
   }
 
   it should "return grouped result by sex and sum of ages" in {
 
     db
       .bulkWriteNative(Array("test5,sex=Male,firstName=Jon,lastName=Snow age=24", "test5,sex=Male,firstName=Rainer,lastName=Targaryen age=25"))
-      .success
-      .value shouldEqual NoContentResult
+      .success.value shouldEqual NoContentResult
 
     db
       .readJs("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"")
-      .success
-      .value
+      .success.value
       .groupedResult
       .map { case (k, v) => k.toSeq -> v } shouldEqual Array(Seq("Male") -> JArray(Array(JNum(0), JNum(49))))
 
