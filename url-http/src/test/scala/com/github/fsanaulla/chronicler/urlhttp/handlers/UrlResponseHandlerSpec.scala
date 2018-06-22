@@ -2,9 +2,8 @@ package com.github.fsanaulla.chronicler.urlhttp.handlers
 
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
 import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
-import com.github.fsanaulla.chronicler.testing.TestSpec
-import com.github.fsanaulla.chronicler.urlhttp.utils.Extensions.{RichString, RichTry}
-import com.github.fsanaulla.chronicler.urlhttp.utils.SampleEntitys.singleResult
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+import com.github.fsanaulla.chronicler.urlhttp.Extensions.{RichString, RichTry}
 import com.softwaremill.sttp.Response
 import jawn.ast._
 import org.scalatest.TryValues
@@ -16,7 +15,7 @@ import scala.language.postfixOps
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UrlResponseHandlerSpec extends TestSpec with UrlResponseHandler with TryValues {
+class UrlResponseHandlerSpec extends FlatSpecWithMatchers with UrlResponseHandler with TryValues {
 
   implicit val p: JParser.type = JParser
 
@@ -56,7 +55,19 @@ class UrlResponseHandlerSpec extends TestSpec with UrlResponseHandler with TryVa
         |}
       """.stripMargin.toResponse
 
-    toQueryJsResult(singleResponse).success.value.queryResult shouldEqual singleResult
+    val result = Array(
+      JArray(Array(
+        JString("2015-01-29T21:55:43.702900257Z"),
+        JNum(2))),
+      JArray(Array(
+        JString("2015-01-29T21:55:43.702900257Z"),
+        JNum(0.55))),
+      JArray(Array(
+        JString("2015-06-11T20:46:02Z"),
+        JNum(0.64)))
+    )
+
+    toQueryJsResult(singleResponse).success.value.queryResult shouldEqual result
   }
 
   it should "extract bulk query results from response" in {

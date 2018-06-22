@@ -1,9 +1,9 @@
 package com.github.fsanaulla.chronicler.urlhttp.handlers
 
-import com.github.fsanaulla.chronicler.testing.{EmptyCredentials, TestSpec}
+import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers}
 
 class UrlQueryHandlerSpec
-  extends TestSpec
+  extends FlatSpecWithMatchers
     with EmptyCredentials
     with UrlQueryHandler {
 

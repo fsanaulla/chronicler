@@ -14,12 +14,13 @@ object Dependencies {
     final val scalaTest = "3.0.5"
   }
 
+  final val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalaTest
+
   // testing
-  final val testingDeps = Seq(
+  final val itTestingDeps = Seq(
     "org.jetbrains"        %  "annotations" % "15.0", // to solve evicted warning
-    "org.scalatest"        %% "scalatest"   % Versions.scalaTest,
     "org.testcontainers"   %  "influxdb"    % "1.7.3" exclude("org.jetbrains", "annotations")
-  )
+  ) :+ scalaTest
 
   // core
   final val coreDep = Seq(
@@ -32,7 +33,7 @@ object Dependencies {
   final val akkaDep = Seq(
     "com.typesafe.akka" %% "akka-stream"  % Versions.akka % Provided,
     "com.typesafe.akka" %% "akka-actor"   % Versions.akka % Provided,
-    "com.typesafe.akka" %% "akka-testkit" % Versions.akka % Test,
+    "com.typesafe.akka" %% "akka-testkit" % Versions.akka % "test,it",
     "com.typesafe.akka" %% "akka-http"    % "10.1.1"
   )
 
@@ -49,5 +50,5 @@ object Dependencies {
   final def scalaReflect(scalaVersion: String): ModuleID = "org.scala-lang" % "scala-reflect" % scalaVersion
 
   // udp
-  final val udpDep = "com.github.fsanaulla" %% "scalatest-embedinflux" % "0.1.7" % Test
+  final val udpDep = "com.github.fsanaulla" %% "scalatest-embedinflux" % "0.1.7" % IntegrationTest
 }

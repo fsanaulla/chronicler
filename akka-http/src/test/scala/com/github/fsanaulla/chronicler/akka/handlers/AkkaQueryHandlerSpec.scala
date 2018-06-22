@@ -1,10 +1,10 @@
 package com.github.fsanaulla.chronicler.akka.handlers
 
 import com.github.fsanaulla.chronicler.core.model.{HasCredentials, InfluxCredentials}
-import com.github.fsanaulla.chronicler.testing.TestSpec
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 
 class AkkaQueryHandlerSpec
-  extends TestSpec
+  extends FlatSpecWithMatchers
     with AkkaQueryHandler
     with HasCredentials {
 

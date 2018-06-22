@@ -1,10 +1,10 @@
 package com.github.fsanaulla.chronicler.async.unit
 
+import com.github.fsanaulla.chronicler.async.TestHelper._
 import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryHandler
-import com.github.fsanaulla.chronicler.async.utils.TestHelper._
 import com.github.fsanaulla.chronicler.core.enums.Privileges
 import com.github.fsanaulla.chronicler.core.query.UserManagementQuery
-import com.github.fsanaulla.chronicler.testing.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
+import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.softwaremill.sttp.Uri
 
 /**

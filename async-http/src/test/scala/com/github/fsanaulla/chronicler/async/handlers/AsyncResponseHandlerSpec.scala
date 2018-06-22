@@ -1,12 +1,13 @@
 package com.github.fsanaulla.chronicler.async.handlers
 
-import com.github.fsanaulla.chronicler.async.utils.SampleEntitys.singleResult
-import com.github.fsanaulla.chronicler.async.utils.TestExtensions.{RichString, RichTry}
+import com.github.fsanaulla.chronicler.async.TestExtensions.{RichString, RichTry}
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
 import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
-import com.github.fsanaulla.chronicler.testing.{FutureHandler, TestSpec}
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.softwaremill.sttp.Response
 import jawn.ast._
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.time.{Second, Seconds, Span}
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
@@ -17,7 +18,9 @@ import scala.language.postfixOps
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class AsyncResponseHandlerSpec extends TestSpec with AsyncResponseHandler with FutureHandler {
+class AsyncResponseHandlerSpec extends FlatSpecWithMatchers with AsyncResponseHandler with ScalaFutures {
+
+  implicit val pc: PatienceConfig = PatienceConfig(Span(20, Seconds), Span(1, Second))
 
   protected implicit val ex: ExecutionContext = ExecutionContext.Implicits.global
 
@@ -62,7 +65,19 @@ class AsyncResponseHandlerSpec extends TestSpec with AsyncResponseHandler with F
         |}
       """.stripMargin.toResponse
 
-    toQueryJsResult(singleResponse).futureValue.queryResult shouldEqual singleResult
+    val result = Array(
+      JArray(Array(
+        JString("2015-01-29T21:55:43.702900257Z"),
+        JNum(2))),
+      JArray(Array(
+        JString("2015-01-29T21:55:43.702900257Z"),
+        JNum(0.55))),
+      JArray(Array(
+        JString("2015-06-11T20:46:02Z"),
+        JNum(0.64)))
+    )
+
+    toQueryJsResult(singleResponse).futureValue.queryResult shouldEqual result
   }
 
   it should "extract bulk query results from response" in {
