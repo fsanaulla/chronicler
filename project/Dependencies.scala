@@ -26,7 +26,7 @@ object Dependencies {
   final val coreDep = Seq(
     "com.beachape"   %% "enumeratum" % "1.5.13",
     "org.spire-math" %% "jawn-ast"   % "0.12.1",
-    "org.scalatest"  %% "scalatest"  % Versions.scalaTest % "test"
+    "org.scalatest"  %% "scalatest"  % Versions.scalaTest % Test
   )
 
   // akka-http
@@ -50,5 +50,5 @@ object Dependencies {
   final def scalaReflect(scalaVersion: String): ModuleID = "org.scala-lang" % "scala-reflect" % scalaVersion
 
   // udp
-  final val udpDep = "com.github.fsanaulla" %% "scalatest-embedinflux" % "0.1.7" % Test
+  final val udpDep = "com.github.fsanaulla" %% "scalatest-embedinflux" % "0.1.7" % IntegrationTest
 }

@@ -13,8 +13,8 @@ services:
   - docker
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION unitTesting/publishLocal
-  - sbt ++$TRAVIS_SCALA_VERSION itTesting/publishLocal
+  - sbt unitPublish
+  - sbt itPublish
   - sbt ++$TRAVIS_SCALA_VERSION coreTest macrosTest asyncTest udpTest urlTest akkaTest
   
 after_success:

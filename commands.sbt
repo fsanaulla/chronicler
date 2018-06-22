@@ -8,3 +8,7 @@ addCommandAlias("asyncTest", ";project asyncHttp;clean;compile;test:compile;cove
 addCommandAlias("udpTest", ";project udp;clean;compile;it:compile;coverage;it:test;coverageReport")
 addCommandAlias("urlTest", ";project urlHttp;clean;compile;test:compile;coverage;test;it:compile;coverage;it:test;coverageReport")
 addCommandAlias("akkaTest", ";project akkaHttp;clean;compile;test:compile;coverage;test;it:compile;coverage;it:test;coverageReport")
+
+// publish local
+addCommandAlias("unitPublish", ";project unitTesting;++$TRAVIS_SCALA_VERSION publishLocal")
+addCommandAlias("itPublish", ";project itTesting;++$TRAVIS_SCALA_VERSION publishLocal")
