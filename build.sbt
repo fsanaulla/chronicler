@@ -38,8 +38,8 @@ lazy val chronicler = (project in file("."))
     macros,
     urlHttp,
     akkaHttp,
-    asyncHttp,
-    udp
+    asyncHttp
+//    udp
   )
 
 lazy val core = project

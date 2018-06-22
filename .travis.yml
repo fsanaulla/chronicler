@@ -15,7 +15,7 @@ services:
 script:
   - sbt ++$TRAVIS_SCALA_VERSION unitTesting/publishLocal
   - sbt ++$TRAVIS_SCALA_VERSION itTesting/publishLocal
-  - sbt ++$TRAVIS_SCALA_VERSION coreTest macrosTest asyncTest udpTest urlTest akkaTest
+  - sbt ++$TRAVIS_SCALA_VERSION coreTest macrosTest asyncTest urlTest akkaTest
   
 after_success:
  - bash <(curl -s https://codecov.io/bash)
