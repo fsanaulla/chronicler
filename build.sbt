@@ -132,6 +132,7 @@ lazy val macros = project
 
 lazy val itTesting = project
   .in(file("tests/it-testing"))
+  .settings(commonSettings: _*)
   .settings(
     name := "chronicler-it-testing",
     libraryDependencies ++= Dependencies.itTestingDeps)
@@ -139,6 +140,7 @@ lazy val itTesting = project
 
 lazy val unitTesting = project
   .in(file("tests/unit-testing"))
+  .settings(commonSettings: _*)
   .settings(
     name := "chronicler-unit-testing",
     libraryDependencies += Dependencies.scalaTest)
