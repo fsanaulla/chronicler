@@ -221,6 +221,8 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
 
                 combTags + " " + fields trim
           }"""
+
+        // todo: optimize this place somehow
         case Some(t) =>
           q"""def write(obj: $tpe): String = {
             val fieldsMap: Map[String, Any] = Map(..$fields)
