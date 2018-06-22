@@ -17,7 +17,7 @@ coverage:
   ignore:
     # files and folders that will be removed during processing
       - "core/*"
-      - "testing/*"
+      - "tests/*"
 
 comment:
   layout: "header, diff"
