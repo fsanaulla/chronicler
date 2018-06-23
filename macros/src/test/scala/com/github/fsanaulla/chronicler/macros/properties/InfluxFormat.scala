@@ -31,11 +31,11 @@ trait InfluxFormat {
     }
 
   val gen: Gen[Test] = for {
-    name <- validStr
-    surname <- Gen.option(validStr)
+    name <- Gen.alphaStr
+    surname <- Gen.option(Gen.alphaStr)
     age <- Arbitrary.arbInt.arbitrary
     schooler <- Gen.oneOf(true :: false :: Nil)
-    city <- validStr
+    city <- Gen.alphaStr
     time <- Arbitrary.arbLong.arbitrary
   } yield Test(name, surname, age, schooler, city, time)
 
@@ -59,6 +59,7 @@ trait InfluxFormat {
   )
 
   final def influxWrite(t: Test): String = {
+    require(t.name.nonEmpty, "Tag can't be an empty string")
     val sb = StringBuilder.newBuilder
 
     sb.append(s"name=")

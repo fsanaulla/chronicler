@@ -7,7 +7,6 @@ package com.github.fsanaulla.chronicler.core.model
   */
 final case class InfluxTag(key: String, value: String) {
   require(value.nonEmpty, "Value can't be empty string")
-  require(value != null, "Value can't be 'null'")
 }
 
 sealed trait InfluxField {
