@@ -209,7 +209,8 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
 
                 val nonOptTagsMap: Map[String, String] = Map(..$nonOptTags)
                 val nonOptTags: String = nonOptTagsMap map {
-                  case (k: String, v: String) => k + "=" + v
+                  case (k: String, v: String) if v.nonEmpty => k + "=" + v
+                  case _ => throw new IllegalArgumentException("Tag can't be an empty string")
                 } mkString(",")
 
                 val optTagsMap: Map[String, Option[String]] = Map(..$optTags)
@@ -234,7 +235,8 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
 
             val nonOptTagsMap: Map[String, String] = Map(..$nonOptTags)
             val nonOptTags: String = nonOptTagsMap map {
-              case (k: String, v: String) => k + "=" + v
+              case (k: String, v: String) if v.nonEmpty => k + "=" + v
+              case _ => throw new IllegalArgumentException("Tag can't be an empty string")
             } mkString(",")
 
             val optTagsMap: Map[String, Option[String]] = Map(..$optTags)
