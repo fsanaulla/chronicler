@@ -5,7 +5,10 @@ package com.github.fsanaulla.chronicler.core.model
   * Author: fayaz.sanaulla@gmail.com
   * Date: 05.08.17
   */
-final case class InfluxTag(key: String, value: String)
+final case class InfluxTag(key: String, value: String) {
+  require(value.nonEmpty, "Value can't be empty string")
+  require(value != null, "Value can't be 'null'")
+}
 
 sealed trait InfluxField {
   override def toString: String

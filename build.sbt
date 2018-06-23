@@ -4,7 +4,7 @@ import sbt.url
 lazy val commonSettings = Seq(
   scalaVersion := "2.12.6",
   organization := "com.github.fsanaulla",
-  scalacOptions ++= Seq("-deprecation", "-feature"),
+  scalacOptions ++= Scalac.options(scalaVersion.value),
   crossScalaVersions := Seq("2.11.8", scalaVersion.value),
   homepage := Some(url("https://github.com/fsanaulla/chronicler")),
   licenses += "Apache-2.0" -> url("https://opensource.org/licenses/Apache-2.0"),
@@ -125,7 +125,7 @@ lazy val macros = project
   .settings(publishSettings: _*)
   .settings(
     name := "chronicler-macros",
-    libraryDependencies ++= Dependencies.scalaReflect(scalaVersion.value) :: Nil
+    libraryDependencies ++= Dependencies.macroDeps(scalaVersion.value)
   )
   .dependsOn(core % "compile->compile;test->test")
   .dependsOn(unitTesting % "test->test")
