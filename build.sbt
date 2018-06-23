@@ -125,7 +125,7 @@ lazy val macros = project
   .settings(publishSettings: _*)
   .settings(
     name := "chronicler-macros",
-    libraryDependencies ++= Dependencies.scalaReflect(scalaVersion.value) :: Nil
+    libraryDependencies ++= Dependencies.macroDeps(scalaVersion.value)
   )
   .dependsOn(core % "compile->compile;test->test")
   .dependsOn(unitTesting % "test->test")

@@ -2,7 +2,6 @@ package com.github.fsanaulla.chronicler.macros
 
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
 
-import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 
 /**
@@ -13,6 +12,7 @@ import scala.reflect.macros.blackbox
 private[macros] class MacrosImpl(val c: blackbox.Context) {
   import c.universe._
 
+  // todo add tag validation
   final val TIMESTAMP_TYPE = tpdls[Long]
 
   final val SUPPORTED_TAGS_TYPES =
