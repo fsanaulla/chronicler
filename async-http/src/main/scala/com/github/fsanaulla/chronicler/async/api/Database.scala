@@ -25,44 +25,39 @@ final class Database(val host: String,
     with AsyncWriter
     with AsyncReader {
 
-  def writeFromFile(
-      file: File,
-      chunkSize: Int = 8192,
-      consistency: Consistency = Consistencies.ONE,
-      precision: Precision = Precisions.NANOSECONDS,
-      retentionPolicy: Option[String] = None): Future[WriteResult] = {
+  def writeFromFile(file: File,
+                    chunkSize: Int = 8192,
+                    consistency: Consistency = Consistencies.ONE,
+                    precision: Precision = Precisions.NANOSECONDS,
+                    retentionPolicy: Option[String] = None): Future[WriteResult] = {
     writeFromFile0(file, chunkSize, consistency, precision, retentionPolicy)
   }
 
-  def writeNative(
-      point: String,
-      consistency: Consistency = Consistencies.ONE,
-      precision: Precision = Precisions.NANOSECONDS,
-      retentionPolicy: Option[String] = None): Future[WriteResult] = {
+  def writeNative(point: String,
+                  consistency: Consistency = Consistencies.ONE,
+                  precision: Precision = Precisions.NANOSECONDS,
+                  retentionPolicy: Option[String] = None): Future[WriteResult] = {
     writeNative0(point, consistency, precision, retentionPolicy)
   }
 
-  def bulkWriteNative(
-      points: Seq[String],
-      consistency: Consistency = Consistencies.ONE,
-      precision: Precision = Precisions.NANOSECONDS,
-      retentionPolicy: Option[String] = None): Future[WriteResult] = {
+  def bulkWriteNative(points: Seq[String],
+                      consistency: Consistency = Consistencies.ONE,
+                      precision: Precision = Precisions.NANOSECONDS,
+                      retentionPolicy: Option[String] = None): Future[WriteResult] = {
     bulkWriteNative0(points, consistency, precision, retentionPolicy)
   }
 
-  def writePoint(
-      point: Point,
-      consistency: Consistency = Consistencies.ONE,
-      precision: Precision = Precisions.NANOSECONDS,
-      retentionPolicy: Option[String] = None): Future[WriteResult] = {
+  def writePoint(point: Point,
+                 consistency: Consistency = Consistencies.ONE,
+                 precision: Precision = Precisions.NANOSECONDS,
+                 retentionPolicy: Option[String] = None): Future[WriteResult] = {
     writePoint0(point, consistency, precision, retentionPolicy)
   }
 
-  def bulkWritePoints(
-      points: Seq[Point],
-      consistency: Consistency = Consistencies.ONE,
-      precision: Precision = Precisions.NANOSECONDS,
-      retentionPolicy: Option[String] = None): Future[WriteResult] = {
+  def bulkWritePoints(points: Seq[Point],
+                      consistency: Consistency = Consistencies.ONE,
+                      precision: Precision = Precisions.NANOSECONDS,
+                      retentionPolicy: Option[String] = None): Future[WriteResult] = {
     bulkWritePoints0(points, consistency, precision, retentionPolicy)
   }
 
