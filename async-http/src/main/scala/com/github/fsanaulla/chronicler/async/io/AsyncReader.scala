@@ -17,11 +17,11 @@ private[fsanaulla] trait AsyncReader
     with DatabaseOperationQuery[Uri]
     with HasCredentials { self: ReadOperations[Future] =>
 
-  override def readJs0(dbName: String,
-                       query: String,
-                       epoch: Epoch,
-                       pretty: Boolean,
-                       chunked: Boolean): Future[ReadResult[JArray]] = {
+  override def readJs(dbName: String,
+                      query: String,
+                      epoch: Epoch,
+                      pretty: Boolean,
+                      chunked: Boolean): Future[ReadResult[JArray]] = {
     val executionResult = readRequest(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked))
     query match {
       case q: String if q.contains("GROUP BY") => executionResult.flatMap(toGroupedJsResult)
@@ -29,11 +29,11 @@ private[fsanaulla] trait AsyncReader
     }
   }
 
-  override def bulkReadJs0(dbName: String,
-                           queries: Seq[String],
-                           epoch: Epoch,
-                           pretty: Boolean,
-                           chunked: Boolean): Future[QueryResult[Array[JArray]]] = {
+  override def bulkReadJs(dbName: String,
+                          queries: Seq[String],
+                          epoch: Epoch,
+                          pretty: Boolean,
+                          chunked: Boolean): Future[QueryResult[Array[JArray]]] = {
     val query = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)
     readRequest(query).flatMap(toBulkQueryJsResult)
   }

@@ -1,7 +1,11 @@
 package com.github.fsanaulla.chronicler.akka.io
 
-import akka.http.scaladsl.model.{RequestEntity, Uri}
-import akka.stream.ActorMaterializer
+import java.nio.file.Paths
+
+import _root_.akka.http.scaladsl.model.{ContentTypes, HttpEntity, RequestEntity, Uri}
+import _root_.akka.stream.scaladsl.{FileIO, Framing, Source}
+import _root_.akka.stream.{ActorMaterializer, IOResult}
+import _root_.akka.util.ByteString
 import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryHandler, AkkaRequestHandler, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
@@ -29,11 +33,11 @@ private[akka] trait AkkaWriter
   protected implicit val mat: ActorMaterializer
   protected implicit val connection: Connection
 
-  def writeTo(dbName: String,
-             entity: RequestEntity,
-             consistency: Consistency,
-             precision: Precision,
-             retentionPolicy: Option[String]): Future[WriteResult] = {
+  override def writeTo(dbName: String,
+                       entity: RequestEntity,
+                       consistency: Consistency,
+                       precision: Precision,
+                       retentionPolicy: Option[String]): Future[WriteResult] = {
 
     writeRequest(
       uri = writeToInfluxQuery(
@@ -43,6 +47,27 @@ private[akka] trait AkkaWriter
         retentionPolicy
       ),
       entity = entity
+    ).flatMap(toResult)
+  }
+
+  override def writeFromFile(dbName: String,
+                             filePath: String,
+                             consistency: Consistency,
+                             precision: Precision,
+                             retentionPolicy: Option[String]): Future[WriteResult] = {
+
+    val fileSrc: Source[ByteString, Future[IOResult]] = FileIO
+      .fromPath(Paths.get(filePath))
+      .via(Framing.delimiter(ByteString(System.lineSeparator()), 1024, allowTruncation = true))
+
+    writeRequest(
+      uri = writeToInfluxQuery(
+        dbName,
+        consistency,
+        precision,
+        retentionPolicy
+      ),
+      entity = HttpEntity(ContentTypes.`text/plain(UTF-8)`, fileSrc)
     ).flatMap(toResult)
   }
 }

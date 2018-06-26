@@ -4,9 +4,8 @@ import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.model.RequestEntity
 import _root_.akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.io.{AkkaReader, AkkaWriter}
-import com.github.fsanaulla.chronicler.akka.models.AkkaDeserializers._
 import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
-import com.github.fsanaulla.chronicler.core.api.MeasurementApi
+import com.github.fsanaulla.chronicler.core.api.MeasurementIO
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
 import jawn.ast.JArray
@@ -27,36 +26,43 @@ final class Measurement[E: ClassTag](
                                      protected implicit val mat: ActorMaterializer,
                                      protected implicit val ex: ExecutionContext,
                                      protected implicit val connection: Connection)
-    extends MeasurementApi[Future, E, RequestEntity](dbName, measurementName)
+    extends MeasurementIO[Future, E, RequestEntity]
       with AkkaWriter
       with AkkaReader
       with HasCredentials
       with Executable {
 
-  def write(
-             entity: E,
-             consistency: Consistency = Consistencies.ONE,
-             precision: Precision = Precisions.NANOSECONDS,
-             retentionPolicy: Option[String] = None)
-           (implicit writer: InfluxWriter[E]): Future[WriteResult] =
-    write0(entity, consistency, precision, retentionPolicy)
+  def write(entity: E,
+            consistency: Consistency = Consistencies.ONE,
+            precision: Precision = Precisions.NANOSECONDS,
+            retentionPolicy: Option[String] = None)(implicit wr: InfluxWriter[E]): Future[WriteResult] =
+    writeTo(
+      dbName,
+      toPoint(measurementName, wr.write(entity)),
+      consistency,
+      precision,
+      retentionPolicy
+    )
 
 
-  def bulkWrite(
-                 entitys: Seq[E],
-                 consistency: Consistency = Consistencies.ONE,
-                 precision: Precision = Precisions.NANOSECONDS,
-                 retentionPolicy: Option[String] = None)
-               (implicit writer: InfluxWriter[E]): Future[WriteResult] =
-    bulkWrite0(entitys, consistency, precision, retentionPolicy)
+  def bulkWrite(entitys: Seq[E],
+                consistency: Consistency = Consistencies.ONE,
+                precision: Precision = Precisions.NANOSECONDS,
+                retentionPolicy: Option[String] = None)(implicit wr: InfluxWriter[E]): Future[WriteResult] =
+    writeTo(
+      dbName,
+      toPoints(measurementName, entitys.map(wr.write)),
+      consistency,
+      precision,
+      retentionPolicy
+    )
 
 
   def read(query: String,
            epoch: Epoch = Epochs.NANOSECONDS,
            pretty: Boolean = false,
-           chunked: Boolean = false)
-          (implicit reader: InfluxReader[E]): Future[ReadResult[E]] =
-    readJs0(dbName, query, epoch, pretty, chunked) map {
+           chunked: Boolean = false)(implicit reader: InfluxReader[E]): Future[ReadResult[E]] =
+    readJs(dbName, query, epoch, pretty, chunked) map {
       case qr: QueryResult[JArray] => qr.map(reader.read)
       case gr: GroupedResult[JArray] => gr.map(reader.read)
     }

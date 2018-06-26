@@ -8,6 +8,7 @@ import com.github.fsanaulla.chronicler.core.utils.PointTransformer
 import com.github.fsanaulla.chronicler.urlhttp.handlers.{UrlQueryHandler, UrlRequestHandler, UrlResponseHandler}
 import com.softwaremill.sttp.Uri
 
+import scala.io.Source
 import scala.util.Try
 
 private[fsanaulla] trait UrlWriter
@@ -18,12 +19,11 @@ private[fsanaulla] trait UrlWriter
     with PointTransformer
     with HasCredentials { self: WriteOperations[Try, String] =>
 
-  override def writeTo(
-                        dbName: String,
-                        entity: String,
-                        consistency: Consistency,
-                        precision: Precision,
-                        retentionPolicy: Option[String]): Try[WriteResult] = {
+  override def writeTo(dbName: String,
+                       entity: String,
+                       consistency: Consistency,
+                       precision: Precision,
+                       retentionPolicy: Option[String]): Try[WriteResult] = {
     writeRequest(
       uri = writeToInfluxQuery(
         dbName,
@@ -32,6 +32,22 @@ private[fsanaulla] trait UrlWriter
         retentionPolicy
       ),
       entity = entity
+    ).flatMap(toResult)
+  }
+
+  override def writeFromFile(dbName: String,
+                             filePath: String,
+                             consistency: Consistency,
+                             precision: Precision,
+                             retentionPolicy: Option[String]): Try[WriteResult] = {
+    writeRequest(
+      uri = writeToInfluxQuery(
+        dbName,
+        consistency,
+        precision,
+        retentionPolicy
+      ),
+      entity = Source.fromFile(filePath).getLines().mkString("\n")
     ).flatMap(toResult)
   }
 

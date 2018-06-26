@@ -19,11 +19,24 @@ trait WriteOperations[M[_], E] {
     * @param retentionPolicy - Optional retention policy name
     * @return                - Result of execution
     */
-  def writeTo(
-              dbName: String,
+  def writeTo(dbName: String,
               entity: E,
               consistency: Consistency,
               precision: Precision,
               retentionPolicy: Option[String]): M[WriteResult]
+
+  /**
+    * Write points from specified file
+    * @param filePath        - which file should be used as source
+    * @param consistency     - consistency level
+    * @param precision       - precision level
+    * @param retentionPolicy - optional retention policy name
+    * @return                - execution result
+    */
+  def writeFromFile(dbName: String,
+                    filePath: String,
+                    consistency: Consistency,
+                    precision: Precision,
+                    retentionPolicy: Option[String]): M[WriteResult]
 
 }

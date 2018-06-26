@@ -1,4 +1,4 @@
-package com.github.fsanaulla.chronicler.urlhttp.models
+package com.github.fsanaulla.chronicler.async.models
 
 import java.io.File
 
@@ -6,7 +6,7 @@ import com.github.fsanaulla.chronicler.core.model.{Point, Serializer}
 
 import scala.io.Source
 
-private[fsanaulla] object UrlDeserializers {
+private[fsanaulla] object AsyncSerializers {
 
   implicit val point2str: Serializer[Point, String] = new Serializer[Point, String] {
     def serialize(obj: Point): String = obj.serialize

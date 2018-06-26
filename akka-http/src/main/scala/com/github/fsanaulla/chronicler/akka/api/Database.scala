@@ -1,14 +1,12 @@
 package com.github.fsanaulla.chronicler.akka.api
 
-import java.io.File
-
 import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.model.RequestEntity
 import _root_.akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.io.{AkkaReader, AkkaWriter}
-import com.github.fsanaulla.chronicler.akka.models.AkkaDeserializers._
+import com.github.fsanaulla.chronicler.akka.models.AkkaSeserializers._
 import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
-import com.github.fsanaulla.chronicler.core.api.DatabaseApi
+import com.github.fsanaulla.chronicler.core.api.DatabaseIO
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
 import jawn.ast.JArray
@@ -26,42 +24,42 @@ final class Database(dbName: String, val credentials: Option[InfluxCredentials])
                override protected implicit val mat: ActorMaterializer,
                override protected implicit val ex: ExecutionContext,
                override protected implicit val connection: Connection)
-  extends DatabaseApi[Future, RequestEntity](dbName)
+  extends DatabaseIO[Future, RequestEntity](dbName)
     with AkkaWriter
     with AkkaReader
+    with Serializable[RequestEntity]
     with HasCredentials
     with Executable {
 
-  def writeFromFile(file: File,
-                    chunkSize: Int = 8192,
+  def writeFromFile(filePath: String,
                     consistency: Consistency = Consistencies.ONE,
                     precision: Precision = Precisions.NANOSECONDS,
                     retentionPolicy: Option[String] = None): Future[WriteResult] =
-    writeFromFile0(file, chunkSize, consistency, precision, retentionPolicy)
+    writeFromFile(dbName, filePath, consistency, precision, retentionPolicy)
 
   def writeNative(point: String,
                   consistency: Consistency = Consistencies.ONE,
                   precision: Precision = Precisions.NANOSECONDS,
                   retentionPolicy: Option[String] = None): Future[WriteResult] =
-    writeNative0(point, consistency, precision, retentionPolicy)
+    writeTo(dbName, point, consistency, precision, retentionPolicy)
 
   def bulkWriteNative(points: Seq[String],
                       consistency: Consistency = Consistencies.ONE,
                       precision: Precision = Precisions.NANOSECONDS,
                       retentionPolicy: Option[String] = None): Future[WriteResult] =
-    bulkWriteNative0(points, consistency, precision, retentionPolicy)
+    writeTo(dbName, points, consistency, precision, retentionPolicy)
 
   def writePoint(point: Point,
                  consistency: Consistency = Consistencies.ONE,
                  precision: Precision = Precisions.NANOSECONDS,
                  retentionPolicy: Option[String] = None): Future[WriteResult] =
-    writePoint0(point, consistency, precision, retentionPolicy)
+    writeTo(dbName, point, consistency, precision, retentionPolicy)
 
   def bulkWritePoints(points: Seq[Point],
                       consistency: Consistency = Consistencies.ONE,
                       precision: Precision = Precisions.NANOSECONDS,
                       retentionPolicy: Option[String] = None): Future[WriteResult] =
-    bulkWritePoints0(points, consistency, precision, retentionPolicy)
+    writeTo(dbName, points, consistency, precision, retentionPolicy)
 
   def read[A: ClassTag](query: String,
                         epoch: Epoch = Epochs.NANOSECONDS,

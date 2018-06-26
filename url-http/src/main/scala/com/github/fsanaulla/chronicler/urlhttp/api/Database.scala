@@ -1,8 +1,6 @@
 package com.github.fsanaulla.chronicler.urlhttp.api
 
-import java.io.File
-
-import com.github.fsanaulla.chronicler.core.api.DatabaseApi
+import com.github.fsanaulla.chronicler.core.api.DatabaseIO
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.urlhttp.io.{UrlReader, UrlWriter}
@@ -13,51 +11,50 @@ import jawn.ast.JArray
 import scala.reflect.ClassTag
 import scala.util.Try
 
-final class Database(
-                val host: String,
-                val port: Int,
-                val credentials: Option[InfluxCredentials],
-                dbName: String)
-              (protected implicit val backend: SttpBackend[Try, Nothing])
-  extends DatabaseApi[Try, String](dbName)
+final class Database(val host: String,
+                     val port: Int,
+                     val credentials: Option[InfluxCredentials],
+                     dbName: String)
+                    (protected implicit val backend: SttpBackend[Try, Nothing])
+  extends DatabaseIO[Try, String](dbName)
     with HasCredentials
+    with Serializable[String]
     with UrlWriter
     with UrlReader {
 
-  def writeFromFile(file: File,
-                    chunkSize: Int = 8192,
+  def writeFromFile(filePath: String,
                     consistency: Consistency = Consistencies.ONE,
                     precision: Precision = Precisions.NANOSECONDS,
                     retentionPolicy: Option[String] = None): Try[WriteResult] = {
-    writeFromFile0(file, chunkSize, consistency, precision, retentionPolicy)
+    writeFromFile(dbName, filePath, consistency, precision, retentionPolicy)
   }
 
   def writeNative(point: String,
                   consistency: Consistency = Consistencies.ONE,
                   precision: Precision = Precisions.NANOSECONDS,
                   retentionPolicy: Option[String] = None): Try[WriteResult] = {
-    writeNative0(point, consistency, precision, retentionPolicy)
+    writeTo(dbName, point, consistency, precision, retentionPolicy)
   }
 
   def bulkWriteNative(points: Seq[String],
                       consistency: Consistency = Consistencies.ONE,
                       precision: Precision = Precisions.NANOSECONDS,
                       retentionPolicy: Option[String] = None): Try[WriteResult] = {
-    bulkWriteNative0(points, consistency, precision, retentionPolicy)
+    writeTo(dbName, points, consistency, precision, retentionPolicy)
   }
 
   def writePoint(point: Point,
                  consistency: Consistency = Consistencies.ONE,
                  precision: Precision = Precisions.NANOSECONDS,
                  retentionPolicy: Option[String] = None): Try[WriteResult] = {
-    writePoint0(point, consistency, precision, retentionPolicy)
+    writeTo(dbName, point, consistency, precision, retentionPolicy)
   }
 
   def bulkWritePoints(points: Seq[Point],
                       consistency: Consistency = Consistencies.ONE,
                       precision: Precision = Precisions.NANOSECONDS,
                       retentionPolicy: Option[String] = None): Try[WriteResult] = {
-    bulkWritePoints0(points, consistency, precision, retentionPolicy)
+    writeTo(dbName, points, consistency, precision, retentionPolicy)
   }
 
   override def read[A: ClassTag](
