@@ -9,17 +9,16 @@ import scala.reflect.macros.blackbox
   * Author: fayaz.sanaulla@gmail.com
   * Date: 13.02.18
   */
-private[macros] class MacrosImpl(val c: blackbox.Context) {
+private[macros] final class MacrosImpl(val c: blackbox.Context) {
   import c.universe._
 
-  // todo add tag validation
-  final val TIMESTAMP_TYPE = tpdls[Long]
+  private val TIMESTAMP_TYPE = tpdls[Long]
 
-  final val SUPPORTED_TAGS_TYPES =
+  private val SUPPORTED_TAGS_TYPES =
     Seq(tpdls[Option[String]], tpdls[String])
 
-  final val SUPPORTED_FIELD_TYPES =
-    Seq(tpdls[Boolean], tpdls[Int], tpdls[Double], tpdls[String], TIMESTAMP_TYPE)
+  final private val SUPPORTED_FIELD_TYPES =
+    Seq(tpdls[Boolean], tpdls[Int], tpdls[Double], tpdls[String], tpdls[Float], TIMESTAMP_TYPE)
 
   /** return type dealias */
   def tpdls[A: TypeTag]: c.universe.Type = typeOf[A].dealias
@@ -179,12 +178,12 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
         case _ => false
       }
 
-    val optTags: List[Tree] = tagsMethods collect {
+    val optTags: Seq[Tree] = tagsMethods collect {
       case m: MethodSymbol if isOption(m.returnType) =>
         q"${m.name.decodedName.toString} -> obj.${m.name}"
     }
 
-    val nonOptTags: List[Tree] = tagsMethods collect {
+    val nonOptTags: Seq[Tree] = tagsMethods collect {
       case m: MethodSymbol if !isOption(m.returnType) =>
         q"${m.name.decodedName.toString} -> obj.${m.name}"
     }
@@ -201,18 +200,18 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
               optTime: Option[Tree]): c.universe.Tree = {
 
       q"""def write(obj: $tpe): String = {
-                val fields: String =  Seq(..$fields) map {
+                val fields: String =  Seq[(String, Any)](..$fields) map {
                   case (k, v: String) => k + "=" + "\"" + v + "\""
-                  case (k, v: Int) => k + "=" + v + "i"
-                  case (k, v) => k + "=" + v
+                  case (k, v: Int)    => k + "=" + v + "i"
+                  case (k, v)         => k + "=" + v
                 } mkString(",")
 
-                val nonOptTags: String = Seq(..$nonOptTags) map {
-                  case (k: String, v: String) if v.nonEmpty => k + "=" + v
-                  case _ => throw new IllegalArgumentException("Tag can't be an empty string")
+                val nonOptTags: String = Seq[(String, String)](..$nonOptTags) map {
+                  case (k, v) if v.nonEmpty => k + "=" + v
+                  case (k, _) => throw new IllegalArgumentException("Tag " + k + " can't be an empty string")
                 } mkString(",")
 
-                val optTags: String = Seq(..$optTags) collect {
+                val optTags: String = Seq[(String, Option[String])](..$optTags) collect {
                   case (k, Some(v)) => k + "=" + v
                 } mkString(",")
 
