@@ -235,7 +235,7 @@ class AkkaJsonHandlerSpec
     val (measurament, points) = res.value.head
 
     measurament shouldEqual "cpu_load_short"
-    points shouldEqual result
+    points shouldEqual result.head._2
   }
 
   it should "extract grouped result" in {
