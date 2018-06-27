@@ -2,10 +2,9 @@ package com.github.fsanaulla.chronicler.akka.io
 
 import java.nio.file.Paths
 
-import _root_.akka.http.scaladsl.model.{ContentTypes, HttpEntity, RequestEntity, Uri}
-import _root_.akka.stream.scaladsl.{FileIO, Framing, Source}
-import _root_.akka.stream.{ActorMaterializer, IOResult}
-import _root_.akka.util.ByteString
+import _root_.akka.http.scaladsl.model._
+import _root_.akka.stream.ActorMaterializer
+import _root_.akka.stream.scaladsl.FileIO
 import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryHandler, AkkaRequestHandler, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
@@ -56,10 +55,6 @@ private[akka] trait AkkaWriter
                              precision: Precision,
                              retentionPolicy: Option[String]): Future[WriteResult] = {
 
-    val fileSrc: Source[ByteString, Future[IOResult]] = FileIO
-      .fromPath(Paths.get(filePath))
-      .via(Framing.delimiter(ByteString(System.lineSeparator()), 1024, allowTruncation = true))
-
     writeRequest(
       uri = writeToInfluxQuery(
         dbName,
@@ -67,7 +62,7 @@ private[akka] trait AkkaWriter
         precision,
         retentionPolicy
       ),
-      entity = HttpEntity(ContentTypes.`text/plain(UTF-8)`, fileSrc)
+      entity = HttpEntity(MediaTypes.`application/octet-stream`, FileIO.fromPath(Paths.get(filePath), 1024))
     ).flatMap(toResult)
   }
 }

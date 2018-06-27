@@ -1,3 +1,3 @@
-test1,direction=in,host=server01,region=us-west value=2.1|
-test1,direction=in,host=server02,region=us-west value=2.2|
-test1,direction=in,host=server03,region=us-west value=2.3|
+test1,direction=in,host=server01,region=us-west value=2.1
+test1,direction=in,host=server02,region=us-west value=2.2
+test1,direction=in,host=server03,region=us-west value=2.3
