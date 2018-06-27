@@ -12,10 +12,6 @@ import com.github.fsanaulla.chronicler.core.model.{Point, Serializer}
   */
 private[akka] object AkkaSeserializers {
 
-  implicit val str2Http: Serializer[String, RequestEntity] = new Serializer[String, RequestEntity] {
-    def serialize(obj: String) = HttpEntity(ByteString(obj))
-  }
-
   implicit val seq2Http: Serializer[Seq[String], RequestEntity] = new Serializer[Seq[String], RequestEntity] {
     def serialize(obj: Seq[String]) = HttpEntity(ByteString(obj.mkString("\n")))
   }

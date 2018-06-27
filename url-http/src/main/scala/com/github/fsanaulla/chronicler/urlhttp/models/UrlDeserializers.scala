@@ -15,8 +15,4 @@ private[urlhttp] object UrlDeserializers {
   implicit val seqString2Influx: Serializer[Seq[String], String] = new Serializer[Seq[String], String] {
     def serialize(obj: Seq[String]): String = obj.mkString("\n")
   }
-
-  implicit val str2Influx: Serializer[String, String] = new Serializer[String, String] {
-    def serialize(obj: String): String = obj
-  }
 }
