@@ -10,7 +10,7 @@ import com.github.fsanaulla.chronicler.core.model.{AuthorizationException, Influ
 object TestHelper {
 
   implicit class StringRich(val str: String) extends AnyVal {
-    def encode: String = URLEncoder.encode(str)
+    def encode: String = URLEncoder.encode(str, "UTF-8")
   }
 
   final val AuthErrorResult =

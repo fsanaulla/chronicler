@@ -8,8 +8,6 @@ import com.softwaremill.sttp.Response
 import jawn.ast._
 import org.scalatest.TryValues
 
-import scala.language.postfixOps
-
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
