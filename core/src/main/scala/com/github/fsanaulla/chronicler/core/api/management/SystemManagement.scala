@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.core.api.management
 
-import com.github.fsanaulla.chronicler.core.api.{DatabaseApi, MeasurementApi}
+import com.github.fsanaulla.chronicler.core.api.{DatabaseIO, MeasurementIO}
 import com.github.fsanaulla.chronicler.core.model.WriteResult
 
 import scala.reflect.ClassTag
@@ -20,7 +20,7 @@ private[chronicler] trait SystemManagement[M[_], E] {
     * @param dbName - database name
     * @return Database instance that provide non type safe operations
     */
-  def database(dbName: String): DatabaseApi[M, E]
+  def database(dbName: String): DatabaseIO[M, E]
 
   /**
     *
@@ -29,5 +29,5 @@ private[chronicler] trait SystemManagement[M[_], E] {
     * @tparam A - Measurement's time series type
     * @return - Measurement instance of type [A]
     */
-  def measurement[A: ClassTag](dbName: String, measurementName: String): MeasurementApi[M, A, E]
+  def measurement[A: ClassTag](dbName: String, measurementName: String): MeasurementIO[M, A, E]
 }

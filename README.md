@@ -156,3 +156,6 @@ For more details see next section. The same example can be applied for other cli
 9. [Response handling](docs/response_handling.md)
 10. [Macros](docs/macros.md)
 11. [Utils](docs/utils.md)
+
+# Inspirations
+- [scala-influxdb-client](https://github.com/paulgoldbaum/scala-influxdb-client) by [Paul Goldbaum](https://github.com/paulgoldbaum)

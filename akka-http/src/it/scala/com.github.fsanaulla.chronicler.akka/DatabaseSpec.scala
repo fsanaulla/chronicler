@@ -1,7 +1,5 @@
 package com.github.fsanaulla.chronicler.akka
 
-import java.io.File
-
 import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.SampleEntitys._
@@ -36,7 +34,7 @@ class DatabaseSpec
   "Database API" should "write data from file" in {
     influx.createDatabase(testDB).futureValue shouldEqual OkResult
 
-    db.writeFromFile(new File(getClass.getResource("/points.txt").getPath))
+    db.writeFromFile(getClass.getResource("/points.txt").getPath)
       .futureValue shouldEqual NoContentResult
 
     db.readJs("SELECT * FROM test1")
@@ -45,7 +43,7 @@ class DatabaseSpec
       .length shouldEqual 3
   }
 
-  it should "write 2 points represented entities" in {
+  it should "write 2 points.txt represented entities" in {
 
     val point1 = Point("test2")
       .addTag("sex", "Male")

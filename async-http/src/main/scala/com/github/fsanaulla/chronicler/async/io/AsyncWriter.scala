@@ -9,6 +9,7 @@ import com.github.fsanaulla.chronicler.core.utils.PointTransformer
 import com.softwaremill.sttp.Uri
 
 import scala.concurrent.Future
+import scala.io.Source
 
 private[fsanaulla] trait AsyncWriter
   extends DatabaseOperationQuery[Uri]
@@ -34,4 +35,19 @@ private[fsanaulla] trait AsyncWriter
     ).flatMap(toResult)
   }
 
+  override def writeFromFile(dbName: String,
+                             filePath: String,
+                             consistency: Consistency,
+                             precision: Precision,
+                             retentionPolicy: Option[String]): Future[WriteResult] = {
+    writeRequest(
+      uri = writeToInfluxQuery(
+        dbName,
+        consistency,
+        precision,
+        retentionPolicy
+      ),
+      entity = Source.fromFile(filePath).getLines().mkString("\n")
+    ).flatMap(toResult)
+  }
 }

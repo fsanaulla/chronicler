@@ -235,11 +235,7 @@ class AkkaJsonHandlerSpec
     val (measurament, points) = res.value.head
 
     measurament shouldEqual "cpu_load_short"
-    points shouldEqual Array(
-      JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
-      JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
-      JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
-    )
+    points shouldEqual result.head._2
   }
 
   it should "extract grouped result" in {

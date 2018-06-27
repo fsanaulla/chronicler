@@ -1,7 +1,5 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
-import java.io.File
-
 import com.github.fsanaulla.chronicler.core.model.Point
 import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
 import com.github.fsanaulla.chronicler.testing.it.FakeEntity.fmt
@@ -30,7 +28,7 @@ class DatabaseSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with Try
   "Database API" should "write data from file" in {
     influx.createDatabase(testDB).success.value shouldEqual OkResult
 
-    db.writeFromFile(new File(getClass.getResource("/points.txt").getPath))
+    db.writeFromFile(getClass.getResource("/points.txt").getPath)
       .success
       .value shouldEqual NoContentResult
 

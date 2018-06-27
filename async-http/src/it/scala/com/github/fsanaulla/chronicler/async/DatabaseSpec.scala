@@ -1,7 +1,5 @@
 package com.github.fsanaulla.chronicler.async
 
-import java.io.File
-
 import com.github.fsanaulla.chronicler.async.SampleEntitys.largeMultiJsonEntity
 import com.github.fsanaulla.chronicler.async.api.Database
 import com.github.fsanaulla.chronicler.core.model.Point
@@ -30,7 +28,7 @@ class DatabaseSpec extends FlatSpecWithMatchers with Futures with DockerizedInfl
   "Database API" should "write data from file" in {
     influx.createDatabase(testDB).futureValue shouldEqual OkResult
 
-    db.writeFromFile(new File(getClass.getResource("/points.txt").getPath))
+    db.writeFromFile(getClass.getResource("/points.txt").getPath)
       .futureValue shouldEqual NoContentResult
     
     db.readJs("SELECT * FROM test1")

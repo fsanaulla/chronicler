@@ -9,17 +9,16 @@ import scala.reflect.macros.blackbox
   * Author: fayaz.sanaulla@gmail.com
   * Date: 13.02.18
   */
-private[macros] class MacrosImpl(val c: blackbox.Context) {
+private[macros] final class MacrosImpl(val c: blackbox.Context) {
   import c.universe._
 
-  // todo add tag validation
-  final val TIMESTAMP_TYPE = tpdls[Long]
+  private val TIMESTAMP_TYPE = tpdls[Long]
 
-  final val SUPPORTED_TAGS_TYPES =
+  private val SUPPORTED_TAGS_TYPES =
     Seq(tpdls[Option[String]], tpdls[String])
 
-  final val SUPPORTED_FIELD_TYPES =
-    Seq(tpdls[Boolean], tpdls[Int], tpdls[Double], tpdls[String], TIMESTAMP_TYPE)
+  final private val SUPPORTED_FIELD_TYPES =
+    Seq(tpdls[Boolean], tpdls[Int], tpdls[Double], tpdls[String], tpdls[Float], TIMESTAMP_TYPE)
 
   /** return type dealias */
   def tpdls[A: TypeTag]: c.universe.Type = typeOf[A].dealias
@@ -37,7 +36,7 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
     * @param tpe  - for which type
     * @return     - AST that will be expanded to read method
     */
-  def createReadMethod(tpe: c.universe.Type): c.universe.Tree = {
+  def createReadMethod(tpe: c.universe.Type): Tree = {
 
     val bool = tpdls[Boolean]
     val int = tpdls[Int]
@@ -81,9 +80,9 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
 
       val timestamp = TermName(timeField.head.name.decodedName.toString)
 
-      val constructorTime: c.universe.Tree = q"$timestamp = toNanoLong($timestamp.asString)"
+      val constructorTime: Tree = q"$timestamp = toNanoLong($timestamp.asString)"
 
-      val patternTime: c.universe.Tree = pq"$timestamp: JValue"
+      val patternTime: Tree = pq"$timestamp: JValue"
 
       val patterns: List[Tree] = patternTime :: patternParams
       val constructor: List[Tree] = constructorTime :: constructorParams
@@ -129,7 +128,7 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
     * @param tpe - specified type
     * @return    - AST that will be expanded to write method
     */
-  def createWriteMethod(tpe: c.Type): c.universe.Tree = {
+  def createWriteMethod(tpe: c.Type): Tree = {
 
     /** Is it Option container*/
     def isOption(tpe: c.universe.Type): Boolean =
@@ -179,76 +178,56 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
         case _ => false
       }
 
-    val optTags: List[c.universe.Tree] = tagsMethods collect {
+    val optTags: Seq[Tree] = tagsMethods collect {
       case m: MethodSymbol if isOption(m.returnType) =>
         q"${m.name.decodedName.toString} -> obj.${m.name}"
     }
 
-    val nonOptTags: List[c.universe.Tree] = tagsMethods collect {
+    val nonOptTags: Seq[Tree] = tagsMethods collect {
       case m: MethodSymbol if !isOption(m.returnType) =>
         q"${m.name.decodedName.toString} -> obj.${m.name}"
     }
 
-    val fields = fieldsMethods map {
+    val fields: Seq[Tree] = fieldsMethods map {
       m: MethodSymbol =>
         q"${m.name.decodedName.toString} -> obj.${m.name}"
     }
 
-    // creation of 4 map in serializing, not the best case
-    timeField
-      .headOption
-      .map(m => q"obj.${m.name}") match {
-        case None =>
-          q"""def write(obj: $tpe): String = {
-                val fieldsMap: Map[String, Any] = Map(..$fields)
-                val fields = fieldsMap map {
+    def write(tpe: Type,
+              fields: Seq[Tree],
+              nonOptTags: Seq[Tree],
+              optTags: Seq[Tree],
+              optTime: Option[Tree]): c.universe.Tree = {
+
+      q"""def write(obj: $tpe): String = {
+                val fields: String =  Seq[(String, Any)](..$fields) map {
                   case (k, v: String) => k + "=" + "\"" + v + "\""
-                  case (k, v: Int) => k + "=" + v + "i"
-                  case (k, v) => k + "=" + v
+                  case (k, v: Int)    => k + "=" + v + "i"
+                  case (k, v)         => k + "=" + v
                 } mkString(",")
 
-                val nonOptTagsMap: Map[String, String] = Map(..$nonOptTags)
-                val nonOptTags: String = nonOptTagsMap map {
-                  case (k: String, v: String) if v.nonEmpty => k + "=" + v
-                  case _ => throw new IllegalArgumentException("Tag can't be an empty string")
+                val nonOptTags: String = Seq[(String, String)](..$nonOptTags) map {
+                  case (k, v) if v.nonEmpty => k + "=" + v
+                  case (k, _) => throw new IllegalArgumentException("Tag " + k + " can't be an empty string")
                 } mkString(",")
 
-                val optTagsMap: Map[String, Option[String]] = Map(..$optTags)
-                val optTags: String = optTagsMap collect {
+                val optTags: String = Seq[(String, Option[String])](..$optTags) collect {
                   case (k, Some(v)) => k + "=" + v
                 } mkString(",")
 
                 val combTags: String = if (optTags.isEmpty) nonOptTags else nonOptTags + "," + optTags
 
-                combTags + " " + fields trim
+                ${optTime.fold(q"""combTags + " " + fields trim""")(t => q"""combTags + " " + fields + " " + $t trim""")}
           }"""
+    }
 
-        // todo: optimize this place somehow
-        case Some(t) =>
-          q"""def write(obj: $tpe): String = {
-            val fieldsMap: Map[String, Any] = Map(..$fields)
-            val fields = fieldsMap map {
-               case (k, v: String) => k + "=" + "\"" + v + "\""
-               case (k, v: Int) => k + "=" + v + "i"
-               case (k, v) => k + "=" + v
-            } mkString(",")
-
-            val nonOptTagsMap: Map[String, String] = Map(..$nonOptTags)
-            val nonOptTags: String = nonOptTagsMap map {
-              case (k: String, v: String) if v.nonEmpty => k + "=" + v
-              case _ => throw new IllegalArgumentException("Tag can't be an empty string")
-            } mkString(",")
-
-            val optTagsMap: Map[String, Option[String]] = Map(..$optTags)
-            val optTags: String = optTagsMap collect {
-                case (k, Some(v)) => k + "=" + v
-            } mkString(",")
-
-            val combTags: String = if (optTags.isEmpty) nonOptTags else nonOptTags + "," + optTags
-            val time: Long = $t
-
-            combTags + " " + fields + " " + time trim
-          }"""
+    timeField
+      .headOption
+      .map(m => q"obj.${m.name}") match {
+        case None =>
+          write(tpe, fields, nonOptTags, optTags, None)
+        case some =>
+          write(tpe, fields, nonOptTags, optTags, some)
       }
   }
 
@@ -256,7 +235,7 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
     * Generate AST for current type at compile time.
     * @tparam T - Type parameter for whom will be generated AST
     */
-  def writer_impl[T: c.WeakTypeTag]: c.universe.Tree = {
+  def writer_impl[T: c.WeakTypeTag]: Tree = {
     val tpe = c.weakTypeOf[T]
     q"""new InfluxWriter[$tpe] {${createWriteMethod(tpe)}} """
   }
@@ -265,7 +244,7 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
     * Generate AST for current type at compile time.
     * @tparam T - Type parameter for whom will be generated AST
     */
-  def reader_impl[T: c.WeakTypeTag]: c.universe.Tree = {
+  def reader_impl[T: c.WeakTypeTag]: Tree = {
     val tpe = c.weakTypeOf[T]
 
     q"""new InfluxReader[$tpe] {
@@ -286,7 +265,7 @@ private[macros] class MacrosImpl(val c: blackbox.Context) {
     * Generate AST for current type at compile time.
     * @tparam T - Type parameter for whom will be generated AST
     */
-  def format_impl[T: c.WeakTypeTag]: c.universe.Tree = {
+  def format_impl[T: c.WeakTypeTag]: Tree = {
     val tpe = c.weakTypeOf[T]
 
     q"""

@@ -18,7 +18,7 @@ trait ReadOperations[M[_]] {
     * @param chunked - Chunked response
     * @return        - Query result, array of JArray
     */
-  def readJs0(dbName: String, query: String, epoch: Epoch, pretty: Boolean, chunked: Boolean): M[ReadResult[JArray]]
+  def readJs(dbName: String, query: String, epoch: Epoch, pretty: Boolean, chunked: Boolean): M[ReadResult[JArray]]
 
   /**
     * Execute several queries in one time
@@ -29,6 +29,6 @@ trait ReadOperations[M[_]] {
     * @param chunked - Chunked response
     * @return        - Multiple query results, array of JArray
     */
-  def bulkReadJs0(dbName: String, queries: Seq[String], epoch: Epoch, pretty: Boolean, chunked: Boolean): M[QueryResult[Array[JArray]]]
+  def bulkReadJs(dbName: String, queries: Seq[String], epoch: Epoch, pretty: Boolean, chunked: Boolean): M[QueryResult[Array[JArray]]]
 
 }

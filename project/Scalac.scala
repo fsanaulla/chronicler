@@ -19,7 +19,7 @@ object Scalac {
     "-Ywarn-unused:params",     // Warn if a value parameter is unused.
     "-Ywarn-unused:patvars",    // Warn if a variable bound in a pattern is unused.
     "-Ywarn-unused:privates",   // Warn if a private member is unused.
-//    "-Xfatal-warnings",
+    "-Xfatal-warnings",
     "-Ywarn-unused:implicits"   // Warn if an implicit parameter is unused.
   ) ++ options11
 }
