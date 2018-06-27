@@ -1,9 +1,6 @@
 package com.github.fsanaulla.chronicler.akka.models
 
-import java.io.File
-
 import _root_.akka.http.scaladsl.model.{HttpEntity, RequestEntity}
-import _root_.akka.stream.scaladsl.FileIO
 import _root_.akka.util.ByteString
 import com.github.fsanaulla.chronicler.akka.utils.AkkaContentTypes.OctetStream
 import com.github.fsanaulla.chronicler.core.model.{Point, Serializer}
@@ -29,9 +26,5 @@ private[akka] object AkkaSeserializers {
 
   implicit val seqPoint2Http: Serializer[Seq[Point], RequestEntity] = new Serializer[Seq[Point], RequestEntity] {
     def serialize(obj: Seq[Point]) = HttpEntity(OctetStream, ByteString(obj.map(_.serialize).mkString("\n")))
-  }
-
-  implicit val file2Http: Serializer[File, RequestEntity] = new Serializer[File, RequestEntity] {
-    def serialize(obj: File) = HttpEntity(OctetStream, FileIO.fromPath(obj.toPath, chunkSize = 1024))
   }
 }
