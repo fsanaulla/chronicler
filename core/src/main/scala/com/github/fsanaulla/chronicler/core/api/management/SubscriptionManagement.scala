@@ -32,15 +32,15 @@ private[chronicler] trait SubscriptionManagement[M[_], R, U, E] extends Subscrip
                          rpName: String = "autogen",
                          destinationType: Destination,
                          addresses: Seq[String]): M[WriteResult] =
-    m.mapTo(readRequest(createSubscriptionQuery(subsName, dbName, rpName, destinationType, addresses)), toResult)
+    mapTo(readRequest(createSubscriptionQuery(subsName, dbName, rpName, destinationType, addresses)), toResult)
 
   /** Drop subscription */
   final def dropSubscription(subName: String, dbName: String, rpName: String): M[WriteResult] =
-    m.mapTo(readRequest(dropSubscriptionQuery(subName, dbName, rpName)), toResult)
+    mapTo(readRequest(dropSubscriptionQuery(subName, dbName, rpName)), toResult)
 
   /** Show list of subscription info */
   final def showSubscriptionsInfo: M[QueryResult[SubscriptionInfo]] =
-    m.mapTo(readRequest(showSubscriptionsQuery()), toSubscriptionQueryResult)
+    mapTo(readRequest(showSubscriptionsQuery()), toSubscriptionQueryResult)
 
 //  /** Show subscription by database name */
 //  def showSubscription(dbName: String): Future[QueryResult[Subscription]] = {

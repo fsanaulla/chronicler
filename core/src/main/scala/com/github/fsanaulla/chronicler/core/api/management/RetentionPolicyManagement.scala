@@ -37,7 +37,7 @@ private[chronicler] trait RetentionPolicyManagement[M[_], R, U, E] extends Reten
 
     require(replication > 0, "Replication must greater that 0")
 
-    m.mapTo(
+    mapTo(
       readRequest(createRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)),
       toResult
     )
@@ -51,7 +51,7 @@ private[chronicler] trait RetentionPolicyManagement[M[_], R, U, E] extends Reten
                                    replication: Option[Int] = None,
                                    shardDuration: Option[String] = None,
                                    default: Boolean = false): M[WriteResult] =
-    m.mapTo(
+    mapTo(
       readRequest(updateRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)),
       toResult
     )
@@ -59,10 +59,10 @@ private[chronicler] trait RetentionPolicyManagement[M[_], R, U, E] extends Reten
 
   /** Drop retention policy */
   final def dropRetentionPolicy(rpName: String, dbName: String): M[WriteResult] =
-    m.mapTo(readRequest(dropRetentionPolicyQuery(rpName, dbName)), toResult)
+    mapTo(readRequest(dropRetentionPolicyQuery(rpName, dbName)), toResult)
 
   /** Show list of retention polices */
   final def showRetentionPolicies(dbName: String): M[QueryResult[RetentionPolicyInfo]] =
-    m.mapTo(readRequest(showRetentionPoliciesQuery(dbName)), toQueryResult[RetentionPolicyInfo])
+    mapTo(readRequest(showRetentionPoliciesQuery(dbName)), toQueryResult[RetentionPolicyInfo])
 
 }

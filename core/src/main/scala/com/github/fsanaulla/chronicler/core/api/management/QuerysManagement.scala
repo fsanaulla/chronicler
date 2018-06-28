@@ -19,11 +19,11 @@ private[chronicler] trait QuerysManagement[M[_], R, U, E] extends QuerysManageme
 
   /** Show list of queries */
   final def showQueries: M[QueryResult[QueryInfo]] =
-    m.mapTo(readRequest(showQuerysQuery()), toQueryResult[QueryInfo])
+    mapTo(readRequest(showQuerysQuery()), toQueryResult[QueryInfo])
 
 
   /** Kill query */
   final def killQuery(queryId: Int): M[WriteResult] =
-    m.mapTo(readRequest(killQueryQuery(queryId)), toResult)
+    mapTo(readRequest(killQueryQuery(queryId)), toResult)
 
 }

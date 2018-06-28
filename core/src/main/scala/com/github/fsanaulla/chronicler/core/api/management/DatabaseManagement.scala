@@ -32,28 +32,28 @@ private[chronicler] trait DatabaseManagement[M[_], R, U, E] extends DataManageme
                             replication: Option[Int] = None,
                             shardDuration: Option[String] = None,
                             rpName: Option[String] = None): M[WriteResult] =
-    m.mapTo(readRequest(createDatabaseQuery(dbName, duration, replication, shardDuration, rpName)), toResult)
+    mapTo(readRequest(createDatabaseQuery(dbName, duration, replication, shardDuration, rpName)), toResult)
 
 
   /** Drop database */
   final def dropDatabase(dbName: String): M[WriteResult] =
-    m.mapTo(readRequest(dropDatabaseQuery(dbName)), toResult)
+    mapTo(readRequest(dropDatabaseQuery(dbName)), toResult)
 
   /** Drop measurement */
   final def dropMeasurement(dbName: String, measurementName: String): M[WriteResult] =
-    m.mapTo(readRequest(dropMeasurementQuery(dbName, measurementName)), toResult)
+    mapTo(readRequest(dropMeasurementQuery(dbName, measurementName)), toResult)
 
   /** Show measurements */
   final def showMeasurement(dbName: String): M[QueryResult[String]] =
-    m.mapTo(readRequest(showMeasurementQuery(dbName)), toQueryResult[String])
+    mapTo(readRequest(showMeasurementQuery(dbName)), toQueryResult[String])
 
   /** Show database list */
   final def showDatabases(): M[QueryResult[String]] =
-    m.mapTo(readRequest(showDatabasesQuery()), toQueryResult[String])
+    mapTo(readRequest(showDatabasesQuery()), toQueryResult[String])
 
   /** Show field tags list */
   final def showFieldKeys(dbName: String, measurementName: String): M[QueryResult[FieldInfo]] =
-    m.mapTo(readRequest(showFieldKeysQuery(dbName, measurementName)), toQueryResult[FieldInfo])
+    mapTo(readRequest(showFieldKeysQuery(dbName, measurementName)), toQueryResult[FieldInfo])
 
   /** Show tags keys list */
   final def showTagKeys(
@@ -62,7 +62,7 @@ private[chronicler] trait DatabaseManagement[M[_], R, U, E] extends DataManageme
                    whereClause: Option[String] = None,
                    limit: Option[Int] = None,
                    offset: Option[Int] = None): M[QueryResult[String]] =
-    m.mapTo(readRequest(showTagKeysQuery(dbName, measurementName, whereClause, limit, offset)), toQueryResult[String])
+    mapTo(readRequest(showTagKeysQuery(dbName, measurementName, whereClause, limit, offset)), toQueryResult[String])
 
   /** Show tag values list */
   final def showTagValues(dbName: String,
@@ -71,5 +71,5 @@ private[chronicler] trait DatabaseManagement[M[_], R, U, E] extends DataManageme
                     whereClause: Option[String] = None,
                     limit: Option[Int] = None,
                     offset: Option[Int] = None): M[QueryResult[TagValue]] =
-    m.mapTo(readRequest(showTagValuesQuery(dbName, measurementName, withKey, whereClause, limit, offset)), toQueryResult[TagValue])
+    mapTo(readRequest(showTagValuesQuery(dbName, measurementName, withKey, whereClause, limit, offset)), toQueryResult[TagValue])
 }

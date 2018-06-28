@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.core.model
 
-private[chronicler] trait Serializable[To] {
+trait Serializable[To] {
 
   /**
     * Auotmatically serialize entity of type ${From} to ${To}

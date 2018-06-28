@@ -19,15 +19,15 @@ private[chronicler] trait ShardManagement[M[_], R, U, E] extends ShardManagement
 
   /** Drop shard */
   final def dropShard(shardId: Int): M[WriteResult] =
-    m.mapTo(readRequest(dropShardQuery(shardId)), toResult)
+    mapTo(readRequest(dropShardQuery(shardId)), toResult)
 
   /** Show shard groups */
   final def showShardGroups: M[QueryResult[ShardGroupsInfo]] =
-    m.mapTo(readRequest(showShardGroupsQuery()), toShardGroupQueryResult)
+    mapTo(readRequest(showShardGroupsQuery()), toShardGroupQueryResult)
 
   /** Show shards */
   final def showShards: M[QueryResult[ShardInfo]] =
-    m.mapTo(readRequest(showShardsQuery()), toShardQueryResult)
+    mapTo(readRequest(showShardsQuery()), toShardQueryResult)
 
 //  def getShards(dbName: String): Future[QueryResult[Shard]] = {
 //    showShards().map { qr =>

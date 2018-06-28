@@ -29,9 +29,7 @@ final class InfluxAkkaHttpClient(
       with AkkaResponseHandler
       with AkkaQueryHandler {
 
-  override val m: Mapper[Future, HttpResponse] = new Mapper[Future, HttpResponse] {
-    override def mapTo[B](resp: Future[HttpResponse], f: HttpResponse => Future[B]): Future[B] = resp.flatMap(f)
-  }
+  override def mapTo[B](resp: Future[HttpResponse], f: HttpResponse => Future[B]): Future[B] = resp.flatMap(f)
 
   protected implicit val mat: ActorMaterializer = ActorMaterializer()
   protected implicit val connection: Connection = Http().outgoingConnection(host, port) recover {
@@ -62,7 +60,7 @@ final class InfluxAkkaHttpClient(
     * Ping InfluxDB
     */
   override def ping: Future[WriteResult] =
-    m.mapTo(readRequest("/ping"), toResult)
+    mapTo(readRequest("/ping"), toResult)
 
   /**
     * Close HTTP connection
