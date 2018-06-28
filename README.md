@@ -159,3 +159,4 @@ For more details see next section. The same example can be applied for other cli
 
 # Inspirations
 - [scala-influxdb-client](https://github.com/paulgoldbaum/scala-influxdb-client) by [Paul Goldbaum](https://github.com/paulgoldbaum)
+- [influxdb-java](https://github.com/influxdata/influxdb-java) from [influxdata](https://github.com/influxdata)
