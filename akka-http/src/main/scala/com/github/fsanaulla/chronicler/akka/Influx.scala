@@ -21,10 +21,11 @@ object Influx {
     * @param system - implicit actor system, by default will create new one
     * @return - InfluxAkkaHttpClient
     */
-  final def connect(host: String = "localhost",
-                    port: Int = 8086,
-                    credentials: Option[InfluxCredentials] = None,
-                    system: ActorSystem = ActorSystem())
-                   (implicit ex: ExecutionContext) =
-    new InfluxAkkaHttpClient(host, port, credentials)(ex, system)
+  def connect(host: String = "localhost",
+              port: Int = 8086,
+              credentials: Option[InfluxCredentials] = None,
+              system: ActorSystem = ActorSystem(),
+              gzipped: Boolean = false)
+             (implicit ex: ExecutionContext) =
+    new InfluxAkkaHttpClient(host, port, credentials, gzipped)(ex, system)
 }

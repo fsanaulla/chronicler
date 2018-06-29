@@ -10,11 +10,13 @@ import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
   * Author: fayaz.sanaulla@gmail.com
   * Date: 08.08.17
   */
-private[chronicler] trait RetentionPolicyManagement[M[_], R, U, E] extends RetentionPolicyManagementQuery[U] {
-  self: RequestHandler[M, R, U, E]
-    with ResponseHandler[M, R]
-    with QueryHandler[U]
-    with Mappable[M, R]
+private[chronicler] trait RetentionPolicyManagement[M[_], Req, Resp, Uri, Entity]
+  extends RetentionPolicyManagementQuery[Uri] {
+  self: RequestHandler[M, Req, Resp]
+    with ResponseHandler[M, Resp]
+    with QueryHandler[Uri]
+    with Mappable[M, Resp]
+    with RequestBuilder[Uri, Req]
     with HasCredentials =>
 
   /**
@@ -27,18 +29,17 @@ private[chronicler] trait RetentionPolicyManagement[M[_], R, U, E] extends Reten
     * @param default       - use default
     * @return              - execution result
     */
-  final def createRetentionPolicy(
-                                   rpName: String,
-                                   dbName: String,
-                                   duration: String,
-                                   replication: Int = 1,
-                                   shardDuration: Option[String] = None,
-                                   default: Boolean = false): M[WriteResult] = {
+  final def createRetentionPolicy(rpName: String,
+                                  dbName: String,
+                                  duration: String,
+                                  replication: Int = 1,
+                                  shardDuration: Option[String] = None,
+                                  default: Boolean = false): M[WriteResult] = {
 
     require(replication > 0, "Replication must greater that 0")
 
     mapTo(
-      readRequest(createRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)),
+      execute(createRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)),
       toResult
     )
   }
@@ -52,17 +53,17 @@ private[chronicler] trait RetentionPolicyManagement[M[_], R, U, E] extends Reten
                                    shardDuration: Option[String] = None,
                                    default: Boolean = false): M[WriteResult] =
     mapTo(
-      readRequest(updateRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)),
+      execute(updateRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)),
       toResult
     )
 
 
   /** Drop retention policy */
   final def dropRetentionPolicy(rpName: String, dbName: String): M[WriteResult] =
-    mapTo(readRequest(dropRetentionPolicyQuery(rpName, dbName)), toResult)
+    mapTo(execute(dropRetentionPolicyQuery(rpName, dbName)), toResult)
 
   /** Show list of retention polices */
   final def showRetentionPolicies(dbName: String): M[QueryResult[RetentionPolicyInfo]] =
-    mapTo(readRequest(showRetentionPoliciesQuery(dbName)), toQueryResult[RetentionPolicyInfo])
+    mapTo(execute(showRetentionPoliciesQuery(dbName)), toQueryResult[RetentionPolicyInfo])
 
 }

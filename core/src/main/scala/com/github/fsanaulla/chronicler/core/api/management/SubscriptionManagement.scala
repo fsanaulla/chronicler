@@ -11,11 +11,12 @@ import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-private[chronicler] trait SubscriptionManagement[M[_], R, U, E] extends SubscriptionsManagementQuery[U] {
-  self: RequestHandler[M, R, U, E]
-    with ResponseHandler[M, R]
-    with QueryHandler[U]
-    with Mappable[M, R]
+private[chronicler] trait SubscriptionManagement[M[_], Req, Resp, Uri, Entity] extends SubscriptionsManagementQuery[Uri] {
+  self: RequestHandler[M, Req, Resp]
+    with ResponseHandler[M, Resp]
+    with QueryHandler[Uri]
+    with Mappable[M, Resp]
+    with RequestBuilder[Uri, Req]
     with HasCredentials =>
 
   /**
@@ -28,44 +29,17 @@ private[chronicler] trait SubscriptionManagement[M[_], R, U, E] extends Subscrip
     * @return                - execution result
     */
   final def createSubscription(subsName: String,
-                         dbName: String,
-                         rpName: String = "autogen",
-                         destinationType: Destination,
-                         addresses: Seq[String]): M[WriteResult] =
-    mapTo(readRequest(createSubscriptionQuery(subsName, dbName, rpName, destinationType, addresses)), toResult)
+                               dbName: String,
+                               rpName: String = "autogen",
+                               destinationType: Destination,
+                               addresses: Seq[String]): M[WriteResult] =
+    mapTo(execute(createSubscriptionQuery(subsName, dbName, rpName, destinationType, addresses)), toResult)
 
   /** Drop subscription */
   final def dropSubscription(subName: String, dbName: String, rpName: String): M[WriteResult] =
-    mapTo(readRequest(dropSubscriptionQuery(subName, dbName, rpName)), toResult)
+    mapTo(execute(dropSubscriptionQuery(subName, dbName, rpName)), toResult)
 
   /** Show list of subscription info */
   final def showSubscriptionsInfo: M[QueryResult[SubscriptionInfo]] =
-    mapTo(readRequest(showSubscriptionsQuery()), toSubscriptionQueryResult)
-
-//  /** Show subscription by database name */
-//  def showSubscription(dbName: String): Future[QueryResult[Subscription]] = {
-//
-//    showSubscriptionsInfo().map { queryRes =>
-//      val seq = queryRes
-//        .queryResult
-//        .find(_.dbName == dbName)
-//        .map(_.subscriptions)
-//        .getOrElse(Array.empty[Subscription])
-//
-//      QueryResult[Subscription](queryRes.code, queryRes.isSuccess, seq, queryRes.ex)
-//    }
-//  }
-
-//  /** Update subscription */
-//  def updateSubscription(
-//                          subsName: String,
-//                          dbName: String,
-//                          rpName: String,
-//                          destination: Destination = Destinations.ALL,
-//                          address: Seq[String]): M[R] = {
-//    for {
-//      dropRes <- dropSubscription(subsName, dbName, rpName) if dropRes.ex.isEmpty
-//      createRes <- createSubscription(subsName, dbName, rpName, destination, address)
-//    } yield createRes
-//  }
+    mapTo(execute(showSubscriptionsQuery()), toSubscriptionQueryResult)
 }

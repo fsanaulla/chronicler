@@ -8,8 +8,6 @@ import _root_.akka.http.scaladsl.model.{MediaType, MediaTypes}
   * Date: 15.03.18
   */
 private[akka] object AkkaContentTypes {
-
-  final val AppJson: MediaType.WithFixedCharset = MediaTypes.`application/json`
-
-  final val OctetStream: MediaType.Binary = MediaTypes.`application/octet-stream`
+  val AppJson: MediaType.WithFixedCharset = MediaTypes.`application/json`
+  val OctetStream: MediaType.Binary = MediaTypes.`application/octet-stream`
 }

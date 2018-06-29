@@ -11,6 +11,7 @@ import com.github.fsanaulla.chronicler.core.client.InfluxClient
 import com.github.fsanaulla.chronicler.core.model._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.language.implicitConversions
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success}
 
@@ -19,16 +20,19 @@ import scala.util.{Failure, Success}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-final class InfluxAkkaHttpClient(
-                                  host: String,
-                                  port: Int,
-                                  val credentials: Option[InfluxCredentials])
+final class InfluxAkkaHttpClient(host: String,
+                                 port: Int,
+                                 val credentials: Option[InfluxCredentials],
+                                 gzipped: Boolean)
                                 (implicit val ex: ExecutionContext, val system: ActorSystem)
-    extends InfluxClient[Future, HttpResponse, Uri, RequestEntity]
+    extends InfluxClient[Future, HttpRequest, HttpResponse, Uri, RequestEntity]
       with AkkaRequestHandler
       with AkkaResponseHandler
-      with AkkaQueryHandler {
+      with AkkaQueryHandler
+      with Mappable[Future, HttpResponse]
+      with RequestBuilder[Uri, HttpRequest] {
 
+  override implicit def req(uri: Uri): HttpRequest = HttpRequest(uri = uri)
   override def mapTo[B](resp: Future[HttpResponse], f: HttpResponse => Future[B]): Future[B] = resp.flatMap(f)
 
   protected implicit val mat: ActorMaterializer = ActorMaterializer()
@@ -43,7 +47,7 @@ final class InfluxAkkaHttpClient(
     * @return Database instance that provide non type safe operations
     */
   override def database(dbName: String): Database =
-    new Database(dbName, credentials)
+    new Database(dbName, credentials, gzipped)
 
   /**
     *
@@ -52,15 +56,16 @@ final class InfluxAkkaHttpClient(
     * @tparam A - Measurement's time series type
     * @return - Measurement instance of type [A]
     */
-  override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] =
-    new Measurement[A](dbName, measurementName, credentials)
+  override def measurement[A: ClassTag](dbName: String,
+                                        measurementName: String): Measurement[A] =
+    new Measurement[A](dbName, measurementName, credentials, gzipped)
 
 
   /**
     * Ping InfluxDB
     */
   override def ping: Future[WriteResult] =
-    mapTo(readRequest("/ping"), toResult)
+    mapTo(execute(Uri("/ping")), toResult)
 
   /**
     * Close HTTP connection
