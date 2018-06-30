@@ -47,6 +47,7 @@ private[akka] trait AkkaWriter
         precision,
         retentionPolicy
       ),
+      method = HttpMethods.POST,
       headers = if (gzipped) AkkaHeaders.gzipEncoding :: Nil else Nil,
       entity = entity
     )
@@ -68,6 +69,7 @@ private[akka] trait AkkaWriter
         precision,
         retentionPolicy
       ),
+      method = HttpMethods.POST,
       headers = if (gzipped) AkkaHeaders.gzipEncoding :: Nil else Nil,
       entity = HttpEntity(MediaTypes.`application/octet-stream`, FileIO.fromPath(Paths.get(filePath), 1024))
     )
