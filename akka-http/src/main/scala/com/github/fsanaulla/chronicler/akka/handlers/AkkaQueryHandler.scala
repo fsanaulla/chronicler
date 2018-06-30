@@ -11,8 +11,6 @@ import com.github.fsanaulla.chronicler.core.model.HasCredentials
   */
 private[akka] trait AkkaQueryHandler extends QueryHandler[Uri] with HasCredentials {
 
-  override def buildQuery(
-                           uri: String,
-                           queryParams: Map[String, String]): Uri =
+  override def buildQuery(uri: String, queryParams: Map[String, String]): Uri =
     Uri(uri).withQuery(Uri.Query(queryParams))
 }

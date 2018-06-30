@@ -10,31 +10,46 @@ import jawn.ast.JArray
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
-final class Measurement[E: ClassTag](val host: String,
+final class Measurement[E: ClassTag](dbName: String,
+                                     measurementName: String,
+                                     gzipped: Boolean,
+                                     val host: String,
                                      val port: Int,
-                                     val credentials: Option[InfluxCredentials],
-                                     dbName: String,
-                                     measurementName: String)
+                                     val credentials: Option[InfluxCredentials])
                                     (protected implicit val ex: ExecutionContext,
                                      protected implicit val backend: SttpBackend[Future, Nothing])
     extends MeasurementIO[Future, E, String]
-    with HasCredentials
-    with AsyncWriter
-    with AsyncReader {
+      with HasCredentials
+      with AsyncWriter
+      with AsyncReader {
 
   def write(entity: E,
             consistency: Consistency = Consistencies.ONE,
             precision: Precision = Precisions.NANOSECONDS,
             retentionPolicy: Option[String] = None)
            (implicit wr: InfluxWriter[E]): Future[WriteResult] =
-    writeTo(dbName, toPoint(measurementName, wr.write(entity)), consistency, precision, retentionPolicy)
+    writeTo(
+      dbName,
+      toPoint(measurementName, wr.write(entity)),
+      consistency,
+      precision,
+      retentionPolicy,
+      gzipped
+    )
 
   def bulkWrite(entitys: Seq[E],
                 consistency: Consistency = Consistencies.ONE,
                 precision: Precision = Precisions.NANOSECONDS,
                 retentionPolicy: Option[String] = None)
                (implicit wr: InfluxWriter[E]): Future[WriteResult] =
-    writeTo(dbName, toPoints(measurementName, entitys.map(wr.write)), consistency, precision, retentionPolicy)
+    writeTo(
+      dbName,
+      toPoints(measurementName, entitys.map(wr.write)),
+      consistency,
+      precision,
+      retentionPolicy,
+      gzipped
+    )
 
   def read(query: String,
            epoch: Epoch = Epochs.NANOSECONDS,

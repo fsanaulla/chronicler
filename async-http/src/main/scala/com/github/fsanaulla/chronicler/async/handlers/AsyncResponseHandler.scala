@@ -8,7 +8,8 @@ import jawn.ast.{JArray, JValue}
 import scala.concurrent.Future
 import scala.reflect.ClassTag
 
-private[async] trait AsyncResponseHandler extends ResponseHandler[Future, Response[JValue]] with AsyncJsonHandler {
+private[async] trait AsyncResponseHandler
+  extends ResponseHandler[Future, Response[JValue]] with AsyncJsonHandler {
 
   // Simply result's
   override def toResult(response: Response[JValue]): Future[WriteResult] = {

@@ -19,11 +19,13 @@ import scala.reflect.ClassTag
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-final class Database(dbName: String, val credentials: Option[InfluxCredentials])
-              (protected implicit val actorSystem: ActorSystem,
-               override protected implicit val mat: ActorMaterializer,
-               override protected implicit val ex: ExecutionContext,
-               override protected implicit val connection: Connection)
+final class Database(dbName: String,
+                     val credentials: Option[InfluxCredentials],
+                     gzipped: Boolean)
+                    (protected implicit val actorSystem: ActorSystem,
+                     override protected implicit val mat: ActorMaterializer,
+                     override protected implicit val ex: ExecutionContext,
+                     override protected implicit val connection: Connection)
   extends DatabaseIO[Future, RequestEntity](dbName)
     with AkkaWriter
     with AkkaReader
@@ -35,31 +37,31 @@ final class Database(dbName: String, val credentials: Option[InfluxCredentials])
                     consistency: Consistency = Consistencies.ONE,
                     precision: Precision = Precisions.NANOSECONDS,
                     retentionPolicy: Option[String] = None): Future[WriteResult] =
-    writeFromFile(dbName, filePath, consistency, precision, retentionPolicy)
+    writeFromFile(dbName, filePath, consistency, precision, retentionPolicy, gzipped)
 
   def writeNative(point: String,
                   consistency: Consistency = Consistencies.ONE,
                   precision: Precision = Precisions.NANOSECONDS,
                   retentionPolicy: Option[String] = None): Future[WriteResult] =
-    writeTo(dbName, point, consistency, precision, retentionPolicy)
+    writeTo(dbName, point, consistency, precision, retentionPolicy, gzipped)
 
   def bulkWriteNative(points: Seq[String],
                       consistency: Consistency = Consistencies.ONE,
                       precision: Precision = Precisions.NANOSECONDS,
                       retentionPolicy: Option[String] = None): Future[WriteResult] =
-    writeTo(dbName, points, consistency, precision, retentionPolicy)
+    writeTo(dbName, points, consistency, precision, retentionPolicy, gzipped)
 
   def writePoint(point: Point,
                  consistency: Consistency = Consistencies.ONE,
                  precision: Precision = Precisions.NANOSECONDS,
                  retentionPolicy: Option[String] = None): Future[WriteResult] =
-    writeTo(dbName, point, consistency, precision, retentionPolicy)
+    writeTo(dbName, point, consistency, precision, retentionPolicy, gzipped)
 
   def bulkWritePoints(points: Seq[Point],
                       consistency: Consistency = Consistencies.ONE,
                       precision: Precision = Precisions.NANOSECONDS,
                       retentionPolicy: Option[String] = None): Future[WriteResult] =
-    writeTo(dbName, points, consistency, precision, retentionPolicy)
+    writeTo(dbName, points, consistency, precision, retentionPolicy, gzipped)
 
   def read[A: ClassTag](query: String,
                         epoch: Epoch = Epochs.NANOSECONDS,

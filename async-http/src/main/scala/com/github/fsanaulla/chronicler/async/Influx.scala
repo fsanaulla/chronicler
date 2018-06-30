@@ -16,7 +16,8 @@ object Influx {
     */
   def connect(host: String = "localhost",
               port: Int = 8086,
-              credentials: Option[InfluxCredentials] = None)
+              credentials: Option[InfluxCredentials] = None,
+              gzipped: Boolean = false)
              (implicit ex: ExecutionContext) =
-    new InfluxAsyncHttpClient(host, port, credentials)
+    new InfluxAsyncHttpClient(host, port, credentials, gzipped)
 }

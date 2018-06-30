@@ -13,6 +13,7 @@ object Influx {
     */
   def connect(host: String = "localhost",
               port: Int = 8086,
-              credentials: Option[InfluxCredentials] = None) =
-    new InfluxUrlHttpClient(host, port, credentials)
+              credentials: Option[InfluxCredentials] = None,
+              gzipped: Boolean = false) =
+    new InfluxUrlHttpClient(host, port, credentials, gzipped)
 }

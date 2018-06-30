@@ -51,9 +51,8 @@ private[chronicler] trait ResponseHandler[M[_], R] {
     * @tparam B       - info object
     * @return         - Query result of [B] in future container
     */
-  def toComplexQueryResult[A: ClassTag, B: ClassTag](
-                                                      response: R,
-                                                      f: (String, Array[A]) => B)
+  def toComplexQueryResult[A: ClassTag, B: ClassTag](response: R,
+                                                     f: (String, Array[A]) => B)
                                                     (implicit reader: InfluxReader[A]): M[QueryResult[B]]
 
   /**

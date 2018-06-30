@@ -23,7 +23,8 @@ trait WriteOperations[M[_], E] {
               entity: E,
               consistency: Consistency,
               precision: Precision,
-              retentionPolicy: Option[String]): M[WriteResult]
+              retentionPolicy: Option[String],
+              gzipped: Boolean): M[WriteResult]
 
   /**
     * Write points from specified file
@@ -37,6 +38,7 @@ trait WriteOperations[M[_], E] {
                     filePath: String,
                     consistency: Consistency,
                     precision: Precision,
-                    retentionPolicy: Option[String]): M[WriteResult]
+                    retentionPolicy: Option[String],
+                    gzipped: Boolean): M[WriteResult]
 
 }

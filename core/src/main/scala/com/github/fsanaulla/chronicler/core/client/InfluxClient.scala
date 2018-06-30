@@ -2,20 +2,19 @@ package com.github.fsanaulla.chronicler.core.client
 
 import com.github.fsanaulla.chronicler.core.api.management._
 import com.github.fsanaulla.chronicler.core.handlers.{QueryHandler, RequestHandler, ResponseHandler}
-import com.github.fsanaulla.chronicler.core.model.{HasCredentials, Mappable}
+import com.github.fsanaulla.chronicler.core.model.{HasCredentials, ImplicitRequestBuilder, Mappable}
 
 /** Base client trait that combine functional */
-private[chronicler] trait InfluxClient[M[_], R, U, E]
-    extends RequestHandler[M, R, U, E]
-    with ResponseHandler[M, R]
-    with QueryHandler[U]
-    with Mappable[M, R]
-    with SystemManagement[M, E]
-    with DatabaseManagement[M, R, U, E]
-    with UserManagement[M, R, U, E]
-    with QuerysManagement[M, R, U, E]
-    with RetentionPolicyManagement[M, R, U, E]
-    with ContinuousQueryManagement[M, R, U, E]
-    with ShardManagement[M, R, U, E]
-    with SubscriptionManagement[M, R, U, E]
-    with AutoCloseable { self: HasCredentials => }
+private[chronicler] trait InfluxClient[M[_], Req, Resp, Uri, Entity]
+    extends RequestHandler[M, Req, Resp, Uri]
+    with ResponseHandler[M, Resp]
+    with QueryHandler[Uri]
+    with SystemManagement[M, Entity]
+    with DatabaseManagement[M, Req, Resp, Uri, Entity]
+    with UserManagement[M, Req, Resp, Uri, Entity]
+    with QuerysManagement[M, Req, Resp, Uri, Entity]
+    with RetentionPolicyManagement[M, Req, Resp, Uri, Entity]
+    with ContinuousQueryManagement[M, Req, Resp, Uri, Entity]
+    with ShardManagement[M, Req, Resp, Uri, Entity]
+    with SubscriptionManagement[M, Req, Resp, Uri, Entity]
+    with AutoCloseable { self: HasCredentials with Mappable[M, Resp] with ImplicitRequestBuilder[Uri, Req] => }

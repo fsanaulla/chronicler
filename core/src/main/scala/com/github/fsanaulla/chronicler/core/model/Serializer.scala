@@ -3,7 +3,7 @@ package com.github.fsanaulla.chronicler.core.model
 /**
   * Entity transformer
   */
-private[chronicler] trait Serializer[From, To] {
+trait Serializer[From, To] {
 
   /**
     * Transform entity to request enityt

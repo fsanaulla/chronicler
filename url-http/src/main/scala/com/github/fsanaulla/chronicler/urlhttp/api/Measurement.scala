@@ -10,12 +10,13 @@ import jawn.ast.JArray
 import scala.reflect.ClassTag
 import scala.util.Try
 
-final class Measurement[E: ClassTag](val host: String,
-                               val port: Int,
-                               val credentials: Option[InfluxCredentials],
-                               dbName: String,
-                               measurementName: String)
-                              (protected implicit val backend: SttpBackend[Try, Nothing])
+final class Measurement[E: ClassTag](dbName: String,
+                                     measurementName: String,
+                                     gzipped: Boolean,
+                                     val host: String,
+                                     val port: Int,
+                                     val credentials: Option[InfluxCredentials])
+                                    (protected implicit val backend: SttpBackend[Try, Nothing])
   extends MeasurementIO[Try, E, String]
     with HasCredentials
     with UrlWriter
@@ -25,14 +26,28 @@ final class Measurement[E: ClassTag](val host: String,
             consistency: Consistency = Consistencies.ONE,
             precision: Precision = Precisions.NANOSECONDS,
             retentionPolicy: Option[String] = None)(implicit wr: InfluxWriter[E]): Try[WriteResult] =
-    writeTo(dbName, toPoint(measurementName, wr.write(entity)), consistency, precision, retentionPolicy)
+    writeTo(
+      dbName,
+      toPoint(measurementName, wr.write(entity)),
+      consistency,
+      precision,
+      retentionPolicy,
+      gzipped
+    )
 
 
   def bulkWrite(entitys: Seq[E],
                 consistency: Consistency = Consistencies.ONE,
                 precision: Precision = Precisions.NANOSECONDS,
                 retentionPolicy: Option[String] = None)(implicit wr: InfluxWriter[E]): Try[WriteResult] =
-    writeTo(dbName, toPoints(measurementName, entitys.map(wr.write)), consistency, precision, retentionPolicy)
+    writeTo(
+      dbName,
+      toPoints(measurementName, entitys.map(wr.write)),
+      consistency,
+      precision,
+      retentionPolicy,
+      gzipped
+    )
 
 
   def read(query: String,

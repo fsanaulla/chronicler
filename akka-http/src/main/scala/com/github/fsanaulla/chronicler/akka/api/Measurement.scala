@@ -18,10 +18,10 @@ import scala.reflect.ClassTag
   * Author: fayaz.sanaulla@gmail.com
   * Date: 03.09.17
   */
-final class Measurement[E: ClassTag](
-                                      dbName: String,
-                                      measurementName: String,
-                                      val credentials: Option[InfluxCredentials])
+final class Measurement[E: ClassTag](dbName: String,
+                                     measurementName: String,
+                                     val credentials: Option[InfluxCredentials],
+                                     gzipped: Boolean)
                                     (protected implicit val actorSystem: ActorSystem,
                                      protected implicit val mat: ActorMaterializer,
                                      protected implicit val ex: ExecutionContext,
@@ -41,7 +41,8 @@ final class Measurement[E: ClassTag](
       toPoint(measurementName, wr.write(entity)),
       consistency,
       precision,
-      retentionPolicy
+      retentionPolicy,
+      gzipped
     )
 
 
@@ -54,7 +55,8 @@ final class Measurement[E: ClassTag](
       toPoints(measurementName, entitys.map(wr.write)),
       consistency,
       precision,
-      retentionPolicy
+      retentionPolicy,
+      gzipped
     )
 
 

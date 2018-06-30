@@ -7,6 +7,7 @@ import _root_.akka.stream.ActorMaterializer
 import _root_.akka.stream.scaladsl.FileIO
 import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryHandler, AkkaRequestHandler, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
+import com.github.fsanaulla.chronicler.akka.utils.AkkaHeaders
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
 import com.github.fsanaulla.chronicler.core.io.WriteOperations
 import com.github.fsanaulla.chronicler.core.model.{Executable, HasCredentials, WriteResult}
@@ -36,33 +37,43 @@ private[akka] trait AkkaWriter
                        entity: RequestEntity,
                        consistency: Consistency,
                        precision: Precision,
-                       retentionPolicy: Option[String]): Future[WriteResult] = {
+                       retentionPolicy: Option[String],
+                       gzipped: Boolean): Future[WriteResult] = {
 
-    writeRequest(
+    val request = HttpRequest(
       uri = writeToInfluxQuery(
         dbName,
         consistency,
         precision,
         retentionPolicy
       ),
+      method = HttpMethods.POST,
+      headers = if (gzipped) AkkaHeaders.gzipEncoding :: Nil else Nil,
       entity = entity
-    ).flatMap(toResult)
+    )
+
+    execute(request).flatMap(toResult)
   }
 
   override def writeFromFile(dbName: String,
                              filePath: String,
                              consistency: Consistency,
                              precision: Precision,
-                             retentionPolicy: Option[String]): Future[WriteResult] = {
+                             retentionPolicy: Option[String],
+                             gzipped: Boolean): Future[WriteResult] = {
 
-    writeRequest(
+    val request = HttpRequest(
       uri = writeToInfluxQuery(
         dbName,
         consistency,
         precision,
         retentionPolicy
       ),
+      method = HttpMethods.POST,
+      headers = if (gzipped) AkkaHeaders.gzipEncoding :: Nil else Nil,
       entity = HttpEntity(MediaTypes.`application/octet-stream`, FileIO.fromPath(Paths.get(filePath), 1024))
-    ).flatMap(toResult)
+    )
+
+    execute(request).flatMap(toResult)
   }
 }

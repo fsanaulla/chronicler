@@ -10,30 +10,23 @@ import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-private[chronicler] trait ShardManagement[M[_], R, U, E] extends ShardManagementQuery[U] {
-  self: RequestHandler[M, R, U, E]
-    with ResponseHandler[M, R]
-    with QueryHandler[U]
-    with Mappable[M, R]
+private[chronicler] trait ShardManagement[M[_], Req, Resp, Uri, Entity] extends ShardManagementQuery[Uri] {
+  self: RequestHandler[M, Req, Resp, Uri]
+    with ResponseHandler[M, Resp]
+    with QueryHandler[Uri]
+    with Mappable[M, Resp]
+    with ImplicitRequestBuilder[Uri, Req]
     with HasCredentials =>
 
   /** Drop shard */
   final def dropShard(shardId: Int): M[WriteResult] =
-    m.mapTo(readRequest(dropShardQuery(shardId)), toResult)
+    mapTo(execute(dropShardQuery(shardId)), toResult)
 
   /** Show shard groups */
   final def showShardGroups: M[QueryResult[ShardGroupsInfo]] =
-    m.mapTo(readRequest(showShardGroupsQuery()), toShardGroupQueryResult)
+    mapTo(execute(showShardGroupsQuery()), toShardGroupQueryResult)
 
   /** Show shards */
   final def showShards: M[QueryResult[ShardInfo]] =
-    m.mapTo(readRequest(showShardsQuery()), toShardQueryResult)
-
-//  def getShards(dbName: String): Future[QueryResult[Shard]] = {
-//    showShards().map { qr =>
-//      val seq = qr.queryResult.find(_.dbName == dbName).map(_.shards).getOrElse(Array.empty[Shard])
-//
-//      QueryResult[Shard](qr.code, qr.isSuccess, seq, qr.ex)
-//    }
-//  }
+    mapTo(execute(showShardsQuery()), toShardQueryResult)
 }
