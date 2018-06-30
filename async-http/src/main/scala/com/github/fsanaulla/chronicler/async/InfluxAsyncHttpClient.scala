@@ -1,7 +1,7 @@
 package com.github.fsanaulla.chronicler.async
 
 import com.github.fsanaulla.chronicler.async.api.{Database, Measurement}
-import com.github.fsanaulla.chronicler.async.io.AsyncWriter
+import com.github.fsanaulla.chronicler.async.handlers.{AsyncQueryHandler, AsyncRequestHandler, AsyncResponseHandler}
 import com.github.fsanaulla.chronicler.async.utils.Aliases.Request
 import com.github.fsanaulla.chronicler.core.client.InfluxClient
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, Mappable, WriteResult}
@@ -18,7 +18,9 @@ final class InfluxAsyncHttpClient(val host: String,
                                   gzipped: Boolean)
                                  (implicit val ex: ExecutionContext)
   extends InfluxClient[Future, Request, Response[JValue], Uri, String]
-    with AsyncWriter
+    with AsyncRequestHandler
+    with AsyncResponseHandler
+    with AsyncQueryHandler
     with Mappable[Future, Response[JValue]] {
 
   protected implicit val backend: SttpBackend[Future, Nothing] = AsyncHttpClientFutureBackend()

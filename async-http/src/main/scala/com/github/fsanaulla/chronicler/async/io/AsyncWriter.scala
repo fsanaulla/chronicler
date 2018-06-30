@@ -6,8 +6,8 @@ import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
 import com.github.fsanaulla.chronicler.core.io.WriteOperations
 import com.github.fsanaulla.chronicler.core.model.{HasCredentials, WriteResult}
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.chronicler.core.utils.PointTransformer
-import com.softwaremill.sttp.{Empty, RequestT, Uri, sttp}
+import com.github.fsanaulla.chronicler.core.utils.{Encodings, PointTransformer}
+import com.softwaremill.sttp.{Uri, sttp}
 
 import scala.concurrent.Future
 import scala.io.Source
@@ -21,10 +21,6 @@ private[fsanaulla] trait AsyncWriter
     with HasCredentials
     with WriteOperations[Future, String] {
 
-  private final val gzipEncoding = "gzip"
-
-  private val reqBuilder: RequestT[Empty, String, Nothing] = sttp
-
   override def writeTo(dbName: String,
                        entity: String,
                        consistency: Consistency,
@@ -33,11 +29,11 @@ private[fsanaulla] trait AsyncWriter
                        gzipped: Boolean): Future[WriteResult] = {
 
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
-    val req = reqBuilder
+    val req = sttp
       .post(uri)
       .body(entity)
       .response(asJson)
-    val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
+    val maybeEncoded = if (gzipped) req.acceptEncoding(Encodings.gzipEncoding) else req
 
     execute(maybeEncoded).flatMap(toResult)
   }
@@ -50,11 +46,11 @@ private[fsanaulla] trait AsyncWriter
                              gzipped: Boolean): Future[WriteResult] = {
 
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
-    val req = reqBuilder
+    val req = sttp
       .post(uri)
       .body(Source.fromFile(filePath).getLines().mkString("\n"))
       .response(asJson)
-    val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
+    val maybeEncoded = if (gzipped) req.acceptEncoding(Encodings.gzipEncoding) else req
 
     execute(maybeEncoded).flatMap(toResult)
   }

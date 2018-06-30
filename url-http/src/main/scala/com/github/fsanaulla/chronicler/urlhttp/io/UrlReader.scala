@@ -22,7 +22,7 @@ private[fsanaulla] trait UrlReader
                       epoch: Epoch,
                       pretty: Boolean,
                       chunked: Boolean): Try[ReadResult[JArray]] = {
-    val executionResult = readRequest(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked))
+    val executionResult = execute(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked))
 
     query match {
       case q: String if q.contains("GROUP BY") => executionResult.flatMap(toGroupedJsResult)
@@ -36,6 +36,6 @@ private[fsanaulla] trait UrlReader
                           pretty: Boolean,
                           chunked: Boolean): Try[QueryResult[Array[JArray]]] = {
     val query = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)
-    readRequest(query).flatMap(toBulkQueryJsResult)
+    execute(query).flatMap(toBulkQueryJsResult)
   }
 }
