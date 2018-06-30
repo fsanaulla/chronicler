@@ -7,11 +7,11 @@ import com.github.fsanaulla.chronicler.core.query.UserManagementQuery
 import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
 
 private[fsanaulla] trait UserManagement[M[_], Req, Resp, Uri, Entity] extends UserManagementQuery[Uri] {
-  self: RequestHandler[M, Req, Resp]
+  self: RequestHandler[M, Req, Resp, Uri]
     with ResponseHandler[M, Resp]
     with QueryHandler[Uri]
     with Mappable[M, Resp]
-    with RequestBuilder[Uri, Req]
+    with ImplicitRequestBuilder[Uri, Req]
     with HasCredentials =>
 
   /***

@@ -11,7 +11,6 @@ import com.github.fsanaulla.chronicler.core.client.InfluxClient
 import com.github.fsanaulla.chronicler.core.model._
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.language.implicitConversions
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success}
 
@@ -29,10 +28,8 @@ final class InfluxAkkaHttpClient(host: String,
       with AkkaRequestHandler
       with AkkaResponseHandler
       with AkkaQueryHandler
-      with Mappable[Future, HttpResponse]
-      with RequestBuilder[Uri, HttpRequest] {
+      with Mappable[Future, HttpResponse] {
 
-  override implicit def req(uri: Uri): HttpRequest = HttpRequest(uri = uri)
   override def mapTo[B](resp: Future[HttpResponse], f: HttpResponse => Future[B]): Future[B] = resp.flatMap(f)
 
   protected implicit val mat: ActorMaterializer = ActorMaterializer()

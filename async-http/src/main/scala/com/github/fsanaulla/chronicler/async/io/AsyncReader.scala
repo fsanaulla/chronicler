@@ -22,7 +22,8 @@ private[fsanaulla] trait AsyncReader
                       epoch: Epoch,
                       pretty: Boolean,
                       chunked: Boolean): Future[ReadResult[JArray]] = {
-    val executionResult = readRequest(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked))
+    val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
+    val executionResult = execute(uri)
     query match {
       case q: String if q.contains("GROUP BY") => executionResult.flatMap(toGroupedJsResult)
       case _ => executionResult.flatMap(toQueryJsResult)
@@ -34,7 +35,7 @@ private[fsanaulla] trait AsyncReader
                           epoch: Epoch,
                           pretty: Boolean,
                           chunked: Boolean): Future[QueryResult[Array[JArray]]] = {
-    val query = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)
-    readRequest(query).flatMap(toBulkQueryJsResult)
+    val uri = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)
+    execute(uri).flatMap(toBulkQueryJsResult)
   }
 }

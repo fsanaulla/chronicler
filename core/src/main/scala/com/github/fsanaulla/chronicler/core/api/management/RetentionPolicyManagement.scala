@@ -10,13 +10,12 @@ import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
   * Author: fayaz.sanaulla@gmail.com
   * Date: 08.08.17
   */
-private[chronicler] trait RetentionPolicyManagement[M[_], Req, Resp, Uri, Entity]
-  extends RetentionPolicyManagementQuery[Uri] {
-  self: RequestHandler[M, Req, Resp]
+private[chronicler] trait RetentionPolicyManagement[M[_], Req, Resp, Uri, Entity] extends RetentionPolicyManagementQuery[Uri] {
+  self: RequestHandler[M, Req, Resp, Uri]
     with ResponseHandler[M, Resp]
     with QueryHandler[Uri]
     with Mappable[M, Resp]
-    with RequestBuilder[Uri, Req]
+    with ImplicitRequestBuilder[Uri, Req]
     with HasCredentials =>
 
   /**

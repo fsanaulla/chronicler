@@ -1,9 +1,10 @@
 package com.github.fsanaulla.chronicler.async
 
 import com.github.fsanaulla.chronicler.async.api.{Database, Measurement}
-import com.github.fsanaulla.chronicler.async.handlers._
+import com.github.fsanaulla.chronicler.async.io.AsyncWriter
+import com.github.fsanaulla.chronicler.async.utils.Aliases.Request
 import com.github.fsanaulla.chronicler.core.client.InfluxClient
-import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, WriteResult}
+import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, Mappable, WriteResult}
 import com.softwaremill.sttp.asynchttpclient.future.AsyncHttpClientFutureBackend
 import com.softwaremill.sttp.{Response, SttpBackend, Uri}
 import jawn.ast.JValue
@@ -13,14 +14,14 @@ import scala.reflect.ClassTag
 
 final class InfluxAsyncHttpClient(val host: String,
                                   val port: Int,
-                                  val credentials: Option[InfluxCredentials])(implicit val ex: ExecutionContext)
-  extends InfluxClient[Future, Response[JValue], Uri, String]
-    with AsyncRequestHandler
-    with AsyncResponseHandler
-    with AsyncQueryHandler {
+                                  val credentials: Option[InfluxCredentials],
+                                  gzipped: Boolean)
+                                 (implicit val ex: ExecutionContext)
+  extends InfluxClient[Future, Request, Response[JValue], Uri, String]
+    with AsyncWriter
+    with Mappable[Future, Response[JValue]] {
 
   protected implicit val backend: SttpBackend[Future, Nothing] = AsyncHttpClientFutureBackend()
-
   override def mapTo[B](resp: Future[Response[JValue]], f: Response[JValue] => Future[B]): Future[B] = resp.flatMap(f)
 
   /**
@@ -29,7 +30,7 @@ final class InfluxAsyncHttpClient(val host: String,
     * @return Database instance that provide non type safe operations
     */
   override def database(dbName: String): Database =
-    new Database(host, port, credentials, dbName)
+    new Database(host, port, credentials, dbName, gzipped)
 
   /**
     *
@@ -38,14 +39,15 @@ final class InfluxAsyncHttpClient(val host: String,
     * @tparam A - Measurement's time series type
     * @return - Measurement instance of type [A]
     */
-  override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] =
-    new Measurement[A](host, port, credentials, dbName, measurementName)
+  override def measurement[A: ClassTag](dbName: String,
+                                        measurementName: String): Measurement[A] =
+    new Measurement[A](dbName, measurementName, gzipped, host, port, credentials)
 
   /**
     * Ping InfluxDB
     */
   override def ping: Future[WriteResult] =
-    readRequest(buildQuery("/ping", Map.empty[String, String])).flatMap(toResult)
+    execute(buildQuery("/ping", Map.empty[String, String])).flatMap(toResult)
 
   /**
     * Close HTTP connection
