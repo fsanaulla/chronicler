@@ -21,7 +21,7 @@ import scala.reflect.ClassTag
   */
 final class Database(dbName: String,
                      val credentials: Option[InfluxCredentials],
-                     gzipped: Boolean = false)
+                     gzipped: Boolean)
                     (protected implicit val actorSystem: ActorSystem,
                      override protected implicit val mat: ActorMaterializer,
                      override protected implicit val ex: ExecutionContext,

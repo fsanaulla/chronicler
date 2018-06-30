@@ -21,7 +21,7 @@ import scala.reflect.ClassTag
 final class Measurement[E: ClassTag](dbName: String,
                                      measurementName: String,
                                      val credentials: Option[InfluxCredentials],
-                                     gzipped: Boolean = false)
+                                     gzipped: Boolean)
                                     (protected implicit val actorSystem: ActorSystem,
                                      protected implicit val mat: ActorMaterializer,
                                      protected implicit val ex: ExecutionContext,
