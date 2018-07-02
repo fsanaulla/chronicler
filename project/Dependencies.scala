@@ -13,6 +13,7 @@ object Dependencies {
     val netty = "4.1.22.Final"
     val scalaTest = "3.0.5"
     val scalaCheck = "1.14.0"
+    val chronicler = "0.2.8"
   }
 
   val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalaTest
@@ -21,38 +22,57 @@ object Dependencies {
   def macroDeps(scalaVersion: String): Seq[ModuleID] = Seq(
     "org.scala-lang" %  "scala-reflect" % scalaVersion,
     "org.scalacheck" %% "scalacheck"    % Versions.scalaCheck % Test
-  )
+  ) :+ scalaTest % Test
 
   // testing
   val itTestingDeps: Seq[ModuleID] = Seq(
     "org.jetbrains"        %  "annotations" % "15.0", // to solve evicted warning
     "org.testcontainers"   %  "influxdb"    % "1.7.3" exclude("org.jetbrains", "annotations")
-  ) :+ scalaTest
+  ) :+ scalaTest % Provided
 
   // core
   val coreDep = Seq(
     "com.beachape"   %% "enumeratum" % "1.5.13",
-    "org.spire-math" %% "jawn-ast"   % "0.12.1",
-    "org.scalatest"  %% "scalatest"  % Versions.scalaTest % Test
-  )
+    "org.spire-math" %% "jawn-ast"   % "0.12.1"
+  ) :+ scalaTest % Test
 
   // akka-http
-  val akkaDep = Seq(
-    "com.typesafe.akka" %% "akka-stream"  % Versions.akka % Provided,
-    "com.typesafe.akka" %% "akka-actor"   % Versions.akka % Provided,
-    "com.typesafe.akka" %% "akka-testkit" % Versions.akka % "test,it",
-    "com.typesafe.akka" %% "akka-http"    % "10.1.1"
-  )
+  val akkaDep: List[ModuleID] = List(
+    "com.typesafe.akka"    %% "akka-stream"             % Versions.akka % Provided,
+    "com.typesafe.akka"    %% "akka-actor"              % Versions.akka % Provided,
+    "com.typesafe.akka"    %% "akka-testkit"            % Versions.akka % "test,it",
+    "com.typesafe.akka"    %% "akka-http"               % "10.1.1",
+
+    // if, you want to use it by your own, publish this deps from tests library first
+    "com.github.fsanaulla" %% "chronicler-it-testing"   % "0.2.8" % IntegrationTest,
+    "com.github.fsanaulla" %% "chronicler-unit-testing" % "0.2.8" % "test,it"
+  ) :+ scalaTest % Test
 
   // async-http
-  val asyncHttp = Seq(
+  val asyncHttp: Seq[ModuleID] = Seq(
     "io.netty"              %  "netty-handler"                    % Versions.netty, // to solve evicted warning
-    "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp exclude("io.netty", "netty-handler")
-  )
+    "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp exclude("io.netty", "netty-handler"),
+
+    // if, you want to use it by your own, publish this deps from tests library first
+    "com.github.fsanaulla"  %% "chronicler-it-testing"            % "0.2.8" % IntegrationTest,
+    "com.github.fsanaulla"  %% "chronicler-unit-testing"          % "0.2.8" % "test,it"
+  ) :+ scalaTest % Test
 
   // url-http
-  val urlHttp = "com.softwaremill.sttp" %% "core" % Versions.sttp
+  val urlHttp: Seq[ModuleID] = Seq(
+    "com.softwaremill.sttp" %% "core" % Versions.sttp,
+
+    // if, you want to use it by your own, publish this deps from tests library first
+    "com.github.fsanaulla"  %% "chronicler-it-testing"   % "0.2.8" % IntegrationTest,
+    "com.github.fsanaulla"  %% "chronicler-unit-testing" % "0.2.8" % "test,it"
+  ) :+ scalaTest % Test
 
   // udp
-  val udpDep = "com.github.fsanaulla" %% "scalatest-embedinflux" % "0.1.7" % IntegrationTest
+  val udpDep: Seq[ModuleID] =
+    Seq(
+      "com.github.fsanaulla"  %% "scalatest-embedinflux"   % "0.1.7",
+      "com.github.fsanaulla"  %% "chronicler-url-http"     % Versions.chronicler,
+      "com.github.fsanaulla"  %% "chronicler-unit-testing" % Versions.chronicler,
+      scalaTest
+    ) map (_ % IntegrationTest)
 }

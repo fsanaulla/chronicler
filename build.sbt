@@ -34,11 +34,9 @@ lazy val urlHttp = project
   .settings(Settings.publish: _*)
   .settings(
     name := "chronicler-url-http",
-    libraryDependencies += Dependencies.urlHttp
+    libraryDependencies ++= Dependencies.urlHttp
   )
   .dependsOn(core % "compile->compile;test->test")
-  .dependsOn(unitTesting % "test->test")
-  .dependsOn(itTesting, unitTesting % "it->test")
 
 lazy val akkaHttp = project
   .in(file("akka-http"))
@@ -55,8 +53,6 @@ lazy val akkaHttp = project
     libraryDependencies ++= Dependencies.akkaDep
   )
   .dependsOn(core % "compile->compile;test->test")
-  .dependsOn(unitTesting % "test->test")
-  .dependsOn(itTesting, unitTesting % "it->test")
 
 lazy val asyncHttp = project
   .in(file("async-http"))
@@ -73,8 +69,6 @@ lazy val asyncHttp = project
     libraryDependencies ++= Dependencies.asyncHttp
   )
   .dependsOn(core % "compile->compile;test->test")
-  .dependsOn(unitTesting % "test->test")
-  .dependsOn(itTesting, unitTesting % "it->test")
 
 lazy val udp = project
   .in(file("udp"))
@@ -84,10 +78,10 @@ lazy val udp = project
   .settings(Settings.publish: _*)
   .settings(
     name := "chronicler-udp",
-    libraryDependencies += Dependencies.udpDep,
+    libraryDependencies ++= Dependencies.udpDep,
     test in Test := {}
   )
-  .dependsOn(core, asyncHttp, macros, unitTesting % "it->test")
+  .dependsOn(core % "compile->compile;test->test")
 
 lazy val macros = project
   .in(file("macros"))
@@ -98,20 +92,22 @@ lazy val macros = project
     libraryDependencies ++= Dependencies.macroDeps(scalaVersion.value)
   )
   .dependsOn(core % "compile->compile;test->test")
-  .dependsOn(unitTesting % "test->test")
 
+// Only for test purpose
 lazy val itTesting = project
   .in(file("tests/it-testing"))
   .settings(Settings.common: _*)
   .settings(
     name := "chronicler-it-testing",
-    libraryDependencies ++= Dependencies.itTestingDeps)
-  .dependsOn(core, macros % "compile->compile")
+    libraryDependencies ++= Dependencies.itTestingDeps
+  )
+  .dependsOn(core % "compile->compile")
 
 lazy val unitTesting = project
   .in(file("tests/unit-testing"))
   .settings(Settings.common: _*)
   .settings(
     name := "chronicler-unit-testing",
-    libraryDependencies += Dependencies.scalaTest)
+    libraryDependencies += Dependencies.scalaTest % Provided
+  )
   .dependsOn(core % "compile->compile")

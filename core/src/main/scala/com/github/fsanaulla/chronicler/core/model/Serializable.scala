@@ -3,7 +3,7 @@ package com.github.fsanaulla.chronicler.core.model
 trait Serializable[To] {
 
   /**
-    * Auotmatically serialize entity of type ${From} to ${To}
+    * Automatically serialize entity
     * @param f     - entity
     * @param sr    - serializer
     * @tparam From - frp, which type

@@ -2,18 +2,13 @@ package com.github.fsanaulla.chronicler.udp
 
 import java.io.File
 
-import com.github.fsanaulla.chronicler.async.InfluxAsyncHttpClient
-import com.github.fsanaulla.chronicler.async.api.Database
 import com.github.fsanaulla.chronicler.core.model.{InfluxFormatter, Point}
-import com.github.fsanaulla.chronicler.macros.Macros
-import com.github.fsanaulla.chronicler.macros.annotations.{field, tag}
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.github.fsanaulla.core.testing.configurations.InfluxUDPConf
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
+import jawn.ast.{JArray, JNum, JString}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Second, Seconds, Span}
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * Created by
@@ -132,6 +127,16 @@ class UdpClientSpec extends FlatSpecWithMatchers with EmbeddedInfluxDB with Infl
 }
 
 object UdpClientSpec {
-  case class Test(@tag name: String, @field age: Int)
-  implicit val fmt: InfluxFormatter[Test] = Macros.format[Test]
+  import com.github.fsanaulla.chronicler.core.utils.PrimitiveJawnImplicits._
+
+  case class Test(name: String, age: Int)
+
+  implicit val fmt: InfluxFormatter[Test] = new InfluxFormatter[Test] {
+    override def read(js: JArray): Test = js.vs.tail match {
+      case Array(age: JNum, name: JString) => Test(name, age)
+    }
+
+    override def write(obj: Test): String =
+      s"name=${obj.name} age=${obj.age}"
+  }
 }
