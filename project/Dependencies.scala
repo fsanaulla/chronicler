@@ -44,8 +44,8 @@ object Dependencies {
     "com.typesafe.akka"    %% "akka-http"               % "10.1.1",
 
     // if, you want to use it by your own, publish this deps from tests library first
-    "com.github.fsanaulla" %% "chronicler-it-testing"   % "0.2.8" % IntegrationTest,
-    "com.github.fsanaulla" %% "chronicler-unit-testing" % "0.2.8" % "test,it"
+    "com.github.fsanaulla" %% "chronicler-it-testing"   % Versions.chronicler % IntegrationTest,
+    "com.github.fsanaulla" %% "chronicler-unit-testing" % Versions.chronicler % "test,it"
   ) :+ scalaTest % "test,it"
 
   // async-http
@@ -54,8 +54,8 @@ object Dependencies {
     "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp exclude("io.netty", "netty-handler"),
 
     // if, you want to use it by your own, publish this deps from tests library first
-    "com.github.fsanaulla"  %% "chronicler-it-testing"            % "0.2.8" % IntegrationTest,
-    "com.github.fsanaulla"  %% "chronicler-unit-testing"          % "0.2.8" % "test,it"
+    "com.github.fsanaulla"  %% "chronicler-it-testing"   % Versions.chronicler % IntegrationTest,
+    "com.github.fsanaulla"  %% "chronicler-unit-testing" % Versions.chronicler % "test,it"
   ) :+ scalaTest % "test,it"
 
   // url-http
@@ -63,8 +63,8 @@ object Dependencies {
     "com.softwaremill.sttp" %% "core" % Versions.sttp,
 
     // if, you want to use it by your own, publish this deps from tests library first
-    "com.github.fsanaulla"  %% "chronicler-it-testing"   % "0.2.8" % IntegrationTest,
-    "com.github.fsanaulla"  %% "chronicler-unit-testing" % "0.2.8" % "test,it"
+    "com.github.fsanaulla"  %% "chronicler-it-testing"   % Versions.chronicler % IntegrationTest,
+    "com.github.fsanaulla"  %% "chronicler-unit-testing" % Versions.chronicler % "test,it"
   ) :+ scalaTest % "test,it"
 
   // udp
