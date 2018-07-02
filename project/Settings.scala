@@ -7,15 +7,16 @@ import sbt.{Developer, Opts, ScmInfo, url}
 object Settings extends LibraryManagementSyntax {
 
    val common = Seq(
-    scalaVersion := "2.12.6",
-    organization := "com.github.fsanaulla",
-    scalacOptions ++= Scalac.options(scalaVersion.value),
-    crossScalaVersions := Seq("2.11.8", scalaVersion.value),
-    homepage := Some(url("https://github.com/fsanaulla/chronicler")),
-    licenses += "Apache-2.0" -> url("https://opensource.org/licenses/Apache-2.0"),
-    developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla")),
-    parallelExecution in IntegrationTest := false
-  )
+     scalaVersion := "2.12.6",
+     organization := "com.github.fsanaulla",
+     scalacOptions ++= Scalac.options(scalaVersion.value),
+     crossScalaVersions := Seq("2.11.8", scalaVersion.value),
+     homepage := Some(url("https://github.com/fsanaulla/chronicler")),
+     licenses += "Apache-2.0" -> url("https://opensource.org/licenses/Apache-2.0"),
+     developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla")),
+     parallelExecution in IntegrationTest := false,
+     publishArtifact in IntegrationTest := false
+   )
 
 
   val publish = Seq(
