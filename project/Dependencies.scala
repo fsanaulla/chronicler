@@ -46,7 +46,7 @@ object Dependencies {
     // if, you want to use it by your own, publish this deps from tests library first
     "com.github.fsanaulla" %% "chronicler-it-testing"   % "0.2.8" % IntegrationTest,
     "com.github.fsanaulla" %% "chronicler-unit-testing" % "0.2.8" % "test,it"
-  ) :+ scalaTest % Test
+  ) :+ scalaTest % "test,it"
 
   // async-http
   val asyncHttp: Seq[ModuleID] = Seq(
@@ -56,7 +56,7 @@ object Dependencies {
     // if, you want to use it by your own, publish this deps from tests library first
     "com.github.fsanaulla"  %% "chronicler-it-testing"            % "0.2.8" % IntegrationTest,
     "com.github.fsanaulla"  %% "chronicler-unit-testing"          % "0.2.8" % "test,it"
-  ) :+ scalaTest % Test
+  ) :+ scalaTest % "test,it"
 
   // url-http
   val urlHttp: Seq[ModuleID] = Seq(
@@ -65,7 +65,7 @@ object Dependencies {
     // if, you want to use it by your own, publish this deps from tests library first
     "com.github.fsanaulla"  %% "chronicler-it-testing"   % "0.2.8" % IntegrationTest,
     "com.github.fsanaulla"  %% "chronicler-unit-testing" % "0.2.8" % "test,it"
-  ) :+ scalaTest % Test
+  ) :+ scalaTest % "test,it"
 
   // udp
   val udpDep: Seq[ModuleID] =

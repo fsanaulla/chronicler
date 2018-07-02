@@ -3,9 +3,9 @@ package com.github.fsanaulla.chronicler.urlhttp
 import com.github.fsanaulla.chronicler.core.enums.Privileges
 import com.github.fsanaulla.chronicler.core.model.{AuthorizationException, UserPrivilegesInfo}
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
+import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.OkResult
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import org.scalatest.{OptionValues, TryValues}
-import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.OkResult
 
 /**
   * Created by
@@ -13,7 +13,6 @@ import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.OkResult
   * Date: 17.08.17
   */
 class AuthenticationSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with TryValues with OptionValues {
-
 
   val userDB = "db"
   val userName = "some_user"
