@@ -2,9 +2,9 @@ package com.github.fsanaulla.chronicler.macros
 
 import com.github.fsanaulla.chronicler.core.model.InfluxWriter
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+import org.scalatest.{FlatSpec, Matchers}
 
-class MacroWriterSpec extends FlatSpecWithMatchers {
+class MacroWriterSpec extends FlatSpec with Matchers {
 
   case class Test(@tag name: String,
                   @tag surname: Option[String],

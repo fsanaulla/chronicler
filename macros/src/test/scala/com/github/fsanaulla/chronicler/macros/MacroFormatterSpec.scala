@@ -2,10 +2,10 @@ package com.github.fsanaulla.chronicler.macros
 
 import com.github.fsanaulla.chronicler.core.model.InfluxFormatter
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import jawn.ast.{JArray, JNull, JNum, JString}
+import org.scalatest.{FlatSpec, Matchers}
 
-class MacroFormatterSpec extends FlatSpecWithMatchers {
+class MacroFormatterSpec extends FlatSpec with Matchers {
 
   case class Test(@tag name: String,
                   @tag surname: Option[String],
