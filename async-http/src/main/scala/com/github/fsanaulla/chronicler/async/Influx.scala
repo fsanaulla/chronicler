@@ -14,21 +14,19 @@ object Influx {
     * @param ex          - Execution context
     * @return            - InfluxAsyncHttpClient
     */
-  def connect(host: String = "localhost",
-              port: Int = 8086,
-              credentials: Option[InfluxCredentials] = None,
-              gzipped: Boolean = false)
-             (implicit ex: ExecutionContext) =
+  def apply(host: String = "localhost",
+            port: Int = 8086,
+            credentials: Option[InfluxCredentials] = None,
+            gzipped: Boolean = false)
+           (implicit ex: ExecutionContext) =
     new InfluxAsyncHttpClient(host, port, credentials, gzipped)
 
   /***
     * Create Async HTTP based client from configuration
     * @param conf    - configuration object
-    * @param gzipped - enable gzip compression
     * @param ex      - Execution context
     * @return        - InfluxAsyncHttpClient
     */
-  def connect(conf: InfluxConfig,
-              gzipped: Boolean = false)(implicit ex: ExecutionContext): InfluxAsyncHttpClient =
-    connect(conf.host, conf.port, conf.credentials, gzipped)
+  def apply(conf: InfluxConfig)(implicit ex: ExecutionContext): InfluxAsyncHttpClient =
+    new InfluxAsyncHttpClient(conf.host, conf.port, conf.credentials, conf.gzipped)
 }

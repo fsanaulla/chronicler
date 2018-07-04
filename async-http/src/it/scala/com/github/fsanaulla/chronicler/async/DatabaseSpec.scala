@@ -21,7 +21,7 @@ class DatabaseSpec extends FlatSpecWithMatchers with Futures with DockerizedInfl
   val testDB = "db"
 
   lazy val influx: InfluxAsyncHttpClient =
-    Influx.connect(host, port, Some(creds))
+    Influx.apply(host, port, Some(creds))
 
   lazy val db: Database = influx.database(testDB)
 

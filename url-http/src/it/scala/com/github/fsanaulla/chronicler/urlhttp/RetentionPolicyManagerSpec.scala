@@ -18,8 +18,8 @@ class RetentionPolicyManagerSpec extends FlatSpecWithMatchers with DockerizedInf
 
   val rpDB = "db"
 
-  lazy val influx =
-    Influx.connect(host, port, Some(creds))
+  lazy val influx: InfluxUrlHttpClient =
+    Influx(host, port, Some(creds))
 
   "Retention policy" should "create retention policy" in {
     influx.createDatabase(rpDB).success.value shouldEqual OkResult

@@ -21,7 +21,7 @@ class GzippedDatabaseSpec extends FlatSpecWithMatchers with DockerizedInfluxDB w
   val testDB = "db"
 
   lazy val influx: InfluxUrlHttpClient =
-    Influx.connect(host, port, Some(creds), gzipped = true)
+    Influx(host, port, Some(creds), gzipped = true)
 
   lazy val db: Database = influx.database(testDB)
 

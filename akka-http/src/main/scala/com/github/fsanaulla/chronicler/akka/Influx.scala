@@ -22,24 +22,20 @@ object Influx {
     * @param ex          - implicit execution context, by default use standard one
     * @return            - InfluxAkkaHttpClient
     */
-  def connect(host: String = "localhost",
-              port: Int = 8086,
-              credentials: Option[InfluxCredentials] = None,
-              system: ActorSystem = ActorSystem(),
-              gzipped: Boolean = false)
-             (implicit ex: ExecutionContext) =
+  def apply(host: String = "localhost",
+            port: Int = 8086,
+            credentials: Option[InfluxCredentials] = None,
+            gzipped: Boolean = false)
+           (implicit ex: ExecutionContext, system: ActorSystem) =
     new InfluxAkkaHttpClient(host, port, credentials, gzipped)(ex, system)
 
   /**
     * Create Akka HTTP based influxdb client from configuration object
     * @param conf        - configuration object
     * @param system      - actor system, by default will create new one
-    * @param gzipped     - enable gzip compression
     * @param ex          - implicit execution context, by default use standard one
     * @return            - InfluxAkkaHttpClient
     */
-  def connect(conf: InfluxConfig,
-              system: ActorSystem = ActorSystem(),
-              gzipped: Boolean)(implicit ex: ExecutionContext): InfluxAkkaHttpClient =
-    connect(conf.host, conf.port, conf.credentials, system, gzipped)
+  def apply(conf: InfluxConfig)(implicit ex: ExecutionContext, system: ActorSystem): InfluxAkkaHttpClient =
+    new InfluxAkkaHttpClient(conf.host, conf.port, conf.credentials, conf.gzipped)(ex, system)
 }

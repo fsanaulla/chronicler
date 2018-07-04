@@ -23,7 +23,7 @@ class ShardManagementSpec
   val testDb = "_internal"
 
   lazy val influx: InfluxAkkaHttpClient =
-    Influx.connect(host = host, port = port, system = system, credentials = Some(creds))
+    Influx(host = host, port = port, credentials = Some(creds))
 
   "shard operations" should "show shards" in {
 

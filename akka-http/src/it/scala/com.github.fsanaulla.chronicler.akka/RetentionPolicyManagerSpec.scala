@@ -24,7 +24,7 @@ class RetentionPolicyManagerSpec
   val rpDB = "db"
 
   lazy val influx: InfluxAkkaHttpClient =
-    Influx.connect(host = host, port = port, system = system, credentials = Some(creds))
+    Influx(host = host, port = port, credentials = Some(creds))
 
   "Retention policy" should "create retention policy" in {
     influx.createDatabase(rpDB).futureValue shouldEqual OkResult

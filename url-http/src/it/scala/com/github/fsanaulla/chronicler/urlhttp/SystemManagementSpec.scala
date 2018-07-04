@@ -13,7 +13,7 @@ import org.scalatest.TryValues
 class SystemManagementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with TryValues {
 
   lazy val influx: InfluxUrlHttpClient =
-    Influx.connect(host, port, Some(creds))
+    Influx(host, port, Some(creds))
 
   "System api" should "ping InfluxDB" in {
     influx.ping.success.value shouldEqual NoContentResult

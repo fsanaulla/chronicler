@@ -22,8 +22,8 @@ class UserManagementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB wi
   val admin = "Admin"
   val adminPass = "admin_pass"
 
-  lazy val influx =
-    Influx.connect(host, port, Some(creds))
+  lazy val influx: InfluxUrlHttpClient =
+    Influx(host, port, Some(creds))
 
   "User management operation" should "create user" in {
     influx.createDatabase(userDB).success.value shouldEqual OkResult
