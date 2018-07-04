@@ -13,15 +13,16 @@ object Dependencies {
     val netty = "4.1.22.Final"
     val scalaTest = "3.0.5"
     val scalaCheck = "1.14.0"
-    val chronicler = "0.2.9"
+    val chronicler = "0.3.0"
   }
 
   val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalaTest
   val scalaCheck = "org.scalacheck" %% "scalacheck" % Versions.scalaCheck
 
   def macroDeps(scalaVersion: String): Seq[ModuleID] = Seq(
-    "org.scala-lang" %  "scala-reflect" % scalaVersion,
-    "org.scalacheck" %% "scalacheck"    % Versions.scalaCheck % Test
+    "org.scala-lang"       %  "scala-reflect"         % scalaVersion,
+    "org.scalacheck"       %% "scalacheck"            % Versions.scalaCheck % Test,
+    "com.github.fsanaulla" %% "scalacheck-generators" % "0.1.0"             % Provided exclude("org.scala-lang", "scala-reflect")
   ) :+ scalaTest % Test
 
   // testing

@@ -5,6 +5,7 @@ import java.time.Instant
 import com.github.fsanaulla.chronicler.core.model.InfluxFormatter
 import com.github.fsanaulla.chronicler.macros.Macros
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
+import com.github.fsanaulla.scalacheck.Generator
 import jawn.ast._
 import org.scalacheck.{Arbitrary, Gen}
 
@@ -18,45 +19,32 @@ trait InfluxFormat {
                   @timestamp time: Long)
 
   val fmt: InfluxFormatter[Test] = Macros.format[Test]
+  val gen: Arbitrary[Test] = Generator.gen[Test]
 
   val validStr: Gen[String] = for (s <- Gen.alphaStr if s.nonEmpty && s != null) yield s
 
   val arbInstant: Arbitrary[String] = Arbitrary {
-      for {
-        millis <- Gen.chooseNum(0L, Instant.MAX.getEpochSecond)
-        nanos <- Gen.chooseNum(0, Instant.MAX.getNano)
-      } yield {
-        Instant.ofEpochMilli(millis).plusNanos(nanos).toString
-      }
+    for {
+      millis <- Gen.chooseNum(0L, Instant.MAX.getEpochSecond)
+      nanos <- Gen.chooseNum(0, Instant.MAX.getNano)
+    } yield {
+      Instant.ofEpochMilli(millis).plusNanos(nanos).toString
     }
+  }
 
-  val gen: Gen[Test] = for {
-    name <- Gen.alphaStr
-    surname <- Gen.option(Gen.alphaStr)
-    age <- Arbitrary.arbInt.arbitrary
-    schooler <- Gen.oneOf(true :: false :: Nil)
-    city <- Gen.alphaStr
-    time <- Arbitrary.arbLong.arbitrary
-  } yield Test(name, surname, age, schooler, city, time)
-
-  val genJArr: Gen[JArray] = for {
-    name <- validStr
-    surname <- Gen.option(validStr)
-    age <- Arbitrary.arbInt.arbitrary
-    schooler <- Gen.oneOf(true :: false :: Nil)
-    city <- validStr
-    time <- arbInstant.arbitrary
-  } yield
+  val genArr: Gen[JArray] = gen.arbitrary.map { t =>
     JArray(
       Array(
-        JString(time),
-        JNum(age),
-        JString(city),
-        JString(name),
-        JBool(schooler),
-        surname.map(s => JString(s)).getOrElse(JNull)
+        JString(Instant.ofEpochMilli(t.time).toString),
+        JNum(t.age),
+        JString(t.city),
+        JString(t.name),
+        JBool(t.schooler),
+        t.surname.map(s => JString(s)).getOrElse(JNull)
       )
-  )
+    )
+  }
+
 
   final def influxWrite(t: Test): String = {
     require(t.name.nonEmpty, "Tag can't be an empty string")

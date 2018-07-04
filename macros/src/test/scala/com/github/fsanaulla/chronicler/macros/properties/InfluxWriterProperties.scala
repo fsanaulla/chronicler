@@ -9,7 +9,7 @@ object InfluxWriterProperties
   extends Properties("InfluxFormatter")
     with InfluxFormat {
 
-  property("write") = forAll(gen) { t: Test =>
+  property("write") = forAll(gen.arbitrary) { t: Test =>
 
     if (t.name.isEmpty) {
       val f = Try(fmt.write(t)).isFailure
@@ -19,7 +19,7 @@ object InfluxWriterProperties
     }
   }
 
-  property("read") = forAll(genJArr) { jarr =>
+  property("read") = forAll(genArr) { jarr =>
     fmt.read(jarr) == influxRead(jarr)
   }
 }
