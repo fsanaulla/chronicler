@@ -4,27 +4,27 @@ import java.io.File
 
 import com.github.fsanaulla.chronicler.core.model.{InfluxFormatter, Point}
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+import com.github.fsanaulla.chronicler.urlhttp.InfluxUrlHttpClient
+import com.github.fsanaulla.chronicler.urlhttp.api.Database
 import com.github.fsanaulla.core.testing.configurations.InfluxUDPConf
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 import jawn.ast.{JArray, JNum, JString}
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.time.{Second, Seconds, Span}
+import org.scalatest.TryValues
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 24.02.18
   */
-class UdpClientSpec extends FlatSpecWithMatchers with EmbeddedInfluxDB with InfluxUDPConf with ScalaFutures {
+// todo: move it to test-containers
+class UdpClientSpec extends FlatSpecWithMatchers with EmbeddedInfluxDB with InfluxUDPConf with TryValues {
   import UdpClientSpec._
 
-  implicit val pc: PatienceConfig = PatienceConfig(Span(20, Seconds), Span(1, Second))
-  
   lazy val influxUdp: InfluxUDPClient =
     com.github.fsanaulla.chronicler.udp.Influx.connect()
 
-  lazy val influxHttp: InfluxAsyncHttpClient =
-    com.github.fsanaulla.chronicler.async.Influx.connect()
+  lazy val influxHttp: InfluxUrlHttpClient =
+    com.github.fsanaulla.chronicler.urlhttp.Influx.connect()
 
   lazy val udp: Database = influxHttp.database("udp")
 
@@ -38,7 +38,8 @@ class UdpClientSpec extends FlatSpecWithMatchers with EmbeddedInfluxDB with Infl
 
     udp
       .read[Test]("SELECT * FROM cpu")
-      .futureValue
+      .success
+      .value
       .queryResult shouldEqual Array(t)
   }
 
@@ -52,7 +53,8 @@ class UdpClientSpec extends FlatSpecWithMatchers with EmbeddedInfluxDB with Infl
 
     udp
       .read[Test]("SELECT * FROM cpu1")
-      .futureValue
+      .success
+      .value
       .queryResult shouldEqual Array(t, t1)
   }
 
@@ -68,7 +70,8 @@ class UdpClientSpec extends FlatSpecWithMatchers with EmbeddedInfluxDB with Infl
 
     udp
       .read[Test]("SELECT * FROM cpu")
-      .futureValue
+      .success
+      .value
       .queryResult
       .length shouldEqual 2
   }
@@ -88,7 +91,8 @@ class UdpClientSpec extends FlatSpecWithMatchers with EmbeddedInfluxDB with Infl
 
     udp
       .read[Test]("SELECT * FROM cpu2")
-      .futureValue
+      .success
+      .value
       .queryResult shouldEqual Array(Test("d", 2), Test("e", 3))
   }
 
@@ -99,7 +103,8 @@ class UdpClientSpec extends FlatSpecWithMatchers with EmbeddedInfluxDB with Infl
 
     udp
       .read[Test]("SELECT * FROM cpu")
-      .futureValue
+      .success
+      .value
       .queryResult
       .length shouldEqual 3
   }
@@ -111,7 +116,8 @@ class UdpClientSpec extends FlatSpecWithMatchers with EmbeddedInfluxDB with Infl
 
     udp
       .read[Test]("SELECT * FROM cpu3")
-      .futureValue
+      .success
+      .value
       .queryResult shouldEqual Array(Test("b", 5), Test("v", 3))
   }
 
@@ -119,11 +125,11 @@ class UdpClientSpec extends FlatSpecWithMatchers with EmbeddedInfluxDB with Infl
     influxUdp.writeFromFile(new File(getClass.getResource("/points.txt").getPath)) shouldEqual {}
 
     udp.readJs("SELECT * FROM test1")
-      .futureValue
+      .success
+      .value
       .queryResult
       .length shouldEqual 3
   }
-
 }
 
 object UdpClientSpec {

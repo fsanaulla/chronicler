@@ -8,72 +8,67 @@ import sbt._
 object Dependencies {
 
   object Versions {
-    val sttp = "1.1.14"
-    val akka = "2.5.12"
-    val netty = "4.1.22.Final"
-    val scalaTest = "3.0.5"
+    val sttp       = "1.1.14"
+    val akka       = "2.5.12"
+    val netty      = "4.1.22.Final"
+    val scalaTest  = "3.0.5"
     val scalaCheck = "1.14.0"
-    val chronicler = "0.3.0"
+    val testing    = "0.3.0"
   }
 
-  val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalaTest
+  val scalaTest = "org.scalatest"   %% "scalatest"  % Versions.scalaTest
   val scalaCheck = "org.scalacheck" %% "scalacheck" % Versions.scalaCheck
+
+  val httpClientTesting = List(
+    // if, you want to use it by your own, publish this deps from tests library first
+    "com.github.fsanaulla"  %% "chronicler-it-testing"   % Versions.testing % Scope.it,
+    "com.github.fsanaulla"  %% "chronicler-unit-testing" % Versions.testing % Scope.all,
+    scalaTest % Scope.all
+  )
 
   def macroDeps(scalaVersion: String): Seq[ModuleID] = Seq(
     "org.scala-lang"       %  "scala-reflect"         % scalaVersion,
-    "org.scalacheck"       %% "scalacheck"            % Versions.scalaCheck % Test,
-    "com.github.fsanaulla" %% "scalacheck-generators" % "0.1.0"             % Provided exclude("org.scala-lang", "scala-reflect")
-  ) :+ scalaTest % Test
+    "org.scalacheck"       %% "scalacheck"            % Versions.scalaCheck % Scope.test,
+    "com.github.fsanaulla" %% "scalacheck-generators" % "0.1.0"             % Scope.compileTimeOnly exclude("org.scala-lang", "scala-reflect")
+  ) :+ scalaTest % Scope.test
 
   // testing
   val itTestingDeps: Seq[ModuleID] = Seq(
     "org.jetbrains"        %  "annotations" % "15.0", // to solve evicted warning
     "org.testcontainers"   %  "influxdb"    % "1.7.3" exclude("org.jetbrains", "annotations")
-  ) :+ scalaTest % Provided
+  ) :+ scalaTest % Scope.compileTimeOnly
 
   // core
-  val coreDep = Seq(
+  val coreDep: List[ModuleID] = List(
     "com.beachape"   %% "enumeratum" % "1.5.13",
     "org.spire-math" %% "jawn-ast"   % "0.12.1"
-  ) :+ scalaTest % Test
+  ) :+ scalaTest % Scope.test
 
   // akka-http
   val akkaDep: List[ModuleID] = List(
-    "com.typesafe.akka"    %% "akka-stream"             % Versions.akka % Provided,
-    "com.typesafe.akka"    %% "akka-actor"              % Versions.akka % Provided,
-    "com.typesafe.akka"    %% "akka-testkit"            % Versions.akka % "test,it",
-    "com.typesafe.akka"    %% "akka-http"               % "10.1.1",
-
-    // if, you want to use it by your own, publish this deps from tests library first
-    "com.github.fsanaulla" %% "chronicler-it-testing"   % Versions.chronicler % IntegrationTest,
-    "com.github.fsanaulla" %% "chronicler-unit-testing" % Versions.chronicler % "test,it"
-  ) :+ scalaTest % "test,it"
+    "com.typesafe.akka"    %% "akka-stream"             % Versions.akka % Scope.compileTimeOnly,
+    "com.typesafe.akka"    %% "akka-actor"              % Versions.akka % Scope.compileTimeOnly,
+    "com.typesafe.akka"    %% "akka-testkit"            % Versions.akka % Scope.all,
+    "com.typesafe.akka"    %% "akka-http"               % "10.1.1"
+  ) ::: httpClientTesting
 
   // async-http
-  val asyncHttp: Seq[ModuleID] = Seq(
+  val asyncHttp: Seq[ModuleID] = List(
     "io.netty"              %  "netty-handler"                    % Versions.netty, // to solve evicted warning
-    "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp exclude("io.netty", "netty-handler"),
-
-    // if, you want to use it by your own, publish this deps from tests library first
-    "com.github.fsanaulla"  %% "chronicler-it-testing"   % Versions.chronicler % IntegrationTest,
-    "com.github.fsanaulla"  %% "chronicler-unit-testing" % Versions.chronicler % "test,it"
-  ) :+ scalaTest % "test,it"
+    "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp exclude("io.netty", "netty-handler")
+  ) ::: httpClientTesting
 
   // url-http
-  val urlHttp: Seq[ModuleID] = Seq(
-    "com.softwaremill.sttp" %% "core" % Versions.sttp,
-
-    // if, you want to use it by your own, publish this deps from tests library first
-    "com.github.fsanaulla"  %% "chronicler-it-testing"   % Versions.chronicler % IntegrationTest,
-    "com.github.fsanaulla"  %% "chronicler-unit-testing" % Versions.chronicler % "test,it"
-  ) :+ scalaTest % "test,it"
+  val urlHttp: Seq[ModuleID] = List(
+    "com.softwaremill.sttp" %% "core" % Versions.sttp
+  ) ::: httpClientTesting
 
   // udp
   val udpDep: Seq[ModuleID] =
     Seq(
       "com.github.fsanaulla"  %% "scalatest-embedinflux"   % "0.1.7",
-      "com.github.fsanaulla"  %% "chronicler-url-http"     % Versions.chronicler,
-      "com.github.fsanaulla"  %% "chronicler-unit-testing" % Versions.chronicler,
+      "com.github.fsanaulla"  %% "chronicler-url-http"     % Versions.testing,
+      "com.github.fsanaulla"  %% "chronicler-unit-testing" % Versions.testing,
       scalaTest
-    ) map (_ % IntegrationTest)
+    ) map (_ % Scope.it)
 }

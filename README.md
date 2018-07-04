@@ -78,7 +78,7 @@ libraryDependencies ++= Seq(
 )
 ```
 Our code:
-```scala
+```
 import com.github.fsanaulla.chronicler.async.{Influx, InfluxAsyncHttpClient}
 import com.github.fsanaulla.macros.annotations.{field, tag, timestamp}
 import com.github.fsanaulla.core.model.InfluxFormatter
