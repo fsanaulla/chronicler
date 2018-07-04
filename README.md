@@ -6,7 +6,7 @@ Open-source [Scala](https://www.scala-lang.org/) client tool for [InfluxDB](http
 [![Build Status](https://travis-ci.org/fsanaulla/chronicler.svg?branch=master)](https://travis-ci.org/fsanaulla/chronicler)
 [![Codecov](https://img.shields.io/codecov/c/github/fsanaulla/chronicler.svg)](https://codecov.io/gh/fsanaulla/chronicler)
 [![Join the chat at https://gitter.im/chronicler/Lobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/chronicler-scala/Lobby/?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Latest version](https://index.scala-lang.org/fsanaulla/chronicler/chronicler-core/latest.svg)](https://index.scala-lang.org/fsanaulla/chronicler/chronicler-core_2.11)
+[![Latest version](https://index.scala-lang.org/fsanaulla/chronicler/chronicler-core/latest.svg?color=yellow)](https://index.scala-lang.org/com.github.fsanaulla/chronicler/chronicler-core_2.11)
 [![License](http://img.shields.io/:license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 </div>
 
