@@ -1,18 +1,18 @@
 package com.github.fsanaulla.chronicler.async
 
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.model.{InfluxConfig, InfluxCredentials}
 
 import scala.concurrent.ExecutionContext
 
 object Influx {
 
   /***
-    * Create HTTP client
-    * @param host - InfluxDB host
-    * @param port - InfluxDB port
+    * Create Async HTTP based client
+    * @param host        - InfluxDB host
+    * @param port        - InfluxDB port
     * @param credentials - user credentials
-    * @param ex - Execution context
-    * @return - InfluxAsyncHttpClient
+    * @param ex          - Execution context
+    * @return            - InfluxAsyncHttpClient
     */
   def connect(host: String = "localhost",
               port: Int = 8086,
@@ -20,4 +20,15 @@ object Influx {
               gzipped: Boolean = false)
              (implicit ex: ExecutionContext) =
     new InfluxAsyncHttpClient(host, port, credentials, gzipped)
+
+  /***
+    * Create Async HTTP based client from configuration
+    * @param conf    - configuration object
+    * @param gzipped - enable gzip compression
+    * @param ex      - Execution context
+    * @return        - InfluxAsyncHttpClient
+    */
+  def connect(conf: InfluxConfig,
+              gzipped: Boolean = false)(implicit ex: ExecutionContext): InfluxAsyncHttpClient =
+    connect(conf.host, conf.port, conf.credentials, gzipped)
 }

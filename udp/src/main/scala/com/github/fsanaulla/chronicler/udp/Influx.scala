@@ -15,5 +15,4 @@ object Influx {
     */
   def connect(host: String = "localhost", port: Int = 8089): InfluxUDPClient =
     new InfluxUDPClient(host, port)
-
 }
