@@ -1,7 +1,7 @@
 package com.github.fsanaulla.chronicler.akka
 
 import akka.actor.ActorSystem
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.model.{InfluxConfig, InfluxCredentials}
 
 import scala.concurrent.ExecutionContext
 
@@ -14,18 +14,28 @@ object Influx {
 
   /**
     * Create HTTP client for InfluxDB
-    * @param host - hostname
-    * @param port - port value
+    * @param host        - hostname
+    * @param port        - port value
     * @param credentials - user credentials
-    * @param ex - implicit execution context, by default use standard one
-    * @param system - implicit actor system, by default will create new one
-    * @return - InfluxAkkaHttpClient
+    * @param system      - actor system, by default will create new one
+    * @param gzipped     - enable gzip compression
+    * @param ex          - implicit execution context, by default use standard one
+    * @return            - InfluxAkkaHttpClient
     */
-  def connect(host: String = "localhost",
-              port: Int = 8086,
-              credentials: Option[InfluxCredentials] = None,
-              system: ActorSystem = ActorSystem(),
-              gzipped: Boolean = false)
-             (implicit ex: ExecutionContext) =
+  def apply(host: String,
+            port: Int = 8086,
+            credentials: Option[InfluxCredentials] = None,
+            gzipped: Boolean = false)
+           (implicit ex: ExecutionContext, system: ActorSystem) =
     new InfluxAkkaHttpClient(host, port, credentials, gzipped)(ex, system)
+
+  /**
+    * Create Akka HTTP based influxdb client from configuration object
+    * @param conf        - configuration object
+    * @param system      - actor system, by default will create new one
+    * @param ex          - implicit execution context, by default use standard one
+    * @return            - InfluxAkkaHttpClient
+    */
+  def apply(conf: InfluxConfig)(implicit ex: ExecutionContext, system: ActorSystem): InfluxAkkaHttpClient =
+    apply(conf.host, conf.port, conf.credentials, conf.gzipped)(ex, system)
 }

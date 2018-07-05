@@ -25,7 +25,7 @@ class MeasurementSpec
   val measName = "meas"
 
   lazy val influx: InfluxAkkaHttpClient =
-    Influx.connect(host = host, port = port, system = system, credentials = Some(creds))
+    Influx(host, port, credentials = Some(creds))
 
   lazy val meas: Measurement[FakeEntity] = influx.measurement[FakeEntity](safeDB, measName)
 

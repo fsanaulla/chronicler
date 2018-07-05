@@ -18,7 +18,7 @@ class MeasurementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with 
   val measName = "meas"
 
   lazy val influx: InfluxUrlHttpClient =
-    Influx.connect(host, port, Some(creds))
+    Influx(host, port, Some(creds))
 
   lazy val meas: Measurement[FakeEntity] = influx.measurement[FakeEntity](safeDB, measName)
 

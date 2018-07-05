@@ -1,19 +1,27 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.model.{InfluxConfig, InfluxCredentials}
 
 object Influx {
 
   /***
     * Create HTTP client
-    * @param host - InfluxDB host
-    * @param port - InfluxDB port
+    * @param host        - InfluxDB host
+    * @param port        - InfluxDB port
     * @param credentials - user credentials
-    * @return - InfluxAsyncHttpClient
+    * @return - InfluxUrlHttpClient
     */
-  def connect(host: String = "localhost",
-              port: Int = 8086,
-              credentials: Option[InfluxCredentials] = None,
-              gzipped: Boolean = false) =
+  def apply(host: String,
+            port: Int = 8086,
+            credentials: Option[InfluxCredentials] = None,
+            gzipped: Boolean = false) =
     new InfluxUrlHttpClient(host, port, credentials, gzipped)
+
+  /***
+    * Create Async HTTP based client from configuration
+    * @param conf    - configuration object
+    * @return        - InfluxUrlHttpClient
+    */
+  def apply(conf: InfluxConfig): InfluxUrlHttpClient =
+    apply(conf.host, conf.port, conf.credentials, conf.gzipped)
 }
