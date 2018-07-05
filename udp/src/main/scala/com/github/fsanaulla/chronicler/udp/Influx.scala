@@ -13,6 +13,6 @@ object Influx {
     * @param port - InfluxDB port value
     * @return - InfluxUDPClient
     */
-  def connect(host: String = "localhost", port: Int = 8089): InfluxUDPClient =
+  def apply(host: String, port: Int = 8089): InfluxUDPClient =
     new InfluxUDPClient(host, port)
 }

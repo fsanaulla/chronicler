@@ -20,11 +20,12 @@ import org.scalatest.TryValues
 class UdpClientSpec extends FlatSpecWithMatchers with EmbeddedInfluxDB with InfluxUDPConf with TryValues {
   import UdpClientSpec._
 
+  val host = "localhost"
   lazy val influxUdp: InfluxUDPClient =
-    com.github.fsanaulla.chronicler.udp.Influx.connect()
+    com.github.fsanaulla.chronicler.udp.Influx(host)
 
   lazy val influxHttp: InfluxUrlHttpClient =
-    com.github.fsanaulla.chronicler.urlhttp.Influx.connect()
+    com.github.fsanaulla.chronicler.urlhttp.Influx(host)
 
   lazy val udp: Database = influxHttp.database("udp")
 
