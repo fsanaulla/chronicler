@@ -22,6 +22,7 @@ script:
   - sbt ++$TRAVIS_SCALA_VERSION coreTest macrosTest
   - sbt ++$TRAVIS_SCALA_VERSION urlTest
   - sbt ++$TRAVIS_SCALA_VERSION urlHttp/publishLocal
+  - sbt ++$TRAVIS_SCALA_VERSION udpTest
   - sbt ++$TRAVIS_SCALA_VERSION asyncTest akkaTest
   
 after_success:
