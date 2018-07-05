@@ -27,7 +27,7 @@ class DatabaseSpec
   val testDB = "db"
 
   lazy val influx: InfluxAkkaHttpClient =
-    Influx(host = host, port = port, credentials = Some(creds))
+    Influx(host, port, credentials = Some(creds))
 
   lazy val db: Database = influx.database(testDB)
 

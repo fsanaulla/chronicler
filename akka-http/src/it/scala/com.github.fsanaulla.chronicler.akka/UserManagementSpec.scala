@@ -30,7 +30,7 @@ class UserManagementSpec
   val adminPass = "admin_pass"
 
   lazy val influx: InfluxAkkaHttpClient =
-    Influx(host = host, port = port, credentials = Some(creds))
+    Influx(host, port, Some(creds))
 
   "User management operation" should "create user" in {
     influx.createDatabase(userDB).futureValue shouldEqual OkResult

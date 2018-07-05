@@ -20,7 +20,7 @@ class SystemManagementSpec
     with DockerizedInfluxDB {
 
   lazy val influx: InfluxAkkaHttpClient =
-    Influx(host = host, port = port, credentials = Some(creds))
+    Influx(host, port, Some(creds))
 
   "System api" should "ping InfluxDB" in {
     influx.ping.futureValue shouldEqual NoContentResult

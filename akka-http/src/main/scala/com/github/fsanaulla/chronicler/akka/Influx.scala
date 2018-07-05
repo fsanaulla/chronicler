@@ -22,7 +22,7 @@ object Influx {
     * @param ex          - implicit execution context, by default use standard one
     * @return            - InfluxAkkaHttpClient
     */
-  def apply(host: String = "localhost",
+  def apply(host: String,
             port: Int = 8086,
             credentials: Option[InfluxCredentials] = None,
             gzipped: Boolean = false)

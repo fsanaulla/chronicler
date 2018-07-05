@@ -14,7 +14,7 @@ object Influx {
     * @param ex          - Execution context
     * @return            - InfluxAsyncHttpClient
     */
-  def apply(host: String = "localhost",
+  def apply(host: String,
             port: Int = 8086,
             credentials: Option[InfluxCredentials] = None,
             gzipped: Boolean = false)
