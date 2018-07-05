@@ -28,7 +28,7 @@ class SubscriptionManagementSpec extends FlatSpecWithMatchers with DockerizedInf
   val duration: String = 1.hours + 30.minutes
 
   lazy val influx: InfluxAsyncHttpClient =
-    Influx.apply(host, port, Some(creds))
+    Influx(host, port, Some(creds))
 
   "Subscription operation" should "create subscription" in {
 

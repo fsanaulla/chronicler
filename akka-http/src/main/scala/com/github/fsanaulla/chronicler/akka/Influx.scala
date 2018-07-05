@@ -37,5 +37,5 @@ object Influx {
     * @return            - InfluxAkkaHttpClient
     */
   def apply(conf: InfluxConfig)(implicit ex: ExecutionContext, system: ActorSystem): InfluxAkkaHttpClient =
-    new InfluxAkkaHttpClient(conf.host, conf.port, conf.credentials, conf.gzipped)(ex, system)
+    apply(conf.host, conf.port, conf.credentials, conf.gzipped)(ex, system)
 }

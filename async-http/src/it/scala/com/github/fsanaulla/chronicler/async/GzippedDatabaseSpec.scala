@@ -21,7 +21,7 @@ class GzippedDatabaseSpec extends FlatSpecWithMatchers with Futures with Dockeri
   val testDB = "db"
 
   lazy val influx: InfluxAsyncHttpClient =
-    Influx.apply(host, port, Some(creds), gzipped = true)
+    Influx(host, port, Some(creds), gzipped = true)
 
   lazy val db: Database = influx.database(testDB)
 

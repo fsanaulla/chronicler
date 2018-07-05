@@ -28,5 +28,5 @@ object Influx {
     * @return        - InfluxAsyncHttpClient
     */
   def apply(conf: InfluxConfig)(implicit ex: ExecutionContext): InfluxAsyncHttpClient =
-    new InfluxAsyncHttpClient(conf.host, conf.port, conf.credentials, conf.gzipped)
+    apply(conf.host, conf.port, conf.credentials, conf.gzipped)
 }

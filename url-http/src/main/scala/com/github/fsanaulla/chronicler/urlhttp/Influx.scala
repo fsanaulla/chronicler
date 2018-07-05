@@ -11,7 +11,7 @@ object Influx {
     * @param credentials - user credentials
     * @return - InfluxUrlHttpClient
     */
-  def apply(host: String = "localhost",
+  def apply(host: String,
             port: Int = 8086,
             credentials: Option[InfluxCredentials] = None,
             gzipped: Boolean = false) =
@@ -23,5 +23,5 @@ object Influx {
     * @return        - InfluxUrlHttpClient
     */
   def apply(conf: InfluxConfig): InfluxUrlHttpClient =
-    new InfluxUrlHttpClient(conf.host, conf.port, conf.credentials, conf.gzipped)
+    apply(conf.host, conf.port, conf.credentials, conf.gzipped)
 }

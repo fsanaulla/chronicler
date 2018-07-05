@@ -30,7 +30,7 @@ class AuthenticationSpec
   val adminPass = "admin"
 
   lazy val influx: InfluxAkkaHttpClient =
-    Influx(host, port, None)
+    Influx(host, port)
 
   lazy val authInflux: InfluxAkkaHttpClient =
     Influx(host = host, port = port, credentials = Some(creds))
