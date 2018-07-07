@@ -69,20 +69,6 @@ object DefaultInfluxImplicits {
     }
   }
 
-//  implicit object SubscriptionInfoInfluxReader extends InfluxReader[SubscriptionInfo] {
-//    override def read(js: JArray): SubscriptionInfo = js.vs match {
-//      case Array(dbName: JValue, subscriptions: JArray) =>
-//        val subs = subscriptions
-//          .arrayValue
-//          .map(_.flatMap(_.array).map(SubscriptionInfluxReader.read))
-//          .getOrElse(Array.empty[Subscription])
-//
-//        SubscriptionInfo(dbName, subs)
-//      case _ =>
-//        throw new DeserializationException(s"Can't deserialize $SubscriptionInfo object")
-//    }
-//  }
-
   implicit object UserPrivilegesInfoInfluxReader extends InfluxReader[UserPrivilegesInfo] {
     override def read(js: JArray): UserPrivilegesInfo = js.vs match {
       case Array(username: JValue, admin: JValue) =>

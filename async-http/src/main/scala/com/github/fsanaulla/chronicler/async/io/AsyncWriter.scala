@@ -4,9 +4,9 @@ import com.github.fsanaulla.chronicler.async.handlers._
 import com.github.fsanaulla.chronicler.async.utils.ResponseFormats.asJson
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
 import com.github.fsanaulla.chronicler.core.io.WriteOperations
-import com.github.fsanaulla.chronicler.core.model.{HasCredentials, WriteResult}
+import com.github.fsanaulla.chronicler.core.model.{HasCredentials, PointTransformer, WriteResult}
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.chronicler.core.utils.{Encodings, PointTransformer}
+import com.github.fsanaulla.chronicler.core.utils.Encodings
 import com.softwaremill.sttp.{Uri, sttp}
 
 import scala.concurrent.Future

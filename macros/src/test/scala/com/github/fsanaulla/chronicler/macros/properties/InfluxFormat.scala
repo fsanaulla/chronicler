@@ -5,7 +5,7 @@ import java.time.Instant
 import com.github.fsanaulla.chronicler.core.model.InfluxFormatter
 import com.github.fsanaulla.chronicler.macros.Macros
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
-import com.github.fsanaulla.scalacheck.Generator
+import com.github.fsanaulla.scalacheck.Arb
 import jawn.ast._
 import org.scalacheck.{Arbitrary, Gen}
 
@@ -19,7 +19,7 @@ trait InfluxFormat {
                   @timestamp time: Long)
 
   val fmt: InfluxFormatter[Test] = Macros.format[Test]
-  val gen: Arbitrary[Test] = Generator.gen[Test]
+  val gen: Arbitrary[Test] = Arb.of[Test]
 
   val validStr: Gen[String] = for (s <- Gen.alphaStr if s.nonEmpty && s != null) yield s
 

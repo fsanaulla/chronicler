@@ -10,6 +10,13 @@ Open-source [Scala](https://www.scala-lang.org/) client tool for [InfluxDB](http
 [![License](http://img.shields.io/:license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 </div>
 
+## Features
+- Multiple backend
+- Code generation with macros
+- High modularity
+- Spark support (In-progress)
+- Easy to customize
+
 ## Components
 There are several components for use.
 

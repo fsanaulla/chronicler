@@ -8,7 +8,7 @@ import com.softwaremill.sttp._
 
 import scala.annotation.tailrec
 
-private[fsanaulla] trait UrlQueryHandler extends QueryHandler[Uri] with HasCredentials {
+private[urlhttp] trait UrlQueryHandler extends QueryHandler[Uri] with HasCredentials {
 
   protected val host: String
   protected val port: Int

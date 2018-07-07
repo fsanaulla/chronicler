@@ -1,4 +1,4 @@
-package com.github.fsanaulla.chronicler.udp
+package com.github.fsanaulla.chronicler.core.model
 
 import java.net.InetAddress
 

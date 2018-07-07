@@ -1,4 +1,4 @@
-package com.github.fsanaulla.chronicler.core.utils
+package com.github.fsanaulla.chronicler.core.model
 
 /**
   * Created by

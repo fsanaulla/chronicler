@@ -9,11 +9,15 @@ object Dependencies {
 
   object Versions {
     val sttp       = "1.1.14"
-    val akka       = "2.5.12"
     val netty      = "4.1.22.Final"
     val scalaTest  = "3.0.5"
     val scalaCheck = "1.14.0"
     val testing    = "0.3.0"
+
+    object Akka {
+      val akka = "2.5.12"
+      val akkaHttp = "10.1.1"
+    }
   }
 
   val scalaTest = "org.scalatest"   %% "scalatest"  % Versions.scalaTest
@@ -29,7 +33,7 @@ object Dependencies {
   def macroDeps(scalaVersion: String): Seq[ModuleID] = Seq(
     "org.scala-lang"       %  "scala-reflect"         % scalaVersion,
     "org.scalacheck"       %% "scalacheck"            % Versions.scalaCheck % Scope.test,
-    "com.github.fsanaulla" %% "scalacheck-generators" % "0.1.0"             % Scope.compileTimeOnly exclude("org.scala-lang", "scala-reflect")
+    "com.github.fsanaulla" %% "scalacheck-generators" % "0.1.3"             % Scope.compileTimeOnly exclude("org.scala-lang", "scala-reflect")
   ) :+ scalaTest % Scope.test
 
   // testing
@@ -46,10 +50,10 @@ object Dependencies {
 
   // akka-http
   val akkaDep: List[ModuleID] = List(
-    "com.typesafe.akka"    %% "akka-stream"             % Versions.akka % Scope.compileTimeOnly,
-    "com.typesafe.akka"    %% "akka-actor"              % Versions.akka % Scope.compileTimeOnly,
-    "com.typesafe.akka"    %% "akka-testkit"            % Versions.akka % Scope.all,
-    "com.typesafe.akka"    %% "akka-http"               % "10.1.1"
+    "com.typesafe.akka"    %% "akka-stream"  % Versions.Akka.akka     % Scope.compileTimeOnly,
+    "com.typesafe.akka"    %% "akka-actor"   % Versions.Akka.akka     % Scope.compileTimeOnly,
+    "com.typesafe.akka"    %% "akka-testkit" % Versions.Akka.akka     % Scope.all,
+    "com.typesafe.akka"    %% "akka-http"    % Versions.Akka.akkaHttp
   ) ::: httpClientTesting
 
   // async-http

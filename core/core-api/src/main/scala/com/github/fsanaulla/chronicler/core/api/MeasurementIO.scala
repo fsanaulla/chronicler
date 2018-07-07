@@ -2,8 +2,7 @@ package com.github.fsanaulla.chronicler.core.api
 
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
 import com.github.fsanaulla.chronicler.core.io.{ReadOperations, WriteOperations}
-import com.github.fsanaulla.chronicler.core.model.{InfluxWriter, WriteResult}
-import com.github.fsanaulla.chronicler.core.utils.PointTransformer
+import com.github.fsanaulla.chronicler.core.model.{InfluxWriter, PointTransformer, WriteResult}
 
 /**
   * Main functionality for measurement api
