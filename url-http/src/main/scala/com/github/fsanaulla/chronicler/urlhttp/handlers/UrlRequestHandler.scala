@@ -9,7 +9,7 @@ import jawn.ast.JValue
 import scala.language.implicitConversions
 import scala.util.Try
 
-private[fsanaulla] trait UrlRequestHandler extends RequestHandler[Try, Request, Response[JValue], Uri] {
+private[urlhttp] trait UrlRequestHandler extends RequestHandler[Try, Request, Response[JValue], Uri] {
   protected implicit val backend: SttpBackend[Try, Nothing]
 
   override implicit def req(uri: Uri): Request = sttp.get(uri).response(asJson)

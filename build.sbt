@@ -4,7 +4,7 @@ lazy val chronicler = (project in file("."))
   .settings(Settings.common: _*)
   .settings(publishArtifact := false)
   .aggregate(
-    core,
+    coreModel,
     macros,
     urlHttp,
     akkaHttp,
@@ -12,18 +12,27 @@ lazy val chronicler = (project in file("."))
 //    udp
   )
 
-lazy val core = project
-  .in(file("core"))
+lazy val coreApi = project
+  .in(file("core/core-api"))
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(
-    name := "chronicler-core",
+    name := "chronicler-core-api",
+    scalacOptions += "-language:higherKinds"
+  )
+  .dependsOn(coreModel)
+
+lazy val coreModel = project
+  .in(file("core/core-model"))
+  .settings(Settings.common: _*)
+  .settings(Settings.publish: _*)
+  .settings(
+    name := "chronicler-core-model",
+    libraryDependencies ++= Dependencies.coreDep,
     scalacOptions ++= Seq(
       "-language:implicitConversions",
-      "-language:postfixOps",
       "-language:higherKinds"
-    ),
-    libraryDependencies ++= Dependencies.coreDep
+    )
   )
 
 lazy val urlHttp = project
@@ -36,7 +45,7 @@ lazy val urlHttp = project
     name := "chronicler-url-http",
     libraryDependencies ++= Dependencies.urlHttp
   )
-  .dependsOn(core % "compile->compile;test->test")
+  .dependsOn(coreApi)
 
 lazy val akkaHttp = project
   .in(file("akka-http"))
@@ -52,7 +61,7 @@ lazy val akkaHttp = project
     ),
     libraryDependencies ++= Dependencies.akkaDep
   )
-  .dependsOn(core % "compile->compile;test->test")
+  .dependsOn(coreApi)
 
 lazy val asyncHttp = project
   .in(file("async-http"))
@@ -68,7 +77,7 @@ lazy val asyncHttp = project
     ),
     libraryDependencies ++= Dependencies.asyncHttp
   )
-  .dependsOn(core % "compile->compile;test->test")
+  .dependsOn(coreApi)
 
 lazy val udp = project
   .in(file("udp"))
@@ -81,7 +90,7 @@ lazy val udp = project
     libraryDependencies ++= Dependencies.udpDep,
     test in Test := {}
   )
-  .dependsOn(core % "compile->compile;test->test")
+  .dependsOn(coreModel)
 
 lazy val macros = project
   .in(file("macros"))
@@ -91,7 +100,7 @@ lazy val macros = project
     name := "chronicler-macros",
     libraryDependencies ++= Dependencies.macroDeps(scalaVersion.value)
   )
-  .dependsOn(core % "compile->compile;test->test")
+  .dependsOn(coreModel)
 
 // Only for test purpose
 lazy val itTesting = project
@@ -101,7 +110,7 @@ lazy val itTesting = project
     name := "chronicler-it-testing",
     libraryDependencies ++= Dependencies.itTestingDeps
   )
-  .dependsOn(core % "compile->compile")
+  .dependsOn(coreModel % "compile->compile")
 
 lazy val unitTesting = project
   .in(file("tests/unit-testing"))
@@ -110,4 +119,4 @@ lazy val unitTesting = project
     name := "chronicler-unit-testing",
     libraryDependencies += Dependencies.scalaTest % Provided
   )
-  .dependsOn(core % "compile->compile")
+  .dependsOn(coreModel % "compile->compile")

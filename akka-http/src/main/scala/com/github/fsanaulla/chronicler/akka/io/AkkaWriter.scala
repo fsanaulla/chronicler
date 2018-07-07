@@ -10,9 +10,8 @@ import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
 import com.github.fsanaulla.chronicler.akka.utils.AkkaHeaders
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
 import com.github.fsanaulla.chronicler.core.io.WriteOperations
-import com.github.fsanaulla.chronicler.core.model.{Executable, HasCredentials, WriteResult}
+import com.github.fsanaulla.chronicler.core.model.{Executable, HasCredentials, PointTransformer, WriteResult}
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.chronicler.core.utils.PointTransformer
 
 import scala.concurrent.Future
 

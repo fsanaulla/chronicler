@@ -17,7 +17,11 @@ import org.scalatest.TryValues
   * Date: 24.02.18
   */
 // todo: move it to test-containers
-class UdpClientSpec extends FlatSpecWithMatchers with EmbeddedInfluxDB with InfluxUDPConf with TryValues {
+class UdpClientSpec
+  extends FlatSpecWithMatchers
+    with EmbeddedInfluxDB
+    with InfluxUDPConf
+    with TryValues {
   import UdpClientSpec._
 
   val host = "localhost"

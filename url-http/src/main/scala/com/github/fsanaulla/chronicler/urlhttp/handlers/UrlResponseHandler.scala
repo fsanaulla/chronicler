@@ -8,7 +8,7 @@ import jawn.ast.{JArray, JValue}
 import scala.reflect.ClassTag
 import scala.util.Try
 
-private[fsanaulla] trait UrlResponseHandler extends ResponseHandler[Try, Response[JValue]] with UrlJsonHandler {
+private[urlhttp] trait UrlResponseHandler extends ResponseHandler[Try, Response[JValue]] with UrlJsonHandler {
 
   override def toResult(response: Response[JValue]): Try[WriteResult] = {
     response.code match {

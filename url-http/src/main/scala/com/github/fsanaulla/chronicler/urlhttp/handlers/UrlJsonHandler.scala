@@ -7,7 +7,7 @@ import jawn.ast.{JParser, JValue}
 
 import scala.util.{Success, Try}
 
-private[fsanaulla] trait UrlJsonHandler extends JsonHandler[Try, Response[JValue]] {
+private[urlhttp] trait UrlJsonHandler extends JsonHandler[Try, Response[JValue]] {
 
   override def getResponseBody(response: Response[JValue]): Try[JValue] = response.body match {
     case Right(js) => Success(js)

@@ -3,8 +3,7 @@ package com.github.fsanaulla.chronicler.udp
 import java.io.File
 import java.net._
 
-import com.github.fsanaulla.chronicler.core.model.{InfluxWriter, Point}
-import com.github.fsanaulla.chronicler.core.utils.PointTransformer
+import com.github.fsanaulla.chronicler.core.model.{InfluxWriter, Point, PointTransformer, UdpConnection}
 
 import scala.io.Source
 
@@ -24,10 +23,8 @@ final class InfluxUDPClient(host: String, port: Int)
   def writeNative(point: String): Unit =
     send(buildDatagram(point.getBytes()))
 
-
   def bulkWriteNative(points: Seq[String]): Unit =
     send(buildDatagram(points.mkString("\n").getBytes()))
-
 
   def write[T](measurement: String, entity: T)(implicit writer: InfluxWriter[T]): Unit = {
     val sendEntity = toPoint(measurement, writer.write(entity)).getBytes()
