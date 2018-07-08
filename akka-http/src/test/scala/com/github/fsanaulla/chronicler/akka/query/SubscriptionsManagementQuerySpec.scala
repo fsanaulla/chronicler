@@ -4,6 +4,7 @@ import _root_.akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.TestHelper._
 import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryHandler
 import com.github.fsanaulla.chronicler.core.enums.Destinations
+import com.github.fsanaulla.chronicler.core.model.HasCredentials
 import com.github.fsanaulla.chronicler.core.query.SubscriptionsManagementQuery
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 
@@ -14,7 +15,7 @@ import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecW
   */
 class SubscriptionsManagementQuerySpec extends FlatSpecWithMatchers {
 
-  trait Env extends AkkaQueryHandler with SubscriptionsManagementQuery[Uri] {
+  trait Env extends AkkaQueryHandler with SubscriptionsManagementQuery[Uri] { self: HasCredentials =>
     val host = "localhost"
     val port = 8086
   }

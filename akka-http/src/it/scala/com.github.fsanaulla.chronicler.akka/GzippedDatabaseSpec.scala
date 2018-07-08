@@ -4,8 +4,8 @@ import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.SampleEntitys._
 import com.github.fsanaulla.chronicler.akka.api.Database
-import com.github.fsanaulla.chronicler.akka.clients.AkkaFullClient
-import com.github.fsanaulla.chronicler.core.model.Point
+import com.github.fsanaulla.chronicler.akka.clients.{AkkaIOClient, AkkaManagementClient}
+import com.github.fsanaulla.chronicler.core.model.{InfluxConfig, Point}
 import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity, Futures}
@@ -22,13 +22,18 @@ class GzippedDatabaseSpec
 
   val testDB = "db"
 
-  lazy val influx: AkkaFullClient =
-    Influx(host, port, Some(creds), gzipped = true)
+  val influxConf = InfluxConfig(host, port, credentials = Some(creds), gzipped = false)
 
-  lazy val db: Database = influx.database(testDB)
+  lazy val management: AkkaManagementClient =
+    Influx.management(influxConf)
+
+  lazy val io: AkkaIOClient =
+    Influx.io(influxConf)
+
+  lazy val db: Database = io.database(testDB)
 
   "Database API" should "write data from file" in {
-    influx.createDatabase(testDB).futureValue shouldEqual OkResult
+    management.createDatabase(testDB).futureValue shouldEqual OkResult
 
     db.writeFromFile(getClass.getResource("/points.txt").getPath)
       .futureValue shouldEqual NoContentResult
@@ -118,6 +123,7 @@ class GzippedDatabaseSpec
       .groupedResult
       .map { case (k, v) => k.toSeq -> v } shouldEqual Array(Seq("Male") -> JArray(Array(JNum(0), JNum(49))))
 
-    influx.close() shouldEqual {}
+    management.close() shouldEqual {}
+    io.close() shouldEqual {}
   }
 }

@@ -24,7 +24,7 @@ class ShardManagementSpec
   val testDb = "_internal"
 
   lazy val influx: AkkaFullClient =
-    Influx(host, port, Some(creds))
+    Influx.full(host, port, Some(creds))
 
   "shard operations" should "show shards" in {
 
