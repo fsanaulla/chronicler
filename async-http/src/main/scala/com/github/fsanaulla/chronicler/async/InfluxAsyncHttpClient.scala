@@ -3,7 +3,7 @@ package com.github.fsanaulla.chronicler.async
 import com.github.fsanaulla.chronicler.async.api.{Database, Measurement}
 import com.github.fsanaulla.chronicler.async.handlers.{AsyncQueryHandler, AsyncRequestHandler, AsyncResponseHandler}
 import com.github.fsanaulla.chronicler.async.utils.Aliases.Request
-import com.github.fsanaulla.chronicler.core.client.InfluxClient
+import com.github.fsanaulla.chronicler.core.client.FullClient
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, Mappable, WriteResult}
 import com.softwaremill.sttp.asynchttpclient.future.AsyncHttpClientFutureBackend
 import com.softwaremill.sttp.{Response, SttpBackend, Uri}
@@ -17,11 +17,12 @@ final class InfluxAsyncHttpClient(val host: String,
                                   val credentials: Option[InfluxCredentials],
                                   gzipped: Boolean)
                                  (implicit val ex: ExecutionContext)
-  extends InfluxClient[Future, Request, Response[JValue], Uri, String]
+  extends FullClient[Future, Request, Response[JValue], Uri, String]
     with AsyncRequestHandler
     with AsyncResponseHandler
     with AsyncQueryHandler
-    with Mappable[Future, Response[JValue]] {
+    with Mappable[Future, Response[JValue]]
+    with AutoCloseable {
 
   protected implicit val backend: SttpBackend[Future, Nothing] = AsyncHttpClientFutureBackend()
   override def mapTo[B](resp: Future[Response[JValue]], f: Response[JValue] => Future[B]): Future[B] = resp.flatMap(f)

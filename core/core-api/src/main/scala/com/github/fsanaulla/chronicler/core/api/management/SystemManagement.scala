@@ -1,33 +1,16 @@
 package com.github.fsanaulla.chronicler.core.api.management
 
-import com.github.fsanaulla.chronicler.core.api.{DatabaseIO, MeasurementIO}
 import com.github.fsanaulla.chronicler.core.model.WriteResult
 
-import scala.reflect.ClassTag
-
 /**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 08.08.17
+  * Basic system related management operations
+  * @tparam M - Response container type
   */
-private[chronicler] trait SystemManagement[M[_], E] {
+trait SystemManagement[M[_]] {
 
-  /** Ping InfluxDB */
+  /**
+    * Method for checking InfluxDB status
+    * @return - Write result with status information
+    */
   def ping: M[WriteResult]
-
-  /**
-    *
-    * @param dbName - database name
-    * @return Database instance that provide non type safe operations
-    */
-  def database(dbName: String): DatabaseIO[M, E]
-
-  /**
-    *
-    * @param dbName - database name
-    * @param measurementName - measurement name
-    * @tparam A - Measurement's time series type
-    * @return - Measurement instance of type [A]
-    */
-  def measurement[A: ClassTag](dbName: String, measurementName: String): MeasurementIO[M, A, E]
 }

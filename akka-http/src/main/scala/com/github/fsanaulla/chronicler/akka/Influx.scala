@@ -1,6 +1,7 @@
 package com.github.fsanaulla.chronicler.akka
 
 import akka.actor.ActorSystem
+import com.github.fsanaulla.chronicler.akka.clients.AkkaFullClient
 import com.github.fsanaulla.chronicler.core.model.{InfluxConfig, InfluxCredentials}
 
 import scala.concurrent.ExecutionContext
@@ -27,7 +28,7 @@ object Influx {
             credentials: Option[InfluxCredentials] = None,
             gzipped: Boolean = false)
            (implicit ex: ExecutionContext, system: ActorSystem) =
-    new InfluxAkkaHttpClient(host, port, credentials, gzipped)(ex, system)
+    new AkkaFullClient(host, port, credentials, gzipped)(ex, system)
 
   /**
     * Create Akka HTTP based influxdb client from configuration object
@@ -36,6 +37,6 @@ object Influx {
     * @param ex          - implicit execution context, by default use standard one
     * @return            - InfluxAkkaHttpClient
     */
-  def apply(conf: InfluxConfig)(implicit ex: ExecutionContext, system: ActorSystem): InfluxAkkaHttpClient =
+  def apply(conf: InfluxConfig)(implicit ex: ExecutionContext, system: ActorSystem): AkkaFullClient =
     apply(conf.host, conf.port, conf.credentials, conf.gzipped)(ex, system)
 }

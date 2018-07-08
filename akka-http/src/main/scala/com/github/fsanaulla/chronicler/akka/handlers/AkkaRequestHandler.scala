@@ -14,7 +14,8 @@ import scala.language.implicitConversions
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[akka] trait AkkaRequestHandler extends RequestHandler[Future, HttpRequest, HttpResponse, Uri] {
+private[akka] trait AkkaRequestHandler
+  extends RequestHandler[Future, HttpRequest, HttpResponse, Uri] {
 
   protected implicit val mat: ActorMaterializer
   protected implicit val connection: Connection

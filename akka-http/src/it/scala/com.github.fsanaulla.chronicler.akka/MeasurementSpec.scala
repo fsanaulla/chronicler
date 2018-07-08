@@ -4,6 +4,7 @@ import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.SampleEntitys._
 import com.github.fsanaulla.chronicler.akka.api.Measurement
+import com.github.fsanaulla.chronicler.akka.clients.AkkaFullClient
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity, Futures}
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
@@ -24,7 +25,7 @@ class MeasurementSpec
   val safeDB = "db"
   val measName = "meas"
 
-  lazy val influx: InfluxAkkaHttpClient =
+  lazy val influx: AkkaFullClient =
     Influx(host, port, credentials = Some(creds))
 
   lazy val meas: Measurement[FakeEntity] = influx.measurement[FakeEntity](safeDB, measName)

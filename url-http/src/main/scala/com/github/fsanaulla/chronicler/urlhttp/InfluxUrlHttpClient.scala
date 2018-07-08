@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
-import com.github.fsanaulla.chronicler.core.client.InfluxClient
+import com.github.fsanaulla.chronicler.core.client.FullClient
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, Mappable, WriteResult}
 import com.github.fsanaulla.chronicler.urlhttp.api.{Database, Measurement}
 import com.github.fsanaulla.chronicler.urlhttp.handlers.{UrlQueryHandler, UrlRequestHandler, UrlResponseHandler}
@@ -15,11 +15,12 @@ final class InfluxUrlHttpClient(val host: String,
                                 val port: Int,
                                 val credentials: Option[InfluxCredentials],
                                 gzipped: Boolean)
-  extends InfluxClient[Try, Request, Response[JValue], Uri, String]
+  extends FullClient[Try, Request, Response[JValue], Uri, String]
     with UrlRequestHandler
     with UrlResponseHandler
     with UrlQueryHandler
-    with Mappable[Try, Response[JValue]] {
+    with Mappable[Try, Response[JValue]]
+    with AutoCloseable {
 
   override def mapTo[B](resp: Try[Response[JValue]], f: Response[JValue] => Try[B]): Try[B] = resp.flatMap(f)
 

@@ -30,8 +30,8 @@ final class Database(dbName: String,
     with AkkaWriter
     with AkkaReader
     with Serializable[RequestEntity]
-    with HasCredentials
-    with Executable {
+    with Executable
+    with HasCredentials {
 
   def writeFromFile(filePath: String,
                     consistency: Consistency = Consistencies.ONE,

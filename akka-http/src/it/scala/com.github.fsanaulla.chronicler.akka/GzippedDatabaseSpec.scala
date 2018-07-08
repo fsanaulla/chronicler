@@ -4,6 +4,7 @@ import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.SampleEntitys._
 import com.github.fsanaulla.chronicler.akka.api.Database
+import com.github.fsanaulla.chronicler.akka.clients.AkkaFullClient
 import com.github.fsanaulla.chronicler.core.model.Point
 import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
@@ -21,7 +22,7 @@ class GzippedDatabaseSpec
 
   val testDB = "db"
 
-  lazy val influx: InfluxAkkaHttpClient =
+  lazy val influx: AkkaFullClient =
     Influx(host, port, Some(creds), gzipped = true)
 
   lazy val db: Database = influx.database(testDB)
