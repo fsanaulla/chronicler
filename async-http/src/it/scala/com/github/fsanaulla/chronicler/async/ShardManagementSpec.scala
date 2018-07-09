@@ -1,5 +1,6 @@
 package com.github.fsanaulla.chronicler.async
 
+import com.github.fsanaulla.chronicler.async.clients.AsyncManagementClient
 import com.github.fsanaulla.chronicler.core.model.{ShardGroupsInfo, ShardInfo}
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
@@ -16,8 +17,8 @@ class ShardManagementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB w
 
   val testDb = "_internal"
 
-  lazy val influx: InfluxAsyncHttpClient =
-    Influx(host, port, Some(creds))
+  lazy val influx: AsyncManagementClient =
+    Influx.management(host, port, Some(creds))
 
   "shard operations" should "show shards" in {
 

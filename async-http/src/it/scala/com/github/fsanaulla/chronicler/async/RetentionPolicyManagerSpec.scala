@@ -1,5 +1,6 @@
 package com.github.fsanaulla.chronicler.async
 
+import com.github.fsanaulla.chronicler.async.clients.AsyncManagementClient
 import com.github.fsanaulla.chronicler.core.model.RetentionPolicyInfo
 import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
@@ -18,8 +19,8 @@ class RetentionPolicyManagerSpec extends FlatSpecWithMatchers with DockerizedInf
 
   val rpDB = "db"
 
-  lazy val influx: InfluxAsyncHttpClient =
-    Influx(host, port, Some(creds))
+  lazy val influx: AsyncManagementClient =
+    Influx.management(host, port, Some(creds))
 
   "Retention policy" should "create retention policy" in {
     influx.createDatabase(rpDB).futureValue shouldEqual OkResult

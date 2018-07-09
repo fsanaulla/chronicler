@@ -1,5 +1,6 @@
 package com.github.fsanaulla.chronicler.async
 
+import com.github.fsanaulla.chronicler.async.clients.AsyncManagementClient
 import com.github.fsanaulla.chronicler.core.enums.{Destination, Destinations}
 import com.github.fsanaulla.chronicler.core.model.Subscription
 import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
@@ -27,8 +28,8 @@ class SubscriptionManagementSpec extends FlatSpecWithMatchers with DockerizedInf
 
   val duration: String = 1.hours + 30.minutes
 
-  lazy val influx: InfluxAsyncHttpClient =
-    Influx(host, port, Some(creds))
+  lazy val influx: AsyncManagementClient =
+    Influx.management(host, port, Some(creds))
 
   "Subscription operation" should "create subscription" in {
 
