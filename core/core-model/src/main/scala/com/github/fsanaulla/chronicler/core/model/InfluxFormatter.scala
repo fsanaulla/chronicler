@@ -4,9 +4,6 @@ import jawn.ast.JArray
 
 import scala.annotation.implicitNotFound
 
-/**
-  * Created by fayaz on 27.06.17.
-  */
 @implicitNotFound(
   "No InfluxFormatter found for type ${T}. Try to implement an implicit Format for this type."
 )
