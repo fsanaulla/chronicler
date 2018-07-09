@@ -1,23 +1,35 @@
 # Clients
 
-At the moment there are 4 base clients connector for influx under chronicler project.
-All HTTP client have the same api with different backend under the hood.
+## HTTP
+At the moment there are 3 HTTP client for influx under chronicler project.
+All client have the same api with different backend under the hood.
 
-To configure it you should specify several supported params:
+All of them have functionality delegation to smaller client:
+- IO client
+- Management client
+- Full client
 
-- influxdb host
-- influxdb port
-- influxdb optional credentials
-- gzip support flag, it will automatically encode request body with [GZIP](https://en.wikipedia.org/wiki/Gzip) compression
+### *IO Client*
 
-It will looks like that:
-```scala
-val influx = Influx.connect(
-  "172.12.200.43",
-  8086,
-  Some(InfluxCredentials("admin", "admin"))
-  gzipped = true)
+If you need to make IO related operations like read/write - choose IO client.
+To create it call `io` method on Influx factory object like this:
 ```
-After that we will receive connected client with gzipped request
+val ioClient = Influx.io(...) // constructor parameters may wary depends on backend
+```
 
-All client have additional params in their constructor, for more information take a look on connect function.
+### *Management Client*
+If you need execute management operation like: create user/table/database/etc - choose Management client.
+To create it call `management` method on Influx factory object like this:
+```
+val managementClient = Influx.management(...) // constructor parameters may wary depends on backend
+```
+
+### *Full Client*
+It a combination of IO and Management clients.
+To create it call `full` method on Influx factory object like this:
+```
+val fullClient = Influx.full(...) // constructor parameters may wary depends on backend
+```
+
+All client have additional params in their constructor, for more information take a look on connect function or ask question on [gitter](https://gitter.im/chronicler-scala/Lobby).
+
