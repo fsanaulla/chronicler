@@ -10,12 +10,12 @@ import jawn.ast.JArray
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
-final class Measurement[E: ClassTag](dbName: String,
-                                     measurementName: String,
-                                     gzipped: Boolean,
-                                     val host: String,
+final class Measurement[E: ClassTag](val host: String,
                                      val port: Int,
-                                     val credentials: Option[InfluxCredentials])
+                                     val credentials: Option[InfluxCredentials],
+                                     dbName: String,
+                                     measurementName: String,
+                                     gzipped: Boolean)
                                     (protected implicit val ex: ExecutionContext,
                                      protected implicit val backend: SttpBackend[Future, Nothing])
     extends MeasurementIO[Future, E, String]

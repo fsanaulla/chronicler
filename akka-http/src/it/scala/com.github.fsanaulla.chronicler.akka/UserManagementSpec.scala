@@ -2,6 +2,7 @@ package com.github.fsanaulla.chronicler.akka
 
 import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
+import com.github.fsanaulla.chronicler.akka.clients.AkkaFullClient
 import com.github.fsanaulla.chronicler.core.enums.Privileges
 import com.github.fsanaulla.chronicler.core.model.{UserInfo, UserPrivilegesInfo}
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
@@ -29,8 +30,8 @@ class UserManagementSpec
   val admin = "Admin"
   val adminPass = "admin_pass"
 
-  lazy val influx: InfluxAkkaHttpClient =
-    Influx.connect(host = host, port = port, system = system, credentials = Some(creds))
+  lazy val influx: AkkaFullClient =
+    Influx.full(host, port, Some(creds))
 
   "User management operation" should "create user" in {
     influx.createDatabase(userDB).futureValue shouldEqual OkResult

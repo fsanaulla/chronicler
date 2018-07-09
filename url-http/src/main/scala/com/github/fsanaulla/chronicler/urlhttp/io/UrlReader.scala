@@ -10,7 +10,7 @@ import jawn.ast.JArray
 
 import scala.util.Try
 
-private[fsanaulla] trait UrlReader
+private[urlhttp] trait UrlReader
   extends UrlQueryHandler
     with UrlRequestHandler
     with UrlResponseHandler

@@ -2,9 +2,9 @@ package com.github.fsanaulla.chronicler.urlhttp.io
 
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
 import com.github.fsanaulla.chronicler.core.io.WriteOperations
-import com.github.fsanaulla.chronicler.core.model.{HasCredentials, WriteResult}
+import com.github.fsanaulla.chronicler.core.model.{HasCredentials, PointTransformer, WriteResult}
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.chronicler.core.utils.{Encodings, PointTransformer}
+import com.github.fsanaulla.chronicler.core.utils.Encodings
 import com.github.fsanaulla.chronicler.urlhttp.handlers.{UrlQueryHandler, UrlRequestHandler, UrlResponseHandler}
 import com.github.fsanaulla.chronicler.urlhttp.utils.ResponseFormats.asJson
 import com.softwaremill.sttp.{Uri, sttp}
@@ -12,7 +12,7 @@ import com.softwaremill.sttp.{Uri, sttp}
 import scala.io.Source
 import scala.util.Try
 
-private[fsanaulla] trait UrlWriter
+private[urlhttp] trait UrlWriter
   extends DatabaseOperationQuery[Uri]
     with UrlRequestHandler
     with UrlResponseHandler

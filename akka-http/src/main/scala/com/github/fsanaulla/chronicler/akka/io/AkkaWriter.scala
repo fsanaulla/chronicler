@@ -12,7 +12,6 @@ import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
 import com.github.fsanaulla.chronicler.core.io.WriteOperations
 import com.github.fsanaulla.chronicler.core.model.{Executable, HasCredentials, WriteResult}
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.chronicler.core.utils.PointTransformer
 
 import scala.concurrent.Future
 
@@ -25,10 +24,8 @@ private[akka] trait AkkaWriter
   extends DatabaseOperationQuery[Uri]
     with AkkaRequestHandler
     with AkkaResponseHandler
-    with AkkaQueryHandler
-    with PointTransformer
-    with HasCredentials
-    with Executable { self: WriteOperations[Future, RequestEntity] =>
+    with AkkaQueryHandler {
+  self: WriteOperations[Future, RequestEntity] with HasCredentials with Executable =>
 
   protected implicit val mat: ActorMaterializer
   protected implicit val connection: Connection

@@ -3,6 +3,7 @@ package com.github.fsanaulla.chronicler.akka.query
 import _root_.akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.TestHelper._
 import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryHandler
+import com.github.fsanaulla.chronicler.core.model.HasCredentials
 import com.github.fsanaulla.chronicler.core.query.ContinuousQuerys
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 
@@ -13,7 +14,7 @@ import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecW
   */
 class ContinuousQuerysSpec extends FlatSpecWithMatchers {
 
-  trait Env extends AkkaQueryHandler with ContinuousQuerys[Uri] {
+  trait Env extends AkkaQueryHandler with ContinuousQuerys[Uri] { self: HasCredentials =>
     val host = "localhost"
     val port = 8086
   }

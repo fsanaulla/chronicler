@@ -9,7 +9,7 @@ import com.github.fsanaulla.chronicler.core.model.HasCredentials
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[akka] trait AkkaQueryHandler extends QueryHandler[Uri] with HasCredentials {
+private[akka] trait AkkaQueryHandler extends QueryHandler[Uri] { self: HasCredentials =>
 
   override def buildQuery(uri: String, queryParams: Map[String, String]): Uri =
     Uri(uri).withQuery(Uri.Query(queryParams))

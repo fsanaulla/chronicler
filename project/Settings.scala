@@ -25,7 +25,7 @@ object Settings extends LibraryManagementSyntax {
     scmInfo := Some(
       ScmInfo(
         url("https://github.com/fsanaulla/chronicler"),
-        "https://github.com/fsanaulla/chronicler.git"
+        "scm:git@github.com:fsanaulla/chronicler.git"
       )
     ),
     pomIncludeRepository := (_ => false),
