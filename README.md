@@ -12,6 +12,7 @@ Open-source [Scala](https://www.scala-lang.org/) client tool for [InfluxDB](http
 
 ## Features
 - Multiple backend
+- Flexible API
 - Code generation with macros
 - High modularity
 - Spark support (In-progress)
@@ -115,8 +116,8 @@ final val host = "influx_host"
 final val port = 8086
 
 // establish connection to InfluxDB
-val influx: InfluxAsyncHttpClient = 
-  Influx.connect(host, port, Some(credentials))
+val influx: AsyncIOClient = 
+  Influx.io(host, port, Some(credentials)) // because we will make only IO action
 
 val databaseName = "test_db"
 val measurementName = "test_measurement"

@@ -1,5 +1,6 @@
 package com.github.fsanaulla.chronicler.async
 
+import com.github.fsanaulla.chronicler.async.clients.AsyncManagementClient
 import com.github.fsanaulla.chronicler.core.enums.Privileges
 import com.github.fsanaulla.chronicler.core.model.{AuthorizationException, UserPrivilegesInfo}
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.OkResult
@@ -24,11 +25,11 @@ class AuthenticationSpec extends FlatSpecWithMatchers with DockerizedInfluxDB wi
   val admin = "admin"
   val adminPass = "admin"
 
-  lazy val influx: InfluxAsyncHttpClient =
-    Influx(host, port)
+  lazy val influx: AsyncManagementClient =
+    Influx.management(host, port)
 
-  lazy val authInflux: InfluxAsyncHttpClient =
-    Influx(host, port, Some(creds))
+  lazy val authInflux: AsyncManagementClient =
+    Influx.management(host, port, Some(creds))
 
   "AuthenticationManagement" should  "create admin user " in {
     influx.showUsers.futureValue.ex.value shouldBe a[AuthorizationException]

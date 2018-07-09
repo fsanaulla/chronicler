@@ -2,7 +2,8 @@ package com.github.fsanaulla.chronicler.async
 
 import com.github.fsanaulla.chronicler.async.SampleEntitys.largeMultiJsonEntity
 import com.github.fsanaulla.chronicler.async.api.Database
-import com.github.fsanaulla.chronicler.core.model.Point
+import com.github.fsanaulla.chronicler.async.clients.{AsyncIOClient, AsyncManagementClient}
+import com.github.fsanaulla.chronicler.core.model.{InfluxConfig, Point}
 import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity, Futures}
@@ -20,17 +21,23 @@ class DatabaseSpec extends FlatSpecWithMatchers with Futures with DockerizedInfl
 
   val testDB = "db"
 
-  lazy val influx: InfluxAsyncHttpClient =
-    Influx(host, port, Some(creds))
+  lazy val influxConf =
+    InfluxConfig(host, port, credentials = Some(creds), gzipped = false)
 
-  lazy val db: Database = influx.database(testDB)
+  lazy val management: AsyncManagementClient =
+    Influx.management(influxConf)
+
+  lazy val io: AsyncIOClient =
+    Influx.io(influxConf)
+
+  lazy val db: Database = io.database(testDB)
 
   "Database API" should "write data from file" in {
-    influx.createDatabase(testDB).futureValue shouldEqual OkResult
+    management.createDatabase(testDB).futureValue shouldEqual OkResult
 
     db.writeFromFile(getClass.getResource("/points.txt").getPath)
       .futureValue shouldEqual NoContentResult
-    
+
     db.readJs("SELECT * FROM test1")
       .futureValue
       .queryResult
@@ -52,13 +59,13 @@ class DatabaseSpec extends FlatSpecWithMatchers with Futures with DockerizedInfl
       .addField("age", 36)
 
     db.writePoint(point1).futureValue shouldEqual NoContentResult
-    
+
     db.read[FakeEntity]("SELECT * FROM test2")
       .futureValue
       .queryResult shouldEqual Array(FakeEntity("Martin", "Odersky", 54))
 
     db.bulkWritePoints(Array(point1, point2)).futureValue shouldEqual NoContentResult
-    
+
     db.read[FakeEntity]("SELECT * FROM test2")
       .futureValue
       .queryResult shouldEqual Array(FakeEntity("Martin", "Odersky", 54), FakeEntity("Jame", "Franko", 36), FakeEntity("Martin", "Odersky", 54))
@@ -92,7 +99,7 @@ class DatabaseSpec extends FlatSpecWithMatchers with Futures with DockerizedInfl
   it should "write native" in {
 
     db.writeNative("test3,sex=Male,firstName=Jame,lastName=Lannister age=48").futureValue shouldEqual NoContentResult
-    
+
     db.read[FakeEntity]("SELECT * FROM test3")
       .futureValue
       .queryResult shouldEqual Array(FakeEntity("Jame", "Lannister", 48))
@@ -116,6 +123,7 @@ class DatabaseSpec extends FlatSpecWithMatchers with Futures with DockerizedInfl
       .groupedResult
       .map { case (k, v) => k.toSeq -> v } shouldEqual Array(Seq("Male") -> JArray(Array(JNum(0), JNum(49))))
 
-    influx.close() shouldEqual {}
+    management.close() shouldEqual {}
+    io.close() shouldEqual {}
   }
 }

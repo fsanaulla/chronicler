@@ -2,6 +2,8 @@ package com.github.fsanaulla.chronicler.async
 
 import com.github.fsanaulla.chronicler.async.SampleEntitys._
 import com.github.fsanaulla.chronicler.async.api.Measurement
+import com.github.fsanaulla.chronicler.async.clients.{AsyncIOClient, AsyncManagementClient}
+import com.github.fsanaulla.chronicler.core.model.InfluxConfig
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity, Futures}
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
@@ -18,13 +20,19 @@ class MeasurementSpec extends FlatSpecWithMatchers with Futures with DockerizedI
   val safeDB = "db"
   val measName = "meas"
 
-  lazy val influx: InfluxAsyncHttpClient =
-    Influx(host, port, Some(creds))
+  lazy val influxConf =
+    InfluxConfig(host, port, credentials = Some(creds), gzipped = false)
 
-  lazy val meas: Measurement[FakeEntity] = influx.measurement[FakeEntity](safeDB, measName)
+  lazy val management: AsyncManagementClient =
+    Influx.management(influxConf)
+
+  lazy val io: AsyncIOClient =
+    Influx.io(influxConf)
+
+  lazy val meas: Measurement[FakeEntity] = io.measurement[FakeEntity](safeDB, measName)
 
   "Measurement[FakeEntity]" should "make single write" in {
-    influx.createDatabase(safeDB).futureValue shouldEqual OkResult
+    management.createDatabase(safeDB).futureValue shouldEqual OkResult
 
     meas.write(singleEntity).futureValue shouldEqual NoContentResult
 
@@ -41,6 +49,7 @@ class MeasurementSpec extends FlatSpecWithMatchers with Futures with DockerizedI
       .queryResult
       .length shouldEqual 3
 
-    influx.close() shouldEqual {}
+    management.close() shouldEqual {}
+    io.close() shouldEqual {}
   }
 }

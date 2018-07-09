@@ -1,5 +1,6 @@
 package com.github.fsanaulla.chronicler.async
 
+import com.github.fsanaulla.chronicler.async.clients.AsyncManagementClient
 import com.github.fsanaulla.chronicler.core.enums.Privileges
 import com.github.fsanaulla.chronicler.core.model.{UserInfo, UserPrivilegesInfo}
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.OkResult
@@ -23,8 +24,8 @@ class UserManagementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB wi
   val admin = "Admin"
   val adminPass = "admin_pass"
 
-  lazy val influx: InfluxAsyncHttpClient =
-    Influx(host, port, Some(creds))
+  lazy val influx: AsyncManagementClient =
+    Influx.management(host, port, Some(creds))
 
   "User management operation" should "create user" in {
     influx.createDatabase(userDB).futureValue shouldEqual OkResult

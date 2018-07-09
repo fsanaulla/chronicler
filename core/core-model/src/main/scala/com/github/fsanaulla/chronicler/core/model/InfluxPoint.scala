@@ -41,11 +41,10 @@ final case class BigDecimalField(key: String, value: BigDecimal) extends InfluxF
   override def toString: String = key + "=" + value
 }
 
-final case class Point(
-                        measurement: String,
-                        tags: List[InfluxTag] = Nil,
-                        fields: List[InfluxField] = Nil,
-                        time: Long = -1L) {
+final case class Point(measurement: String,
+                       tags: List[InfluxTag] = Nil,
+                       fields: List[InfluxField] = Nil,
+                       time: Long = -1L) {
 
   def addTag(key: String, value: String): Point = copy(tags = tags :+ InfluxTag(key, value))
   def addField(key: String, value: String): Point = copy(fields = fields :+ StringField(key, value))

@@ -10,18 +10,21 @@ object Dependencies {
   object Versions {
     val sttp       = "1.1.14"
     val netty      = "4.1.22.Final"
-    val scalaTest  = "3.0.5"
-    val scalaCheck = "1.14.0"
     val testing    = "0.3.0"
 
     object Akka {
       val akka = "2.5.12"
       val akkaHttp = "10.1.1"
     }
+
+    object Testing {
+      val scalaTest  = "3.0.5"
+      val scalaCheck = "1.14.0"
+    }
   }
 
-  val scalaTest = "org.scalatest"   %% "scalatest"  % Versions.scalaTest
-  val scalaCheck = "org.scalacheck" %% "scalacheck" % Versions.scalaCheck
+  val scalaTest = "org.scalatest"   %% "scalatest"  % Versions.Testing.scalaTest
+  val scalaCheck = "org.scalacheck" %% "scalacheck" % Versions.Testing.scalaCheck
 
   val httpClientTesting = List(
     // if, you want to use it by your own, publish this deps from tests library first
@@ -30,11 +33,10 @@ object Dependencies {
     scalaTest % Scope.all
   )
 
-  def macroDeps(scalaVersion: String): Seq[ModuleID] = Seq(
+  def macroDeps(scalaVersion: String): List[ModuleID] = List(
     "org.scala-lang"       %  "scala-reflect"         % scalaVersion,
-    "org.scalacheck"       %% "scalacheck"            % Versions.scalaCheck % Scope.test,
-    "com.github.fsanaulla" %% "scalacheck-generators" % "0.1.3"             % Scope.compileTimeOnly exclude("org.scala-lang", "scala-reflect")
-  ) :+ scalaTest % Scope.test
+    "com.github.fsanaulla" %% "scalacheck-generators" % "0.1.3" % Scope.compileTimeOnly exclude("org.scala-lang", "scala-reflect")
+  ) ::: List(scalaTest, scalaCheck).map(_ % Scope.test)
 
   // testing
   val itTestingDeps: Seq[ModuleID] = Seq(
@@ -46,7 +48,7 @@ object Dependencies {
   val coreDep: List[ModuleID] = List(
     "com.beachape"   %% "enumeratum" % "1.5.13",
     "org.spire-math" %% "jawn-ast"   % "0.12.1"
-  ) :+ scalaTest % Scope.test
+  ) ::: List(scalaTest, scalaCheck).map(_ % Scope.test)
 
   // akka-http
   val akkaDep: List[ModuleID] = List(

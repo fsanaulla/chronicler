@@ -13,9 +13,7 @@ import scala.reflect.ClassTag
   * @tparam M     - container type
   * @tparam E     - Entity type
   */
-private[chronicler] abstract class DatabaseIO[M[_], E](dbName: String)
-  extends ReadOperations[M]
-    with WriteOperations[M, E] {
+abstract class DatabaseIO[M[_], E](dbName: String) extends ReadOperations[M] with WriteOperations[M, E] {
 
   def read[A: ClassTag](query: String,
                         epoch: Epoch = Epochs.NANOSECONDS,

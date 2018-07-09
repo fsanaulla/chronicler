@@ -30,7 +30,8 @@ final class Measurement[E: ClassTag](dbName: String,
       with AkkaWriter
       with AkkaReader
       with HasCredentials
-      with Executable {
+      with Executable
+      with PointTransformer {
 
   def write(entity: E,
             consistency: Consistency = Consistencies.ONE,

@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
-import com.github.fsanaulla.chronicler.core.model.Point
+import com.github.fsanaulla.chronicler.core.model.{InfluxConfig, Point}
 import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
 import com.github.fsanaulla.chronicler.testing.it.FakeEntity.fmt
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
@@ -8,6 +8,7 @@ import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntit
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.github.fsanaulla.chronicler.urlhttp.SampleEntitys.largeMultiJsonEntity
 import com.github.fsanaulla.chronicler.urlhttp.api.Database
+import com.github.fsanaulla.chronicler.urlhttp.clients.{UrlIOClient, UrlManagementClient}
 import jawn.ast.{JArray, JNum}
 import org.scalatest.{OptionValues, TryValues}
 
@@ -20,13 +21,19 @@ class DatabaseSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with Try
 
   val testDB = "db"
 
-  lazy val influx: InfluxUrlHttpClient =
-    Influx(host, port, Some(creds))
+  lazy val influxConf =
+    InfluxConfig(host, port, credentials = Some(creds), gzipped = false)
 
-  lazy val db: Database = influx.database(testDB)
+  lazy val management: UrlManagementClient =
+    Influx.management(influxConf)
+
+  lazy val io: UrlIOClient =
+    Influx.io(influxConf)
+
+  lazy val db: Database = io.database(testDB)
 
   "Database API" should "write data from file" in {
-    influx.createDatabase(testDB).success.value shouldEqual OkResult
+    management.createDatabase(testDB).success.value shouldEqual OkResult
 
     db.writeFromFile(getClass.getResource("/points.txt").getPath)
       .success
@@ -120,6 +127,7 @@ class DatabaseSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with Try
       .groupedResult
       .map { case (k, v) => k.toSeq -> v } shouldEqual Array(Seq("Male") -> JArray(Array(JNum(0), JNum(49))))
 
-    influx.close() shouldEqual {}
+    management.close() shouldEqual {}
+    io.close() shouldEqual {}
   }
 }

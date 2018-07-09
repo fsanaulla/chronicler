@@ -1,10 +1,12 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
+import com.github.fsanaulla.chronicler.core.model.InfluxConfig
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity}
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.github.fsanaulla.chronicler.urlhttp.SampleEntitys._
 import com.github.fsanaulla.chronicler.urlhttp.api.Measurement
+import com.github.fsanaulla.chronicler.urlhttp.clients.{UrlIOClient, UrlManagementClient}
 import org.scalatest.TryValues
 
 /**
@@ -17,13 +19,19 @@ class MeasurementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with 
   val safeDB = "db"
   val measName = "meas"
 
-  lazy val influx: InfluxUrlHttpClient =
-    Influx(host, port, Some(creds))
+  lazy val influxConf =
+    InfluxConfig(host, port, credentials = Some(creds), gzipped = false)
 
-  lazy val meas: Measurement[FakeEntity] = influx.measurement[FakeEntity](safeDB, measName)
+  lazy val management: UrlManagementClient =
+    Influx.management(influxConf)
+
+  lazy val io: UrlIOClient =
+    Influx.io(influxConf)
+
+  lazy val meas: Measurement[FakeEntity] = io.measurement[FakeEntity](safeDB, measName)
 
   "Measurement[FakeEntity]" should "make single write" in {
-    influx.createDatabase(safeDB).success.value shouldEqual OkResult
+    management.createDatabase(safeDB).success.value shouldEqual OkResult
 
     meas.write(singleEntity).success.value shouldEqual NoContentResult
 
@@ -40,6 +48,7 @@ class MeasurementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with 
       .queryResult
       .length shouldEqual 3
 
-    influx.close() shouldEqual {}
+    management.close() shouldEqual {}
+    io.close() shouldEqual {}
   }
 }

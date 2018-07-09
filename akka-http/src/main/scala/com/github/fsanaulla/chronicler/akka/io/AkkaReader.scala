@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.akka.io
 
-import _root_.akka.http.scaladsl.model.{HttpRequest, Uri}
+import _root_.akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryHandler, AkkaRequestHandler, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.core.enums.Epoch
 import com.github.fsanaulla.chronicler.core.io.ReadOperations
@@ -19,9 +19,8 @@ private[akka] trait AkkaReader
   extends AkkaRequestHandler
     with AkkaResponseHandler
     with AkkaQueryHandler
-    with DatabaseOperationQuery[Uri]
-    with HasCredentials
-    with ImplicitRequestBuilder[Uri, HttpRequest] { self: ReadOperations[Future] with Executable =>
+    with DatabaseOperationQuery[Uri] {
+  self: ReadOperations[Future] with Executable with HasCredentials =>
 
   override def readJs(dbName: String,
                       query: String,

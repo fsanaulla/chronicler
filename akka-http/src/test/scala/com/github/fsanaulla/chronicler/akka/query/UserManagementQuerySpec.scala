@@ -4,6 +4,7 @@ import _root_.akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.TestHelper._
 import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryHandler
 import com.github.fsanaulla.chronicler.core.enums.Privileges
+import com.github.fsanaulla.chronicler.core.model.HasCredentials
 import com.github.fsanaulla.chronicler.core.query.UserManagementQuery
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 
@@ -14,7 +15,7 @@ import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecW
   */
 class UserManagementQuerySpec extends FlatSpecWithMatchers {
 
-  trait Env extends AkkaQueryHandler with UserManagementQuery[Uri] {
+  trait Env extends AkkaQueryHandler with UserManagementQuery[Uri] { self: HasCredentials =>
     val host = "localhost"
     val port = 8086
   }

@@ -5,6 +5,7 @@ import com.github.fsanaulla.chronicler.core.model.{AuthorizationException, UserP
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.OkResult
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+import com.github.fsanaulla.chronicler.urlhttp.clients.UrlManagementClient
 import org.scalatest.TryValues
 
 /**
@@ -22,10 +23,10 @@ class AuthenticationSpec extends FlatSpecWithMatchers with DockerizedInfluxDB wi
   val admin = "admin"
   val adminPass = "admin"
 
-  lazy val influx: InfluxUrlHttpClient = Influx(host, port)
+  lazy val influx: UrlManagementClient = Influx.management(host, port)
 
-  lazy val authInflux: InfluxUrlHttpClient =
-    Influx(host, port, Some(creds))
+  lazy val authInflux: UrlManagementClient =
+    Influx.management(host, port, Some(creds))
 
   "AuthenticationManagement" should  "create admin user " in {
     influx.showUsers.success.value.ex.get shouldBe a[AuthorizationException]

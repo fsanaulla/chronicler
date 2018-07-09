@@ -2,7 +2,8 @@ package com.github.fsanaulla.chronicler.async
 
 import com.github.fsanaulla.chronicler.async.SampleEntitys.largeMultiJsonEntity
 import com.github.fsanaulla.chronicler.async.api.Database
-import com.github.fsanaulla.chronicler.core.model.Point
+import com.github.fsanaulla.chronicler.async.clients.{AsyncIOClient, AsyncManagementClient}
+import com.github.fsanaulla.chronicler.core.model.{InfluxConfig, Point}
 import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity, Futures}
@@ -20,13 +21,19 @@ class GzippedDatabaseSpec extends FlatSpecWithMatchers with Futures with Dockeri
 
   val testDB = "db"
 
-  lazy val influx: InfluxAsyncHttpClient =
-    Influx(host, port, Some(creds), gzipped = true)
+  lazy val influxConf =
+    InfluxConfig(host, port, credentials = Some(creds), gzipped = true)
 
-  lazy val db: Database = influx.database(testDB)
+  lazy val management: AsyncManagementClient =
+    Influx.management(influxConf)
+
+  lazy val io: AsyncIOClient =
+    Influx.io(influxConf)
+
+  lazy val db: Database = io.database(testDB)
 
   "Database API" should "write data from file" in {
-    influx.createDatabase(testDB).futureValue shouldEqual OkResult
+    management.createDatabase(testDB).futureValue shouldEqual OkResult
 
     db.writeFromFile(getClass.getResource("/points.txt").getPath)
       .futureValue shouldEqual NoContentResult
@@ -116,6 +123,7 @@ class GzippedDatabaseSpec extends FlatSpecWithMatchers with Futures with Dockeri
       .groupedResult
       .map { case (k, v) => k.toSeq -> v } shouldEqual Array(Seq("Male") -> JArray(Array(JNum(0), JNum(49))))
 
-    influx.close() shouldEqual {}
+    management.close() shouldEqual {}
+    io.close() shouldEqual {}
   }
 }

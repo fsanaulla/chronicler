@@ -7,7 +7,7 @@ package com.github.fsanaulla.chronicler.core.utils
   */
 object InfluxDuration {
 
-  implicit class IntDurationExtension(private val i: Int) extends AnyVal {
+  implicit final class IntDurationExtension(private val i: Int) extends AnyVal {
     def nanoseconds: String = i.toString + "ns"
     def microseconds: String = i.toString + "u"
     def milliseconds: String = i.toString + "ms"
@@ -18,7 +18,7 @@ object InfluxDuration {
     def weeks: String = i.toString + "w"
   }
 
-  implicit class LongDurationExtension(private val l: Long) extends AnyVal {
+  implicit final class LongDurationExtension(private val l: Long) extends AnyVal {
     def nanoseconds: String = l.toString + "ns"
     def microseconds: String = l.toString + "u"
     def milliseconds: String = l.toString + "ms"

@@ -2,6 +2,7 @@ package com.github.fsanaulla.chronicler.akka
 
 import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
+import com.github.fsanaulla.chronicler.akka.clients.AkkaFullClient
 import com.github.fsanaulla.chronicler.core.model.RetentionPolicyInfo
 import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
@@ -23,8 +24,8 @@ class RetentionPolicyManagerSpec
 
   val rpDB = "db"
 
-  lazy val influx: InfluxAkkaHttpClient =
-    Influx(host, port, Some(creds))
+  lazy val influx: AkkaFullClient =
+    Influx.full(host, port, Some(creds))
 
   "Retention policy" should "create retention policy" in {
     influx.createDatabase(rpDB).futureValue shouldEqual OkResult

@@ -5,6 +5,7 @@ import com.github.fsanaulla.chronicler.core.model.{UserInfo, UserPrivilegesInfo}
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.OkResult
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+import com.github.fsanaulla.chronicler.urlhttp.clients.UrlManagementClient
 import org.scalatest.TryValues
 
 /**
@@ -22,8 +23,8 @@ class UserManagementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB wi
   val admin = "Admin"
   val adminPass = "admin_pass"
 
-  lazy val influx: InfluxUrlHttpClient =
-    Influx(host, port, Some(creds))
+  lazy val influx: UrlManagementClient =
+    Influx.management(host, port, Some(creds))
 
   "User management operation" should "create user" in {
     influx.createDatabase(userDB).success.value shouldEqual OkResult
