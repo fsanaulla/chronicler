@@ -26,7 +26,7 @@ class MeasurementSpec
   val safeDB = "db"
   val measName = "meas"
 
-  val influxConf = InfluxConfig(host, port, credentials = Some(creds), gzipped = false)
+  lazy val influxConf = InfluxConfig(host, port, credentials = Some(creds), gzipped = false)
 
   lazy val management: AkkaManagementClient =
     Influx.management(influxConf)

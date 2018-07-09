@@ -27,7 +27,7 @@ class DatabaseSpec
 
   val testDB = "db"
 
-  val influxConf = InfluxConfig(host, port, credentials = Some(creds), gzipped = false)
+  lazy val influxConf = InfluxConfig(host, port, credentials = Some(creds), gzipped = false)
 
   lazy val management: AkkaManagementClient =
     Influx.management(influxConf)
