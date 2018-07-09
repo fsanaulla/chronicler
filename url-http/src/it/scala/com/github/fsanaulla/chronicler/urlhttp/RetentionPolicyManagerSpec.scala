@@ -5,6 +5,7 @@ import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+import com.github.fsanaulla.chronicler.urlhttp.clients.UrlManagementClient
 import org.scalatest.TryValues
 
 import scala.language.postfixOps
@@ -18,8 +19,8 @@ class RetentionPolicyManagerSpec extends FlatSpecWithMatchers with DockerizedInf
 
   val rpDB = "db"
 
-  lazy val influx: InfluxUrlHttpClient =
-    Influx(host, port, Some(creds))
+  lazy val influx: UrlManagementClient =
+    Influx.management(host, port, Some(creds))
 
   "Retention policy" should "create retention policy" in {
     influx.createDatabase(rpDB).success.value shouldEqual OkResult

@@ -1,4 +1,4 @@
-package com.github.fsanaulla.chronicler.urlhttp
+package com.github.fsanaulla.chronicler.urlhttp.clients
 
 import com.github.fsanaulla.chronicler.core.client.FullClient
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, Mappable, WriteResult}
@@ -11,10 +11,10 @@ import jawn.ast.JValue
 import scala.reflect.ClassTag
 import scala.util.Try
 
-final class InfluxUrlHttpClient(val host: String,
-                                val port: Int,
-                                val credentials: Option[InfluxCredentials],
-                                gzipped: Boolean)
+final class UrlFullClient(val host: String,
+                          val port: Int,
+                          val credentials: Option[InfluxCredentials],
+                          gzipped: Boolean)
   extends FullClient[Try, Request, Response[JValue], Uri, String]
     with UrlRequestHandler
     with UrlResponseHandler
@@ -22,31 +22,19 @@ final class InfluxUrlHttpClient(val host: String,
     with Mappable[Try, Response[JValue]]
     with AutoCloseable {
 
-  override def mapTo[B](resp: Try[Response[JValue]], f: Response[JValue] => Try[B]): Try[B] = resp.flatMap(f)
+  override def mapTo[B](resp: Try[Response[JValue]],
+                        f: Response[JValue] => Try[B]): Try[B] =
+    resp.flatMap(f)
 
   protected implicit val backend: SttpBackend[Try, Nothing] = TryHttpURLConnectionBackend()
 
-  /**
-    * Select database
-    * @param dbName - database name
-    * @return Database instance that provide non type safe operations
-    */
   override def database(dbName: String): Database =
-    new Database(dbName, gzipped, host, port, credentials)
+    new Database(host, port, credentials, dbName, gzipped)
 
-  /**
-    *
-    * @param dbName          - database name
-    * @param measurementName - measurement name
-    * @tparam A - Measurement's time series type
-    * @return - Measurement instance of type [A]
-    */
-  override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] =
-    new Measurement[A](dbName, measurementName, gzipped, host, port, credentials)
+  override def measurement[A: ClassTag](dbName: String,
+                                        measurementName: String): Measurement[A] =
+    new Measurement[A](host, port, credentials, dbName, measurementName, gzipped)
 
-  /**
-    * Ping InfluxDB
-    */
   override def ping: Try[WriteResult] =
     execute(buildQuery("/ping", Map.empty[String, String])).flatMap(toResult)
 

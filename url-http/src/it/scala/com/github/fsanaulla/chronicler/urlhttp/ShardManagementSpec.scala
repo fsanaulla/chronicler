@@ -4,6 +4,7 @@ import com.github.fsanaulla.chronicler.core.model.{ShardGroupsInfo, ShardInfo}
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.OkResult
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+import com.github.fsanaulla.chronicler.urlhttp.clients.UrlManagementClient
 import org.scalatest.TryValues
 
 /**
@@ -15,8 +16,8 @@ class ShardManagementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB w
 
   val testDb = "_internal"
 
-  lazy val influx: InfluxUrlHttpClient =
-    Influx(host, port, Some(creds))
+  lazy val influx: UrlManagementClient =
+    Influx.management(host, port, Some(creds))
 
   "shard operations" should "show shards" in {
 

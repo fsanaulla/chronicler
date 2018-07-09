@@ -22,7 +22,7 @@ class GzippedDatabaseSpec extends FlatSpecWithMatchers with Futures with Dockeri
   val testDB = "db"
 
   lazy val influxConf =
-    InfluxConfig(host, port, credentials = Some(creds), gzipped = false)
+    InfluxConfig(host, port, credentials = Some(creds), gzipped = true)
 
   lazy val management: AsyncManagementClient =
     Influx.management(influxConf)
