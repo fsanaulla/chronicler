@@ -10,6 +10,14 @@ Open-source [Scala](https://www.scala-lang.org/) client tool for [InfluxDB](http
 [![License](http://img.shields.io/:license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 </div>
 
+## Features
+- Multiple backend
+- Flexible API
+- Code generation with macros
+- High modularity
+- Spark support (In-progress)
+- Easy to customize
+
 ## Components
 There are several components for use.
 
@@ -78,7 +86,7 @@ libraryDependencies ++= Seq(
 )
 ```
 Our code:
-```scala
+```
 import com.github.fsanaulla.chronicler.async.{Influx, InfluxAsyncHttpClient}
 import com.github.fsanaulla.macros.annotations.{field, tag, timestamp}
 import com.github.fsanaulla.core.model.InfluxFormatter
@@ -108,8 +116,8 @@ final val host = "influx_host"
 final val port = 8086
 
 // establish connection to InfluxDB
-val influx: InfluxAsyncHttpClient = 
-  Influx.connect(host, port, Some(credentials))
+val influx: AsyncIOClient = 
+  Influx.io(host, port, Some(credentials)) // because we will make only IO action
 
 val databaseName = "test_db"
 val measurementName = "test_measurement"

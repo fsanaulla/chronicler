@@ -5,14 +5,15 @@ import com.github.fsanaulla.chronicler.core.model.{AuthorizationException, UserP
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.OkResult
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
-import org.scalatest.{OptionValues, TryValues}
+import com.github.fsanaulla.chronicler.urlhttp.clients.UrlManagementClient
+import org.scalatest.TryValues
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 17.08.17
   */
-class AuthenticationSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with TryValues with OptionValues {
+class AuthenticationSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with TryValues {
 
   val userDB = "db"
   val userName = "some_user"
@@ -22,14 +23,13 @@ class AuthenticationSpec extends FlatSpecWithMatchers with DockerizedInfluxDB wi
   val admin = "admin"
   val adminPass = "admin"
 
-  lazy val influx: InfluxUrlHttpClient =
-    Influx.connect(host, port)
+  lazy val influx: UrlManagementClient = Influx.management(host, port)
 
-  lazy val authInflux: InfluxUrlHttpClient =
-    Influx.connect(host, port, Some(creds))
+  lazy val authInflux: UrlManagementClient =
+    Influx.management(host, port, Some(creds))
 
   "AuthenticationManagement" should  "create admin user " in {
-    influx.showUsers.success.value.ex.value shouldBe a[AuthorizationException]
+    influx.showUsers.success.value.ex.get shouldBe a[AuthorizationException]
   }
 
   it should "create database" in {
