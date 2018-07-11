@@ -6,7 +6,7 @@ Open-source [Scala](https://www.scala-lang.org/) client tool for [InfluxDB](http
 [![Build Status](https://travis-ci.org/fsanaulla/chronicler.svg?branch=master)](https://travis-ci.org/fsanaulla/chronicler)
 [![Codecov](https://img.shields.io/codecov/c/github/fsanaulla/chronicler.svg)](https://codecov.io/gh/fsanaulla/chronicler)
 [![Join the chat at https://gitter.im/chronicler/Lobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/chronicler-scala/Lobby/?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Latest version](https://index.scala-lang.org/fsanaulla/chronicler/chronicler-core/latest.svg?color=yellow)](https://index.scala-lang.org/com.github.fsanaulla/chronicler/chronicler-core_2.11)
+[![Latest version](https://index.scala-lang.org/fsanaulla/chronicler/chronicler-core-api/latest.svg?color=yellow)](https://index.scala-lang.org/com.github.fsanaulla/chronicler/chronicler-core-api_2.11)
 [![License](http://img.shields.io/:license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 </div>
 
@@ -36,23 +36,23 @@ There are several components for use.
 - [jawn](https://github.com/non/jawn) as a base for JSON operation
 
 **Macros**:
-- core
+- coreModel
 - scala-reflect
 
 **Akka-HTTP**:
-- core
+- coreApi
 - [akka-http](https://github.com/akka/akka-http)
 
 **Async-HTTP**:
-- core
+- coreApi
 - [sttp](https://github.com/softwaremill/sttp) - async-client backend
 
 **Url-HTTP**:
-- core
+- coreApi
 - [sttp](https://github.com/softwaremill/sttp) - url-conn backend
 
 **UDP**
-- core
+- coreModel
 
 ## Installation
 Add to your dependencies list in `build.sbt`:
