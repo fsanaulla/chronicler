@@ -16,5 +16,5 @@ private[chronicler] trait RequestHandler[M[_], Req, Resp, Uri] extends ImplicitR
     * @param request - request entity
     * @return        - Return wrapper response
     */
-  def execute(request: Req): M[Resp]
+  private[chronicler] def execute(request: Req): M[Resp]
 }

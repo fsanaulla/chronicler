@@ -11,15 +11,15 @@ import com.github.fsanaulla.chronicler.core.model.HasCredentials
 private[chronicler] trait ShardManagementQuery[U] {
   self: QueryHandler[U] with HasCredentials =>
 
-  final def dropShardQuery(shardId: Int): U = {
+  private[chronicler] final def dropShardQuery(shardId: Int): U = {
     buildQuery("/query", buildQueryParams(s"DROP SHARD $shardId"))
   }
 
-  final def showShardsQuery(): U = {
+  private[chronicler] final def showShardsQuery(): U = {
     buildQuery("/query", buildQueryParams("SHOW SHARDS"))
   }
 
-  final def showShardGroupsQuery(): U = {
+  private[chronicler] final def showShardGroupsQuery(): U = {
     buildQuery("/query", buildQueryParams("SHOW SHARD GROUPS"))
   }
 

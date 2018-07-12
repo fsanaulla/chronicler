@@ -9,9 +9,9 @@ import jawn.ast.JValue
 
 import scala.util.Try
 
-class UrlManagementClient(val host: String,
-                          val port: Int,
-                          val credentials: Option[InfluxCredentials])
+class UrlManagementClient(private[urlhttp] val host: String,
+                          private[urlhttp] val port: Int,
+                          private[chronicler] val credentials: Option[InfluxCredentials])
   extends ManagementClient [Try, Request, Response[JValue], Uri, String]
     with UrlRequestHandler
     with UrlResponseHandler
@@ -19,11 +19,11 @@ class UrlManagementClient(val host: String,
     with Mappable[Try, Response[JValue]]
     with AutoCloseable {
 
-  override protected implicit val backend: SttpBackend[Try, Nothing] =
+  private[urlhttp] override implicit val backend: SttpBackend[Try, Nothing] =
     TryHttpURLConnectionBackend()
 
-  override def mapTo[B](resp: Try[Response[JValue]], f: Response[JValue] => Try[B]): Try[B] =
-    resp.flatMap(f)
+  private[chronicler] override def mapTo[B](resp: Try[Response[JValue]],
+                                            f: Response[JValue] => Try[B]): Try[B] = resp.flatMap(f)
 
   override def ping: Try[WriteResult] =
     execute(buildQuery("/ping", Map.empty[String, String])).flatMap(toResult)

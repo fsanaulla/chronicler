@@ -8,12 +8,12 @@ import scala.collection.mutable
 private[chronicler] trait RetentionPolicyManagementQuery[U] {
   self: QueryHandler[U] with HasCredentials =>
 
-  final def createRetentionPolicyQuery(rpName: String,
-                                       dbName: String,
-                                       duration: String,
-                                       replication: Int,
-                                       shardDuration: Option[String],
-                                       default: Boolean = false): U = {
+  private[chronicler] final def createRetentionPolicyQuery(rpName: String,
+                                                           dbName: String,
+                                                           duration: String,
+                                                           replication: Int,
+                                                           shardDuration: Option[String],
+                                                           default: Boolean = false): U = {
     val sb = StringBuilder.newBuilder
 
     sb.append("CREATE RETENTION POLICY ")
@@ -34,15 +34,15 @@ private[chronicler] trait RetentionPolicyManagementQuery[U] {
     buildQuery("/query", buildQueryParams(sb.toString()))
   }
 
-  final def dropRetentionPolicyQuery(rpName: String, dbName: String): U =
+  private[chronicler] final def dropRetentionPolicyQuery(rpName: String, dbName: String): U =
     buildQuery("/query", buildQueryParams(s"DROP RETENTION POLICY $rpName ON $dbName"))
 
-  final def updateRetentionPolicyQuery(rpName: String,
-                                       dbName: String,
-                                       duration: Option[String],
-                                       replication: Option[Int],
-                                       shardDuration: Option[String],
-                                       default: Boolean = false): U = {
+  private[chronicler] final def updateRetentionPolicyQuery(rpName: String,
+                                                           dbName: String,
+                                                           duration: Option[String],
+                                                           replication: Option[Int],
+                                                           shardDuration: Option[String],
+                                                           default: Boolean = false): U = {
     val sb = StringBuilder.newBuilder
 
     sb.append("ALTER RETENTION POLICY ")
@@ -67,6 +67,6 @@ private[chronicler] trait RetentionPolicyManagementQuery[U] {
     buildQuery("/query", buildQueryParams(sb.toString()))
   }
 
-  final def showRetentionPoliciesQuery(dbName: String): U =
+  private[chronicler] final def showRetentionPoliciesQuery(dbName: String): U =
     buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> "SHOW RETENTION POLICIES")))
 }

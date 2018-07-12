@@ -11,12 +11,11 @@ import com.github.fsanaulla.chronicler.core.model.HasCredentials
 private[chronicler] trait QuerysManagementQuery[U] {
   self: QueryHandler[U] with HasCredentials =>
 
-  final def showQuerysQuery(): U = {
+  private[chronicler] final def showQuerysQuery(): U = {
     buildQuery("/query", buildQueryParams("SHOW QUERIES"))
   }
 
-  final def killQueryQuery(queryId: Int): U = {
+  private[chronicler] final def killQueryQuery(queryId: Int): U = {
     buildQuery("/query", buildQueryParams(s"KILL QUERY $queryId"))
   }
-
 }

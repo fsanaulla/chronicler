@@ -11,12 +11,12 @@ import jawn.ast.JArray
 import scala.reflect.ClassTag
 import scala.util.Try
 
-final class Database(val host: String,
-                     val port: Int,
-                     val credentials: Option[InfluxCredentials],
+final class Database(private[urlhttp] val host: String,
+                     private[urlhttp] val port: Int,
+                     private[chronicler] val credentials: Option[InfluxCredentials],
                      dbName: String,
                      gzipped: Boolean)
-                    (protected implicit val backend: SttpBackend[Try, Nothing])
+                    (private[urlhttp] implicit val backend: SttpBackend[Try, Nothing])
   extends DatabaseIO[Try, String](dbName)
     with HasCredentials
     with Serializable[String]

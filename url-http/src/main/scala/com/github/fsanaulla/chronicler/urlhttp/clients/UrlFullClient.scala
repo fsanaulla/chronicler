@@ -11,9 +11,9 @@ import jawn.ast.JValue
 import scala.reflect.ClassTag
 import scala.util.Try
 
-final class UrlFullClient(val host: String,
-                          val port: Int,
-                          val credentials: Option[InfluxCredentials],
+final class UrlFullClient(private[urlhttp] val host: String,
+                          private[urlhttp] val port: Int,
+                          private[chronicler] val credentials: Option[InfluxCredentials],
                           gzipped: Boolean)
   extends FullClient[Try, Request, Response[JValue], Uri, String]
     with UrlRequestHandler
@@ -22,11 +22,11 @@ final class UrlFullClient(val host: String,
     with Mappable[Try, Response[JValue]]
     with AutoCloseable {
 
-  override def mapTo[B](resp: Try[Response[JValue]],
-                        f: Response[JValue] => Try[B]): Try[B] =
-    resp.flatMap(f)
+  private[chronicler] override def mapTo[B](resp: Try[Response[JValue]],
+                        f: Response[JValue] => Try[B]): Try[B] = resp.flatMap(f)
 
-  protected implicit val backend: SttpBackend[Try, Nothing] = TryHttpURLConnectionBackend()
+  private[urlhttp] implicit val backend: SttpBackend[Try, Nothing] =
+    TryHttpURLConnectionBackend()
 
   override def database(dbName: String): Database =
     new Database(host, port, credentials, dbName, gzipped)

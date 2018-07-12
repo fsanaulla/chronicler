@@ -13,5 +13,5 @@ trait ImplicitRequestBuilder[Uri, Request] {
     * @param uri - Uri parameter
     * @return    - request entity
     */
-  implicit def req(uri: Uri): Request
+  private[chronicler] implicit def req(uri: Uri): Request
 }

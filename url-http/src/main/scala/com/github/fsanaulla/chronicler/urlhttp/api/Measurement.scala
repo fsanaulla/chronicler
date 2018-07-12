@@ -10,13 +10,13 @@ import jawn.ast.JArray
 import scala.reflect.ClassTag
 import scala.util.Try
 
-final class Measurement[E: ClassTag](val host: String,
-                                     val port: Int,
-                                     val credentials: Option[InfluxCredentials],
+final class Measurement[E: ClassTag](private[urlhttp] val host: String,
+                                     private[urlhttp] val port: Int,
+                                     private[chronicler] val credentials: Option[InfluxCredentials],
                                      dbName: String,
                                      measurementName: String,
                                      gzipped: Boolean)
-                                    (protected implicit val backend: SttpBackend[Try, Nothing])
+                                    (private[urlhttp] implicit val backend: SttpBackend[Try, Nothing])
   extends MeasurementIO[Try, E, String]
     with HasCredentials
     with UrlWriter

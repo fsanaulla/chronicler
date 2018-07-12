@@ -8,13 +8,13 @@ import com.softwaremill.sttp.{SttpBackend, TryHttpURLConnectionBackend}
 import scala.reflect.ClassTag
 import scala.util.Try
 
-class UrlIOClient(val host: String,
-                  val port: Int,
-                  val credentials: Option[InfluxCredentials],
+class UrlIOClient(private[urlhttp] val host: String,
+                  private[urlhttp] val port: Int,
+                  private[chronicler] val credentials: Option[InfluxCredentials],
                   gzipped: Boolean)
   extends IOClient[Try, String] with AutoCloseable {
 
-  protected implicit val backend: SttpBackend[Try, Nothing] =
+  private[urlhttp] implicit val backend: SttpBackend[Try, Nothing] =
     TryHttpURLConnectionBackend()
 
   override def database(dbName: String): Database =

@@ -1,7 +1,7 @@
 package com.github.fsanaulla.chronicler.core.model
 
 /** Mixing mapper to context*/
-trait Mappable[M[_], R] {
+private[chronicler] trait Mappable[M[_], R] {
 
   /**
     * Map execution result to InfluxResult
@@ -10,5 +10,5 @@ trait Mappable[M[_], R] {
     * @tparam B   - ressult type
     * @return     - result wrapped in input container
     */
-  def mapTo[B](resp: M[R], f: R => M[B]): M[B]
+  private[chronicler] def mapTo[B](resp: M[R], f: R => M[B]): M[B]
 }

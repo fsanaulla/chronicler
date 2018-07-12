@@ -14,10 +14,10 @@ import scala.collection.mutable
 private[chronicler] trait DatabaseOperationQuery[U] {
   self: QueryHandler[U] with HasCredentials =>
 
-  final def writeToInfluxQuery(dbName: String,
-                         consistency: Consistency,
-                         precision: Precision,
-                         retentionPolicy: Option[String]): U = {
+  private[chronicler] final def writeToInfluxQuery(dbName: String,
+                                                   consistency: Consistency,
+                                                   precision: Precision,
+                                                   retentionPolicy: Option[String]): U = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
       "db" -> dbName,
@@ -32,11 +32,11 @@ private[chronicler] trait DatabaseOperationQuery[U] {
     buildQuery("/write", buildQueryParams(queryParams))
   }
 
-  final def readFromInfluxSingleQuery(dbName: String,
-                                          query: String,
-                                          epoch: Epoch,
-                                          pretty: Boolean,
-                                          chunked: Boolean): U = {
+  private[chronicler] final def readFromInfluxSingleQuery(dbName: String,
+                                                          query: String,
+                                                          epoch: Epoch,
+                                                          pretty: Boolean,
+                                                          chunked: Boolean): U = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
       "db" -> dbName,
@@ -49,11 +49,11 @@ private[chronicler] trait DatabaseOperationQuery[U] {
     buildQuery("/query", buildQueryParams(queryParams))
   }
 
-  final def readFromInfluxBulkQuery(dbName: String,
-                              queries: Seq[String],
-                              epoch: Epoch,
-                              pretty: Boolean,
-                              chunked: Boolean): U = {
+  private[chronicler] final def readFromInfluxBulkQuery(dbName: String,
+                                                        queries: Seq[String],
+                                                        epoch: Epoch,
+                                                        pretty: Boolean,
+                                                        chunked: Boolean): U = {
     val queryParams = mutable.Map[String, String](
       "db" -> dbName,
       "pretty" -> pretty.toString,

@@ -12,10 +12,10 @@ private[chronicler] trait DataManagementQuery[U] {
   self: QueryHandler[U] with HasCredentials =>
 
   final def createDatabaseQuery(dbName: String,
-                          duration: Option[String],
-                          replication: Option[Int],
-                          shardDuration: Option[String],
-                          rpName: Option[String]): U = {
+                                duration: Option[String],
+                                replication: Option[Int],
+                                shardDuration: Option[String],
+                                rpName: Option[String]): U = {
 
     val sb = StringBuilder.newBuilder
 
@@ -73,10 +73,10 @@ private[chronicler] trait DataManagementQuery[U] {
   }
 
   final def showTagKeysQuery(dbName: String,
-                       measurementName: String,
-                       whereClause: Option[String],
-                       limit: Option[Int],
-                       offset: Option[Int]): U = {
+                             measurementName: String,
+                             whereClause: Option[String],
+                             limit: Option[Int],
+                             offset: Option[Int]): U = {
     val sb = StringBuilder.newBuilder
 
     sb.append("SHOW TAG KEYS ON ")
@@ -100,11 +100,11 @@ private[chronicler] trait DataManagementQuery[U] {
   }
 
   final def showTagValuesQuery(dbName: String,
-                         measurementName: String,
-                         withKey: Seq[String],
-                         whereClause: Option[String],
-                         limit: Option[Int],
-                         offset: Option[Int]): U = {
+                               measurementName: String,
+                               withKey: Seq[String],
+                               whereClause: Option[String],
+                               limit: Option[Int],
+                               offset: Option[Int]): U = {
     require(withKey.nonEmpty, "Keys can't be empty")
 
     val sb = StringBuilder.newBuilder

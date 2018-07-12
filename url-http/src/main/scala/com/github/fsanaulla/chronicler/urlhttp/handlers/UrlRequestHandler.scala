@@ -10,8 +10,8 @@ import scala.language.implicitConversions
 import scala.util.Try
 
 private[urlhttp] trait UrlRequestHandler extends RequestHandler[Try, Request, Response[JValue], Uri] {
-  protected implicit val backend: SttpBackend[Try, Nothing]
+  private[urlhttp] implicit val backend: SttpBackend[Try, Nothing]
 
-  override implicit def req(uri: Uri): Request = sttp.get(uri).response(asJson)
-  override def execute(request: Request): Try[Response[JValue]] = request.send()
+  private[chronicler] override implicit def req(uri: Uri): Request = sttp.get(uri).response(asJson)
+  private[chronicler] override def execute(request: Request): Try[Response[JValue]] = request.send()
 }

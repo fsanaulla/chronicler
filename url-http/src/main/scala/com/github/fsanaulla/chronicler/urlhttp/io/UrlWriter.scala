@@ -20,12 +20,12 @@ private[urlhttp] trait UrlWriter
     with PointTransformer
     with HasCredentials { self: WriteOperations[Try, String] =>
 
-  override def writeTo(dbName: String,
-                       entity: String,
-                       consistency: Consistency,
-                       precision: Precision,
-                       retentionPolicy: Option[String],
-                       gzipped: Boolean): Try[WriteResult] = {
+  private[chronicler] override def writeTo(dbName: String,
+                                        entity: String,
+                                        consistency: Consistency,
+                                        precision: Precision,
+                                        retentionPolicy: Option[String],
+                                        gzipped: Boolean): Try[WriteResult] = {
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
     val req = sttp
       .post(uri)
@@ -36,12 +36,12 @@ private[urlhttp] trait UrlWriter
     execute(maybeEncoded).flatMap(toResult)
   }
 
-  override def writeFromFile(dbName: String,
-                             filePath: String,
-                             consistency: Consistency,
-                             precision: Precision,
-                             retentionPolicy: Option[String],
-                             gzipped: Boolean): Try[WriteResult] = {
+  private[chronicler] override def writeFromFile(dbName: String,
+                                              filePath: String,
+                                              consistency: Consistency,
+                                              precision: Precision,
+                                              retentionPolicy: Option[String],
+                                              gzipped: Boolean): Try[WriteResult] = {
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
     val req = sttp
       .post(uri)

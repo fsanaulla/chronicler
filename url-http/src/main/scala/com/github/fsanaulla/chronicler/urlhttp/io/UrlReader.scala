@@ -17,7 +17,7 @@ private[urlhttp] trait UrlReader
     with DatabaseOperationQuery[Uri]
     with HasCredentials { self: ReadOperations[Try] =>
 
-  override def readJs(dbName: String,
+  private[chronicler] override def readJs(dbName: String,
                       query: String,
                       epoch: Epoch,
                       pretty: Boolean,
@@ -30,11 +30,11 @@ private[urlhttp] trait UrlReader
     }
   }
 
-  override def bulkReadJs(dbName: String,
-                          queries: Seq[String],
-                          epoch: Epoch,
-                          pretty: Boolean,
-                          chunked: Boolean): Try[QueryResult[Array[JArray]]] = {
+  private[chronicler] override def bulkReadJs(dbName: String,
+                                           queries: Seq[String],
+                                           epoch: Epoch,
+                                           pretty: Boolean,
+                                           chunked: Boolean): Try[QueryResult[Array[JArray]]] = {
     val query = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)
     execute(query).flatMap(toBulkQueryJsResult)
   }
