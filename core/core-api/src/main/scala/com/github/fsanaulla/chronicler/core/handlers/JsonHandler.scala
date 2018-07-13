@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017-2018 Faiaz Sanaulla
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.fsanaulla.chronicler.core.handlers
 
 import com.github.fsanaulla.chronicler.core.model.InfluxReader
@@ -8,44 +24,49 @@ import scala.reflect.ClassTag
 
 /***
   * Trait that define all necessary methods for handling JSON related operation
+  *
   * @tparam R - Response type
   */
 private[chronicler] trait JsonHandler[M[_], R] {
 
   /***
     * Extracting JSON from Response
+    *
     * @param response - Response
     * @return         - Extracted JSON
     */
-  def getResponseBody(response: R): M[JValue]
+  private[chronicler] def getResponseBody(response: R): M[JValue]
 
   /**
     * Extract error message from response
+    *
     * @param response - Response
     * @return         - Error Message
     */
-  def getResponseError(response: R): M[String]
+  private[chronicler] def getResponseError(response: R): M[String]
 
   /**
     * Extract optional error message from response
+    *
     * @param response - Response JSON body
     * @return         - optional error message
     */
-  def getOptResponseError(response: R): M[Option[String]]
+  private[chronicler] def getOptResponseError(response: R): M[Option[String]]
 
   /**
     * Extract influx points from JSON, representede as Arrays
+    *
     * @param js - JSON value
     * @return - optional array of points
     */
-  final def getOptQueryResult(js: JValue): Option[Array[JArray]] = {
+  private[chronicler] final def getOptQueryResult(js: JValue): Option[Array[JArray]] = {
     js.get("results").arrayValue.flatMap(_.headOption) // get head of 'results' field
       .flatMap(_.get("series").arrayValue.flatMap(_.headOption)) // get head of 'series' field
       .flatMap(_.get("values").arrayValue) // get array of jValue
       .map(_.flatMap(_.array)) // map to array of JArray
   }
 
-  final def getOptGropedResult(js: JValue): Option[Array[(Array[String], JArray)]] = {
+  private[chronicler] final def getOptGropedResult(js: JValue): Option[Array[(Array[String], JArray)]] = {
     js.get("results").arrayValue.flatMap(_.headOption)
       .flatMap(_.get("series").arrayValue)
       .map(_.flatMap(_.obj))
@@ -66,7 +87,7 @@ private[chronicler] trait JsonHandler[M[_], R] {
     * @param js - JSON value
     * @return - Array of points
     */
-  final def getOptBulkInfluxPoints(js: JValue): Option[Array[Array[JArray]]] = {
+  private[chronicler] final def getOptBulkInfluxPoints(js: JValue): Option[Array[Array[JArray]]] = {
     js.get("results").arrayValue // get array from 'results' field
       .map(_.flatMap(_.get("series").arrayValue.flatMap(_.headOption))) // get head of 'series' field
       .map(_.flatMap(_.get("values").arrayValue.map(_.flatMap(_.array)))) // get 'values' array
@@ -77,7 +98,7 @@ private[chronicler] trait JsonHandler[M[_], R] {
     * @param js - JSON value
     * @return = array of meas name -> meas points
     */
-  final def getOptJsInfluxInfo(js: JValue): Option[Array[(String, Array[JArray])]] = {
+  private[chronicler] final def getOptJsInfluxInfo(js: JValue): Option[Array[(String, Array[JArray])]] = {
     js.get("results").arrayValue.flatMap(_.headOption)
       .flatMap(_.get("series").arrayValue)
       .map(_.flatMap(_.obj))
@@ -100,6 +121,6 @@ private[chronicler] trait JsonHandler[M[_], R] {
     * @tparam T - type of scala case class
     * @return - Array of pairs
     */
-  final def getOptInfluxInfo[T: ClassTag](js: JValue)(implicit rd: InfluxReader[T]): Option[Array[(String, Array[T])]] =
+  private[chronicler] final def getOptInfluxInfo[T: ClassTag](js: JValue)(implicit rd: InfluxReader[T]): Option[Array[(String, Array[T])]] =
     getOptJsInfluxInfo(js).map(_.map { case (k, v) => k -> v.map(rd.read)})
 }

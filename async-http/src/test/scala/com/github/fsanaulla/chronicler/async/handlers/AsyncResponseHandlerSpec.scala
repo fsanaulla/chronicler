@@ -22,7 +22,7 @@ class AsyncResponseHandlerSpec extends FlatSpecWithMatchers with AsyncResponseHa
 
   implicit val pc: PatienceConfig = PatienceConfig(Span(20, Seconds), Span(1, Second))
 
-  protected implicit val ex: ExecutionContext = ExecutionContext.Implicits.global
+  implicit val ex: ExecutionContext = ExecutionContext.Implicits.global
 
   implicit val timeout: FiniteDuration = 1 second
 

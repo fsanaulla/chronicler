@@ -1,31 +1,22 @@
-import sbt.Keys.{libraryDependencies, name, publishArtifact}
-
-lazy val chronicler = (project in file("."))
-  .settings(Settings.common: _*)
-  .settings(publishArtifact := false)
-  .aggregate(
-    coreModel,
-    macros,
-    urlHttp,
-    akkaHttp,
-    asyncHttp
-//    udp
-  )
+import sbt.Keys.{libraryDependencies, name}
 
 lazy val coreApi = project
   .in(file("core/core-api"))
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
+  .settings(Settings.header: _*)
   .settings(
     name := "chronicler-core-api",
     scalacOptions += "-language:higherKinds"
   )
   .dependsOn(coreModel)
+  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val coreModel = project
   .in(file("core/core-model"))
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
+  .settings(Settings.header)
   .settings(
     name := "chronicler-core-model",
     libraryDependencies ++= Dependencies.coreDep,
@@ -34,6 +25,7 @@ lazy val coreModel = project
       "-language:higherKinds"
     )
   )
+  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val urlHttp = project
   .in(file("url-http"))
@@ -41,11 +33,13 @@ lazy val urlHttp = project
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
+  .settings(Settings.header)
   .settings(
     name := "chronicler-url-http",
     libraryDependencies ++= Dependencies.urlHttp
   )
   .dependsOn(coreApi)
+  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val akkaHttp = project
   .in(file("akka-http"))
@@ -53,6 +47,7 @@ lazy val akkaHttp = project
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
+  .settings(Settings.header)
   .settings(
     name := "chronicler-akka-http",
     scalacOptions ++= Seq(
@@ -62,6 +57,7 @@ lazy val akkaHttp = project
     libraryDependencies ++= Dependencies.akkaDep
   )
   .dependsOn(coreApi)
+  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val asyncHttp = project
   .in(file("async-http"))
@@ -69,6 +65,7 @@ lazy val asyncHttp = project
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
+  .settings(Settings.header)
   .settings(
     name := "chronicler-async-http",
     scalacOptions ++= Seq(
@@ -78,6 +75,7 @@ lazy val asyncHttp = project
     libraryDependencies ++= Dependencies.asyncHttp
   )
   .dependsOn(coreApi)
+  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val udp = project
   .in(file("udp"))
@@ -85,22 +83,26 @@ lazy val udp = project
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
+  .settings(Settings.header)
   .settings(
     name := "chronicler-udp",
     libraryDependencies ++= Dependencies.udpDep,
     test in Test := {}
   )
   .dependsOn(coreModel)
+  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val macros = project
   .in(file("macros"))
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
+  .settings(Settings.header)
   .settings(
     name := "chronicler-macros",
     libraryDependencies ++= Dependencies.macroDeps(scalaVersion.value)
   )
   .dependsOn(coreModel)
+  .enablePlugins(AutomateHeaderPlugin)
 
 // Only for test purpose
 lazy val itTesting = project
