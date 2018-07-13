@@ -1,4 +1,6 @@
 import com.typesafe.sbt.SbtPgp.autoImportImpl.useGpg
+import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.headerLicense
+import de.heikoseeberger.sbtheader.License
 import sbt.Keys._
 import sbt.librarymanagement.LibraryManagementSyntax
 import sbt.{Developer, Opts, ScmInfo, url}
@@ -6,22 +8,36 @@ import sbt.{Developer, Opts, ScmInfo, url}
 /** Basic sbt settings */
 object Settings extends LibraryManagementSyntax {
 
+  private val apacheUrl = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+
+  private object Owner {
+    val id = "fsanaulla"
+    val name = "Faiaz Sanaulla"
+    val email = "fayaz.sanaulla@gmail.com"
+    val github = "https://github.com/fsanaulla"
+  }
+
    val common = Seq(
      scalaVersion := "2.12.6",
      organization := "com.github.fsanaulla",
      scalacOptions ++= Scalac.options(scalaVersion.value),
      crossScalaVersions := Seq("2.11.8", scalaVersion.value),
      homepage := Some(url("https://github.com/fsanaulla/chronicler")),
-     licenses += "Apache-2.0" -> url("https://opensource.org/licenses/Apache-2.0"),
-     developers += Developer(id = "fsanaulla", name = "Faiaz Sanaulla", email = "fayaz.sanaulla@gmail.com", url = url("https://github.com/fsanaulla")),
+     licenses += "Apache-2.0" -> url(apacheUrl),
+     developers += Developer(
+       id = Owner.id,
+       name = Owner.name,
+       email = Owner.email,
+       url = url(Owner.github)
+     ),
      parallelExecution in IntegrationTest := false,
-     publishArtifact in IntegrationTest := false
+     publishArtifact in IntegrationTest := false,
+     publishArtifact in Test := false
    )
 
 
   val publish = Seq(
     useGpg := true,
-    publishArtifact in Test := false,
     scmInfo := Some(
       ScmInfo(
         url("https://github.com/fsanaulla/chronicler"),
@@ -35,5 +51,12 @@ object Settings extends LibraryManagementSyntax {
       else
         Opts.resolver.sonatypeStaging
     )
+  )
+
+  val header = Seq(
+//    organizationName := Owner.name,
+//    startYear := Some(2017),
+//    licenses += ("Apache-2.0", new URL(apacheUrl)),
+    headerLicense := Some(License.ALv2("2017-2018", Owner.name))
   )
 }
