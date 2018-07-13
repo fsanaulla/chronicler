@@ -53,5 +53,5 @@ object Settings extends LibraryManagementSyntax {
     )
   )
 
-  val header = headerLicense := Some(License.ALv2("2017-2018", Owner.name)
+  val header = headerLicense := Some(License.ALv2("2017-2018", Owner.name))
 }
