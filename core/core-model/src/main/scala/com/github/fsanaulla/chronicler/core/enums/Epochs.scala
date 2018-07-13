@@ -25,17 +25,17 @@ import scala.collection.immutable
   * Author: fayaz.sanaulla@gmail.com
   * Date: 29.07.17
   */
-sealed abstract class Epoch(override val entryName: String) extends EnumEntry {
+sealed abstract class Epoch extends EnumEntry {
   override def toString: String = entryName
 }
 
 object Epochs extends enumeratum.Enum[Epoch] {
   val values: immutable.IndexedSeq[Epoch] = findValues
 
-  case object NANOSECONDS extends Epoch("ns")
-  case object MICROSECONDS extends Epoch("u")
-  case object MILLISECONDS extends Epoch("ms")
-  case object SECONDS extends Epoch("s")
-  case object MINUTES extends Epoch("m")
-  case object HOURS extends Epoch("h")
+  case object NANOSECONDS  extends Epoch { override val entryName: String = "ns" }
+  case object MICROSECONDS extends Epoch { override val entryName: String = "u"  }
+  case object MILLISECONDS extends Epoch { override val entryName: String = "ms" }
+  case object SECONDS      extends Epoch { override val entryName: String = "s"  }
+  case object MINUTES      extends Epoch { override val entryName: String = "m"  }
+  case object HOURS        extends Epoch { override val entryName: String = "h"  }
 }

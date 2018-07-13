@@ -25,15 +25,16 @@ import scala.collection.immutable
   * Author: fayaz.sanaulla@gmail.com
   * Date: 29.07.17
   */
-sealed abstract class Consistency(override val entryName: String) extends EnumEntry {
+sealed abstract class Consistency extends EnumEntry {
   override def toString: String = entryName
 }
 
 object Consistencies extends enumeratum.Enum[Consistency]{
   val values: immutable.IndexedSeq[Consistency] = findValues
 
-  case object ONE extends Consistency("one")
-  case object QUORUM extends Consistency("quorum")
-  case object ALL extends Consistency("all")
-  case object ANY extends Consistency("any")
+  case object ONE    extends Consistency { override val entryName: String = "one" }
+  case object QUORUM extends Consistency { override val entryName: String = "quorum" }
+  case object ALL    extends Consistency { override val entryName: String = "all" }
+  case object ANY    extends Consistency { override val entryName: String = "any" }
 }
+
