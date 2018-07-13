@@ -25,10 +25,7 @@ import scala.annotation.implicitNotFound
 @implicitNotFound(
   "No InfluxFormatter found for type ${T}. Try to implement an implicit Format for this type."
 )
-trait InfluxFormatter[T] extends JSerializable {
-  def write(obj: T): String
-  def read(js: JArray): T
-}
+trait InfluxFormatter[T] extends InfluxWriter[T] with InfluxReader[T]
 
 /**
   * Return string must be in following format
