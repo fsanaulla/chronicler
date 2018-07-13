@@ -32,7 +32,7 @@ final class Measurement[E: ClassTag](private[async] val host: String,
                                      dbName: String,
                                      measurementName: String,
                                      gzipped: Boolean)
-                                    (private[async] implicit val ex: ExecutionContext,
+                                    (private[chronicler] implicit val ex: ExecutionContext,
                                      private[async] implicit val backend: SttpBackend[Future, Nothing])
     extends MeasurementIO[Future, E, String]
       with HasCredentials

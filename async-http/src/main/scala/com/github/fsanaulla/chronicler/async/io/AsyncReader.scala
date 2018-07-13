@@ -30,8 +30,7 @@ private[async] trait AsyncReader
   extends AsyncQueryHandler
     with AsyncRequestHandler
     with AsyncResponseHandler
-    with DatabaseOperationQuery[Uri]
-    with HasCredentials { self: ReadOperations[Future] =>
+    with DatabaseOperationQuery[Uri] { self: ReadOperations[Future] with HasCredentials =>
 
   private[chronicler] override def readJs(dbName: String,
                       query: String,

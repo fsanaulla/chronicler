@@ -19,8 +19,8 @@ package com.github.fsanaulla.chronicler.core.model
 import scala.concurrent.ExecutionContext
 
 /** Trait for mixin execution context */
-trait Executable {
+private[chronicler] trait Executable {
 
   /** Implicit execution context */
-  protected implicit val ex: ExecutionContext
+  private[chronicler] implicit val ex: ExecutionContext
 }

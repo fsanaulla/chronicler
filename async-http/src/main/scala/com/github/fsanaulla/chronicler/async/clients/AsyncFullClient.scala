@@ -31,7 +31,8 @@ import scala.reflect.ClassTag
 final class AsyncFullClient(val host: String,
                             val port: Int,
                             val credentials: Option[InfluxCredentials],
-                            gzipped: Boolean)(implicit val ex: ExecutionContext)
+                            gzipped: Boolean)
+                           (implicit val ex: ExecutionContext)
   extends FullClient[Future, Request, Response[JValue], Uri, String]
     with AsyncRequestHandler
     with AsyncResponseHandler

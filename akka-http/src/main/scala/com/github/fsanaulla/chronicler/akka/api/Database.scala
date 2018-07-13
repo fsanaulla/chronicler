@@ -40,7 +40,7 @@ final class Database(dbName: String,
                      gzipped: Boolean)
                     (private[akka] implicit val actorSystem: ActorSystem,
                      private[akka] implicit val mat: ActorMaterializer,
-                     private[akka] implicit val ex: ExecutionContext,
+                     private[chronicler] implicit val ex: ExecutionContext,
                      private[akka] implicit val connection: Connection)
   extends DatabaseIO[Future, RequestEntity](dbName)
     with AkkaWriter

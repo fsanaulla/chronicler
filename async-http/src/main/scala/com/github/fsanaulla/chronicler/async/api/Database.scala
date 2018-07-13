@@ -32,7 +32,7 @@ final class Database(private[async] val host: String,
                      private[chronicler] val credentials: Option[InfluxCredentials],
                      dbName: String,
                      gzipped: Boolean)(private[async] implicit val backend: SttpBackend[Future, Nothing],
-                                       private[async] implicit val ex: ExecutionContext)
+                                       private[chronicler] implicit val ex: ExecutionContext)
     extends DatabaseIO[Future, String](dbName)
       with HasCredentials
       with Executable

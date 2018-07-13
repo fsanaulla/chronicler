@@ -35,7 +35,7 @@ final class AsyncManagementClient(val host: String,
     with AsyncResponseHandler
     with AsyncQueryHandler
     with Mappable[Future, Response[JValue]]
-    with AutoCloseable{
+    with AutoCloseable {
 
   private[async] implicit val backend: SttpBackend[Future, Nothing] =
     AsyncHttpClientFutureBackend()

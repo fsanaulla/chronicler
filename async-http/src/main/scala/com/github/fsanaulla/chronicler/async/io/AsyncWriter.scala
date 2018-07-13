@@ -33,9 +33,7 @@ private[async] trait AsyncWriter
     with AsyncRequestHandler
     with AsyncResponseHandler
     with AsyncQueryHandler
-    with PointTransformer
-    with HasCredentials
-    with WriteOperations[Future, String] {
+    with PointTransformer { self: WriteOperations[Future, String] with HasCredentials =>
 
   private[chronicler] override def writeTo(dbName: String,
                        entity: String,

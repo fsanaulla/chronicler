@@ -28,7 +28,8 @@ import scala.reflect.ClassTag
 final class AsyncIOClient(val host: String,
                           val port: Int,
                           val credentials: Option[InfluxCredentials],
-                          gzipped: Boolean)(implicit val ex: ExecutionContext)
+                          gzipped: Boolean)
+                         (implicit val ex: ExecutionContext)
   extends IOClient[Future, String] with AutoCloseable {
 
   private[async] implicit val backend: SttpBackend[Future, Nothing] =
