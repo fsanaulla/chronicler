@@ -31,7 +31,8 @@ final class AsyncIOClient(val host: String,
                           gzipped: Boolean)(implicit val ex: ExecutionContext)
   extends IOClient[Future, String] with AutoCloseable {
 
-  protected implicit val backend: SttpBackend[Future, Nothing] = AsyncHttpClientFutureBackend()
+  private[async] implicit val backend: SttpBackend[Future, Nothing] =
+    AsyncHttpClientFutureBackend()
 
   override def database(dbName: String): Database =
     new Database(host, port, credentials, dbName, gzipped)

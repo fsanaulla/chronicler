@@ -28,7 +28,7 @@ import com.softwaremill.sttp.{Uri, sttp}
 import scala.concurrent.Future
 import scala.io.Source
 
-private[fsanaulla] trait AsyncWriter
+private[async] trait AsyncWriter
   extends DatabaseOperationQuery[Uri]
     with AsyncRequestHandler
     with AsyncResponseHandler
@@ -37,7 +37,7 @@ private[fsanaulla] trait AsyncWriter
     with HasCredentials
     with WriteOperations[Future, String] {
 
-  override def writeTo(dbName: String,
+  private[chronicler] override def writeTo(dbName: String,
                        entity: String,
                        consistency: Consistency,
                        precision: Precision,
@@ -54,7 +54,7 @@ private[fsanaulla] trait AsyncWriter
     execute(maybeEncoded).flatMap(toResult)
   }
 
-  override def writeFromFile(dbName: String,
+  private[chronicler] override def writeFromFile(dbName: String,
                              filePath: String,
                              consistency: Consistency,
                              precision: Precision,

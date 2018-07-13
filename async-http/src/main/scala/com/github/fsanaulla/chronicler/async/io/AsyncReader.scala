@@ -26,14 +26,14 @@ import jawn.ast.JArray
 
 import scala.concurrent.Future
 
-private[fsanaulla] trait AsyncReader
+private[async] trait AsyncReader
   extends AsyncQueryHandler
     with AsyncRequestHandler
     with AsyncResponseHandler
     with DatabaseOperationQuery[Uri]
     with HasCredentials { self: ReadOperations[Future] =>
 
-  override def readJs(dbName: String,
+  private[chronicler] override def readJs(dbName: String,
                       query: String,
                       epoch: Epoch,
                       pretty: Boolean,
@@ -46,7 +46,7 @@ private[fsanaulla] trait AsyncReader
     }
   }
 
-  override def bulkReadJs(dbName: String,
+  private[chronicler] override def bulkReadJs(dbName: String,
                           queries: Seq[String],
                           epoch: Epoch,
                           pretty: Boolean,

@@ -40,11 +40,11 @@ final class AkkaManagementClient(host: String,
     with Mappable[Future, HttpResponse]
     with AutoCloseable {
 
-  override def mapTo[B](resp: Future[HttpResponse],
-                        f: HttpResponse => Future[B]): Future[B] = resp.flatMap(f)
+  private[chronicler] override def mapTo[B](resp: Future[HttpResponse],
+                                            f: HttpResponse => Future[B]): Future[B] = resp.flatMap(f)
 
-  protected implicit val mat: ActorMaterializer = ActorMaterializer()
-  protected implicit val connection: Connection = Http().outgoingConnection(host, port) recover {
+  private[akka] implicit val mat: ActorMaterializer = ActorMaterializer()
+  private[akka] implicit val connection: Connection = Http().outgoingConnection(host, port) recover {
     case ex: StreamTcpException => throw new ConnectionException(ex.getMessage)
     case unknown => throw new UnknownConnectionException(unknown.getMessage)
   }

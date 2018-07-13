@@ -27,12 +27,12 @@ import jawn.ast.JArray
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
-final class Database(val host: String,
-                     val port: Int,
-                     val credentials: Option[InfluxCredentials],
+final class Database(private[async] val host: String,
+                     private[async] val port: Int,
+                     private[chronicler] val credentials: Option[InfluxCredentials],
                      dbName: String,
-                     gzipped: Boolean)(protected implicit val backend: SttpBackend[Future, Nothing],
-                                       protected implicit val ex: ExecutionContext)
+                     gzipped: Boolean)(private[async] implicit val backend: SttpBackend[Future, Nothing],
+                                       private[async] implicit val ex: ExecutionContext)
     extends DatabaseIO[Future, String](dbName)
       with HasCredentials
       with Executable

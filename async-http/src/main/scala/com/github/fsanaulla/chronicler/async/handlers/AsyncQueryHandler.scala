@@ -28,11 +28,11 @@ private[async] trait AsyncQueryHandler
     extends QueryHandler[Uri]
     with HasCredentials {
 
-  protected val host: String
-  protected val port: Int
+  private[async] val host: String
+  private[async] val port: Int
 
-  override def buildQuery(uri: String,
-                          queryParams: Map[String, String]): Uri = {
+  private[chronicler] override def buildQuery(uri: String,
+                                              queryParams: Map[String, String]): Uri = {
     val u = Uri(host = host, port).path(uri)
     val encoding = Uri.QueryFragmentEncoding.All
     val kvLst = queryParams.map {

@@ -38,10 +38,10 @@ final class Measurement[E: ClassTag](dbName: String,
                                      measurementName: String,
                                      val credentials: Option[InfluxCredentials],
                                      gzipped: Boolean)
-                                    (protected implicit val actorSystem: ActorSystem,
-                                     protected implicit val mat: ActorMaterializer,
-                                     protected implicit val ex: ExecutionContext,
-                                     protected implicit val connection: Connection)
+                                    (private[akka] implicit val actorSystem: ActorSystem,
+                                     private[akka] implicit val mat: ActorMaterializer,
+                                     private[akka] implicit val ex: ExecutionContext,
+                                     private[akka] implicit val connection: Connection)
     extends MeasurementIO[Future, E, RequestEntity]
       with AkkaWriter
       with AkkaReader

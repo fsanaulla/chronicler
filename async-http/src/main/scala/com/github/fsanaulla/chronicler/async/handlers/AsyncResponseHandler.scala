@@ -28,7 +28,7 @@ private[async] trait AsyncResponseHandler
   extends ResponseHandler[Future, Response[JValue]] with AsyncJsonHandler {
 
   // Simply result's
-  override def toResult(response: Response[JValue]): Future[WriteResult] = {
+  private[chronicler] override def toResult(response: Response[JValue]): Future[WriteResult] = {
     response.code match {
       case code if isSuccessful(code) && code != 204 =>
         getOptResponseError(response) map {
@@ -45,10 +45,9 @@ private[async] trait AsyncResponseHandler
     }
   }
 
-  override def toComplexQueryResult[A: ClassTag, B: ClassTag](
-                                                      response: Response[JValue],
-                                                      f: (String, Array[A]) => B)
-                                                    (implicit reader: InfluxReader[A]): Future[QueryResult[B]] = {
+  private[chronicler] override def toComplexQueryResult[A: ClassTag, B: ClassTag](response: Response[JValue],
+                                                                                  f: (String, Array[A]) => B)
+                                                                                 (implicit reader: InfluxReader[A]): Future[QueryResult[B]] = {
     response.code match {
       case code if isSuccessful(code) =>
         getResponseBody(response)
@@ -65,7 +64,7 @@ private[async] trait AsyncResponseHandler
     }
   }
 
-  override def toQueryJsResult(response: Response[JValue]): Future[QueryResult[JArray]] = {
+  private[chronicler] override def toQueryJsResult(response: Response[JValue]): Future[QueryResult[JArray]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
         getResponseBody(response)
@@ -79,7 +78,7 @@ private[async] trait AsyncResponseHandler
     }
   }
 
-  override def toGroupedJsResult(response: Response[JValue]): Future[GroupedResult[JArray]] = {
+  private[chronicler] override def toGroupedJsResult(response: Response[JValue]): Future[GroupedResult[JArray]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
         getResponseBody(response)
@@ -93,7 +92,7 @@ private[async] trait AsyncResponseHandler
     }
   }
 
-  override def toBulkQueryJsResult(response: Response[JValue]): Future[QueryResult[Array[JArray]]] = {
+  private[chronicler] override def toBulkQueryJsResult(response: Response[JValue]): Future[QueryResult[Array[JArray]]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
         getResponseBody(response)
@@ -108,11 +107,12 @@ private[async] trait AsyncResponseHandler
     }
   }
 
-  override def toQueryResult[A: ClassTag](response: Response[JValue])(implicit reader: InfluxReader[A]): Future[QueryResult[A]] =
+  private[chronicler] override def toQueryResult[A: ClassTag](response: Response[JValue])(implicit reader: InfluxReader[A]): Future[QueryResult[A]] =
     toQueryJsResult(response).map(_.map(reader.read))
 
 
-  override def errorHandler(response: Response[JValue], code: Int): Future[InfluxException] = code match {
+  private[chronicler] override def errorHandler(response: Response[JValue],
+                                                code: Int): Future[InfluxException] = code match {
     case 400 =>
       getResponseError(response).map(errMsg => new BadRequestException(errMsg))
     case 401 =>

@@ -48,18 +48,19 @@ final class AkkaFullClient(host: String,
       with HasCredentials
       with AutoCloseable {
 
-  override def mapTo[B](resp: Future[HttpResponse], f: HttpResponse => Future[B]): Future[B] = resp.flatMap(f)
+  private[chronicler] override def mapTo[B](resp: Future[HttpResponse],
+                                            f: HttpResponse => Future[B]): Future[B] = resp.flatMap(f)
 
-  protected implicit val mat: ActorMaterializer = ActorMaterializer()
-  protected implicit val connection: Connection = Http().outgoingConnection(host, port) recover {
+  private[akka] implicit val mat: ActorMaterializer = ActorMaterializer()
+  private[akka] implicit val connection: Connection = Http().outgoingConnection(host, port) recover {
     case ex: StreamTcpException => throw new ConnectionException(ex.getMessage)
     case unknown => throw new UnknownConnectionException(unknown.getMessage)
   }
 
-  def database(dbName: String): Database =
+  override def database(dbName: String): Database =
     new Database(dbName, credentials, gzipped)
 
-  def measurement[A: ClassTag](dbName: String,
+  override def measurement[A: ClassTag](dbName: String,
                                measurementName: String): Measurement[A] =
     new Measurement[A](dbName, measurementName, credentials, gzipped)
 

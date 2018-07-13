@@ -53,10 +53,5 @@ object Settings extends LibraryManagementSyntax {
     )
   )
 
-  val header = Seq(
-//    organizationName := Owner.name,
-//    startYear := Some(2017),
-//    licenses += ("Apache-2.0", new URL(apacheUrl)),
-    headerLicense := Some(License.ALv2("2017-2018", Owner.name))
-  )
+  val header = headerLicense := Some(License.ALv2("2017-2018", Owner.name)
 }

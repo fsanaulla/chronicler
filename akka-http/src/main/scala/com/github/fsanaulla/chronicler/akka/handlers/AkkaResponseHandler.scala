@@ -32,7 +32,7 @@ import scala.reflect.ClassTag
 private[akka] trait AkkaResponseHandler extends ResponseHandler[Future, HttpResponse] with AkkaJsonHandler {
 
   // Simply result's
-  override def toResult(response: HttpResponse): Future[WriteResult] = {
+  private[chronicler] override def toResult(response: HttpResponse): Future[WriteResult] = {
     response.status.intValue() match {
       case code if isSuccessful(code) && code != 204 =>
         getOptResponseError(response) map {
@@ -49,9 +49,9 @@ private[akka] trait AkkaResponseHandler extends ResponseHandler[Future, HttpResp
     }
   }
 
-  override def toComplexQueryResult[A: ClassTag, B: ClassTag](response: HttpResponse,
-                                                     f: (String, Array[A]) => B)
-                                                    (implicit reader: InfluxReader[A]): Future[QueryResult[B]] = {
+  private[chronicler] override def toComplexQueryResult[A: ClassTag, B: ClassTag](response: HttpResponse,
+                                                                                  f: (String, Array[A]) => B)
+                                                                                 (implicit reader: InfluxReader[A]): Future[QueryResult[B]] = {
     response.status.intValue() match {
       case code if isSuccessful(code) =>
         getResponseBody(response)
@@ -68,7 +68,7 @@ private[akka] trait AkkaResponseHandler extends ResponseHandler[Future, HttpResp
     }
   }
 
-  override def toQueryJsResult(response: HttpResponse): Future[QueryResult[JArray]] = {
+  private[chronicler] override def toQueryJsResult(response: HttpResponse): Future[QueryResult[JArray]] = {
     response.status.intValue() match {
       case code if isSuccessful(code) =>
         getResponseBody(response)
@@ -82,7 +82,7 @@ private[akka] trait AkkaResponseHandler extends ResponseHandler[Future, HttpResp
     }
   }
 
-  override def toGroupedJsResult(response: HttpResponse): Future[GroupedResult[JArray]] = {
+  private[chronicler] override def toGroupedJsResult(response: HttpResponse): Future[GroupedResult[JArray]] = {
     response.status.intValue() match {
       case code if isSuccessful(code) =>
         getResponseBody(response)
@@ -96,7 +96,7 @@ private[akka] trait AkkaResponseHandler extends ResponseHandler[Future, HttpResp
     }
   }
 
-  override def toBulkQueryJsResult(response: HttpResponse): Future[QueryResult[Array[JArray]]] = {
+  private[chronicler] override def toBulkQueryJsResult(response: HttpResponse): Future[QueryResult[Array[JArray]]] = {
     response.status.intValue() match {
       case code if isSuccessful(code) =>
         getResponseBody(response)
@@ -111,10 +111,12 @@ private[akka] trait AkkaResponseHandler extends ResponseHandler[Future, HttpResp
     }
   }
 
-  override def toQueryResult[A: ClassTag](response: HttpResponse)(implicit reader: InfluxReader[A]): Future[QueryResult[A]] =
+  private[chronicler] override def toQueryResult[A: ClassTag](response: HttpResponse)
+                                                             (implicit reader: InfluxReader[A]): Future[QueryResult[A]] =
     toQueryJsResult(response).map(_.map(reader.read))
 
-  override def errorHandler(response: HttpResponse, code: Int): Future[InfluxException] = code match {
+  private[chronicler] override def errorHandler(response: HttpResponse,
+                                                code: Int): Future[InfluxException] = code match {
     case 400 =>
       getResponseError(response).map(errMsg => new BadRequestException(errMsg))
     case 401 =>

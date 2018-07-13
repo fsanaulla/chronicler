@@ -16,7 +16,7 @@ lazy val coreModel = project
   .in(file("core/core-model"))
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
-  .settings(Settings.header: _*)
+  .settings(Settings.header)
   .settings(
     name := "chronicler-core-model",
     libraryDependencies ++= Dependencies.coreDep,
@@ -33,7 +33,7 @@ lazy val urlHttp = project
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
-  .settings(Settings.header: _*)
+  .settings(Settings.header)
   .settings(
     name := "chronicler-url-http",
     libraryDependencies ++= Dependencies.urlHttp
@@ -47,7 +47,7 @@ lazy val akkaHttp = project
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
-  .settings(Settings.header: _*)
+  .settings(Settings.header)
   .settings(
     name := "chronicler-akka-http",
     scalacOptions ++= Seq(
@@ -65,7 +65,7 @@ lazy val asyncHttp = project
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
-  .settings(Settings.header: _*)
+  .settings(Settings.header)
   .settings(
     name := "chronicler-async-http",
     scalacOptions ++= Seq(
@@ -83,7 +83,7 @@ lazy val udp = project
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
-  .settings(Settings.header: _*)
+  .settings(Settings.header)
   .settings(
     name := "chronicler-udp",
     libraryDependencies ++= Dependencies.udpDep,
@@ -96,7 +96,7 @@ lazy val macros = project
   .in(file("macros"))
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
-  .settings(Settings.header: _*)
+  .settings(Settings.header)
   .settings(
     name := "chronicler-macros",
     libraryDependencies ++= Dependencies.macroDeps(scalaVersion.value)

@@ -36,12 +36,12 @@ import scala.reflect.ClassTag
   * Date: 27.08.17
   */
 final class Database(dbName: String,
-                     val credentials: Option[InfluxCredentials],
+                     private[chronicler] val credentials: Option[InfluxCredentials],
                      gzipped: Boolean)
-                    (protected implicit val actorSystem: ActorSystem,
-                     override protected implicit val mat: ActorMaterializer,
-                     override protected implicit val ex: ExecutionContext,
-                     override protected implicit val connection: Connection)
+                    (private[akka] implicit val actorSystem: ActorSystem,
+                     private[akka] implicit val mat: ActorMaterializer,
+                     private[akka] implicit val ex: ExecutionContext,
+                     private[akka] implicit val connection: Connection)
   extends DatabaseIO[Future, RequestEntity](dbName)
     with AkkaWriter
     with AkkaReader

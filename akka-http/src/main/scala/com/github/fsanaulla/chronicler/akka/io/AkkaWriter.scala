@@ -43,10 +43,10 @@ private[akka] trait AkkaWriter
     with AkkaQueryHandler {
   self: WriteOperations[Future, RequestEntity] with HasCredentials with Executable =>
 
-  protected implicit val mat: ActorMaterializer
-  protected implicit val connection: Connection
+  private[akka] implicit val mat: ActorMaterializer
+  private[akka] implicit val connection: Connection
 
-  override def writeTo(dbName: String,
+  private[chronicler] override def writeTo(dbName: String,
                        entity: RequestEntity,
                        consistency: Consistency,
                        precision: Precision,
@@ -68,7 +68,7 @@ private[akka] trait AkkaWriter
     execute(request).flatMap(toResult)
   }
 
-  override def writeFromFile(dbName: String,
+  private[chronicler] override def writeFromFile(dbName: String,
                              filePath: String,
                              consistency: Consistency,
                              precision: Precision,

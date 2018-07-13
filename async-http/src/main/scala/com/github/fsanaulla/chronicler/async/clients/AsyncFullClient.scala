@@ -39,10 +39,11 @@ final class AsyncFullClient(val host: String,
     with Mappable[Future, Response[JValue]]
     with AutoCloseable {
 
-  protected implicit val backend: SttpBackend[Future, Nothing] =
+  private[async] implicit val backend: SttpBackend[Future, Nothing] =
     AsyncHttpClientFutureBackend()
-  override def mapTo[B](resp: Future[Response[JValue]], f: Response[JValue] => Future[B]): Future[B] =
-    resp.flatMap(f)
+
+  private[chronicler] override def mapTo[B](resp: Future[Response[JValue]],
+                                            f: Response[JValue] => Future[B]): Future[B] = resp.flatMap(f)
 
   override def database(dbName: String): Database =
     new Database(host, port, credentials, dbName, gzipped)

@@ -38,11 +38,11 @@ private[akka] trait AkkaReader
     with DatabaseOperationQuery[Uri] {
   self: ReadOperations[Future] with Executable with HasCredentials =>
 
-  override def readJs(dbName: String,
-                      query: String,
-                      epoch: Epoch,
-                      pretty: Boolean,
-                      chunked: Boolean): Future[ReadResult[JArray]] = {
+  private[chronicler] override def readJs(dbName: String,
+                                          query: String,
+                                          epoch: Epoch,
+                                          pretty: Boolean,
+                                          chunked: Boolean): Future[ReadResult[JArray]] = {
 
     val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
     val executionResult = execute(uri)
@@ -54,11 +54,11 @@ private[akka] trait AkkaReader
   }
 
 
-  override def bulkReadJs(dbName: String,
-                          queries: Seq[String],
-                          epoch: Epoch,
-                          pretty: Boolean,
-                          chunked: Boolean): Future[QueryResult[Array[JArray]]] = {
+  private[chronicler] override def bulkReadJs(dbName: String,
+                                              queries: Seq[String],
+                                              epoch: Epoch,
+                                              pretty: Boolean,
+                                              chunked: Boolean): Future[QueryResult[Array[JArray]]] = {
     val uri = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)
 
     execute(uri).flatMap(toBulkQueryJsResult)

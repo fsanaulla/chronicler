@@ -36,12 +36,11 @@ final class AkkaIOClient(host: String,
                         (implicit val ex: ExecutionContext, val system: ActorSystem)
   extends IOClient[Future, RequestEntity] with AutoCloseable {
 
-  protected implicit val mat: ActorMaterializer = ActorMaterializer()
-  protected implicit val connection: Connection = Http().outgoingConnection(host, port) recover {
+  private[akka] implicit val mat: ActorMaterializer = ActorMaterializer()
+  private[akka] implicit val connection: Connection = Http().outgoingConnection(host, port) recover {
     case ex: StreamTcpException => throw new ConnectionException(ex.getMessage)
     case unknown => throw new UnknownConnectionException(unknown.getMessage)
   }
-
   override def database(dbName: String): Database =
     new Database(dbName, credentials, gzipped)
 

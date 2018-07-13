@@ -27,8 +27,8 @@ import scala.concurrent.Future
 private[async] trait AsyncRequestHandler
     extends RequestHandler[Future, Request, Response[JValue], Uri] {
 
-  protected implicit val backend: SttpBackend[Future, Nothing]
+  private[async] implicit val backend: SttpBackend[Future, Nothing]
 
-  override implicit def req(uri: Uri): Request = sttp.get(uri).response(asJson)
-  override def execute(request: Request): Future[Response[JValue]] = request.send()
+  private[chronicler] override implicit def req(uri: Uri): Request = sttp.get(uri).response(asJson)
+  private[chronicler] override def execute(request: Request): Future[Response[JValue]] = request.send()
 }

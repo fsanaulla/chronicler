@@ -26,14 +26,14 @@ import jawn.ast.JArray
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
-final class Measurement[E: ClassTag](val host: String,
-                                     val port: Int,
-                                     val credentials: Option[InfluxCredentials],
+final class Measurement[E: ClassTag](private[async] val host: String,
+                                     private[async] val port: Int,
+                                     private[chronicler] val credentials: Option[InfluxCredentials],
                                      dbName: String,
                                      measurementName: String,
                                      gzipped: Boolean)
-                                    (protected implicit val ex: ExecutionContext,
-                                     protected implicit val backend: SttpBackend[Future, Nothing])
+                                    (private[async] implicit val ex: ExecutionContext,
+                                     private[async] implicit val backend: SttpBackend[Future, Nothing])
     extends MeasurementIO[Future, E, String]
       with HasCredentials
       with AsyncWriter

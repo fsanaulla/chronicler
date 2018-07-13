@@ -34,10 +34,10 @@ import scala.concurrent.Future
   */
 private[akka] trait AkkaJsonHandler extends JsonHandler[Future, HttpResponse] with Executable {
 
-  protected implicit val mat: ActorMaterializer
+  private[akka] implicit val mat: ActorMaterializer
 
   /** Custom Unmarshaller for Jawn JSON */
-  implicit val unm: Unmarshaller[HttpEntity, JValue] = {
+  private implicit val unm: Unmarshaller[HttpEntity, JValue] = {
     Unmarshaller.withMaterializer {
       implicit ex =>
         implicit mat =>
@@ -48,13 +48,13 @@ private[akka] trait AkkaJsonHandler extends JsonHandler[Future, HttpResponse] wi
     }
   }
 
-  override def getResponseBody(response: HttpResponse): Future[JValue] =
+  private[chronicler] override def getResponseBody(response: HttpResponse): Future[JValue] =
     Unmarshal(response.entity).to[JValue]
 
-  override def getResponseError(response: HttpResponse): Future[String] =
+  private[chronicler]override def getResponseError(response: HttpResponse): Future[String] =
     getResponseBody(response).map(_.get("error").asString)
 
-  override def getOptResponseError(response: HttpResponse): Future[Option[String]] =
+  private[chronicler]override def getOptResponseError(response: HttpResponse): Future[Option[String]] =
     getResponseBody(response)
       .map(_.get("results").arrayValue.flatMap(_.headOption))
       .map(_.flatMap(_.get("error").getString))

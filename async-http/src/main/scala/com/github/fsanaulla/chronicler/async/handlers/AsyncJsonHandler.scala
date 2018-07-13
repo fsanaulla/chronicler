@@ -26,19 +26,19 @@ import scala.concurrent.Future
 
 private[async] trait AsyncJsonHandler
     extends JsonHandler[Future, Response[JValue]]
-    with Executable {
+      with Executable {
 
-  override def getResponseBody(response: Response[JValue]): Future[JValue] = {
+  private[chronicler] override def getResponseBody(response: Response[JValue]): Future[JValue] = {
     response.body match {
       case Right(js) => Future.successful(js)
       case Left(str) => Future.fromTry(JParser.parseFromString(str))
     }
   }
 
-  override def getResponseError(response: Response[JValue]): Future[String] =
+  private[chronicler] override def getResponseError(response: Response[JValue]): Future[String] =
     getResponseBody(response).map(_.get("error").asString)
 
-  override def getOptResponseError(response: Response[JValue]): Future[Option[String]] =
+  private[chronicler] override def getOptResponseError(response: Response[JValue]): Future[Option[String]] =
     getResponseBody(response)
       .map(_.get("results").arrayValue.flatMap(_.headOption))
       .map(_.flatMap(_.get("error").getString))

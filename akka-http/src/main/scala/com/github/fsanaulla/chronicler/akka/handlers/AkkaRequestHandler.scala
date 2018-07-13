@@ -33,11 +33,11 @@ import scala.language.implicitConversions
 private[akka] trait AkkaRequestHandler
   extends RequestHandler[Future, HttpRequest, HttpResponse, Uri] {
 
-  protected implicit val mat: ActorMaterializer
-  protected implicit val connection: Connection
+  private[akka] implicit val mat: ActorMaterializer
+  private[akka] implicit val connection: Connection
 
-  override implicit def req(uri: Uri): HttpRequest = HttpRequest(uri = uri)
+  private[chronicler] override implicit def req(uri: Uri): HttpRequest = HttpRequest(uri = uri)
 
-  override def execute(request: HttpRequest): Future[HttpResponse] =
+  private[chronicler] override def execute(request: HttpRequest): Future[HttpResponse] =
     Source.single(request).via(connection).runWith(Sink.head)
 }
