@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017-2018 Faiaz Sanaulla
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.fsanaulla.chronicler.urlhttp.handlers
 
 import com.github.fsanaulla.chronicler.core.handlers.ResponseHandler
@@ -10,7 +26,7 @@ import scala.util.Try
 
 private[urlhttp] trait UrlResponseHandler extends ResponseHandler[Try, Response[JValue]] with UrlJsonHandler {
 
-  override def toResult(response: Response[JValue]): Try[WriteResult] = {
+  private[chronicler] override def toResult(response: Response[JValue]): Try[WriteResult] = {
     response.code match {
       case code if isSuccessful(code) && code != 204 =>
         getOptResponseError(response) map {
@@ -27,7 +43,7 @@ private[urlhttp] trait UrlResponseHandler extends ResponseHandler[Try, Response[
     }
   }
 
-  override def toComplexQueryResult[A: ClassTag, B: ClassTag](
+  private[chronicler] override def toComplexQueryResult[A: ClassTag, B: ClassTag](
                                                       response: Response[JValue],
                                                       f: (String, Array[A]) => B)
                                                     (implicit reader: InfluxReader[A]): Try[QueryResult[B]] = {
@@ -47,7 +63,7 @@ private[urlhttp] trait UrlResponseHandler extends ResponseHandler[Try, Response[
     }
   }
 
-  override def toQueryJsResult(response: Response[JValue]): Try[QueryResult[JArray]] = {
+  private[chronicler] override def toQueryJsResult(response: Response[JValue]): Try[QueryResult[JArray]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
         getResponseBody(response)
@@ -61,7 +77,7 @@ private[urlhttp] trait UrlResponseHandler extends ResponseHandler[Try, Response[
     }
   }
 
-  override def toGroupedJsResult(response: Response[JValue]): Try[GroupedResult[JArray]] = {
+  private[chronicler] override def toGroupedJsResult(response: Response[JValue]): Try[GroupedResult[JArray]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
         getResponseBody(response)
@@ -75,7 +91,7 @@ private[urlhttp] trait UrlResponseHandler extends ResponseHandler[Try, Response[
     }
   }
 
-  override def toBulkQueryJsResult(response: Response[JValue]): Try[QueryResult[Array[JArray]]] = {
+  private[chronicler] override def toBulkQueryJsResult(response: Response[JValue]): Try[QueryResult[Array[JArray]]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
         getResponseBody(response)
@@ -90,11 +106,11 @@ private[urlhttp] trait UrlResponseHandler extends ResponseHandler[Try, Response[
     }
   }
 
-  override def toQueryResult[A: ClassTag](response: Response[JValue])(implicit reader: InfluxReader[A]): Try[QueryResult[A]] =
+  private[chronicler] override def toQueryResult[A: ClassTag](response: Response[JValue])(implicit reader: InfluxReader[A]): Try[QueryResult[A]] =
     toQueryJsResult(response).map(_.map(reader.read))
 
 
-  override def errorHandler(response: Response[JValue], code: Int): Try[InfluxException] = code match {
+  private[chronicler] override def errorHandler(response: Response[JValue], code: Int): Try[InfluxException] = code match {
     case 400 =>
       getResponseError(response).map(errMsg => new BadRequestException(errMsg))
     case 401 =>

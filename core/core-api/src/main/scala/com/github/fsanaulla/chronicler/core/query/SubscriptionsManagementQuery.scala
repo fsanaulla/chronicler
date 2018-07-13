@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017-2018 Faiaz Sanaulla
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.fsanaulla.chronicler.core.query
 
 import com.github.fsanaulla.chronicler.core.enums.Destination
@@ -12,23 +28,23 @@ import com.github.fsanaulla.chronicler.core.model.HasCredentials
 private[chronicler] trait SubscriptionsManagementQuery[U] {
   self: QueryHandler[U] with HasCredentials =>
 
-  final def createSubscriptionQuery(subsName: String,
-                                    dbName: String,
-                                    rpName: String,
-                                    destinationType: Destination,
-                                    addresses: Seq[String]): U = {
+  private[chronicler] final def createSubscriptionQuery(subsName: String,
+                                                        dbName: String,
+                                                        rpName: String,
+                                                        destinationType: Destination,
+                                                        addresses: Seq[String]): U = {
 
     val addressesStr = addresses.map(str => s"\'$str\'").mkString(", ")
     buildQuery("/query", buildQueryParams(s"CREATE SUBSCRIPTION $subsName ON $dbName.$rpName DESTINATIONS $destinationType $addressesStr"))
   }
 
-  final def dropSubscriptionQuery(subsName: String,
-                                  dbName: String,
-                                  rpName: String): U =
+  private[chronicler] final def dropSubscriptionQuery(subsName: String,
+                                                      dbName: String,
+                                                      rpName: String): U =
     buildQuery("/query", buildQueryParams(s"DROP SUBSCRIPTION $subsName ON $dbName.$rpName"))
 
 
-  final def showSubscriptionsQuery(): U =
+  private[chronicler] final def showSubscriptionsQuery(): U =
     buildQuery("/query", buildQueryParams("SHOW SUBSCRIPTIONS"))
 
 }

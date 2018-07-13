@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017-2018 Faiaz Sanaulla
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.fsanaulla.chronicler.akka.handlers
 
 import _root_.akka.http.scaladsl.model.HttpResponse
@@ -16,7 +32,7 @@ import scala.reflect.ClassTag
 private[akka] trait AkkaResponseHandler extends ResponseHandler[Future, HttpResponse] with AkkaJsonHandler {
 
   // Simply result's
-  override def toResult(response: HttpResponse): Future[WriteResult] = {
+  private[chronicler] override def toResult(response: HttpResponse): Future[WriteResult] = {
     response.status.intValue() match {
       case code if isSuccessful(code) && code != 204 =>
         getOptResponseError(response) map {
@@ -33,9 +49,9 @@ private[akka] trait AkkaResponseHandler extends ResponseHandler[Future, HttpResp
     }
   }
 
-  override def toComplexQueryResult[A: ClassTag, B: ClassTag](response: HttpResponse,
-                                                     f: (String, Array[A]) => B)
-                                                    (implicit reader: InfluxReader[A]): Future[QueryResult[B]] = {
+  private[chronicler] override def toComplexQueryResult[A: ClassTag, B: ClassTag](response: HttpResponse,
+                                                                                  f: (String, Array[A]) => B)
+                                                                                 (implicit reader: InfluxReader[A]): Future[QueryResult[B]] = {
     response.status.intValue() match {
       case code if isSuccessful(code) =>
         getResponseBody(response)
@@ -52,7 +68,7 @@ private[akka] trait AkkaResponseHandler extends ResponseHandler[Future, HttpResp
     }
   }
 
-  override def toQueryJsResult(response: HttpResponse): Future[QueryResult[JArray]] = {
+  private[chronicler] override def toQueryJsResult(response: HttpResponse): Future[QueryResult[JArray]] = {
     response.status.intValue() match {
       case code if isSuccessful(code) =>
         getResponseBody(response)
@@ -66,7 +82,7 @@ private[akka] trait AkkaResponseHandler extends ResponseHandler[Future, HttpResp
     }
   }
 
-  override def toGroupedJsResult(response: HttpResponse): Future[GroupedResult[JArray]] = {
+  private[chronicler] override def toGroupedJsResult(response: HttpResponse): Future[GroupedResult[JArray]] = {
     response.status.intValue() match {
       case code if isSuccessful(code) =>
         getResponseBody(response)
@@ -80,7 +96,7 @@ private[akka] trait AkkaResponseHandler extends ResponseHandler[Future, HttpResp
     }
   }
 
-  override def toBulkQueryJsResult(response: HttpResponse): Future[QueryResult[Array[JArray]]] = {
+  private[chronicler] override def toBulkQueryJsResult(response: HttpResponse): Future[QueryResult[Array[JArray]]] = {
     response.status.intValue() match {
       case code if isSuccessful(code) =>
         getResponseBody(response)
@@ -95,10 +111,12 @@ private[akka] trait AkkaResponseHandler extends ResponseHandler[Future, HttpResp
     }
   }
 
-  override def toQueryResult[A: ClassTag](response: HttpResponse)(implicit reader: InfluxReader[A]): Future[QueryResult[A]] =
+  private[chronicler] override def toQueryResult[A: ClassTag](response: HttpResponse)
+                                                             (implicit reader: InfluxReader[A]): Future[QueryResult[A]] =
     toQueryJsResult(response).map(_.map(reader.read))
 
-  override def errorHandler(response: HttpResponse, code: Int): Future[InfluxException] = code match {
+  private[chronicler] override def errorHandler(response: HttpResponse,
+                                                code: Int): Future[InfluxException] = code match {
     case 400 =>
       getResponseError(response).map(errMsg => new BadRequestException(errMsg))
     case 401 =>

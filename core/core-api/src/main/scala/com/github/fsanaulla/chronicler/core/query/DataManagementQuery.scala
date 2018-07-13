@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017-2018 Faiaz Sanaulla
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.fsanaulla.chronicler.core.query
 
 import com.github.fsanaulla.chronicler.core.handlers.QueryHandler
@@ -12,10 +28,10 @@ private[chronicler] trait DataManagementQuery[U] {
   self: QueryHandler[U] with HasCredentials =>
 
   final def createDatabaseQuery(dbName: String,
-                          duration: Option[String],
-                          replication: Option[Int],
-                          shardDuration: Option[String],
-                          rpName: Option[String]): U = {
+                                duration: Option[String],
+                                replication: Option[Int],
+                                shardDuration: Option[String],
+                                rpName: Option[String]): U = {
 
     val sb = StringBuilder.newBuilder
 
@@ -73,10 +89,10 @@ private[chronicler] trait DataManagementQuery[U] {
   }
 
   final def showTagKeysQuery(dbName: String,
-                       measurementName: String,
-                       whereClause: Option[String],
-                       limit: Option[Int],
-                       offset: Option[Int]): U = {
+                             measurementName: String,
+                             whereClause: Option[String],
+                             limit: Option[Int],
+                             offset: Option[Int]): U = {
     val sb = StringBuilder.newBuilder
 
     sb.append("SHOW TAG KEYS ON ")
@@ -100,11 +116,11 @@ private[chronicler] trait DataManagementQuery[U] {
   }
 
   final def showTagValuesQuery(dbName: String,
-                         measurementName: String,
-                         withKey: Seq[String],
-                         whereClause: Option[String],
-                         limit: Option[Int],
-                         offset: Option[Int]): U = {
+                               measurementName: String,
+                               withKey: Seq[String],
+                               whereClause: Option[String],
+                               limit: Option[Int],
+                               offset: Option[Int]): U = {
     require(withKey.nonEmpty, "Keys can't be empty")
 
     val sb = StringBuilder.newBuilder

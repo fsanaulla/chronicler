@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017-2018 Faiaz Sanaulla
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.fsanaulla.chronicler.async.io
 
 import com.github.fsanaulla.chronicler.async.handlers._
@@ -12,16 +28,14 @@ import com.softwaremill.sttp.{Uri, sttp}
 import scala.concurrent.Future
 import scala.io.Source
 
-private[fsanaulla] trait AsyncWriter
+private[async] trait AsyncWriter
   extends DatabaseOperationQuery[Uri]
     with AsyncRequestHandler
     with AsyncResponseHandler
     with AsyncQueryHandler
-    with PointTransformer
-    with HasCredentials
-    with WriteOperations[Future, String] {
+    with PointTransformer { self: WriteOperations[Future, String] with HasCredentials =>
 
-  override def writeTo(dbName: String,
+  private[chronicler] override def writeTo(dbName: String,
                        entity: String,
                        consistency: Consistency,
                        precision: Precision,
@@ -38,7 +52,7 @@ private[fsanaulla] trait AsyncWriter
     execute(maybeEncoded).flatMap(toResult)
   }
 
-  override def writeFromFile(dbName: String,
+  private[chronicler] override def writeFromFile(dbName: String,
                              filePath: String,
                              consistency: Consistency,
                              precision: Precision,
