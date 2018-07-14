@@ -1,8 +1,8 @@
 import com.typesafe.sbt.SbtPgp.autoImportImpl.useGpg
 import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.headerLicense
 import de.heikoseeberger.sbtheader.License
-import sbt.Keys._
-import sbt.librarymanagement.LibraryManagementSyntax
+import sbt.Keys.{publishArtifact, _}
+import sbt.librarymanagement.{Configurations, LibraryManagementSyntax}
 import sbt.{Developer, Opts, ScmInfo, url}
 
 /** Basic sbt settings */
@@ -31,8 +31,7 @@ object Settings extends LibraryManagementSyntax {
        url = url(Owner.github)
      ),
      parallelExecution in IntegrationTest := false,
-     publishArtifact in IntegrationTest := false,
-     publishArtifact in Test := false
+     makePomConfiguration := makePomConfiguration.value.withConfigurations(Configurations.defaultMavenConfigurations)
    )
 
 
@@ -50,7 +49,8 @@ object Settings extends LibraryManagementSyntax {
         Opts.resolver.sonatypeSnapshots
       else
         Opts.resolver.sonatypeStaging
-    )
+    ),
+    publishArtifact in Test := false
   )
 
   val header = headerLicense := Some(License.ALv2("2017-2018", Owner.name))

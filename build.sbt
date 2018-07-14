@@ -119,6 +119,6 @@ lazy val unitTesting = project
   .settings(Settings.common: _*)
   .settings(
     name := "chronicler-unit-testing",
-    libraryDependencies += Dependencies.scalaTest % Provided
+    libraryDependencies += Dependencies.scalaTest
   )
   .dependsOn(coreModel % "compile->compile")
