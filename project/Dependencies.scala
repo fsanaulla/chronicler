@@ -10,7 +10,7 @@ object Dependencies {
   object Versions {
     val sttp       = "1.1.14"
     val netty      = "4.1.22.Final"
-    val testing    = "0.3.2"
+    val testing    = "0.1.0"
 
     object Akka {
       val akka = "2.5.12"

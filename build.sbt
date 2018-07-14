@@ -110,6 +110,7 @@ lazy val itTesting = project
   .settings(Settings.common: _*)
   .settings(
     name := "chronicler-it-testing",
+    version := "0.1.0",
     libraryDependencies ++= Dependencies.itTestingDeps
   )
   .dependsOn(coreModel % "compile->compile")
@@ -119,6 +120,7 @@ lazy val unitTesting = project
   .settings(Settings.common: _*)
   .settings(
     name := "chronicler-unit-testing",
+    version := "0.1.0",
     libraryDependencies += Dependencies.scalaTest
   )
   .dependsOn(coreModel % "compile->compile")
