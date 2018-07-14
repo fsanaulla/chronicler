@@ -72,7 +72,7 @@ object Dependencies {
   val udpDep: Seq[ModuleID] =
     Seq(
       "com.github.fsanaulla"  %% "scalatest-embedinflux"   % "0.1.7",
-      "com.github.fsanaulla"  %% "chronicler-url-http"     % Versions.testing,
+      "com.github.fsanaulla"  %% "chronicler-url-http"     % "0.3.3",
       "com.github.fsanaulla"  %% "chronicler-unit-testing" % Versions.testing,
       scalaTest
     ) map (_ % Scope.it)

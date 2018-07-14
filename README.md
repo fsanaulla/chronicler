@@ -15,7 +15,7 @@ Open-source [Scala](https://www.scala-lang.org/) client tool for [InfluxDB](http
 - Flexible API
 - Code generation with macros
 - High modularity
-- Spark support (In-progress)
+- Spark support (located [here](https://github.com/fsanaulla/chronicler-spark))
 - Easy to customize
 
 ## Components
@@ -29,6 +29,7 @@ There are several components for use.
 | async-client | async HTTP client based on async-client backend |
 | url-http| sync HTTP client based on URLConnection backend |
 | udp | UDP client|
+| spark | Spark connector |
 
 ## Dependencies
 **Core**:
@@ -53,6 +54,9 @@ There are several components for use.
 
 **UDP**
 - coreModel
+
+**Spark**
+- Url-Http
 
 ## Installation
 Add to your dependencies list in `build.sbt`:
