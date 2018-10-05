@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017-2018 Faiaz Sanaulla
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.fsanaulla.chronicler.akka.query
 
 import _root_.akka.http.scaladsl.model.Uri
@@ -30,18 +46,18 @@ class ShardManagementQuerySpec extends FlatSpecWithMatchers {
   }
 
   it should "show shards" in new AuthEnv {
-    showShardsQuery() shouldEqual queryTesterAuth("SHOW SHARDS")(credentials.get)
+    showShardsQuery shouldEqual queryTesterAuth("SHOW SHARDS")(credentials.get)
   }
 
   it should "show shards without auth" in new NonAuthEnv {
-    showShardsQuery() shouldEqual queryTester("SHOW SHARDS")
+    showShardsQuery shouldEqual queryTester("SHOW SHARDS")
   }
 
   it should "show shard groups" in new AuthEnv {
-    showShardGroupsQuery() shouldEqual queryTesterAuth("SHOW SHARD GROUPS")(credentials.get)
+    showShardGroupsQuery shouldEqual queryTesterAuth("SHOW SHARD GROUPS")(credentials.get)
   }
 
   it should "show shard groups without auth" in new NonAuthEnv {
-    showShardGroupsQuery() shouldEqual queryTester("SHOW SHARD GROUPS")
+    showShardGroupsQuery shouldEqual queryTester("SHOW SHARD GROUPS")
   }
 }

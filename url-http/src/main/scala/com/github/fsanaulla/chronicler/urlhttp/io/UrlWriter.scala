@@ -34,7 +34,8 @@ private[urlhttp] trait UrlWriter
     with UrlResponseHandler
     with UrlQueryHandler
     with PointTransformer
-    with HasCredentials { self: WriteOperations[Try, String] =>
+    with HasCredentials
+    with WriteOperations[Try, String] {
 
   private[chronicler] override def writeTo(dbName: String,
                                            entity: String,

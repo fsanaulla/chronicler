@@ -1,7 +1,10 @@
 import sbt.Keys.{libraryDependencies, name}
 
+lazy val PropertyTest = config("pt") extend Test
+lazy val propertyTestSettings = inConfig(PropertyTest)(Defaults.testSettings)
+
 lazy val coreApi = project
-  .in(file("core/core-api"))
+  .in(file("core/api"))
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header: _*)
@@ -13,7 +16,9 @@ lazy val coreApi = project
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val coreModel = project
-  .in(file("core/core-model"))
+  .in(file("core/model"))
+  .settings(propertyTestSettings: _*)
+  .configs(PropertyTest)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
@@ -94,6 +99,8 @@ lazy val udp = project
 
 lazy val macros = project
   .in(file("macros"))
+  .settings(propertyTestSettings: _*)
+  .configs(PropertyTest)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)

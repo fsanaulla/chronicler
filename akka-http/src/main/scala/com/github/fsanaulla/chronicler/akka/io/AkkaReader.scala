@@ -35,8 +35,8 @@ private[akka] trait AkkaReader
   extends AkkaRequestHandler
     with AkkaResponseHandler
     with AkkaQueryHandler
-    with DatabaseOperationQuery[Uri] {
-  self: ReadOperations[Future] with Executable with HasCredentials =>
+    with DatabaseOperationQuery[Uri]
+    with ReadOperations[Future]{ self: Executable with HasCredentials =>
 
   private[chronicler] override def readJs(dbName: String,
                                           query: String,
