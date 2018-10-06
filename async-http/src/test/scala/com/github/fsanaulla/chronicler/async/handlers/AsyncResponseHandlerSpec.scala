@@ -132,7 +132,7 @@ class AsyncResponseHandlerSpec extends FlatSpecWithMatchers with AsyncResponseHa
         |        }
         |    ]
         |}
-      """.stripMargin.toResponse()
+      """.stripMargin.toResponse
 
     toBulkQueryJsResult(bulkResponse).futureValue.queryResult shouldEqual Array(
       Array(
@@ -198,7 +198,7 @@ class AsyncResponseHandlerSpec extends FlatSpecWithMatchers with AsyncResponseHa
       ]
     }
   """
-    val cqHttpResponse = Response(p.parseFromString(cqStrJson).toStrEither(cqStrJson), 200, "", Nil, Nil)
+    val cqHttpResponse = Response.ok(p.parseFromString(cqStrJson).get)
 
     val cqi = toCqQueryResult(cqHttpResponse).futureValue.queryResult.filter(_.querys.nonEmpty).head
     cqi.dbName shouldEqual "mydb"

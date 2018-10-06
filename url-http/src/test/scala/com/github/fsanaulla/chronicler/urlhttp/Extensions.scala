@@ -37,7 +37,7 @@ object Extensions {
 
   implicit class RichString(private val str: String) extends AnyVal {
     def toResponse()(implicit p: JParser.type): Response[JValue] = {
-      Response(body = p.parseFromString(str).toStrEither(str), 200, "", Nil, Nil)
+      Response.ok(p.parseFromString(str).get)
     }
   }
 }

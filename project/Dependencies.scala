@@ -9,7 +9,7 @@ object Dependencies {
 
   object Versions {
     val sttp       = "1.3.5"
-    val netty      = "4.1.22.Final"
+    val netty      = "4.1.27.Final"
     val testing    = "0.1.0"
 
     object Akka {
