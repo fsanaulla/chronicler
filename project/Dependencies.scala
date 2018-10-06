@@ -27,7 +27,7 @@ object Dependencies {
   val scalaTest  = "org.scalatest"  %% "scalatest"  % Versions.Testing.scalaTest
   val scalaCheck = "org.scalacheck" %% "scalacheck" % Versions.Testing.scalaCheck
   val scalaCheckGenerators =
-    "com.github.fsanaulla" %% "scalacheck-generators" % Versions.Testing.scalaCheckGenerators % Scope.test exclude("org.scala-lang", "scala-reflect")
+    "com.github.fsanaulla" %% "scalacheck-generators" % Versions.Testing.scalaCheckGenerators exclude("org.scala-lang", "scala-reflect")
 
   val httpClientTesting = List(
     // if, you want to use it by your own, publish this deps from tests library first

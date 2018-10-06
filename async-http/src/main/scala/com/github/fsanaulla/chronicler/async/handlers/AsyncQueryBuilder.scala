@@ -16,16 +16,16 @@
 
 package com.github.fsanaulla.chronicler.async.handlers
 
-import com.github.fsanaulla.chronicler.core.handlers.QueryHandler
 import com.github.fsanaulla.chronicler.core.model.HasCredentials
+import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 import com.softwaremill.sttp.Uri.QueryFragment
 import com.softwaremill.sttp.Uri.QueryFragment.KeyValue
 import com.softwaremill.sttp._
 
 import scala.annotation.tailrec
 
-private[async] trait AsyncQueryHandler
-    extends QueryHandler[Uri]
+private[async] trait AsyncQueryBuilder
+    extends QueryBuilder[Uri]
     with HasCredentials {
 
   private[async] val host: String

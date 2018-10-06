@@ -20,15 +20,15 @@ import com.github.fsanaulla.chronicler.core.enums.Epoch
 import com.github.fsanaulla.chronicler.core.io.ReadOperations
 import com.github.fsanaulla.chronicler.core.model.{HasCredentials, QueryResult, ReadResult}
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.chronicler.urlhttp.handlers.{UrlQueryHandler, UrlRequestHandler, UrlResponseHandler}
+import com.github.fsanaulla.chronicler.urlhttp.handlers.{UrlQueryBuilder, UrlRequestExecutor, UrlResponseHandler}
 import com.softwaremill.sttp.Uri
 import jawn.ast.JArray
 
 import scala.util.Try
 
 private[urlhttp] trait UrlReader
-  extends UrlQueryHandler
-    with UrlRequestHandler
+  extends UrlQueryBuilder
+    with UrlRequestExecutor
     with UrlResponseHandler
     with DatabaseOperationQuery[Uri]
     with ReadOperations[Try] { self: HasCredentials =>

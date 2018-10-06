@@ -18,7 +18,7 @@ package com.github.fsanaulla.chronicler.akka.query
 
 import _root_.akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.TestHelper._
-import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryHandler
+import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryBuilder
 import com.github.fsanaulla.chronicler.core.model.HasCredentials
 import com.github.fsanaulla.chronicler.core.query.RetentionPolicyManagementQuery
 import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
@@ -31,7 +31,7 @@ import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecW
   */
 class RetentionPolicyManagementQuerySpec extends FlatSpecWithMatchers {
 
-  trait Env extends AkkaQueryHandler with RetentionPolicyManagementQuery[Uri] { self: HasCredentials =>
+  trait Env extends AkkaQueryBuilder with RetentionPolicyManagementQuery[Uri] { self: HasCredentials =>
     val host = "localhost"
     val port = 8086
   }

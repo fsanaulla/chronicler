@@ -26,7 +26,7 @@ import scala.reflect.ClassTag
   * @tparam F - Response type container
   * @tparam E - which response entity should be user
   */
-trait IOClient[F[_], E] {
+trait IOClient[F[_], E] extends AutoCloseable {
 
   /**
     * Get database instant

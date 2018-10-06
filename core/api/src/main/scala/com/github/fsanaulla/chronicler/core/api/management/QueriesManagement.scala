@@ -16,10 +16,10 @@
 
 package com.github.fsanaulla.chronicler.core.api.management
 
-import com.github.fsanaulla.chronicler.core.handlers.{QueryHandler, RequestHandler, ResponseHandler}
+import com.github.fsanaulla.chronicler.core.handlers.ResponseHandler
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.QueriesManagementQuery
-import com.github.fsanaulla.chronicler.core.typeclasses.FlatMap
+import com.github.fsanaulla.chronicler.core.typeclasses.{FlatMap, QueryBuilder, RequestExecutor}
 import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
 
 /**
@@ -28,9 +28,9 @@ import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
   * Date: 19.08.17
   */
 private[chronicler] trait QueriesManagement[F[_], Req, Resp, Uri, Entity] extends QueriesManagementQuery[Uri] {
-  self: RequestHandler[F, Req, Resp, Uri]
+  self: RequestExecutor[F, Req, Resp, Uri]
     with ResponseHandler[F, Resp]
-    with QueryHandler[Uri]
+    with QueryBuilder[Uri]
     with FlatMap[F]
     with HasCredentials =>
 

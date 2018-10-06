@@ -30,9 +30,9 @@ import scala.io.Source
 
 private[async] trait AsyncWriter
   extends DatabaseOperationQuery[Uri]
-    with AsyncRequestHandler
+    with AsyncRequestExecutor
     with AsyncResponseHandler
-    with AsyncQueryHandler
+    with AsyncQueryBuilder
     with WriteOperations[Future, String]
     with PointTransformer { self: HasCredentials =>
 

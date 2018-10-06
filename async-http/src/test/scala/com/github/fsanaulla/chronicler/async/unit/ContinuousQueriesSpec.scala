@@ -1,7 +1,7 @@
 package com.github.fsanaulla.chronicler.async.unit
 
 import com.github.fsanaulla.chronicler.async.TestHelper._
-import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryHandler
+import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryBuilder
 import com.github.fsanaulla.chronicler.core.query.ContinuousQueries
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.softwaremill.sttp.Uri
@@ -13,7 +13,7 @@ import com.softwaremill.sttp.Uri
   */
 class ContinuousQueriesSpec extends FlatSpecWithMatchers {
 
-  trait Env extends AsyncQueryHandler with ContinuousQueries[Uri] {
+  trait Env extends AsyncQueryBuilder with ContinuousQueries[Uri] {
     val host = "localhost"
     val port = 8086
   }
@@ -26,7 +26,7 @@ class ContinuousQueriesSpec extends FlatSpecWithMatchers {
   val query = "SELECT mean(bees) AS mean_bees INTO aggregate_bees FROM farm GROUP BY time(30m)"
 
   "ContinuousQuerys operation" should "generate correct show query" in new AuthEnv {
-    showCQQuery().toString() shouldEqual queryTesterAuth("SHOW CONTINUOUS QUERIES")(credentials.get)
+    showCQQuery.toString() shouldEqual queryTesterAuth("SHOW CONTINUOUS QUERIES")(credentials.get)
   }
 
   it should "generate correct drop query" in new AuthEnv {
@@ -38,7 +38,7 @@ class ContinuousQueriesSpec extends FlatSpecWithMatchers {
   }
 
   it should "generate correct show query without auth" in new NonAuthEnv {
-    showCQQuery().toString() shouldEqual queryTester("SHOW CONTINUOUS QUERIES")
+    showCQQuery.toString() shouldEqual queryTester("SHOW CONTINUOUS QUERIES")
   }
 
   it should "generate correct drop query without auth" in new NonAuthEnv {

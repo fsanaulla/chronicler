@@ -16,15 +16,15 @@
 
 package com.github.fsanaulla.chronicler.core.query
 
-import com.github.fsanaulla.chronicler.core.handlers.QueryHandler
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 08.08.17
   */
-private[chronicler] trait ContinuousQueries[U] { self: QueryHandler[U] =>
+private[chronicler] trait ContinuousQueries[U] { self: QueryBuilder[U] =>
 
   private[chronicler] final def showCQQuery(implicit credentials: Option[InfluxCredentials]): U =
     buildQuery("/query", buildQueryParams("SHOW CONTINUOUS QUERIES"))

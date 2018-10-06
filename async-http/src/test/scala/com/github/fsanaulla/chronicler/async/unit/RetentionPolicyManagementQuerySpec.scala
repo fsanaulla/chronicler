@@ -1,7 +1,7 @@
 package com.github.fsanaulla.chronicler.async.unit
 
 import com.github.fsanaulla.chronicler.async.TestHelper._
-import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryHandler
+import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryBuilder
 import com.github.fsanaulla.chronicler.core.query.RetentionPolicyManagementQuery
 import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
@@ -16,7 +16,7 @@ import scala.language.postfixOps
   */
 class RetentionPolicyManagementQuerySpec extends FlatSpecWithMatchers {
 
-  trait Env extends RetentionPolicyManagementQuery[Uri] with AsyncQueryHandler {
+  trait Env extends RetentionPolicyManagementQuery[Uri] with AsyncQueryBuilder {
     val host = "localhost"
     val port = 8086
   }

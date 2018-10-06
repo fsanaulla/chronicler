@@ -17,9 +17,10 @@
 package com.github.fsanaulla.chronicler.urlhttp.clients
 
 import com.github.fsanaulla.chronicler.core.client.FullClient
-import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, Mappable, WriteResult}
+import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, WriteResult}
+import com.github.fsanaulla.chronicler.core.typeclasses.FlatMap
 import com.github.fsanaulla.chronicler.urlhttp.api.{Database, Measurement}
-import com.github.fsanaulla.chronicler.urlhttp.handlers.{UrlQueryHandler, UrlRequestHandler, UrlResponseHandler}
+import com.github.fsanaulla.chronicler.urlhttp.handlers.{UrlQueryBuilder, UrlRequestExecutor, UrlResponseHandler}
 import com.github.fsanaulla.chronicler.urlhttp.utils.Aliases.Request
 import com.softwaremill.sttp.{Response, SttpBackend, TryHttpURLConnectionBackend, Uri}
 import jawn.ast.JValue
@@ -32,14 +33,12 @@ final class UrlFullClient(val host: String,
                           val credentials: Option[InfluxCredentials],
                           gzipped: Boolean)
   extends FullClient[Try, Request, Response[JValue], Uri, String]
-    with UrlRequestHandler
+    with UrlRequestExecutor
     with UrlResponseHandler
-    with UrlQueryHandler
-    with Mappable[Try, Response[JValue]]
-    with AutoCloseable {
+    with UrlQueryBuilder
+    with FlatMap[Try] {
 
-  private[chronicler] override def mapTo[B](resp: Try[Response[JValue]],
-                        f: Response[JValue] => Try[B]): Try[B] = resp.flatMap(f)
+  private[chronicler] override def flatMap[A, B](fa: Try[A])(f: A => Try[B]): Try[B] = fa.flatMap(f)
 
   private[urlhttp] implicit val backend: SttpBackend[Try, Nothing] =
     TryHttpURLConnectionBackend()

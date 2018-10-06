@@ -17,10 +17,11 @@
 package com.github.fsanaulla.chronicler.async.clients
 
 import com.github.fsanaulla.chronicler.async.api.{Database, Measurement}
-import com.github.fsanaulla.chronicler.async.handlers.{AsyncQueryHandler, AsyncRequestHandler, AsyncResponseHandler}
+import com.github.fsanaulla.chronicler.async.handlers.{AsyncQueryBuilder, AsyncRequestExecutor, AsyncResponseHandler}
 import com.github.fsanaulla.chronicler.async.utils.Aliases.Request
 import com.github.fsanaulla.chronicler.core.client.FullClient
-import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, Mappable, WriteResult}
+import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, WriteResult}
+import com.github.fsanaulla.chronicler.core.typeclasses.FlatMap
 import com.softwaremill.sttp.asynchttpclient.future.AsyncHttpClientFutureBackend
 import com.softwaremill.sttp.{Response, SttpBackend, Uri}
 import jawn.ast.JValue
@@ -34,17 +35,16 @@ final class AsyncFullClient(val host: String,
                             gzipped: Boolean)
                            (implicit val ex: ExecutionContext)
   extends FullClient[Future, Request, Response[JValue], Uri, String]
-    with AsyncRequestHandler
+    with AsyncRequestExecutor
     with AsyncResponseHandler
-    with AsyncQueryHandler
-    with Mappable[Future, Response[JValue]]
+    with AsyncQueryBuilder
+    with FlatMap[Future]
     with AutoCloseable {
 
   private[async] implicit val backend: SttpBackend[Future, Nothing] =
     AsyncHttpClientFutureBackend()
 
-  private[chronicler] override def mapTo[B](resp: Future[Response[JValue]],
-                                            f: Response[JValue] => Future[B]): Future[B] = resp.flatMap(f)
+  private[chronicler] override def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
 
   override def database(dbName: String): Database =
     new Database(host, port, credentials, dbName, gzipped)

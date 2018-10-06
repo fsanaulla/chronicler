@@ -17,8 +17,8 @@
 package com.github.fsanaulla.chronicler.core.query
 
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Epoch, Precision}
-import com.github.fsanaulla.chronicler.core.handlers.QueryHandler
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 
 import scala.collection.mutable
 
@@ -27,7 +27,7 @@ import scala.collection.mutable
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-private[chronicler] trait DatabaseOperationQuery[U] { self: QueryHandler[U] =>
+private[chronicler] trait DatabaseOperationQuery[U] { self: QueryBuilder[U] =>
 
   private[chronicler] final def writeToInfluxQuery(dbName: String,
                                                    consistency: Consistency,

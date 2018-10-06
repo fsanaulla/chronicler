@@ -19,7 +19,7 @@ package com.github.fsanaulla.chronicler.urlhttp.query
 import com.github.fsanaulla.chronicler.core.query.DataManagementQuery
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.github.fsanaulla.chronicler.urlhttp.TestHelper._
-import com.github.fsanaulla.chronicler.urlhttp.handlers.UrlQueryHandler
+import com.github.fsanaulla.chronicler.urlhttp.handlers.UrlQueryBuilder
 import com.softwaremill.sttp.Uri
 
 /**
@@ -29,7 +29,7 @@ import com.softwaremill.sttp.Uri
   */
 class DataManagementQuerySpec extends FlatSpecWithMatchers {
 
-  trait Env extends UrlQueryHandler with DataManagementQuery[Uri] {
+  trait Env extends UrlQueryBuilder with DataManagementQuery[Uri] {
     val host = "localhost"
     val port = 8086
   }
@@ -77,7 +77,7 @@ class DataManagementQuerySpec extends FlatSpecWithMatchers {
   }
 
   it should "generate correct 'show database' query" in new AuthEnv {
-    showDatabasesQuery().toString() shouldEqual
+    showDatabasesQuery.toString() shouldEqual
       queryTesterAuth(s"SHOW DATABASES")(credentials.get)
   }
 
@@ -131,7 +131,7 @@ class DataManagementQuerySpec extends FlatSpecWithMatchers {
   }
 
   it should "generate correct 'show database' query without auth" in new NonAuthEnv {
-    showDatabasesQuery().toString() shouldEqual queryTester(s"SHOW DATABASES")
+    showDatabasesQuery.toString() shouldEqual queryTester(s"SHOW DATABASES")
   }
 
   it should "generate correct 'show tag-key' query without auth" in new NonAuthEnv {

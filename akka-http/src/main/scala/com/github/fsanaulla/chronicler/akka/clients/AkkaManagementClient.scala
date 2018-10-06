@@ -20,7 +20,7 @@ import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.Http
 import _root_.akka.http.scaladsl.model.{HttpRequest, HttpResponse, RequestEntity, Uri}
 import _root_.akka.stream.{ActorMaterializer, StreamTcpException}
-import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryHandler, AkkaRequestHandler, AkkaResponseHandler}
+import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
 import com.github.fsanaulla.chronicler.core.client.ManagementClient
 import com.github.fsanaulla.chronicler.core.model._
@@ -34,9 +34,9 @@ final class AkkaManagementClient(host: String,
                                  val credentials: Option[InfluxCredentials])
                                 (implicit val ex: ExecutionContext, val system: ActorSystem)
   extends ManagementClient[Future, HttpRequest, HttpResponse, Uri, RequestEntity]
-    with AkkaRequestHandler
+    with AkkaRequestExecutor
     with AkkaResponseHandler
-    with AkkaQueryHandler
+    with AkkaQueryBuilder
     with HasCredentials
     with FlatMap[Future]
     with AutoCloseable {

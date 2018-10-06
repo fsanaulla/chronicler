@@ -2,10 +2,10 @@ package com.github.fsanaulla.chronicler.async.handlers
 
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers}
 
-class AsyncQueryHandlerSpec
+class AsyncQueryBuilderSpec
   extends FlatSpecWithMatchers
     with EmptyCredentials
-    with AsyncQueryHandler {
+    with AsyncQueryBuilder {
 
   val host = "localhost"
   val port = 8080

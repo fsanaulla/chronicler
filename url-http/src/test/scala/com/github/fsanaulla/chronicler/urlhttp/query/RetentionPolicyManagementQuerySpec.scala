@@ -20,7 +20,7 @@ import com.github.fsanaulla.chronicler.core.query.RetentionPolicyManagementQuery
 import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.github.fsanaulla.chronicler.urlhttp.TestHelper._
-import com.github.fsanaulla.chronicler.urlhttp.handlers.UrlQueryHandler
+import com.github.fsanaulla.chronicler.urlhttp.handlers.UrlQueryBuilder
 import com.softwaremill.sttp.Uri
 
 import scala.language.postfixOps
@@ -32,7 +32,7 @@ import scala.language.postfixOps
   */
 class RetentionPolicyManagementQuerySpec extends FlatSpecWithMatchers {
 
-  trait Env extends RetentionPolicyManagementQuery[Uri] with UrlQueryHandler {
+  trait Env extends RetentionPolicyManagementQuery[Uri] with UrlQueryBuilder {
     val host = "localhost"
     val port = 8086
   }

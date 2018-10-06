@@ -20,7 +20,7 @@ import _root_.akka.http.scaladsl.model._
 import _root_.akka.stream.ActorMaterializer
 import _root_.akka.stream.scaladsl.{Sink, Source}
 import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
-import com.github.fsanaulla.chronicler.core.handlers.RequestHandler
+import com.github.fsanaulla.chronicler.core.typeclasses.RequestExecutor
 
 import scala.concurrent.Future
 import scala.language.implicitConversions
@@ -30,13 +30,14 @@ import scala.language.implicitConversions
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[akka] trait AkkaRequestHandler
-  extends RequestHandler[Future, HttpRequest, HttpResponse, Uri] {
+private[akka] trait AkkaRequestExecutor
+  extends RequestExecutor[Future, HttpRequest, HttpResponse, Uri] {
 
   private[akka] implicit val mat: ActorMaterializer
   private[akka] implicit val connection: Connection
 
-  private[chronicler] override implicit def req(uri: Uri): HttpRequest = HttpRequest(uri = uri)
+  private[chronicler] override implicit def buildRequest(uri: Uri): HttpRequest =
+    HttpRequest(uri = uri)
 
   private[chronicler] override def execute(request: HttpRequest): Future[HttpResponse] =
     Source.single(request).via(connection).runWith(Sink.head)

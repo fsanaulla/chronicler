@@ -16,15 +16,15 @@
 
 package com.github.fsanaulla.chronicler.core.query
 
-import com.github.fsanaulla.chronicler.core.handlers.QueryHandler
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-private[chronicler] trait QueriesManagementQuery[U] { self: QueryHandler[U] =>
+private[chronicler] trait QueriesManagementQuery[U] { self: QueryBuilder[U] =>
 
   private[chronicler] final def showQuerysQuery(implicit credentials: Option[InfluxCredentials]): U =
     buildQuery("/query", buildQueryParams("SHOW QUERIES"))

@@ -21,7 +21,7 @@ import com.github.fsanaulla.chronicler.core.io.WriteOperations
 import com.github.fsanaulla.chronicler.core.model.{HasCredentials, PointTransformer, WriteResult}
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
 import com.github.fsanaulla.chronicler.core.utils.Encodings
-import com.github.fsanaulla.chronicler.urlhttp.handlers.{UrlQueryHandler, UrlRequestHandler, UrlResponseHandler}
+import com.github.fsanaulla.chronicler.urlhttp.handlers.{UrlQueryBuilder, UrlRequestExecutor, UrlResponseHandler}
 import com.github.fsanaulla.chronicler.urlhttp.utils.ResponseFormats.asJson
 import com.softwaremill.sttp.{Uri, sttp}
 
@@ -30,9 +30,9 @@ import scala.util.Try
 
 private[urlhttp] trait UrlWriter
   extends DatabaseOperationQuery[Uri]
-    with UrlRequestHandler
+    with UrlRequestExecutor
     with UrlResponseHandler
-    with UrlQueryHandler
+    with UrlQueryBuilder
     with PointTransformer
     with HasCredentials
     with WriteOperations[Try, String] {

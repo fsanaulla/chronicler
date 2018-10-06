@@ -1,7 +1,7 @@
 package com.github.fsanaulla.chronicler.async.unit
 
 import com.github.fsanaulla.chronicler.async.TestHelper._
-import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryHandler
+import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryBuilder
 import com.github.fsanaulla.chronicler.core.query.DataManagementQuery
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.softwaremill.sttp.Uri
@@ -13,7 +13,7 @@ import com.softwaremill.sttp.Uri
   */
 class DataManagementQuerySpec extends FlatSpecWithMatchers {
 
-  trait Env extends AsyncQueryHandler with DataManagementQuery[Uri] {
+  trait Env extends AsyncQueryBuilder with DataManagementQuery[Uri] {
     val host = "localhost"
     val port = 8086
   }
@@ -61,7 +61,7 @@ class DataManagementQuerySpec extends FlatSpecWithMatchers {
   }
 
   it should "generate correct 'show database' query" in new AuthEnv {
-    showDatabasesQuery().toString() shouldEqual
+    showDatabasesQuery.toString() shouldEqual
       queryTesterAuth(s"SHOW DATABASES")(credentials.get)
   }
 
@@ -115,7 +115,7 @@ class DataManagementQuerySpec extends FlatSpecWithMatchers {
   }
 
   it should "generate correct 'show database' query without auth" in new NonAuthEnv {
-    showDatabasesQuery().toString() shouldEqual queryTester(s"SHOW DATABASES")
+    showDatabasesQuery.toString() shouldEqual queryTester(s"SHOW DATABASES")
   }
 
   it should "generate correct 'show tag-key' query without auth" in new NonAuthEnv {

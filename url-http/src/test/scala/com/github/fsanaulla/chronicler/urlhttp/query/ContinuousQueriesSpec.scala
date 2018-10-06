@@ -19,7 +19,7 @@ package com.github.fsanaulla.chronicler.urlhttp.query
 import com.github.fsanaulla.chronicler.core.query.ContinuousQueries
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.github.fsanaulla.chronicler.urlhttp.TestHelper._
-import com.github.fsanaulla.chronicler.urlhttp.handlers.UrlQueryHandler
+import com.github.fsanaulla.chronicler.urlhttp.handlers.UrlQueryBuilder
 import com.softwaremill.sttp.Uri
 
 /**
@@ -29,7 +29,7 @@ import com.softwaremill.sttp.Uri
   */
 class ContinuousQueriesSpec extends FlatSpecWithMatchers {
 
-  trait Env extends UrlQueryHandler with ContinuousQueries[Uri] {
+  trait Env extends UrlQueryBuilder with ContinuousQueries[Uri] {
     val host = "localhost"
     val port = 8086
   }

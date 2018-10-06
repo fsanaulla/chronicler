@@ -16,15 +16,15 @@
 
 package com.github.fsanaulla.chronicler.core.query
 
-import com.github.fsanaulla.chronicler.core.handlers.QueryHandler
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 
 import scala.collection.mutable
 
 /**
   * Created by fayaz on 27.06.17.
   */
-private[chronicler] trait DataManagementQuery[U] { self: QueryHandler[U] =>
+private[chronicler] trait DataManagementQuery[U] { self: QueryBuilder[U] =>
 
   final def createDatabaseQuery(dbName: String,
                                 duration: Option[String],

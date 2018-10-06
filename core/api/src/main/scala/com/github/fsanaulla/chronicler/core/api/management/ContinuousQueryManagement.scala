@@ -16,10 +16,10 @@
 
 package com.github.fsanaulla.chronicler.core.api.management
 
-import com.github.fsanaulla.chronicler.core.handlers.{QueryHandler, RequestHandler, ResponseHandler}
+import com.github.fsanaulla.chronicler.core.handlers.ResponseHandler
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.ContinuousQueries
-import com.github.fsanaulla.chronicler.core.typeclasses.FlatMap
+import com.github.fsanaulla.chronicler.core.typeclasses.{FlatMap, QueryBuilder, RequestExecutor}
 import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
 
 /**
@@ -28,10 +28,10 @@ import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
   * Date: 08.08.17
   */
 private[chronicler] trait ContinuousQueryManagement[F[_], Req, Resp, Uri, Entity] extends ContinuousQueries[Uri] {
-  self: RequestHandler[F, Req, Resp, Uri]
+  self: RequestExecutor[F, Req, Resp, Uri]
     with ResponseHandler[F, Resp]
     with FlatMap[F]
-    with QueryHandler[Uri]
+    with QueryBuilder[Uri]
     with HasCredentials =>
 
   /**

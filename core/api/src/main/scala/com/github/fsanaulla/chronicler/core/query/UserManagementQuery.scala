@@ -17,10 +17,10 @@
 package com.github.fsanaulla.chronicler.core.query
 
 import com.github.fsanaulla.chronicler.core.enums.Privilege
-import com.github.fsanaulla.chronicler.core.handlers.QueryHandler
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 
-private[fsanaulla] trait UserManagementQuery[U] { self: QueryHandler[U] =>
+private[fsanaulla] trait UserManagementQuery[U] { self: QueryBuilder[U] =>
 
   private[chronicler] final def showUsersQuery(implicit credentials: Option[InfluxCredentials]): U =
     buildQuery("/query", buildQueryParams("SHOW USERS"))

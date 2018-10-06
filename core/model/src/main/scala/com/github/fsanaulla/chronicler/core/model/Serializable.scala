@@ -20,6 +20,7 @@ trait Serializable[B] {
 
   /**
     * Automatically serialize entity
+    *
     * @param a     - entity
     * @param sr    - serializer
     * @tparam A    - frp, which type

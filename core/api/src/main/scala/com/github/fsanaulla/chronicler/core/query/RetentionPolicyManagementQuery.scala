@@ -16,12 +16,12 @@
 
 package com.github.fsanaulla.chronicler.core.query
 
-import com.github.fsanaulla.chronicler.core.handlers.QueryHandler
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 
 import scala.collection.mutable
 
-private[chronicler] trait RetentionPolicyManagementQuery[U] { self: QueryHandler[U] =>
+private[chronicler] trait RetentionPolicyManagementQuery[U] { self: QueryBuilder[U] =>
 
   private[chronicler] final def createRetentionPolicyQuery(rpName: String,
                                                            dbName: String,

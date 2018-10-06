@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.urlhttp.handlers
+package com.github.fsanaulla.chronicler.akka.handlers
 
-import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers}
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 
-class UrlQueryHandlerSpec
-  extends FlatSpecWithMatchers
-    with EmptyCredentials
-    with UrlQueryHandler {
+class AkkaQueryBuilderSpec extends FlatSpecWithMatchers with AkkaQueryBuilder {
 
-  val host = "localhost"
-  val port = 8080
+  implicit val credentials: Option[InfluxCredentials] = None
 
   "Query handler" should "properly generate URI" in {
     val queryMap = scala.collection.mutable.Map[String, String](
       "q" -> "FirstQuery;SecondQuery"
     )
-    val res = s"http://$host:$port/query?q=FirstQuery%3BSecondQuery"
+    val res = s"/query?q=FirstQuery%3BSecondQuery"
 
     buildQuery("/query", buildQueryParams(queryMap)).toString() shouldEqual res
   }

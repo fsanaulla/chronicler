@@ -1,7 +1,7 @@
 package com.github.fsanaulla.chronicler.async.unit
 
 import com.github.fsanaulla.chronicler.async.TestHelper._
-import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryHandler
+import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryBuilder
 import com.github.fsanaulla.chronicler.core.query.QueriesManagementQuery
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.softwaremill.sttp.Uri
@@ -13,7 +13,7 @@ import com.softwaremill.sttp.Uri
   */
 class QueriesManagementQuerySpec extends FlatSpecWithMatchers {
 
-  trait Env extends AsyncQueryHandler with QueriesManagementQuery[Uri] {
+  trait Env extends AsyncQueryBuilder with QueriesManagementQuery[Uri] {
     val host = "localhost"
     val port = 8086
   }

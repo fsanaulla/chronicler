@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.model
+package com.github.fsanaulla.chronicler.akka.handlers
+
+import _root_.akka.http.scaladsl.model.Uri
+import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 
 /**
-  * Request entity builder from uri parameter, in case of simply read reqeust to Influx
-  *
-  * @tparam Uri     - Http request uri type
-  * @tparam Request - Http request type projection
+  * Created by
+  * Author: fayaz.sanaulla@gmail.com
+  * Date: 15.03.18
   */
-trait ImplicitRequestBuilder[Uri, Request] {
+private[akka] trait AkkaQueryBuilder extends QueryBuilder[Uri] {
 
-  /**
-    * Implicit conversion from Uri to Request,
-    * provided to reduce boilerplate
-    * @param uri - Uri parameter
-    * @return    - request entity
-    */
-  private[chronicler] implicit def req(uri: Uri): Request
+  private[chronicler] override def buildQuery(uri: String, queryParams: Map[String, String]): Uri =
+    Uri(uri).withQuery(Uri.Query(queryParams))
 }
