@@ -19,7 +19,7 @@ package com.github.fsanaulla.chronicler.urlhttp.handlers
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
 import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
-import com.github.fsanaulla.chronicler.urlhttp.Extensions.{RichString, RichTry}
+import com.github.fsanaulla.chronicler.urlhttp.Extensions.RichString
 import com.softwaremill.sttp.Response
 import jawn.ast._
 import org.scalatest.TryValues
@@ -202,7 +202,7 @@ class UrlResponseHandlerSpec extends FlatSpecWithMatchers with UrlResponseHandle
       ]
     }
   """
-    val cqHttpResponse = Response(p.parseFromString(cqStrJson).toStrEither(cqStrJson), 200, "", Nil, Nil)
+    val cqHttpResponse = Response.ok(p.parseFromString(cqStrJson).get)
 
     val cqi = toCqQueryResult(cqHttpResponse).success.value.queryResult.filter(_.querys.nonEmpty).head
     cqi.dbName shouldEqual "mydb"

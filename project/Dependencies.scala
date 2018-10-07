@@ -31,8 +31,8 @@ object Dependencies {
 
   val httpClientTesting = List(
     // if, you want to use it by your own, publish this deps from tests library first
-    "com.github.fsanaulla"  %% "chronicler-it-testing"   % Versions.testing % Scope.it,
-    "com.github.fsanaulla"  %% "chronicler-unit-testing" % Versions.testing % Scope.all
+    "com.github.fsanaulla"  %% "chronicler-it-testing"   % Versions.testing % Scope.test,
+    "com.github.fsanaulla"  %% "chronicler-unit-testing" % Versions.testing % Scope.test
   )
 
   def macroDeps(scalaVersion: String): List[ModuleID] = List(

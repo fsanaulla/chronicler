@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.async.handlers
 
-import com.github.fsanaulla.chronicler.async.TestExtensions.{RichString, RichTry}
+import com.github.fsanaulla.chronicler.async.TestExtensions.RichString
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
 import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers

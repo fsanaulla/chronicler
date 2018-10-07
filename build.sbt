@@ -1,7 +1,5 @@
+import Settings._
 import sbt.Keys.{libraryDependencies, name}
-
-lazy val PropertyTest = config("pt") extend Test
-lazy val propertyTestSettings = inConfig(PropertyTest)(Defaults.testSettings)
 
 lazy val coreApi = project
   .in(file("core/api"))
@@ -34,7 +32,7 @@ lazy val coreModel = project
 
 lazy val urlHttp = project
   .in(file("url-http"))
-  .configs(IntegrationTest)
+  .configs(LocalIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -48,7 +46,7 @@ lazy val urlHttp = project
 
 lazy val akkaHttp = project
   .in(file("akka-http"))
-  .configs(IntegrationTest)
+  .configs(LocalIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -66,7 +64,7 @@ lazy val akkaHttp = project
 
 lazy val asyncHttp = project
   .in(file("async-http"))
-  .configs(IntegrationTest)
+  .configs(LocalIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -84,7 +82,7 @@ lazy val asyncHttp = project
 
 lazy val udp = project
   .in(file("udp"))
-  .configs(IntegrationTest)
+  .configs(LocalIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -92,7 +90,7 @@ lazy val udp = project
   .settings(
     name := "chronicler-udp",
     libraryDependencies ++= Dependencies.udpDep,
-    test in Test := {}
+    test in Scope.test := {}
   )
   .dependsOn(coreModel)
   .enablePlugins(AutomateHeaderPlugin)

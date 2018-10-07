@@ -1,6 +1,5 @@
 package com.github.fsanaulla.chronicler.async.handlers
 
-import com.github.fsanaulla.chronicler.async.TestExtensions.RichTry
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.softwaremill.sttp.Response
 import jawn.ast._
@@ -49,7 +48,7 @@ class AsyncJsonHandlerSpec extends FlatSpecWithMatchers with AsyncJsonHandler wi
                       ]
                   }"""
 
-  val resp = Response(body = JParser.parseFromString(singleStrJson).toStrEither(singleStrJson), 200, "", Nil, Nil)
+  val resp: Response[JValue] = Response.ok(JParser.parseFromString(singleStrJson).get)
 
   val result: JValue = JParser.parseFromString(singleStrJson).get
 
