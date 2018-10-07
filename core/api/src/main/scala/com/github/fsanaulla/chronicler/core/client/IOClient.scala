@@ -44,5 +44,5 @@ trait IOClient[F[_], E] extends AutoCloseable {
     * @tparam A              - measurement entity type
     * @return                - Backend related implementation of MeasurementIO
     */
-  def measurement[A: ClassTag](dbName: String, measurementName: String): MeasurementIO[F, A, E]
+  def measurement[A: ClassTag](dbName: String, measurementName: String): MeasurementIO[F, A]
 }

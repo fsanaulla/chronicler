@@ -41,4 +41,6 @@ trait ManagementClient[F[_], Req, Resp, Uri, Entity]
     with RetentionPolicyManagement[F, Req, Resp, Uri, Entity]
     with ContinuousQueryManagement[F, Req, Resp, Uri, Entity]
     with ShardManagement[F, Req, Resp, Uri, Entity]
-    with SubscriptionManagement[F, Req, Resp, Uri, Entity] { self: HasCredentials with FlatMap[F] => }
+    with SubscriptionManagement[F, Req, Resp, Uri, Entity]
+    with FlatMap[F]
+    with HasCredentials

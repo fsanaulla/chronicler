@@ -16,10 +16,7 @@
 
 package com.github.fsanaulla.chronicler.core.client
 
-import com.github.fsanaulla.chronicler.core.model.HasCredentials
-import com.github.fsanaulla.chronicler.core.typeclasses.FlatMap
-
 /** Full InfluxDB client that combine management and IO functionality */
 trait FullClient[F[_], Req, Resp, Uri, Entity]
   extends IOClient[F, Entity]
-    with ManagementClient[F, Req, Resp, Uri, Entity] { self: HasCredentials with FlatMap[F] => }
+    with ManagementClient[F, Req, Resp, Uri, Entity]

@@ -28,7 +28,7 @@ final class UrlIOClient(val host: String,
                         val port: Int,
                         val credentials: Option[InfluxCredentials],
                         gzipped: Boolean)
-  extends IOClient[Try, String] with AutoCloseable {
+  extends IOClient[Try, String] {
 
   private[urlhttp] implicit val backend: SttpBackend[Try, Nothing] =
     TryHttpURLConnectionBackend()

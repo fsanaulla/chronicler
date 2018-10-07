@@ -38,8 +38,7 @@ final class AsyncFullClient(val host: String,
     with AsyncRequestExecutor
     with AsyncResponseHandler
     with AsyncQueryBuilder
-    with FlatMap[Future]
-    with AutoCloseable {
+    with FlatMap[Future] {
 
   private[async] implicit val backend: SttpBackend[Future, Nothing] =
     AsyncHttpClientFutureBackend()

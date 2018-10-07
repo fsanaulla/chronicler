@@ -33,7 +33,7 @@ final class Measurement[E: ClassTag](private[urlhttp] val host: String,
                                      measurementName: String,
                                      gzipped: Boolean)
                                     (private[urlhttp] implicit val backend: SttpBackend[Try, Nothing])
-  extends MeasurementIO[Try, E, String]
+  extends MeasurementIO[Try, E]
     with HasCredentials
     with UrlWriter
     with UrlReader {

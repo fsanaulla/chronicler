@@ -25,7 +25,6 @@ import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryBuilder, AkkaRequ
 import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
 import com.github.fsanaulla.chronicler.core.client.FullClient
 import com.github.fsanaulla.chronicler.core.model._
-import com.github.fsanaulla.chronicler.core.typeclasses.FlatMap
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -44,9 +43,7 @@ final class AkkaFullClient(host: String,
     extends FullClient[Future, HttpRequest, HttpResponse, Uri, RequestEntity]
       with AkkaRequestExecutor
       with AkkaResponseHandler
-      with AkkaQueryBuilder
-      with FlatMap[Future]
-      with HasCredentials {
+      with AkkaQueryBuilder {
 
   private[chronicler] override def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
 

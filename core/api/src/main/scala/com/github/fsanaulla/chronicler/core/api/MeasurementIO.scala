@@ -24,7 +24,7 @@ import com.github.fsanaulla.chronicler.core.model.{InfluxWriter, WriteResult}
   * @tparam E - Entity type
   * @tparam R - Request entity type
   */
-trait MeasurementIO[F[_], E, R] {
+trait MeasurementIO[F[_], E] {
 
   /**
     * Make single write
