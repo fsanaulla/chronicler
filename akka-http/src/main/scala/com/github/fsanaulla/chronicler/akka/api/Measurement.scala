@@ -17,7 +17,6 @@
 package com.github.fsanaulla.chronicler.akka.api
 
 import _root_.akka.actor.ActorSystem
-import _root_.akka.http.scaladsl.model.RequestEntity
 import _root_.akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.io.{AkkaReader, AkkaWriter}
 import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
@@ -42,7 +41,7 @@ final class Measurement[E: ClassTag](dbName: String,
                                      private[akka] implicit val mat: ActorMaterializer,
                                      private[chronicler] implicit val ex: ExecutionContext,
                                      private[akka] implicit val connection: Connection)
-    extends MeasurementIO[Future, E, RequestEntity]
+    extends MeasurementIO[Future, E]
       with AkkaWriter
       with AkkaReader
       with HasCredentials

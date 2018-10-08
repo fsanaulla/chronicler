@@ -20,7 +20,7 @@ import com.github.fsanaulla.chronicler.core.enums.Privileges
 import com.github.fsanaulla.chronicler.core.query.UserManagementQuery
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.github.fsanaulla.chronicler.urlhttp.TestHelper._
-import com.github.fsanaulla.chronicler.urlhttp.handlers.UrlQueryHandler
+import com.github.fsanaulla.chronicler.urlhttp.handlers.UrlQueryBuilder
 import com.softwaremill.sttp.Uri
 
 /**
@@ -30,7 +30,7 @@ import com.softwaremill.sttp.Uri
   */
 class UserManagementQuerySpec extends FlatSpecWithMatchers {
 
-  trait Env extends UrlQueryHandler with UserManagementQuery[Uri] {
+  trait Env extends UrlQueryBuilder with UserManagementQuery[Uri] {
     val host = "localhost"
     val port = 8086
   }
@@ -74,11 +74,11 @@ class UserManagementQuerySpec extends FlatSpecWithMatchers {
   }
 
   it should "show users query" in new AuthEnv {
-    showUsersQuery().toString() shouldEqual queryTesterAuth("SHOW USERS")(credentials.get)
+    showUsersQuery.toString() shouldEqual queryTesterAuth("SHOW USERS")(credentials.get)
   }
 
   it should "show users query without auth" in new NonAuthEnv {
-    showUsersQuery().toString() shouldEqual queryTester("SHOW USERS")
+    showUsersQuery.toString() shouldEqual queryTester("SHOW USERS")
   }
 
   it should "show user privileges query" in new AuthEnv {

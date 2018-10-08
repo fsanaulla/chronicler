@@ -17,7 +17,7 @@
 package com.github.fsanaulla.chronicler.akka.io
 
 import _root_.akka.http.scaladsl.model.Uri
-import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryHandler, AkkaRequestHandler, AkkaResponseHandler}
+import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.core.enums.Epoch
 import com.github.fsanaulla.chronicler.core.io.ReadOperations
 import com.github.fsanaulla.chronicler.core.model._
@@ -32,11 +32,11 @@ import scala.concurrent.Future
   * Date: 15.03.18
   */
 private[akka] trait AkkaReader
-  extends AkkaRequestHandler
+  extends AkkaRequestExecutor
     with AkkaResponseHandler
-    with AkkaQueryHandler
-    with DatabaseOperationQuery[Uri] {
-  self: ReadOperations[Future] with Executable with HasCredentials =>
+    with AkkaQueryBuilder
+    with DatabaseOperationQuery[Uri]
+    with ReadOperations[Future]{ self: Executable with HasCredentials =>
 
   private[chronicler] override def readJs(dbName: String,
                                           query: String,

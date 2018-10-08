@@ -30,7 +30,7 @@ final class AsyncIOClient(val host: String,
                           val credentials: Option[InfluxCredentials],
                           gzipped: Boolean)
                          (implicit val ex: ExecutionContext)
-  extends IOClient[Future, String] with AutoCloseable {
+  extends IOClient[Future, String] {
 
   private[async] implicit val backend: SttpBackend[Future, Nothing] =
     AsyncHttpClientFutureBackend()
@@ -42,6 +42,5 @@ final class AsyncIOClient(val host: String,
                                         measurementName: String): Measurement[A] =
     new Measurement[A](host, port, credentials, dbName, measurementName, gzipped)
 
-  override def close(): Unit =
-    backend.close()
+  override def close(): Unit = backend.close()
 }

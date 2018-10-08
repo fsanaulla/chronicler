@@ -1,7 +1,8 @@
+import Settings._
 import sbt.Keys.{libraryDependencies, name}
 
 lazy val coreApi = project
-  .in(file("core/core-api"))
+  .in(file("core/api"))
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header: _*)
@@ -13,7 +14,9 @@ lazy val coreApi = project
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val coreModel = project
-  .in(file("core/core-model"))
+  .in(file("core/model"))
+  .settings(propertyTestSettings: _*)
+  .configs(PropertyTest)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
@@ -29,7 +32,7 @@ lazy val coreModel = project
 
 lazy val urlHttp = project
   .in(file("url-http"))
-  .configs(IntegrationTest)
+  .configs(LocalIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -43,7 +46,7 @@ lazy val urlHttp = project
 
 lazy val akkaHttp = project
   .in(file("akka-http"))
-  .configs(IntegrationTest)
+  .configs(LocalIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -61,7 +64,7 @@ lazy val akkaHttp = project
 
 lazy val asyncHttp = project
   .in(file("async-http"))
-  .configs(IntegrationTest)
+  .configs(LocalIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -79,7 +82,7 @@ lazy val asyncHttp = project
 
 lazy val udp = project
   .in(file("udp"))
-  .configs(IntegrationTest)
+  .configs(LocalIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -87,13 +90,15 @@ lazy val udp = project
   .settings(
     name := "chronicler-udp",
     libraryDependencies ++= Dependencies.udpDep,
-    test in Test := {}
+    test in Scope.test := {}
   )
   .dependsOn(coreModel)
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val macros = project
   .in(file("macros"))
+  .settings(propertyTestSettings: _*)
+  .configs(PropertyTest)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)

@@ -30,10 +30,11 @@ import scala.io.Source
 
 private[async] trait AsyncWriter
   extends DatabaseOperationQuery[Uri]
-    with AsyncRequestHandler
+    with AsyncRequestExecutor
     with AsyncResponseHandler
-    with AsyncQueryHandler
-    with PointTransformer { self: WriteOperations[Future, String] with HasCredentials =>
+    with AsyncQueryBuilder
+    with WriteOperations[Future, String]
+    with PointTransformer { self: HasCredentials =>
 
   private[chronicler] override def writeTo(dbName: String,
                        entity: String,

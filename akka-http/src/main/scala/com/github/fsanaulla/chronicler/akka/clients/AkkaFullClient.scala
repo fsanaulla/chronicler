@@ -21,7 +21,7 @@ import _root_.akka.http.scaladsl.Http
 import _root_.akka.http.scaladsl.model._
 import _root_.akka.stream.{ActorMaterializer, StreamTcpException}
 import com.github.fsanaulla.chronicler.akka.api.{Database, Measurement}
-import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryHandler, AkkaRequestHandler, AkkaResponseHandler}
+import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
 import com.github.fsanaulla.chronicler.core.client.FullClient
 import com.github.fsanaulla.chronicler.core.model._
@@ -41,15 +41,11 @@ final class AkkaFullClient(host: String,
                            gzipped: Boolean)
                           (implicit val ex: ExecutionContext, val system: ActorSystem)
     extends FullClient[Future, HttpRequest, HttpResponse, Uri, RequestEntity]
-      with AkkaRequestHandler
+      with AkkaRequestExecutor
       with AkkaResponseHandler
-      with AkkaQueryHandler
-      with Mappable[Future, HttpResponse]
-      with HasCredentials
-      with AutoCloseable {
+      with AkkaQueryBuilder {
 
-  private[chronicler] override def mapTo[B](resp: Future[HttpResponse],
-                                            f: HttpResponse => Future[B]): Future[B] = resp.flatMap(f)
+  private[chronicler] override def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
 
   private[akka] implicit val mat: ActorMaterializer = ActorMaterializer()
   private[akka] implicit val connection: Connection = Http().outgoingConnection(host, port) recover {
@@ -60,12 +56,11 @@ final class AkkaFullClient(host: String,
   override def database(dbName: String): Database =
     new Database(dbName, credentials, gzipped)
 
-  override def measurement[A: ClassTag](dbName: String,
-                               measurementName: String): Measurement[A] =
+  override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] =
     new Measurement[A](dbName, measurementName, credentials, gzipped)
 
   override def ping: Future[WriteResult] =
-    mapTo(execute(Uri("/ping")), toResult)
+    flatMap(execute(Uri("/ping")))(toResult)
 
   override def close(): Unit =
     Await.ready(Http().shutdownAllConnectionPools(), Duration.Inf)

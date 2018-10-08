@@ -19,7 +19,7 @@ package com.github.fsanaulla.chronicler.urlhttp.query
 import com.github.fsanaulla.chronicler.core.query.ShardManagementQuery
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.github.fsanaulla.chronicler.urlhttp.TestHelper._
-import com.github.fsanaulla.chronicler.urlhttp.handlers.UrlQueryHandler
+import com.github.fsanaulla.chronicler.urlhttp.handlers.UrlQueryBuilder
 import com.softwaremill.sttp.Uri
 
 /**
@@ -29,7 +29,7 @@ import com.softwaremill.sttp.Uri
   */
 class ShardManagementQuerySpec extends FlatSpecWithMatchers {
 
-  trait Env extends UrlQueryHandler with ShardManagementQuery[Uri] {
+  trait Env extends UrlQueryBuilder with ShardManagementQuery[Uri] {
     val host = "localhost"
     val port = 8086
   }
@@ -45,18 +45,18 @@ class ShardManagementQuerySpec extends FlatSpecWithMatchers {
   }
 
   it should "show shards" in new AuthEnv {
-    showShardsQuery().toString() shouldEqual queryTesterAuth("SHOW SHARDS")(credentials.get)
+    showShardsQuery.toString() shouldEqual queryTesterAuth("SHOW SHARDS")(credentials.get)
   }
 
   it should "show shards without auth" in new NonAuthEnv {
-    showShardsQuery().toString() shouldEqual queryTester("SHOW SHARDS")
+    showShardsQuery.toString() shouldEqual queryTester("SHOW SHARDS")
   }
 
   it should "show shard groups" in new AuthEnv {
-    showShardGroupsQuery().toString() shouldEqual queryTesterAuth("SHOW SHARD GROUPS")(credentials.get)
+    showShardGroupsQuery.toString() shouldEqual queryTesterAuth("SHOW SHARD GROUPS")(credentials.get)
   }
 
   it should "show shard groups without auth" in new NonAuthEnv {
-    showShardGroupsQuery().toString() shouldEqual queryTester("SHOW SHARD GROUPS")
+    showShardGroupsQuery.toString() shouldEqual queryTester("SHOW SHARD GROUPS")
   }
 }

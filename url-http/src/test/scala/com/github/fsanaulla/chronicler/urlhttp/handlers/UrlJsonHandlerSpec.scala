@@ -17,7 +17,6 @@
 package com.github.fsanaulla.chronicler.urlhttp.handlers
 
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
-import com.github.fsanaulla.chronicler.urlhttp.Extensions.RichTry
 import com.softwaremill.sttp.Response
 import jawn.ast._
 import org.scalatest.{OptionValues, TryValues}
@@ -60,7 +59,7 @@ class UrlJsonHandlerSpec extends FlatSpecWithMatchers with UrlJsonHandler with T
                       ]
                   }"""
 
-  val resp = Response(body = JParser.parseFromString(singleStrJson).toStrEither(singleStrJson), 200, "", Nil, Nil)
+  val resp: Response[JValue] = Response.ok(JParser.parseFromString(singleStrJson).get)
 
   val result: JValue = JParser.parseFromString(singleStrJson).get
 

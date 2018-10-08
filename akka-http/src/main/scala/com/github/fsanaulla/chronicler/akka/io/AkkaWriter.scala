@@ -21,7 +21,7 @@ import java.nio.file.Paths
 import _root_.akka.http.scaladsl.model._
 import _root_.akka.stream.ActorMaterializer
 import _root_.akka.stream.scaladsl.FileIO
-import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryHandler, AkkaRequestHandler, AkkaResponseHandler}
+import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
 import com.github.fsanaulla.chronicler.akka.utils.AkkaHeaders
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
@@ -38,20 +38,20 @@ import scala.concurrent.Future
   */
 private[akka] trait AkkaWriter
   extends DatabaseOperationQuery[Uri]
-    with AkkaRequestHandler
+    with AkkaRequestExecutor
     with AkkaResponseHandler
-    with AkkaQueryHandler {
-  self: WriteOperations[Future, RequestEntity] with HasCredentials with Executable =>
+    with AkkaQueryBuilder
+    with WriteOperations[Future, RequestEntity] { self: HasCredentials with Executable =>
 
   private[akka] implicit val mat: ActorMaterializer
   private[akka] implicit val connection: Connection
 
   private[chronicler] override def writeTo(dbName: String,
-                       entity: RequestEntity,
-                       consistency: Consistency,
-                       precision: Precision,
-                       retentionPolicy: Option[String],
-                       gzipped: Boolean): Future[WriteResult] = {
+                                           entity: RequestEntity,
+                                           consistency: Consistency,
+                                           precision: Precision,
+                                           retentionPolicy: Option[String],
+                                           gzipped: Boolean): Future[WriteResult] = {
 
     val request = HttpRequest(
       uri = writeToInfluxQuery(
@@ -69,11 +69,11 @@ private[akka] trait AkkaWriter
   }
 
   private[chronicler] override def writeFromFile(dbName: String,
-                             filePath: String,
-                             consistency: Consistency,
-                             precision: Precision,
-                             retentionPolicy: Option[String],
-                             gzipped: Boolean): Future[WriteResult] = {
+                                                 filePath: String,
+                                                 consistency: Consistency,
+                                                 precision: Precision,
+                                                 retentionPolicy: Option[String],
+                                                 gzipped: Boolean): Future[WriteResult] = {
 
     val request = HttpRequest(
       uri = writeToInfluxQuery(

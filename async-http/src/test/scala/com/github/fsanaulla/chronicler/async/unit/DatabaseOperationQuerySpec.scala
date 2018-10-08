@@ -1,7 +1,23 @@
+/*
+ * Copyright 2017-2018 Faiaz Sanaulla
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.fsanaulla.chronicler.async.unit
 
 import com.github.fsanaulla.chronicler.async.TestHelper._
-import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryHandler
+import com.github.fsanaulla.chronicler.async.handlers.AsyncQueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.{Consistencies, Epochs, Precisions}
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
@@ -14,7 +30,7 @@ import com.softwaremill.sttp.Uri
   */
 class DatabaseOperationQuerySpec extends FlatSpecWithMatchers {
 
-  trait Env extends AsyncQueryHandler with DatabaseOperationQuery[Uri] {
+  trait Env extends AsyncQueryBuilder with DatabaseOperationQuery[Uri] {
     val host = "localhost"
     val port = 8086
   }
@@ -58,7 +74,7 @@ class DatabaseOperationQuerySpec extends FlatSpecWithMatchers {
   }
 
   it should "return correct single read query" in new AuthEnv {
-    val map = Map[String, String](
+    val map: Map[String, String] = Map[String, String](
       "db" -> testDB,
       "u" -> credentials.get.username,
       "p" -> credentials.get.password,
@@ -72,7 +88,7 @@ class DatabaseOperationQuerySpec extends FlatSpecWithMatchers {
   }
 
   it should "return correct bulk read query" in new AuthEnv {
-    val map = Map[String, String](
+    val map: Map[String, String] = Map[String, String](
       "db" -> testDB,
       "u" -> credentials.get.username,
       "p" -> credentials.get.password,

@@ -1,8 +1,24 @@
+/*
+ * Copyright 2017-2018 Faiaz Sanaulla
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.fsanaulla.chronicler.akka.query
 
 import _root_.akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.TestHelper._
-import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryHandler
+import com.github.fsanaulla.chronicler.akka.handlers.AkkaQueryBuilder
 import com.github.fsanaulla.chronicler.core.model.HasCredentials
 import com.github.fsanaulla.chronicler.core.query.DataManagementQuery
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
@@ -15,7 +31,7 @@ import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecW
   */
 class DataManagementQuerySpec extends FlatSpecWithMatchers {
 
-  trait Env extends AkkaQueryHandler with DataManagementQuery[Uri] { self: HasCredentials =>
+  trait Env extends AkkaQueryBuilder with DataManagementQuery[Uri] { self: HasCredentials =>
     val host = "localhost"
     val port = 8086
   }
@@ -63,7 +79,7 @@ class DataManagementQuerySpec extends FlatSpecWithMatchers {
   }
 
   it should "generate correct 'show database' query" in new AuthEnv {
-    showDatabasesQuery() shouldEqual
+    showDatabasesQuery shouldEqual
       queryTesterAuth(s"SHOW DATABASES")(credentials.get)
   }
 
@@ -114,7 +130,7 @@ class DataManagementQuerySpec extends FlatSpecWithMatchers {
   }
 
   it should "generate correct 'show database' query without auth" in new NonAuthEnv {
-    showDatabasesQuery() shouldEqual queryTester(s"SHOW DATABASES")
+    showDatabasesQuery shouldEqual queryTester(s"SHOW DATABASES")
   }
 
   it should "generate correct 'show tag-key' query without auth" in new NonAuthEnv {

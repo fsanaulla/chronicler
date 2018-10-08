@@ -20,7 +20,7 @@ import com.github.fsanaulla.chronicler.core.enums.Destinations
 import com.github.fsanaulla.chronicler.core.query.SubscriptionsManagementQuery
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.github.fsanaulla.chronicler.urlhttp.TestHelper._
-import com.github.fsanaulla.chronicler.urlhttp.handlers.UrlQueryHandler
+import com.github.fsanaulla.chronicler.urlhttp.handlers.UrlQueryBuilder
 import com.softwaremill.sttp.Uri
 
 /**
@@ -30,7 +30,7 @@ import com.softwaremill.sttp.Uri
   */
 class SubscriptionsManagementQuerySpec extends FlatSpecWithMatchers {
 
-  trait Env extends UrlQueryHandler with SubscriptionsManagementQuery[Uri] {
+  trait Env extends UrlQueryBuilder with SubscriptionsManagementQuery[Uri] {
     val host = "localhost"
     val port = 8086
   }
@@ -70,11 +70,11 @@ class SubscriptionsManagementQuerySpec extends FlatSpecWithMatchers {
   val showRes = "SHOW SUBSCRIPTIONS"
 
   it should "show subs query" in new AuthEnv {
-    showSubscriptionsQuery().toString() shouldEqual
+    showSubscriptionsQuery.toString() shouldEqual
       queryTesterAuth(showRes)(credentials.get)
   }
 
   it should "show subs query without auth" in new NonAuthEnv {
-    showSubscriptionsQuery().toString() shouldEqual queryTester(showRes)
+    showSubscriptionsQuery.toString() shouldEqual queryTester(showRes)
   }
 }

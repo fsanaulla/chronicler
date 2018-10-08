@@ -8,33 +8,36 @@ import sbt._
 object Dependencies {
 
   object Versions {
-    val sttp       = "1.1.14"
-    val netty      = "4.1.22.Final"
+    val sttp       = "1.3.5"
+    val netty      = "4.1.27.Final"
     val testing    = "0.1.0"
 
     object Akka {
-      val akka = "2.5.12"
-      val akkaHttp = "10.1.1"
+      val akka = "2.5.17"
+      val akkaHttp = "10.1.5"
     }
 
     object Testing {
       val scalaTest  = "3.0.5"
       val scalaCheck = "1.14.0"
+      val scalaCheckGenerators = "0.2.0"
     }
   }
 
   val scalaTest  = "org.scalatest"  %% "scalatest"  % Versions.Testing.scalaTest
   val scalaCheck = "org.scalacheck" %% "scalacheck" % Versions.Testing.scalaCheck
+  val scalaCheckGenerators =
+    "com.github.fsanaulla" %% "scalacheck-generators" % Versions.Testing.scalaCheckGenerators exclude("org.scala-lang", "scala-reflect")
 
   val httpClientTesting = List(
     // if, you want to use it by your own, publish this deps from tests library first
-    "com.github.fsanaulla"  %% "chronicler-it-testing"   % Versions.testing % Scope.it,
-    "com.github.fsanaulla"  %% "chronicler-unit-testing" % Versions.testing % Scope.all
+    "com.github.fsanaulla"  %% "chronicler-it-testing"   % Versions.testing % Scope.test,
+    "com.github.fsanaulla"  %% "chronicler-unit-testing" % Versions.testing % Scope.test
   )
 
   def macroDeps(scalaVersion: String): List[ModuleID] = List(
     "org.scala-lang"       %  "scala-reflect"         % scalaVersion,
-    "com.github.fsanaulla" %% "scalacheck-generators" % "0.1.3" % Scope.test exclude("org.scala-lang", "scala-reflect")
+    "com.github.fsanaulla" %% "scalacheck-generators" % "0.2.0" % Scope.test exclude("org.scala-lang", "scala-reflect")
   ) ::: List(scalaTest, scalaCheck).map(_ % Scope.test)
 
   // testing
@@ -47,7 +50,7 @@ object Dependencies {
   val coreDep: List[ModuleID] = List(
     "com.beachape"   %% "enumeratum" % "1.5.13",
     "org.spire-math" %% "jawn-ast"   % "0.12.1"
-  ) ::: List(scalaTest, scalaCheck).map(_ % Scope.test)
+  ) ::: List(scalaTest, scalaCheck, scalaCheckGenerators).map(_ % Scope.test)
 
   // akka-http
   val akkaDep: List[ModuleID] = List(

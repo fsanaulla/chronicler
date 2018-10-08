@@ -20,7 +20,7 @@ import com.github.fsanaulla.chronicler.core.enums.{Consistencies, Epochs, Precis
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.github.fsanaulla.chronicler.urlhttp.TestHelper._
-import com.github.fsanaulla.chronicler.urlhttp.handlers.UrlQueryHandler
+import com.github.fsanaulla.chronicler.urlhttp.handlers.UrlQueryBuilder
 import com.softwaremill.sttp.Uri
 
 /**
@@ -30,7 +30,7 @@ import com.softwaremill.sttp.Uri
   */
 class DatabaseOperationQuerySpec extends FlatSpecWithMatchers {
 
-  trait Env extends UrlQueryHandler with DatabaseOperationQuery[Uri] {
+  trait Env extends UrlQueryBuilder with DatabaseOperationQuery[Uri] {
     val host = "localhost"
     val port = 8086
   }
@@ -74,7 +74,7 @@ class DatabaseOperationQuerySpec extends FlatSpecWithMatchers {
   }
 
   it should "return correct single read query" in new AuthEnv {
-    val map = Map[String, String](
+    val map: Map[String, String] = Map[String, String](
       "db" -> testDB,
       "u" -> credentials.get.username,
       "p" -> credentials.get.password,
@@ -88,7 +88,7 @@ class DatabaseOperationQuerySpec extends FlatSpecWithMatchers {
   }
 
   it should "return correct bulk read query" in new AuthEnv {
-    val map = Map[String, String](
+    val map: Map[String, String] = Map[String, String](
       "db" -> testDB,
       "u" -> credentials.get.username,
       "p" -> credentials.get.password,

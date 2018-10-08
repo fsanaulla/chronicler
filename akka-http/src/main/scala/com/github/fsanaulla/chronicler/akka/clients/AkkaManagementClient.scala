@@ -20,10 +20,11 @@ import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.Http
 import _root_.akka.http.scaladsl.model.{HttpRequest, HttpResponse, RequestEntity, Uri}
 import _root_.akka.stream.{ActorMaterializer, StreamTcpException}
-import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryHandler, AkkaRequestHandler, AkkaResponseHandler}
+import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
 import com.github.fsanaulla.chronicler.core.client.ManagementClient
 import com.github.fsanaulla.chronicler.core.model._
+import com.github.fsanaulla.chronicler.core.typeclasses.FlatMap
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -33,15 +34,14 @@ final class AkkaManagementClient(host: String,
                                  val credentials: Option[InfluxCredentials])
                                 (implicit val ex: ExecutionContext, val system: ActorSystem)
   extends ManagementClient[Future, HttpRequest, HttpResponse, Uri, RequestEntity]
-    with AkkaRequestHandler
+    with AkkaRequestExecutor
     with AkkaResponseHandler
-    with AkkaQueryHandler
+    with AkkaQueryBuilder
     with HasCredentials
-    with Mappable[Future, HttpResponse]
+    with FlatMap[Future]
     with AutoCloseable {
 
-  private[chronicler] override def mapTo[B](resp: Future[HttpResponse],
-                                            f: HttpResponse => Future[B]): Future[B] = resp.flatMap(f)
+  private[chronicler] override def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
 
   private[akka] implicit val mat: ActorMaterializer = ActorMaterializer()
   private[akka] implicit val connection: Connection = Http().outgoingConnection(host, port) recover {
@@ -53,5 +53,5 @@ final class AkkaManagementClient(host: String,
     Await.ready(Http().shutdownAllConnectionPools(), Duration.Inf)
 
   override def ping: Future[WriteResult] =
-    mapTo(execute(Uri("/ping")), toResult)
+    flatMap(execute(Uri("/ping")))(toResult)
 }

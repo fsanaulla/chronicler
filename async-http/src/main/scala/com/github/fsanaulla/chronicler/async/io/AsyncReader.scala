@@ -16,7 +16,7 @@
 
 package com.github.fsanaulla.chronicler.async.io
 
-import com.github.fsanaulla.chronicler.async.handlers.{AsyncQueryHandler, AsyncRequestHandler, AsyncResponseHandler}
+import com.github.fsanaulla.chronicler.async.handlers.{AsyncQueryBuilder, AsyncRequestExecutor, AsyncResponseHandler}
 import com.github.fsanaulla.chronicler.core.enums.Epoch
 import com.github.fsanaulla.chronicler.core.io.ReadOperations
 import com.github.fsanaulla.chronicler.core.model.{HasCredentials, QueryResult, ReadResult}
@@ -27,10 +27,11 @@ import jawn.ast.JArray
 import scala.concurrent.Future
 
 private[async] trait AsyncReader
-  extends AsyncQueryHandler
-    with AsyncRequestHandler
+  extends AsyncQueryBuilder
+    with AsyncRequestExecutor
     with AsyncResponseHandler
-    with DatabaseOperationQuery[Uri] { self: ReadOperations[Future] with HasCredentials =>
+    with DatabaseOperationQuery[Uri]
+    with ReadOperations[Future] { self: HasCredentials =>
 
   private[chronicler] override def readJs(dbName: String,
                       query: String,

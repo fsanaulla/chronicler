@@ -38,9 +38,9 @@ import scala.reflect.ClassTag
 final class Database(dbName: String,
                      private[chronicler] val credentials: Option[InfluxCredentials],
                      gzipped: Boolean)
-                    (private[akka] implicit val actorSystem: ActorSystem,
+                    (private[chronicler] implicit val ex: ExecutionContext,
+                     private[akka] implicit val actorSystem: ActorSystem,
                      private[akka] implicit val mat: ActorMaterializer,
-                     private[chronicler] implicit val ex: ExecutionContext,
                      private[akka] implicit val connection: Connection)
   extends DatabaseIO[Future, RequestEntity](dbName)
     with AkkaWriter

@@ -34,7 +34,7 @@ final class AkkaIOClient(host: String,
                          val credentials: Option[InfluxCredentials],
                          gzipped: Boolean)
                         (implicit val ex: ExecutionContext, val system: ActorSystem)
-  extends IOClient[Future, RequestEntity] with AutoCloseable {
+  extends IOClient[Future, RequestEntity] {
 
   private[akka] implicit val mat: ActorMaterializer = ActorMaterializer()
   private[akka] implicit val connection: Connection = Http().outgoingConnection(host, port) recover {
