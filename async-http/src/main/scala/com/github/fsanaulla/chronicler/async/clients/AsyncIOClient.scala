@@ -17,7 +17,7 @@
 package com.github.fsanaulla.chronicler.async.clients
 
 import com.github.fsanaulla.chronicler.async.api.{Database, Measurement}
-import com.github.fsanaulla.chronicler.core.client.IOClient
+import com.github.fsanaulla.chronicler.core.IOClient
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.softwaremill.sttp.SttpBackend
 import com.softwaremill.sttp.asynchttpclient.future.AsyncHttpClientFutureBackend

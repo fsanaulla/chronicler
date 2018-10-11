@@ -22,7 +22,6 @@ import _root_.akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.io.{AkkaReader, AkkaWriter}
 import com.github.fsanaulla.chronicler.akka.models.AkkaSeserializers._
 import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
-import com.github.fsanaulla.chronicler.core.api.DatabaseIO
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
 import jawn.ast.JArray
@@ -42,7 +41,7 @@ final class Database(dbName: String,
                      private[akka] implicit val actorSystem: ActorSystem,
                      private[akka] implicit val mat: ActorMaterializer,
                      private[akka] implicit val connection: Connection)
-  extends DatabaseIO[Future, RequestEntity](dbName)
+  extends Database[Future, RequestEntity](dbName)
     with AkkaWriter
     with AkkaReader
     with Serializable[RequestEntity]

@@ -20,7 +20,7 @@ import _root_.akka.actor.ActorSystem
 import _root_.akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.io.{AkkaReader, AkkaWriter}
 import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
-import com.github.fsanaulla.chronicler.core.api.MeasurementIO
+import com.github.fsanaulla.chronicler.core.api.MeasurementApi
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
 import jawn.ast.JArray
@@ -41,7 +41,7 @@ final class Measurement[E: ClassTag](dbName: String,
                                      private[akka] implicit val mat: ActorMaterializer,
                                      private[chronicler] implicit val ex: ExecutionContext,
                                      private[akka] implicit val connection: Connection)
-    extends MeasurementIO[Future, E]
+    extends MeasurementApi[Future, E]
       with AkkaWriter
       with AkkaReader
       with HasCredentials

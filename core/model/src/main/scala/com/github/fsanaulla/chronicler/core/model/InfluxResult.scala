@@ -27,7 +27,7 @@ import scala.util.{Success, Try}
   */
 
 /** Entity that represent result types */
-sealed trait InfluxResult {
+sealed trait InfluxResult extends scala.Serializable{
   def code: Int
   def isSuccess: Boolean
   def ex: Option[Throwable]
@@ -36,7 +36,6 @@ sealed trait InfluxResult {
 // it's temporary solution, until 0.3.0
 /**
   * Root object of read result AST
-  * @tparam A
   */
 sealed trait ReadResult[A] extends InfluxResult {
   def queryResult: Array[A]
@@ -44,7 +43,8 @@ sealed trait ReadResult[A] extends InfluxResult {
 }
 
 /**
-  * Entity to resresent non-query result
+  * Entity to represent non-query result
+  *
   * @param code      - HTTP response code
   * @param isSuccess - is it complete successfully
   * @param ex        - optional exception
@@ -64,17 +64,17 @@ object WriteResult {
 
 /**
   * Entity to represent query result response
+  *
   * @param code        - HTTP response code
   * @param isSuccess   - is it complete successfully
-  * @param queryResult      - array of queried results
+  * @param queryResult - array of queried results
   * @param ex          - optional exception
   * @tparam A          - which entity should be retrieved from query request
   */
-final case class QueryResult[A](
-                                 code: Int,
-                                 isSuccess: Boolean,
-                                 queryResult: Array[A],
-                                 ex: Option[Throwable] = None) extends ReadResult[A] {
+final case class QueryResult[A](code: Int,
+                                isSuccess: Boolean,
+                                queryResult: Array[A],
+                                ex: Option[Throwable] = None) extends ReadResult[A] {
 
   def map[B: ClassTag](f: A => B): QueryResult[B] =
     QueryResult[B](code, isSuccess, queryResult.map(f), ex)
@@ -96,17 +96,17 @@ object QueryResult {
 
 /**
   * Entity to represent grouped result response
+  *
   * @param code          - HTTP response code
   * @param isSuccess     - is it complete successfully
   * @param groupedResult - array of group by results
   * @param ex            - exception if exist
   * @tparam A            - which entity should be retrieveed from query result
   */
-final case class GroupedResult[A](
-                                   code: Int,
-                                   isSuccess: Boolean,
-                                   groupedResult: Array[(Array[String], A)],
-                                   ex: Option[Throwable] = None) extends ReadResult[A] {
+final case class GroupedResult[A](code: Int,
+                                  isSuccess: Boolean,
+                                  groupedResult: Array[(Array[String], A)],
+                                  ex: Option[Throwable] = None) extends ReadResult[A] {
   def map[B: ClassTag](f: A => B): GroupedResult[B] =
     GroupedResult[B](code, isSuccess, groupedResult.map(p => p._1 -> f(p._2)), ex)
 

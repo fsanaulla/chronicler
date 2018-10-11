@@ -20,8 +20,8 @@ import _root_.akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import _root_.akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
 import _root_.akka.stream.ActorMaterializer
 import _root_.akka.util.ByteString
-import com.github.fsanaulla.chronicler.core.handlers.JsonHandler
 import com.github.fsanaulla.chronicler.core.model.Executable
+import com.github.fsanaulla.chronicler.core.typeclasses.JsonHandler
 import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
 import jawn.ast.{JParser, JValue}
 

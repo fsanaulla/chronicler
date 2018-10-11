@@ -1,13 +1,26 @@
 import Settings._
 import sbt.Keys.{libraryDependencies, name}
 
-lazy val coreApi = project
-  .in(file("core/api"))
+// CORE
+lazy val coreIO = project
+  .in(file("core/io"))
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header: _*)
   .settings(
-    name := "chronicler-core-api",
+    name := "chronicler-core-io",
+    scalacOptions += "-language:higherKinds"
+  )
+  .dependsOn(coreModel)
+  .enablePlugins(AutomateHeaderPlugin)
+
+lazy val coreManagement = project
+  .in(file("core/management"))
+  .settings(Settings.common: _*)
+  .settings(Settings.publish: _*)
+  .settings(Settings.header: _*)
+  .settings(
+    name := "chronicler-core-management",
     scalacOptions += "-language:higherKinds"
   )
   .dependsOn(coreModel)
@@ -30,20 +43,49 @@ lazy val coreModel = project
   )
   .enablePlugins(AutomateHeaderPlugin)
 
-lazy val urlHttp = project
-  .in(file("url-http"))
+// CHRONICLER URL HTTP
+lazy val urlHttpManagement = project
+  .in(file("url-http/management"))
   .configs(LocalIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
   .settings(
-    name := "chronicler-url-http",
-    libraryDependencies ++= Dependencies.urlHttp
+    name := "chronicler-url-http-management",
+    libraryDependencies ++= Dependencies.httpClientTesting
   )
-  .dependsOn(coreApi)
+  .dependsOn(coreManagement, urlHttpShared)
   .enablePlugins(AutomateHeaderPlugin)
 
+lazy val urlHttpIO = project
+  .in(file("url-http/io"))
+  .configs(LocalIntegrationTest)
+  .settings(Defaults.itSettings)
+  .settings(Settings.common: _*)
+  .settings(Settings.publish: _*)
+  .settings(Settings.header)
+  .settings(
+    name := "chronicler-url-http-io",
+    libraryDependencies ++= Dependencies.httpClientTesting
+  )
+  .dependsOn(coreIO, urlHttpShared)
+  .dependsOn(urlHttpManagement % "test->test")
+  .enablePlugins(AutomateHeaderPlugin)
+
+lazy val urlHttpShared = project
+  .in(file("url-http/shared"))
+  .settings(Settings.common: _*)
+  .settings(Settings.publish: _*)
+  .settings(Settings.header)
+  .settings(
+    name := "chronicler-url-http-shared",
+    libraryDependencies ++= Dependencies.urlHttp
+  )
+  .dependsOn(coreModel)
+  .enablePlugins(AutomateHeaderPlugin)
+
+// CHRONICLER AKKA HTTP
 lazy val akkaHttp = project
   .in(file("akka-http"))
   .configs(LocalIntegrationTest)
@@ -59,7 +101,7 @@ lazy val akkaHttp = project
     ),
     libraryDependencies ++= Dependencies.akkaDep
   )
-  .dependsOn(coreApi)
+  .dependsOn(coreIO)
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val asyncHttp = project
@@ -77,7 +119,7 @@ lazy val asyncHttp = project
     ),
     libraryDependencies ++= Dependencies.asyncHttp
   )
-  .dependsOn(coreApi)
+  .dependsOn(coreIO)
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val udp = project

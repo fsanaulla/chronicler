@@ -22,7 +22,7 @@ import _root_.akka.http.scaladsl.model.RequestEntity
 import _root_.akka.stream.{ActorMaterializer, StreamTcpException}
 import com.github.fsanaulla.chronicler.akka.api.{Database, Measurement}
 import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
-import com.github.fsanaulla.chronicler.core.client.IOClient
+import com.github.fsanaulla.chronicler.core.IOClient
 import com.github.fsanaulla.chronicler.core.model.{ConnectionException, InfluxCredentials, UnknownConnectionException}
 
 import scala.concurrent.duration._

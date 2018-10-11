@@ -16,8 +16,8 @@
 
 package com.github.fsanaulla.chronicler.async.handlers
 
-import com.github.fsanaulla.chronicler.core.handlers.ResponseHandler
 import com.github.fsanaulla.chronicler.core.model._
+import com.github.fsanaulla.chronicler.core.typeclasses.ResponseHandler
 import com.softwaremill.sttp.Response
 import jawn.ast.{JArray, JValue}
 

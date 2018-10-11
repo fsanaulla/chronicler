@@ -25,7 +25,7 @@ final case class InfluxTag(key: String, value: String) {
   require(value.nonEmpty, "Value can't be empty string")
 }
 
-sealed trait InfluxField {
+sealed trait InfluxField extends Product with scala.Serializable {
   def key: String
 }
 

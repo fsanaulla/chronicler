@@ -22,7 +22,6 @@ import _root_.akka.http.scaladsl.model.{HttpRequest, HttpResponse, RequestEntity
 import _root_.akka.stream.{ActorMaterializer, StreamTcpException}
 import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
-import com.github.fsanaulla.chronicler.core.client.ManagementClient
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.typeclasses.FlatMap
 
@@ -44,10 +43,12 @@ final class AkkaManagementClient(host: String,
   private[chronicler] override def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
 
   private[akka] implicit val mat: ActorMaterializer = ActorMaterializer()
-  private[akka] implicit val connection: Connection = Http().outgoingConnection(host, port) recover {
-    case ex: StreamTcpException => throw new ConnectionException(ex.getMessage)
-    case unknown => throw new UnknownConnectionException(unknown.getMessage)
-  }
+  private[akka] implicit val connection: Connection = Http()
+    .outgoingConnection(host, port)
+    .recover {
+      case ex: StreamTcpException => throw new ConnectionException(ex.getMessage)
+      case unknown => throw new UnknownConnectionException(unknown.getMessage)
+    }
 
   override def close(): Unit =
     Await.ready(Http().shutdownAllConnectionPools(), Duration.Inf)

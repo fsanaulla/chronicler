@@ -17,8 +17,8 @@
 package com.github.fsanaulla.chronicler.akka.handlers
 
 import _root_.akka.http.scaladsl.model.HttpResponse
-import com.github.fsanaulla.chronicler.core.handlers.ResponseHandler
 import com.github.fsanaulla.chronicler.core.model._
+import com.github.fsanaulla.chronicler.core.typeclasses.ResponseHandler
 import jawn.ast.JArray
 
 import scala.concurrent.Future

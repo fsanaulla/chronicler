@@ -18,7 +18,7 @@ package com.github.fsanaulla.chronicler.core.utils
 
 import jawn.ast.{JArray, JObject, JValue}
 
-private[fsanaulla] object Extensions {
+private[chronicler] object Extensions {
 
   /** Extension to simplify parsing JAWN AST */
   implicit final class RichJValue(private val jv: JValue) extends AnyVal {

@@ -23,7 +23,6 @@ import _root_.akka.stream.{ActorMaterializer, StreamTcpException}
 import com.github.fsanaulla.chronicler.akka.api.{Database, Measurement}
 import com.github.fsanaulla.chronicler.akka.handlers.{AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.akka.utils.AkkaAlias.Connection
-import com.github.fsanaulla.chronicler.core.client.FullClient
 import com.github.fsanaulla.chronicler.core.model._
 
 import scala.concurrent.duration.Duration

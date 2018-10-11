@@ -17,7 +17,6 @@
 package com.github.fsanaulla.chronicler.async.api
 
 import com.github.fsanaulla.chronicler.async.io.{AsyncReader, AsyncWriter}
-import com.github.fsanaulla.chronicler.core.api.MeasurementIO
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
 import com.softwaremill.sttp.SttpBackend
@@ -34,7 +33,7 @@ final class Measurement[E: ClassTag](private[async] val host: String,
                                      gzipped: Boolean)
                                     (private[chronicler] implicit val ex: ExecutionContext,
                                      private[async] implicit val backend: SttpBackend[Future, Nothing])
-    extends MeasurementIO[Future, E]
+    extends Measurement[Future, E]
       with HasCredentials
       with AsyncWriter
       with AsyncReader {

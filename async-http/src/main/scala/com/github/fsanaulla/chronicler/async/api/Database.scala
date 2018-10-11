@@ -18,7 +18,6 @@ package com.github.fsanaulla.chronicler.async.api
 
 import com.github.fsanaulla.chronicler.async.io.{AsyncReader, AsyncWriter}
 import com.github.fsanaulla.chronicler.async.models.AsyncSerializers._
-import com.github.fsanaulla.chronicler.core.api.DatabaseIO
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
 import com.softwaremill.sttp.SttpBackend
@@ -33,7 +32,7 @@ final class Database(private[async] val host: String,
                      dbName: String,
                      gzipped: Boolean)(private[async] implicit val backend: SttpBackend[Future, Nothing],
                                        private[chronicler] implicit val ex: ExecutionContext)
-    extends DatabaseIO[Future, String](dbName)
+    extends Database[Future, String](dbName)
       with HasCredentials
       with Executable
       with Serializable[String]
