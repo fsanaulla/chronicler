@@ -24,6 +24,7 @@ object Dependencies {
     }
   }
 
+  val sttp = "com.softwaremill.sttp" %% "core" % Versions.sttp
   val scalaTest  = "org.scalatest"  %% "scalatest"  % Versions.Testing.scalaTest
   val scalaCheck = "org.scalacheck" %% "scalacheck" % Versions.Testing.scalaCheck
   val scalaCheckGenerators =
@@ -44,7 +45,7 @@ object Dependencies {
   val itTestingDeps: Seq[ModuleID] = Seq(
     "org.jetbrains"        %  "annotations" % "15.0", // to solve evicted warning
     "org.testcontainers"   %  "influxdb"    % "1.7.3" exclude("org.jetbrains", "annotations")
-  ) :+ scalaTest % Scope.compileTimeOnly
+  )
 
   // core
   val coreDep: List[ModuleID] = List(
@@ -64,11 +65,6 @@ object Dependencies {
   val asyncHttp: Seq[ModuleID] = List(
     "io.netty"              %  "netty-handler"                    % Versions.netty, // to solve evicted warning
     "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp exclude("io.netty", "netty-handler")
-  ) ::: httpClientTesting
-
-  // url-http
-  val urlHttp: Seq[ModuleID] = List(
-    "com.softwaremill.sttp" %% "core" % Versions.sttp
   ) ::: httpClientTesting
 
   // udp

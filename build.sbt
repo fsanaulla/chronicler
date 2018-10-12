@@ -1,7 +1,9 @@
 import Settings._
 import sbt.Keys.{libraryDependencies, name}
 
-// CORE
+//////////////////////////////////////////////////////
+//////////////////// CORE MODULES ////////////////////
+//////////////////////////////////////////////////////
 lazy val coreIO = project
   .in(file("core/io"))
   .settings(Settings.common: _*)
@@ -11,7 +13,7 @@ lazy val coreIO = project
     name := "chronicler-core-io",
     scalacOptions += "-language:higherKinds"
   )
-  .dependsOn(coreModel)
+  .dependsOn(coreShared)
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val coreManagement = project
@@ -23,18 +25,18 @@ lazy val coreManagement = project
     name := "chronicler-core-management",
     scalacOptions += "-language:higherKinds"
   )
-  .dependsOn(coreModel)
+  .dependsOn(coreShared)
   .enablePlugins(AutomateHeaderPlugin)
 
-lazy val coreModel = project
-  .in(file("core/model"))
+lazy val coreShared = project
+  .in(file("core/shared"))
   .settings(propertyTestSettings: _*)
   .configs(PropertyTest)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
   .settings(
-    name := "chronicler-core-model",
+    name := "chronicler-core-shared",
     libraryDependencies ++= Dependencies.coreDep,
     scalacOptions ++= Seq(
       "-language:implicitConversions",
@@ -43,7 +45,9 @@ lazy val coreModel = project
   )
   .enablePlugins(AutomateHeaderPlugin)
 
-// CHRONICLER URL HTTP
+//////////////////////////////////////////////////////
+////////////////// URL HTTP MODULES //////////////////
+//////////////////////////////////////////////////////
 lazy val urlHttpManagement = project
   .in(file("url-http/management"))
   .configs(LocalIntegrationTest)
@@ -51,11 +55,9 @@ lazy val urlHttpManagement = project
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
-  .settings(
-    name := "chronicler-url-http-management",
-    libraryDependencies ++= Dependencies.httpClientTesting
-  )
+  .settings(name := "chronicler-url-http-management")
   .dependsOn(coreManagement, urlHttpShared)
+  .dependsOn(itTesting % "test->test")
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val urlHttpIO = project
@@ -65,12 +67,10 @@ lazy val urlHttpIO = project
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
-  .settings(
-    name := "chronicler-url-http-io",
-    libraryDependencies ++= Dependencies.httpClientTesting
-  )
+  .settings(name := "chronicler-url-http-io")
   .dependsOn(coreIO, urlHttpShared)
   .dependsOn(urlHttpManagement % "test->test")
+  .dependsOn(itTesting % "test->test")
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val urlHttpShared = project
@@ -80,12 +80,15 @@ lazy val urlHttpShared = project
   .settings(Settings.header)
   .settings(
     name := "chronicler-url-http-shared",
-    libraryDependencies ++= Dependencies.urlHttp
+    libraryDependencies += Dependencies.sttp
   )
-  .dependsOn(coreModel)
+  .dependsOn(coreShared)
+  .dependsOn(unitTesting % "test->test")
   .enablePlugins(AutomateHeaderPlugin)
 
-// CHRONICLER AKKA HTTP
+//////////////////////////////////////////////////////
+////////////////// AKKA HTTP MODULES /////////////////
+//////////////////////////////////////////////////////
 lazy val akkaHttp = project
   .in(file("akka-http"))
   .configs(LocalIntegrationTest)
@@ -104,6 +107,9 @@ lazy val akkaHttp = project
   .dependsOn(coreIO)
   .enablePlugins(AutomateHeaderPlugin)
 
+//////////////////////////////////////////////////////
+///////////////// ASYNC HTTP MODULES /////////////////
+//////////////////////////////////////////////////////
 lazy val asyncHttp = project
   .in(file("async-http"))
   .configs(LocalIntegrationTest)
@@ -122,6 +128,9 @@ lazy val asyncHttp = project
   .dependsOn(coreIO)
   .enablePlugins(AutomateHeaderPlugin)
 
+//////////////////////////////////////////////////////
+///////////////////// UPD MODULE /////////////////////
+//////////////////////////////////////////////////////
 lazy val udp = project
   .in(file("udp"))
   .configs(LocalIntegrationTest)
@@ -134,9 +143,12 @@ lazy val udp = project
     libraryDependencies ++= Dependencies.udpDep,
     test in Scope.test := {}
   )
-  .dependsOn(coreModel)
+  .dependsOn(coreShared)
   .enablePlugins(AutomateHeaderPlugin)
 
+//////////////////////////////////////////////////////
+///////////////////// MACRO MODULE ///////////////////
+//////////////////////////////////////////////////////
 lazy val macros = project
   .in(file("macros"))
   .settings(propertyTestSettings: _*)
@@ -148,26 +160,27 @@ lazy val macros = project
     name := "chronicler-macros",
     libraryDependencies ++= Dependencies.macroDeps(scalaVersion.value)
   )
-  .dependsOn(coreModel)
+  .dependsOn(coreShared)
   .enablePlugins(AutomateHeaderPlugin)
 
-// Only for test purpose
+//////////////////////////////////////////////////////
+/////////////////// TESTING MODULES //////////////////
+//////////////////////////////////////////////////////
 lazy val itTesting = project
-  .in(file("tests/it-testing"))
+  .in(file("testing/it"))
   .settings(Settings.common: _*)
   .settings(
     name := "chronicler-it-testing",
-    version := "0.1.0",
     libraryDependencies ++= Dependencies.itTestingDeps
   )
-  .dependsOn(coreModel % "compile->compile")
+  .dependsOn(coreShared)
+  .dependsOn(unitTesting)
 
 lazy val unitTesting = project
-  .in(file("tests/unit-testing"))
+  .in(file("testing/unit"))
   .settings(Settings.common: _*)
   .settings(
     name := "chronicler-unit-testing",
-    version := "0.1.0",
     libraryDependencies += Dependencies.scalaTest
   )
-  .dependsOn(coreModel % "compile->compile")
+  .dependsOn(coreShared)
