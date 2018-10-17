@@ -29,6 +29,7 @@ object Dependencies {
   val scalaCheck = "org.scalacheck" %% "scalacheck" % Versions.Testing.scalaCheck
   val scalaCheckGenerators =
     "com.github.fsanaulla" %% "scalacheck-generators" % Versions.Testing.scalaCheckGenerators exclude("org.scala-lang", "scala-reflect")
+  val akkaTestKit = "com.typesafe.akka"    %% "akka-testkit" % Versions.Akka.akka
 
   val httpClientTesting = List(
     // if, you want to use it by your own, publish this deps from tests library first
@@ -55,11 +56,11 @@ object Dependencies {
 
   // akka-http
   val akkaDep: List[ModuleID] = List(
-    "com.typesafe.akka"    %% "akka-stream"  % Versions.Akka.akka     % Scope.compileTimeOnly,
-    "com.typesafe.akka"    %% "akka-actor"   % Versions.Akka.akka     % Scope.compileTimeOnly,
-    "com.typesafe.akka"    %% "akka-testkit" % Versions.Akka.akka     % Scope.all,
+    "com.typesafe.akka"    %% "akka-stream"  % Versions.Akka.akka,
+    "com.typesafe.akka"    %% "akka-actor"   % Versions.Akka.akka,
+    "com.typesafe.akka"    %% "akka-testkit" % Versions.Akka.akka % Scope.test,
     "com.typesafe.akka"    %% "akka-http"    % Versions.Akka.akkaHttp
-  ) ::: httpClientTesting
+  )
 
   // async-http
   val asyncHttp: Seq[ModuleID] = List(

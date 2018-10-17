@@ -14,28 +14,40 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
+package com.github.fsanaulla.chronicler.akka.shared.handlers
 
+import _root_.akka.actor.ActorSystem
+import _root_.akka.http.scaladsl.model.HttpResponse
+import _root_.akka.stream.ActorMaterializer
+import _root_.akka.testkit.TestKit
+import com.github.fsanaulla.chronicler.akka.shared.Extensions.RichString
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
 import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
-import com.github.fsanaulla.chronicler.urlhttp.shared.Extensions.RichString
-import com.softwaremill.sttp.Response
-import jawn.ast._
-import org.scalatest.TryValues
+import jawn.ast.{JArray, JNum, JString}
+import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+
+import scala.concurrent.ExecutionContext
+import scala.concurrent.duration._
+import scala.language.postfixOps
 
 /**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 10.08.17
+  * Created by fayaz on 12.07.17.
   */
-class UrlResponseHandlerSpec extends FlatSpecWithMatchers with UrlResponseHandler with TryValues {
+class AkkaResponseHandlerSpec
+  extends TestKit(ActorSystem())
+    with FlatSpecWithMatchers
+    with ScalaFutures
+    with IntegrationPatience
+    with AkkaResponseHandler {
 
-  implicit val p: JParser.type = JParser
+  implicit val mat: ActorMaterializer = ActorMaterializer()
+  implicit val ex: ExecutionContext = system.dispatcher
+  implicit val timeout: FiniteDuration = 1 second
 
-  "UrlResponseHandler" should "extract single query result from response" in {
+  "AsyncHttpResponseHandler" should "extract single query queryResult from response" in {
 
-    val singleResponse: Response[JValue] =
+    val singleHttpResponse: HttpResponse =
       """
         |{
         |    "results": [
@@ -81,12 +93,12 @@ class UrlResponseHandlerSpec extends FlatSpecWithMatchers with UrlResponseHandle
         JNum(0.64)))
     )
 
-    toQueryJsResult(singleResponse).success.value.queryResult shouldEqual result
+    toQueryJsResult(singleHttpResponse).futureValue.queryResult shouldEqual result
   }
 
   it should "extract bulk query results from response" in {
 
-    val bulkResponse: Response[JValue] =
+    val bulkHttpResponse: HttpResponse =
       """
         |{
         |    "results": [
@@ -136,9 +148,9 @@ class UrlResponseHandlerSpec extends FlatSpecWithMatchers with UrlResponseHandle
         |        }
         |    ]
         |}
-      """.stripMargin.toResponse()
+      """.stripMargin.toResponse
 
-    toBulkQueryJsResult(bulkResponse).success.value.queryResult shouldEqual Array(
+    toBulkQueryJsResult(bulkHttpResponse).futureValue.queryResult shouldEqual Array(
       Array(
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
@@ -151,7 +163,7 @@ class UrlResponseHandlerSpec extends FlatSpecWithMatchers with UrlResponseHandle
 
   it should "cq unpacking" in {
 
-    val cqStrJson = """{
+    val cqResponse = """{
       "results": [
         {
           "statement_id": 0,
@@ -201,17 +213,16 @@ class UrlResponseHandlerSpec extends FlatSpecWithMatchers with UrlResponseHandle
         }
       ]
     }
-  """
-    val cqHttpResponse = Response.ok(p.parseFromString(cqStrJson).get)
+  """.toResponse
 
-    val cqi = toCqQueryResult(cqHttpResponse).success.value.queryResult.filter(_.querys.nonEmpty).head
+    val cqi = toCqQueryResult(cqResponse).futureValue.queryResult.filter(_.querys.nonEmpty).head
     cqi.dbName shouldEqual "mydb"
     cqi.querys.head shouldEqual ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")
   }
 
   it should "extract optional error message" in {
 
-    val errorResponse: Response[JValue] =
+    val errorHttpResponse: HttpResponse =
       """
         |{
         |        "results": [
@@ -221,16 +232,16 @@ class UrlResponseHandlerSpec extends FlatSpecWithMatchers with UrlResponseHandle
         |          }
         |        ]
         |}
-      """.stripMargin.toResponse()
+      """.stripMargin.toResponse
 
-    getOptResponseError(errorResponse).success.value shouldEqual Some("user not found")
+    getOptResponseError(errorHttpResponse).futureValue shouldEqual Some("user not found")
   }
 
   it should "extract error message" in {
 
-    val errorResponse: Response[JValue] =
-      """ { "error": "user not found" } """.toResponse()
+    val errorHttpResponse: HttpResponse =
+      """ { "error": "user not found" } """.toResponse
 
-    getResponseError(errorResponse).success.value shouldEqual "user not found"
+    getResponseError(errorHttpResponse).futureValue shouldEqual "user not found"
   }
 }

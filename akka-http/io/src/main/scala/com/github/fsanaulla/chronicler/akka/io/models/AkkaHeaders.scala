@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.model
+package com.github.fsanaulla.chronicler.akka.io.models
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 27.08.17
-  */
-private[fsanaulla] trait PointTransformer {
-  protected def toPoint(measurement: String, serializedEntity: String): String =
-    measurement + "," + serializedEntity
-  protected def toPoints(measurement: String, serializedEntitys: Seq[String]): String =
-    serializedEntitys.map(s => measurement + "," + s).mkString("\n")
+import akka.http.scaladsl.model.headers.{HttpEncodings, `Accept-Encoding`}
 
+
+/** All headers required during client lifecycle */
+private[akka] object AkkaHeaders {
+
+  /** Header for GZIP content encoding */
+  val gzipEncoding = `Accept-Encoding`(HttpEncodings.gzip)
 }

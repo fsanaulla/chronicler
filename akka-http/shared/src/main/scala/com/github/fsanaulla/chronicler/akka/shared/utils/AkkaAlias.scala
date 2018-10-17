@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.model
+package com.github.fsanaulla.chronicler.akka.shared.utils
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 27.08.17
-  */
-private[fsanaulla] trait PointTransformer {
-  protected def toPoint(measurement: String, serializedEntity: String): String =
-    measurement + "," + serializedEntity
-  protected def toPoints(measurement: String, serializedEntitys: Seq[String]): String =
-    serializedEntitys.map(s => measurement + "," + s).mkString("\n")
+import akka.http.scaladsl.Http
+import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
+import akka.stream.scaladsl.Flow
 
+import scala.concurrent.Future
+
+private[akka] object AkkaAlias {
+  type Connection = Flow[HttpRequest, HttpResponse, Future[Http.OutgoingConnection]]
 }

@@ -33,7 +33,6 @@ sealed trait InfluxResult extends scala.Serializable{
   def ex: Option[Throwable]
 }
 
-// it's temporary solution, until 0.3.0
 /**
   * Root object of read result AST
   */
@@ -47,7 +46,7 @@ sealed trait ReadResult[A] extends InfluxResult {
   *
   * @param code      - HTTP response code
   * @param isSuccess - is it complete successfully
-  * @param ex        - optional exception
+  * @param ex        - optional [[Throwable]]
   */
 final case class WriteResult(code: Int, isSuccess: Boolean, ex: Option[Throwable] = None) extends InfluxResult
 

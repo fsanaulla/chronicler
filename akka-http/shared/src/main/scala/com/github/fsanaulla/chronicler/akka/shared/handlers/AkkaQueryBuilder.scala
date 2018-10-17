@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.model
+package com.github.fsanaulla.chronicler.akka.shared.handlers
+
+import _root_.akka.http.scaladsl.model.Uri
+import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
-  * Date: 27.08.17
+  * Date: 15.03.18
   */
-private[fsanaulla] trait PointTransformer {
-  protected def toPoint(measurement: String, serializedEntity: String): String =
-    measurement + "," + serializedEntity
-  protected def toPoints(measurement: String, serializedEntitys: Seq[String]): String =
-    serializedEntitys.map(s => measurement + "," + s).mkString("\n")
+private[akka] trait AkkaQueryBuilder extends QueryBuilder[Uri] {
 
+  private[chronicler] override def buildQuery(uri: String, queryParams: Map[String, String]): Uri =
+    Uri(uri).withQuery(Uri.Query(queryParams))
 }

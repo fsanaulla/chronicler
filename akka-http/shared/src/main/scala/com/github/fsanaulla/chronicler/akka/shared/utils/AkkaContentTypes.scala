@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.model
+package com.github.fsanaulla.chronicler.akka.shared.utils
+
+import _root_.akka.http.scaladsl.model.{MediaType, MediaTypes}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
-  * Date: 27.08.17
+  * Date: 15.03.18
   */
-private[fsanaulla] trait PointTransformer {
-  protected def toPoint(measurement: String, serializedEntity: String): String =
-    measurement + "," + serializedEntity
-  protected def toPoints(measurement: String, serializedEntitys: Seq[String]): String =
-    serializedEntitys.map(s => measurement + "," + s).mkString("\n")
-
+private[akka] object AkkaContentTypes {
+  val AppJson: MediaType.WithFixedCharset = MediaTypes.`application/json`
+  val OctetStream: MediaType.Binary = MediaTypes.`application/octet-stream`
 }

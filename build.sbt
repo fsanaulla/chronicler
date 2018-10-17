@@ -89,22 +89,56 @@ lazy val urlHttpShared = project
 //////////////////////////////////////////////////////
 ////////////////// AKKA HTTP MODULES /////////////////
 //////////////////////////////////////////////////////
-lazy val akkaHttp = project
-  .in(file("akka-http"))
+lazy val akkaHttpManagement = project
+  .in(file("akka-http/management"))
   .configs(LocalIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
   .settings(
-    name := "chronicler-akka-http",
+    name := "chronicler-akka-http-management",
     scalacOptions ++= Seq(
       "-language:postfixOps",
       "-language:higherKinds"
     ),
+    libraryDependencies += Dependencies.akkaTestKit % Scope.test
+  )
+  .dependsOn(coreManagement, akkaHttpShared)
+  .dependsOn(itTesting % "test->test")
+  .enablePlugins(AutomateHeaderPlugin)
+
+lazy val akkaHttpIO = project
+  .in(file("akka-http/io"))
+  .configs(LocalIntegrationTest)
+  .settings(Defaults.itSettings)
+  .settings(Settings.common: _*)
+  .settings(Settings.publish: _*)
+  .settings(Settings.header)
+  .settings(
+    name := "chronicler-akka-http-io",
+    scalacOptions ++= Seq(
+      "-language:postfixOps",
+      "-language:higherKinds"
+    ),
+    libraryDependencies += Dependencies.akkaTestKit % Scope.test
+  )
+  .dependsOn(coreIO, akkaHttpShared)
+  .dependsOn(akkaHttpManagement % "test->test")
+  .dependsOn(itTesting % "test->test")
+  .enablePlugins(AutomateHeaderPlugin)
+
+lazy val akkaHttpShared = project
+  .in(file("akka-http/shared"))
+  .settings(Settings.common: _*)
+  .settings(Settings.publish: _*)
+  .settings(Settings.header)
+  .settings(
+    name := "chronicler-akka-http-shared",
     libraryDependencies ++= Dependencies.akkaDep
   )
-  .dependsOn(coreIO)
+  .dependsOn(coreShared)
+  .dependsOn(unitTesting % "test->test")
   .enablePlugins(AutomateHeaderPlugin)
 
 //////////////////////////////////////////////////////

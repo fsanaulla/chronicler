@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.model
+package com.github.fsanaulla.chronicler.akka.shared
+
+import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
+import com.github.fsanaulla.chronicler.akka.shared.utils.AkkaContentTypes.AppJson
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
-  * Date: 27.08.17
+  * Date: 10.04.18
   */
-private[fsanaulla] trait PointTransformer {
-  protected def toPoint(measurement: String, serializedEntity: String): String =
-    measurement + "," + serializedEntity
-  protected def toPoints(measurement: String, serializedEntitys: Seq[String]): String =
-    serializedEntitys.map(s => measurement + "," + s).mkString("\n")
+object Extensions {
+  implicit class RichString(private val str: String) extends AnyVal {
+    def toResponse: HttpResponse = {
+      HttpResponse(entity = HttpEntity(AppJson, str))
+    }
+  }
 
 }
