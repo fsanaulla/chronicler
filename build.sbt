@@ -98,10 +98,6 @@ lazy val akkaHttpManagement = project
   .settings(Settings.header)
   .settings(
     name := "chronicler-akka-http-management",
-    scalacOptions ++= Seq(
-      "-language:postfixOps",
-      "-language:higherKinds"
-    ),
     libraryDependencies += Dependencies.akkaTestKit % Scope.test
   )
   .dependsOn(coreManagement, akkaHttpShared)
@@ -117,10 +113,6 @@ lazy val akkaHttpIO = project
   .settings(Settings.header)
   .settings(
     name := "chronicler-akka-http-io",
-    scalacOptions ++= Seq(
-      "-language:postfixOps",
-      "-language:higherKinds"
-    ),
     libraryDependencies += Dependencies.akkaTestKit % Scope.test
   )
   .dependsOn(coreIO, akkaHttpShared)
@@ -144,24 +136,43 @@ lazy val akkaHttpShared = project
 //////////////////////////////////////////////////////
 ///////////////// ASYNC HTTP MODULES /////////////////
 //////////////////////////////////////////////////////
-lazy val asyncHttp = project
-  .in(file("async-http"))
+lazy val asyncHttpManagement = project
+  .in(file("async-http/management"))
   .configs(LocalIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
-  .settings(
-    name := "chronicler-async-http",
-    scalacOptions ++= Seq(
-      "-language:implicitConversions",
-      "-language:higherKinds"
-    ),
-    libraryDependencies ++= Dependencies.asyncHttp
-  )
-  .dependsOn(coreIO)
+  .settings(name := "chronicler-async-http-management")
+  .dependsOn(coreManagement, asyncHttpShared)
+  .dependsOn(itTesting % "test->test")
   .enablePlugins(AutomateHeaderPlugin)
 
+lazy val asyncHttpIO = project
+  .in(file("async-http/io"))
+  .configs(LocalIntegrationTest)
+  .settings(Defaults.itSettings)
+  .settings(Settings.common: _*)
+  .settings(Settings.publish: _*)
+  .settings(Settings.header)
+  .settings(name := "chronicler-async-http-io")
+  .dependsOn(coreIO, asyncHttpShared)
+  .dependsOn(asyncHttpManagement % "test->test")
+  .dependsOn(itTesting % "test->test")
+  .enablePlugins(AutomateHeaderPlugin)
+
+lazy val asyncHttpShared = project
+  .in(file("async-http/shared"))
+  .settings(Settings.common: _*)
+  .settings(Settings.publish: _*)
+  .settings(Settings.header)
+  .settings(
+    name := "chronicler-async-http-shared",
+    libraryDependencies ++= Dependencies.asyncDeps
+  )
+  .dependsOn(coreShared)
+  .dependsOn(unitTesting % "test->test")
+  .enablePlugins(AutomateHeaderPlugin)
 //////////////////////////////////////////////////////
 ///////////////////// UPD MODULE /////////////////////
 //////////////////////////////////////////////////////
@@ -205,7 +216,7 @@ lazy val itTesting = project
   .settings(Settings.common: _*)
   .settings(
     name := "chronicler-it-testing",
-    libraryDependencies ++= Dependencies.itTestingDeps
+    libraryDependencies ++= Dependencies.testingDeps
   )
   .dependsOn(coreShared)
   .dependsOn(unitTesting)

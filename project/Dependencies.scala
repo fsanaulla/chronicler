@@ -31,21 +31,15 @@ object Dependencies {
     "com.github.fsanaulla" %% "scalacheck-generators" % Versions.Testing.scalaCheckGenerators exclude("org.scala-lang", "scala-reflect")
   val akkaTestKit = "com.typesafe.akka"    %% "akka-testkit" % Versions.Akka.akka
 
-  val httpClientTesting = List(
-    // if, you want to use it by your own, publish this deps from tests library first
-    "com.github.fsanaulla"  %% "chronicler-it-testing"   % Versions.testing % Scope.test,
-    "com.github.fsanaulla"  %% "chronicler-unit-testing" % Versions.testing % Scope.test
-  )
-
   def macroDeps(scalaVersion: String): List[ModuleID] = List(
     "org.scala-lang"       %  "scala-reflect"         % scalaVersion,
     "com.github.fsanaulla" %% "scalacheck-generators" % "0.2.0" % Scope.test exclude("org.scala-lang", "scala-reflect")
   ) ::: List(scalaTest, scalaCheck).map(_ % Scope.test)
 
   // testing
-  val itTestingDeps: Seq[ModuleID] = Seq(
-    "org.jetbrains"        %  "annotations" % "15.0", // to solve evicted warning
-    "org.testcontainers"   %  "influxdb"    % "1.7.3" exclude("org.jetbrains", "annotations")
+  val testingDeps: Seq[ModuleID] = Seq(
+    "org.jetbrains"      %  "annotations" % "15.0", // to solve evicted warning
+    "org.testcontainers" %  "influxdb"    % "1.7.3" exclude("org.jetbrains", "annotations")
   )
 
   // core
@@ -63,10 +57,10 @@ object Dependencies {
   )
 
   // async-http
-  val asyncHttp: Seq[ModuleID] = List(
+  val asyncDeps: Seq[ModuleID] = List(
     "io.netty"              %  "netty-handler"                    % Versions.netty, // to solve evicted warning
     "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp exclude("io.netty", "netty-handler")
-  ) ::: httpClientTesting
+  )
 
   // udp
   val udpDep: Seq[ModuleID] =

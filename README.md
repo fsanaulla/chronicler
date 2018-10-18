@@ -93,7 +93,7 @@ Our code:
 import com.github.fsanaulla.chronicler.async.{Influx, InfluxAsyncHttpClient}
 import com.github.fsanaulla.macros.annotations.{field, tag, timestamp}
 import com.github.fsanaulla.core.model.InfluxFormatter
-import com.github.fsanaulla.chronicler.async.api.Measurement
+import com.github.fsanaulla.chronicler.async.io.api.Measurement
 
 import scala.util.{Success, Failure}
 import scala.concurrent.ExecutionContext.Implicits.global
