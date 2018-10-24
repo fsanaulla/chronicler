@@ -29,7 +29,7 @@ class GzippedDatabaseApiSpec extends FlatSpecWithMatchers with Futures with Dock
     management.InfluxMng.apply(influxConf)
 
   lazy val io: AsyncIOClient =
-    InfluxIO.io(influxConf)
+    InfluxIO.apply(influxConf)
 
   lazy val db: Database = io.database(testDB)
 

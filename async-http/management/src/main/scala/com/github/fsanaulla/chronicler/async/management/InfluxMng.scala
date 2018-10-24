@@ -34,7 +34,7 @@ object InfluxMng {
   def apply(host: String,
             port: Int = 8086,
             credentials: Option[InfluxCredentials] = None)
-           (implicit ex: ExecutionContext) =
+           (implicit ex: ExecutionContext): AsyncManagementClient =
     new AsyncManagementClient(host, port, credentials)
 
   /**
@@ -44,6 +44,6 @@ object InfluxMng {
     * @param ex          - implicit execution context, by default use standard one
     * @return            - [[AsyncManagementClient]]
     */
-  def apply(conf: InfluxConfig)(implicit ex: ExecutionContext) =
+  def apply(conf: InfluxConfig)(implicit ex: ExecutionContext): AsyncManagementClient =
     apply(conf.host, conf.port, conf.credentials)
 }

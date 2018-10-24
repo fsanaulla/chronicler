@@ -30,7 +30,7 @@ class MeasurementApiSpec
   lazy val influxConf = InfluxConfig(host, port, credentials = Some(creds), gzipped = false)
 
   lazy val mng: AkkaManagementClient =
-    management.InfluxMng.management(influxConf)
+    management.InfluxMng.apply(influxConf)
 
   lazy val io: AkkaIOClient = InfluxIO(influxConf)
   lazy val meas: Measurement[FakeEntity] =

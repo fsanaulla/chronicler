@@ -32,7 +32,7 @@ object InfluxIO {
   def apply(host: String,
             port: Int = 8086,
             credentials: Option[InfluxCredentials] = None,
-            gzipped: Boolean = false) =
+            gzipped: Boolean = false): UrlIOClient =
     new UrlIOClient(host, port, credentials, gzipped)
 
   /**

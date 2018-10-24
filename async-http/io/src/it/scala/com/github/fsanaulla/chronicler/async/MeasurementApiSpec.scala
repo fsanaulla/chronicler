@@ -28,7 +28,7 @@ class MeasurementApiSpec extends FlatSpecWithMatchers with Futures with Dockeriz
     management.InfluxMng.apply(influxConf)
 
   lazy val io: AsyncIOClient =
-    InfluxIO.io(influxConf)
+    InfluxIO.apply(influxConf)
 
   lazy val meas: Measurement[FakeEntity] = io.measurement[FakeEntity](safeDB, measName)
 

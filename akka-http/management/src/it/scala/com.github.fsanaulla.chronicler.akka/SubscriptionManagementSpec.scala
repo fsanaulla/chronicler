@@ -35,7 +35,7 @@ class SubscriptionManagementSpec
   val duration: String = 1.hours + 30.minutes
 
   lazy val influx: AkkaManagementClient =
-    InfluxMng.management(host, port, Some(creds))
+    InfluxMng.apply(host, port, Some(creds))
 
   "Subscription operation" should "create subscription" in {
 

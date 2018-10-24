@@ -30,7 +30,7 @@ object InfluxMng {
     */
   def apply(host: String,
             port: Int = 8086,
-            credentials: Option[InfluxCredentials] = None) =
+            credentials: Option[InfluxCredentials] = None): UrlManagementClient =
     new UrlManagementClient(host, port, credentials)
 
   /**
@@ -38,6 +38,6 @@ object InfluxMng {
     * @param conf        - configuration object
     * @return            - UrlManagementClient
     */
-  def apply(conf: InfluxConfig) =
+  def apply(conf: InfluxConfig): UrlManagementClient =
     apply(conf.host, conf.port, conf.credentials)
 }

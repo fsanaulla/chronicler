@@ -24,7 +24,7 @@ class ShardManagementSpec
   val testDb = "_internal"
 
   lazy val influx: AkkaManagementClient =
-    InfluxMng.management(host, port, Some(creds))
+    InfluxMng.apply(host, port, Some(creds))
 
   "shard operations" should "show shards" in {
 

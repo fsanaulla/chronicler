@@ -32,11 +32,11 @@ object InfluxIO {
     * @param ex          - implicit execution context, by default use standard one
     * @return            - [[AsyncIOClient]]
     */
-  def io(host: String,
-         port: Int = 8086,
-         credentials: Option[InfluxCredentials] = None,
-         gzipped: Boolean = false)
-        (implicit ex: ExecutionContext) =
+  def apply(host: String,
+            port: Int = 8086,
+            credentials: Option[InfluxCredentials] = None,
+            gzipped: Boolean = false)
+           (implicit ex: ExecutionContext): AsyncIOClient =
     new AsyncIOClient(host, port, credentials, gzipped)
 
   /**
@@ -46,7 +46,7 @@ object InfluxIO {
     * @param ex          - implicit execution context, by default use standard one
     * @return            - [[AsyncIOClient]]
     */
-  def io(conf: InfluxConfig)
-        (implicit ex: ExecutionContext): AsyncIOClient =
-    io(conf.host, conf.port, conf.credentials, conf.gzipped)
+  def apply(conf: InfluxConfig)
+           (implicit ex: ExecutionContext): AsyncIOClient =
+    apply(conf.host, conf.port, conf.credentials, conf.gzipped)
 }
