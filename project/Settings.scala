@@ -3,7 +3,7 @@ import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.headerLicense
 import de.heikoseeberger.sbtheader.License
 import sbt.Keys.{publishArtifact, _}
 import sbt.librarymanagement.{Configurations, LibraryManagementSyntax}
-import sbt.{Defaults, Developer, Opts, ScmInfo, config, inConfig, url}
+import sbt.{Def, Defaults, Developer, Opts, ScmInfo, config, inConfig, url}
 
 /** Basic sbt settings */
 object Settings extends LibraryManagementSyntax {
@@ -13,10 +13,11 @@ object Settings extends LibraryManagementSyntax {
   lazy val LocalIntegrationTest = config("it") extend Test
   lazy val PropertyTest = config("pt") extend Test
 
-  lazy val propertyTestSettings = inConfig(PropertyTest)(Defaults.testSettings)
+  lazy val propertyTestSettings: Seq[Def.Setting[_]] = 
+    inConfig(PropertyTest)(Defaults.testSettings)
 
-  lazy val localIntegrationTestSettings = inConfig(LocalIntegrationTest)(
-    Defaults.testSettings ++ (parallelExecution in LocalIntegrationTest := false)
+  lazy val localIntegrationTestSettings: Seq[Def.Setting[_]] = 
+    inConfig(LocalIntegrationTest)(Defaults.testSettings ++ (parallelExecution in LocalIntegrationTest := false)
   )
 
   private object Owner {

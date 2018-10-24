@@ -18,7 +18,7 @@ package com.github.fsanaulla.chronicler.akka.io.models
 
 import _root_.akka.http.scaladsl.model.{HttpEntity, RequestEntity}
 import _root_.akka.util.ByteString
-import com.github.fsanaulla.chronicler.akka.shared.utils.AkkaContentTypes.OctetStream
+import com.github.fsanaulla.chronicler.akka.shared.types._
 import com.github.fsanaulla.chronicler.core.model.{Point, Serializer}
 
 /**

@@ -20,7 +20,7 @@ import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import _root_.akka.stream.ActorMaterializer
 import _root_.akka.testkit.TestKit
-import com.github.fsanaulla.chronicler.akka.shared.utils.AkkaContentTypes.AppJson
+import com.github.fsanaulla.chronicler.akka.shared.types._
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import jawn.ast._
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}

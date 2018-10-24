@@ -19,7 +19,7 @@ package com.github.fsanaulla.chronicler.akka.shared.handlers
 import _root_.akka.http.scaladsl.model._
 import _root_.akka.stream.ActorMaterializer
 import _root_.akka.stream.scaladsl.{Sink, Source}
-import com.github.fsanaulla.chronicler.akka.shared.utils.AkkaAlias.Connection
+import com.github.fsanaulla.chronicler.akka.shared.alias.Connection
 import com.github.fsanaulla.chronicler.core.typeclasses.RequestExecutor
 
 import scala.concurrent.Future

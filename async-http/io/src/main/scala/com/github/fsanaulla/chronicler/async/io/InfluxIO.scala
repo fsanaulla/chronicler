@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.urlhttp.io
+package com.github.fsanaulla.chronicler.async.io
 
 import com.github.fsanaulla.chronicler.core.model.{InfluxConfig, InfluxCredentials}
 
-object Influx {
+import scala.concurrent.ExecutionContext
+
+object InfluxIO {
 
   /**
     * Retrieve IO InfluxDB client, without management functionality
@@ -27,21 +29,24 @@ object Influx {
     * @param port        - port value
     * @param credentials - user credentials
     * @param gzipped     - enable gzip compression
-    * @return            - [[UrlIOClient]]
+    * @param ex          - implicit execution context, by default use standard one
+    * @return            - [[AsyncIOClient]]
     */
   def io(host: String,
          port: Int = 8086,
          credentials: Option[InfluxCredentials] = None,
-         gzipped: Boolean = false) =
-    new UrlIOClient(host, port, credentials, gzipped)
+         gzipped: Boolean = false)
+        (implicit ex: ExecutionContext) =
+    new AsyncIOClient(host, port, credentials, gzipped)
 
   /**
     * Retrieve IO InfluxDB client, without management functionality using configuration object
     *
-    * @param conf - configuration object
-    * @return     - [[UrlIOClient]]
+    * @param conf        - configuration object
+    * @param ex          - implicit execution context, by default use standard one
+    * @return            - [[AsyncIOClient]]
     */
-  def io(conf: InfluxConfig): UrlIOClient =
+  def io(conf: InfluxConfig)
+        (implicit ex: ExecutionContext): AsyncIOClient =
     io(conf.host, conf.port, conf.credentials, conf.gzipped)
-
 }

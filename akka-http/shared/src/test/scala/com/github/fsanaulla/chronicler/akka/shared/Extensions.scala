@@ -17,7 +17,6 @@
 package com.github.fsanaulla.chronicler.akka.shared
 
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
-import com.github.fsanaulla.chronicler.akka.shared.utils.AkkaContentTypes.AppJson
 
 /**
   * Created by
@@ -25,10 +24,8 @@ import com.github.fsanaulla.chronicler.akka.shared.utils.AkkaContentTypes.AppJso
   * Date: 10.04.18
   */
 object Extensions {
-  implicit class RichString(private val str: String) extends AnyVal {
-    def toResponse: HttpResponse = {
-      HttpResponse(entity = HttpEntity(AppJson, str))
-    }
+  implicit final class RichString(private val str: String) extends AnyVal {
+    def toResponse: HttpResponse =
+      HttpResponse(entity = HttpEntity(types.AppJson, str))
   }
-
 }

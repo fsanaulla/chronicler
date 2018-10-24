@@ -19,7 +19,7 @@ package com.github.fsanaulla.chronicler.akka.io.api
 import _root_.akka.actor.ActorSystem
 import _root_.akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.io.models.{AkkaReader, AkkaWriter}
-import com.github.fsanaulla.chronicler.akka.shared.utils.AkkaAlias.Connection
+import com.github.fsanaulla.chronicler.akka.shared.alias.Connection
 import com.github.fsanaulla.chronicler.core.api.MeasurementApi
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._

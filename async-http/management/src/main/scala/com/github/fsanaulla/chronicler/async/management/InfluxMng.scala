@@ -14,45 +14,36 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.akka.io
+package com.github.fsanaulla.chronicler.async.management
 
-import akka.actor.ActorSystem
 import com.github.fsanaulla.chronicler.core.model.{InfluxConfig, InfluxCredentials}
 
 import scala.concurrent.ExecutionContext
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 15.03.18
-  */
-object Influx {
+object InfluxMng {
 
   /**
-    * Retrieve IO InfluxDB client, without management functionality
+    * Retrieve InfluxDB management client, without IO functionality
+    *
     * @param host        - hostname
     * @param port        - port value
     * @param credentials - user credentials
-    * @param system      - actor system, by default will create new one
-    * @param gzipped     - enable gzip compression
     * @param ex          - implicit execution context, by default use standard one
-    * @return            - AkkaIOClient
+    * @return            - [[AsyncManagementClient]]
     */
-  def io(host: String,
-         port: Int = 8086,
-         credentials: Option[InfluxCredentials] = None,
-         gzipped: Boolean = false)
-        (implicit ex: ExecutionContext, system: ActorSystem) =
-    new AkkaIOClient(host, port, credentials, gzipped)(ex, system)
+  def apply(host: String,
+            port: Int = 8086,
+            credentials: Option[InfluxCredentials] = None)
+           (implicit ex: ExecutionContext) =
+    new AsyncManagementClient(host, port, credentials)
 
   /**
-    * Retrieve IO InfluxDB client, without management functionality using configuration object
+    * Retrieve InfluxDB management client, without IO functionality
+    *
     * @param conf        - configuration object
-    * @param system      - actor system, by default will create new one
     * @param ex          - implicit execution context, by default use standard one
-    * @return            - AkkaIOClient
+    * @return            - [[AsyncManagementClient]]
     */
-  def io(conf: InfluxConfig)
-        (implicit ex: ExecutionContext, system: ActorSystem): AkkaIOClient =
-    io(conf.host, conf.port, conf.credentials, conf.gzipped)(ex, system)
+  def apply(conf: InfluxConfig)(implicit ex: ExecutionContext) =
+    apply(conf.host, conf.port, conf.credentials)
 }

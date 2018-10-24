@@ -2,7 +2,7 @@ package com.github.fsanaulla.chronicler.akka
 
 import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
-import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, Influx}
+import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, InfluxMng}
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.NoContentResult
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
@@ -21,7 +21,7 @@ class SystemManagementSpec
     with DockerizedInfluxDB {
 
   lazy val influx: AkkaManagementClient =
-    Influx.management(host, port, Some(creds))
+    InfluxMng.management(host, port, Some(creds))
 
   "System api" should "ping InfluxDB" in {
     influx.ping.futureValue shouldEqual NoContentResult

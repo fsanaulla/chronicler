@@ -14,35 +14,30 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.async.management
+package com.github.fsanaulla.chronicler.urlhttp.management
 
 import com.github.fsanaulla.chronicler.core.model.{InfluxConfig, InfluxCredentials}
 
-import scala.concurrent.ExecutionContext
-
-object Influx {
+object InfluxMng {
 
   /**
     * Retrieve InfluxDB management client, without IO functionality
+    *
     * @param host        - hostname
     * @param port        - port value
     * @param credentials - user credentials
-    * @param ex          - implicit execution context, by default use standard one
-    * @return            - AsyncManagementClient
+    * @return            - UrlManagementClient
     */
-  def management(host: String,
-                 port: Int = 8086,
-                 credentials: Option[InfluxCredentials] = None)
-                (implicit ex: ExecutionContext) =
-    new AsyncManagementClient(host, port, credentials)
+  def apply(host: String,
+            port: Int = 8086,
+            credentials: Option[InfluxCredentials] = None) =
+    new UrlManagementClient(host, port, credentials)
 
   /**
     * Retrieve InfluxDB management client, without IO functionality
     * @param conf        - configuration object
-    * @param ex          - implicit execution context, by default use standard one
-    * @return            - AsyncManagementClient
+    * @return            - UrlManagementClient
     */
-  def management(conf: InfluxConfig)
-                (implicit ex: ExecutionContext) =
-    new AsyncManagementClient(conf.host, conf.port, conf.credentials)
+  def apply(conf: InfluxConfig) =
+    apply(conf.host, conf.port, conf.credentials)
 }

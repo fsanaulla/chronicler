@@ -2,7 +2,7 @@ package com.github.fsanaulla.chronicler.akka
 
 import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
-import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, Influx}
+import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, InfluxMng}
 import com.github.fsanaulla.chronicler.core.model.ShardGroupsInfo
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
@@ -24,7 +24,7 @@ class ShardManagementSpec
   val testDb = "_internal"
 
   lazy val influx: AkkaManagementClient =
-    Influx.management(host, port, Some(creds))
+    InfluxMng.management(host, port, Some(creds))
 
   "shard operations" should "show shards" in {
 

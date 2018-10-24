@@ -185,10 +185,10 @@ lazy val udp = project
   .settings(Settings.header)
   .settings(
     name := "chronicler-udp",
-    libraryDependencies ++= Dependencies.udpDep,
-    test in Scope.test := {}
+    libraryDependencies ++= Dependencies.udpDep
   )
   .dependsOn(coreShared)
+  .dependsOn(unitTesting)
   .enablePlugins(AutomateHeaderPlugin)
 
 //////////////////////////////////////////////////////

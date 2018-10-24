@@ -4,7 +4,7 @@ import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.SampleEntitys._
 import com.github.fsanaulla.chronicler.akka.io.api.Database
-import com.github.fsanaulla.chronicler.akka.io.{AkkaIOClient, Influx}
+import com.github.fsanaulla.chronicler.akka.io.{AkkaIOClient, InfluxIO}
 import com.github.fsanaulla.chronicler.akka.management.AkkaManagementClient
 import com.github.fsanaulla.chronicler.core.model.{InfluxConfig, Point}
 import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
@@ -26,10 +26,10 @@ class GzippedDatabaseApiSpec
   lazy val influxConf = InfluxConfig(host, port, credentials = Some(creds), gzipped = false)
 
   lazy val mng: AkkaManagementClient =
-    management.Influx.management(influxConf)
+    management.InfluxMng.management(influxConf)
 
   lazy val io: AkkaIOClient =
-    Influx.io(influxConf)
+    InfluxIO(influxConf)
 
   lazy val db: Database = io.database(testDB)
 

@@ -6,7 +6,7 @@ import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.OkResult
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
-import com.github.fsanaulla.chronicler.urlhttp.management.{Influx, UrlManagementClient}
+import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import org.scalatest.TryValues
 
 /**
@@ -28,7 +28,7 @@ class SubscriptionManagementSpec extends FlatSpecWithMatchers with DockerizedInf
   val duration: String = 1.hours + 30.minutes
 
   lazy val influx: UrlManagementClient =
-    Influx.management(host, port, Some(creds))
+    InfluxMng.apply(host, port, Some(creds))
 
   "Subscription operation" should "create subscription" in {
 

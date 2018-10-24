@@ -14,30 +14,34 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.urlhttp.management
+package com.github.fsanaulla.chronicler.urlhttp.io
 
 import com.github.fsanaulla.chronicler.core.model.{InfluxConfig, InfluxCredentials}
 
-object Influx {
+object InfluxIO {
 
   /**
-    * Retrieve InfluxDB management client, without IO functionality
+    * Retrieve IO InfluxDB client, without management functionality
     *
     * @param host        - hostname
     * @param port        - port value
     * @param credentials - user credentials
-    * @return            - UrlManagementClient
+    * @param gzipped     - enable gzip compression
+    * @return            - [[UrlIOClient]]
     */
-  def management(host: String,
-                 port: Int = 8086,
-                 credentials: Option[InfluxCredentials] = None) =
-    new UrlManagementClient(host, port, credentials)
+  def apply(host: String,
+            port: Int = 8086,
+            credentials: Option[InfluxCredentials] = None,
+            gzipped: Boolean = false) =
+    new UrlIOClient(host, port, credentials, gzipped)
 
   /**
-    * Retrieve InfluxDB management client, without IO functionality
-    * @param conf        - configuration object
-    * @return            - UrlManagementClient
+    * Retrieve IO InfluxDB client, without management functionality using configuration object
+    *
+    * @param conf - configuration object
+    * @return     - [[UrlIOClient]]
     */
-  def management(conf: InfluxConfig) =
-    new UrlManagementClient(conf.host, conf.port, conf.credentials)
+  def apply(conf: InfluxConfig): UrlIOClient =
+    apply(conf.host, conf.port, conf.credentials, conf.gzipped)
+
 }

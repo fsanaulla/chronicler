@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.akka.management
+package com.github.fsanaulla.chronicler.akka.io
 
 import akka.actor.ActorSystem
 import com.github.fsanaulla.chronicler.core.model.{InfluxConfig, InfluxCredentials}
@@ -26,31 +26,33 @@ import scala.concurrent.ExecutionContext
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-object Influx {
+object InfluxIO {
 
   /**
-    * Retrieve InfluxDB management client, without IO functionality
+    * Retrieve IO InfluxDB client, without management functionality
     * @param host        - hostname
     * @param port        - port value
     * @param credentials - user credentials
     * @param system      - actor system, by default will create new one
+    * @param gzipped     - enable gzip compression
     * @param ex          - implicit execution context, by default use standard one
-    * @return            - AkkaManagementClient
+    * @return            - AkkaIOClient
     */
-  def management(host: String,
-                 port: Int = 8086,
-                 credentials: Option[InfluxCredentials] = None)
-                (implicit ex: ExecutionContext, system: ActorSystem) =
-    new AkkaManagementClient(host, port, credentials)(ex, system)
+  def apply(host: String,
+            port: Int = 8086,
+            credentials: Option[InfluxCredentials] = None,
+            gzipped: Boolean = false)
+           (implicit ex: ExecutionContext, system: ActorSystem) =
+    new AkkaIOClient(host, port, credentials, gzipped)(ex, system)
 
   /**
-    * Retrieve InfluxDB management client, without IO functionality
+    * Retrieve IO InfluxDB client, without management functionality using configuration object
     * @param conf        - configuration object
     * @param system      - actor system, by default will create new one
     * @param ex          - implicit execution context, by default use standard one
-    * @return            - AkkaManagementClient
+    * @return            - AkkaIOClient
     */
-  def management(conf: InfluxConfig)
-                (implicit ex: ExecutionContext, system: ActorSystem) =
-    new AkkaManagementClient(conf.host, conf.port, conf.credentials)(ex, system)
+  def apply(conf: InfluxConfig)
+           (implicit ex: ExecutionContext, system: ActorSystem): AkkaIOClient =
+    apply(conf.host, conf.port, conf.credentials, conf.gzipped)(ex, system)
 }

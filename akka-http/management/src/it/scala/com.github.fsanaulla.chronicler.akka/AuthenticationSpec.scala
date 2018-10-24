@@ -2,7 +2,7 @@ package com.github.fsanaulla.chronicler.akka
 
 import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
-import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, Influx}
+import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, InfluxMng}
 import com.github.fsanaulla.chronicler.core.enums.Privileges
 import com.github.fsanaulla.chronicler.core.model.{AuthorizationException, UserPrivilegesInfo}
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
@@ -31,10 +31,10 @@ class AuthenticationSpec
   val adminPass = "admin"
 
   lazy val influx: AkkaManagementClient =
-    Influx.management(host, port)
+    InfluxMng.management(host, port)
 
   lazy val authInflux: AkkaManagementClient =
-    Influx.management(host = host, port = port, credentials = Some(creds))
+    InfluxMng.management(host = host, port = port, credentials = Some(creds))
 
   "AuthenticationUserManagement" should  "create admin user " in {
     influx.showUsers.futureValue.ex.get shouldBe a[AuthorizationException]

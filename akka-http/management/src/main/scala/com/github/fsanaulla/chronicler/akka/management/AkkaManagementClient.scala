@@ -20,8 +20,8 @@ import _root_.akka.http.scaladsl.Http
 import _root_.akka.http.scaladsl.model.{HttpRequest, HttpResponse, RequestEntity, Uri}
 import akka.actor.ActorSystem
 import akka.stream.{ActorMaterializer, StreamTcpException}
+import com.github.fsanaulla.chronicler.akka.shared.alias.Connection
 import com.github.fsanaulla.chronicler.akka.shared.handlers.{AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
-import com.github.fsanaulla.chronicler.akka.shared.utils.AkkaAlias.Connection
 import com.github.fsanaulla.chronicler.core.ManagementClient
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.typeclasses.FlatMap

@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.akka.shared.utils
+package com.github.fsanaulla.chronicler.akka.shared
 
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
-import akka.stream.scaladsl.Flow
+import akka.http.scaladsl.model.{MediaType, MediaTypes}
 
-import scala.concurrent.Future
-
-private[akka] object AkkaAlias {
-  type Connection = Flow[HttpRequest, HttpResponse, Future[Http.OutgoingConnection]]
+package object types {
+  val AppJson: MediaType.WithFixedCharset = MediaTypes.`application/json`
+  val OctetStream: MediaType.Binary = MediaTypes.`application/octet-stream`
 }

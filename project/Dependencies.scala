@@ -29,11 +29,11 @@ object Dependencies {
   val scalaCheck = "org.scalacheck" %% "scalacheck" % Versions.Testing.scalaCheck
   val scalaCheckGenerators =
     "com.github.fsanaulla" %% "scalacheck-generators" % Versions.Testing.scalaCheckGenerators exclude("org.scala-lang", "scala-reflect")
-  val akkaTestKit = "com.typesafe.akka"    %% "akka-testkit" % Versions.Akka.akka
+  val akkaTestKit = "com.typesafe.akka" %% "akka-testkit" % Versions.Akka.akka
 
   def macroDeps(scalaVersion: String): List[ModuleID] = List(
     "org.scala-lang"       %  "scala-reflect"         % scalaVersion,
-    "com.github.fsanaulla" %% "scalacheck-generators" % "0.2.0" % Scope.test exclude("org.scala-lang", "scala-reflect")
+    "com.github.fsanaulla" %% "scalacheck-generators" % "0.2.0"       % Scope.test exclude("org.scala-lang", "scala-reflect")
   ) ::: List(scalaTest, scalaCheck).map(_ % Scope.test)
 
   // testing
@@ -67,7 +67,6 @@ object Dependencies {
     Seq(
       "com.github.fsanaulla"  %% "scalatest-embedinflux"   % "0.1.7",
       "com.github.fsanaulla"  %% "chronicler-url-http"     % "0.3.3",
-      "com.github.fsanaulla"  %% "chronicler-unit-testing" % Versions.testing,
       scalaTest
-    ) map (_ % Scope.it)
+    ) map (_ % Scope.test)
 }

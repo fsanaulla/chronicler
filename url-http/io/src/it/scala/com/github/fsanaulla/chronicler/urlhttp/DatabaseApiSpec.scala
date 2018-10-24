@@ -8,8 +8,8 @@ import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntit
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.github.fsanaulla.chronicler.urlhttp.SampleEntitys.largeMultiJsonEntity
 import com.github.fsanaulla.chronicler.urlhttp.io.api.Database
-import com.github.fsanaulla.chronicler.urlhttp.io.{UrlIOClient, Influx => IOInflux}
-import com.github.fsanaulla.chronicler.urlhttp.management.{UrlManagementClient, Influx => MngInflux}
+import com.github.fsanaulla.chronicler.urlhttp.io.{UrlIOClient, InfluxIO => IOInflux}
+import com.github.fsanaulla.chronicler.urlhttp.management.{UrlManagementClient, InfluxMng => MngInflux}
 import jawn.ast.{JArray, JNum}
 import org.scalatest.{OptionValues, TryValues}
 
@@ -26,10 +26,10 @@ class DatabaseApiSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with 
     InfluxConfig(host, port, credentials = Some(creds), gzipped = false)
 
   lazy val management: UrlManagementClient =
-    MngInflux.management(influxConf)
+    MngInflux.apply(influxConf)
 
   lazy val io: UrlIOClient =
-    IOInflux.io(influxConf)
+    IOInflux.apply(influxConf)
 
   lazy val db: Database = io.database(testDB)
 

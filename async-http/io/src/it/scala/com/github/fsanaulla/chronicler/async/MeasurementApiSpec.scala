@@ -2,7 +2,7 @@ package com.github.fsanaulla.chronicler.async
 
 import com.github.fsanaulla.chronicler.async.SampleEntitys._
 import com.github.fsanaulla.chronicler.async.io.api.Measurement
-import com.github.fsanaulla.chronicler.async.io.{AsyncIOClient, Influx}
+import com.github.fsanaulla.chronicler.async.io.{AsyncIOClient, InfluxIO}
 import com.github.fsanaulla.chronicler.async.management.AsyncManagementClient
 import com.github.fsanaulla.chronicler.core.model.InfluxConfig
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
@@ -25,10 +25,10 @@ class MeasurementApiSpec extends FlatSpecWithMatchers with Futures with Dockeriz
     InfluxConfig(host, port, credentials = Some(creds), gzipped = false)
 
   lazy val mng: AsyncManagementClient =
-    management.Influx.management(influxConf)
+    management.InfluxMng.apply(influxConf)
 
   lazy val io: AsyncIOClient =
-    Influx.io(influxConf)
+    InfluxIO.io(influxConf)
 
   lazy val meas: Measurement[FakeEntity] = io.measurement[FakeEntity](safeDB, measName)
 
