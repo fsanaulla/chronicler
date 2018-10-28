@@ -129,8 +129,18 @@ class DatabaseApiSpec
       .futureValue
       .groupedResult
       .map { case (k, v) => k.toSeq -> v } shouldEqual Array(Seq("Male") -> JArray(Array(JNum(0), JNum(49))))
+  }
 
-    mng.close() shouldEqual {}
-    io.close() shouldEqual {}
+  it should "write escaped value" in {
+    val p = Point("test6")
+      .addTag("key,", "value,")
+      .addField("field=key", 1)
+
+    db.writePoint(p).futureValue shouldEqual NoContentResult
+
+    db.readJs("SELECT * FROM test6").futureValue.queryResult.length shouldEqual 1
+
+    mng.close()
+    io.close()
   }
 }
