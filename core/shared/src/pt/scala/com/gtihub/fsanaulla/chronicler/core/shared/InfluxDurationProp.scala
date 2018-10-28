@@ -1,4 +1,4 @@
-package com.gtihub.fsanaulla.chronicler.core.model
+package com.gtihub.fsanaulla.chronicler.core.shared
 
 import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
 import org.scalatest.FlatSpec

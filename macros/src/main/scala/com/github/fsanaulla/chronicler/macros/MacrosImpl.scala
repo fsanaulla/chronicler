@@ -16,6 +16,7 @@
 
 package com.github.fsanaulla.chronicler.macros
 
+import com.github.fsanaulla.chronicler.core.utils.Extensions.RichString
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
 
 import scala.reflect.macros.blackbox
@@ -196,17 +197,17 @@ private[macros] final class MacrosImpl(val c: blackbox.Context) {
 
     val optTags: Seq[Tree] = tagsMethods collect {
       case m: MethodSymbol if isOption(m.returnType) =>
-        q"${m.name.decodedName.toString} -> obj.${m.name}"
+        q"${m.name.decodedName.toString.escapeFull} -> obj.${m.name}"
     }
 
     val nonOptTags: Seq[Tree] = tagsMethods collect {
       case m: MethodSymbol if !isOption(m.returnType) =>
-        q"${m.name.decodedName.toString} -> obj.${m.name}"
+        q"${m.name.decodedName.toString.escapeFull} -> obj.${m.name}"
     }
 
     val fields: Seq[Tree] = fieldsMethods map {
       m: MethodSymbol =>
-        q"${m.name.decodedName.toString} -> obj.${m.name}"
+        q"${m.name.decodedName.toString.escapeFull} -> obj.${m.name}"
     }
 
     def write(tpe: Type,
@@ -216,6 +217,7 @@ private[macros] final class MacrosImpl(val c: blackbox.Context) {
               optTime: Option[Tree]): c.universe.Tree = {
 
       q"""def write(obj: $tpe): String = {
+                import com.github.fsanaulla.chronicler.core.utils.Extensions.RichString
                 val fields: String =  Seq[(String, Any)](..$fields) map {
                   case (k, v: String) => k + "=" + "\"" + v + "\""
                   case (k, v: Int)    => k + "=" + v + "i"
@@ -223,12 +225,12 @@ private[macros] final class MacrosImpl(val c: blackbox.Context) {
                 } mkString(",")
 
                 val nonOptTags: String = Seq[(String, String)](..$nonOptTags) map {
-                  case (k, v) if v.nonEmpty => k + "=" + v
+                  case (k, v) if v.nonEmpty => k + "=" + v.escapeFull
                   case (k, _) => throw new IllegalArgumentException("Tag " + k + " can't be an empty string")
                 } mkString(",")
 
                 val optTags: String = Seq[(String, Option[String])](..$optTags) collect {
-                  case (k, Some(v)) => k + "=" + v
+                  case (k, Some(v)) => k + "=" + v.escapeFull
                 } mkString(",")
 
                 val combTags: String = if (optTags.isEmpty) nonOptTags else nonOptTags + "," + optTags
