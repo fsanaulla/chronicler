@@ -101,10 +101,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 // let's define our model, and mark them with annotations for macro-code generation
 case class Resume(
  @tag id: String,
- @tag candidateName: String,
+ @tag candidateName: Option[String],
  @tag candidateSurname: String,
  @field position: String,
- @field age: Option[Int],
+ @field age: Int,
  @field rate: Double,
  @timestamp created: Long)
 
@@ -131,10 +131,10 @@ val measurement: Measurement[Resume] =
   
 // let's write into measurement
 val resume = Resume("dasdasfsadf",
-                    "Jame",
+                    Some("Jame"),
                     "Lanni",
                     "Scala developer",
-                    Some(25),
+                    25,
                     4.5,
                     System.currentTimeMillis() * 1000000)
   
