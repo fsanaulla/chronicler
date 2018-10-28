@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.async.shared.utils
+package com.github.fsanaulla.chronicler.async.shared
 
 import com.softwaremill.sttp.{Id, RequestT}
 import jawn.ast.JValue
 
-private[async] object Aliases {
+package object alias {
   type Request = RequestT[Id, JValue, Nothing]
 }

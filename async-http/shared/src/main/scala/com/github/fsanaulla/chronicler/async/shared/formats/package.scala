@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.async.shared.utils
+package com.github.fsanaulla.chronicler.async.shared
 
 import com.softwaremill.sttp.{ResponseAs, asString}
 import jawn.ast.{JNull, JParser, JValue}
 
 import scala.util.Success
 
-private[async] object ResponseFormats {
+package object formats {
 
   val asJson: ResponseAs[JValue, Nothing] = {
     asString

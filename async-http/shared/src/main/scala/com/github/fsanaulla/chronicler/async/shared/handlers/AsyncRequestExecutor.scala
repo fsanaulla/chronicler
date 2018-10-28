@@ -16,8 +16,8 @@
 
 package com.github.fsanaulla.chronicler.async.shared.handlers
 
-import com.github.fsanaulla.chronicler.async.shared.utils.Aliases.Request
-import com.github.fsanaulla.chronicler.async.shared.utils.ResponseFormats.asJson
+import com.github.fsanaulla.chronicler.async.shared.alias._
+import com.github.fsanaulla.chronicler.async.shared.formats._
 import com.github.fsanaulla.chronicler.core.typeclasses.RequestExecutor
 import com.softwaremill.sttp.{Response, SttpBackend, Uri, sttp}
 import jawn.ast.JValue

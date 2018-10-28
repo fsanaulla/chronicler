@@ -16,8 +16,8 @@
 
 package com.github.fsanaulla.chronicler.async.management
 
+import com.github.fsanaulla.chronicler.async.shared.alias._
 import com.github.fsanaulla.chronicler.async.shared.handlers.{AsyncQueryBuilder, AsyncRequestExecutor, AsyncResponseHandler}
-import com.github.fsanaulla.chronicler.async.shared.utils.Aliases.Request
 import com.github.fsanaulla.chronicler.core.ManagementClient
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, WriteResult}
 import com.github.fsanaulla.chronicler.core.typeclasses.FlatMap
