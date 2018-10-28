@@ -24,27 +24,23 @@ object Dependencies {
     }
   }
 
+  val sttp = "com.softwaremill.sttp" %% "core" % Versions.sttp
   val scalaTest  = "org.scalatest"  %% "scalatest"  % Versions.Testing.scalaTest
   val scalaCheck = "org.scalacheck" %% "scalacheck" % Versions.Testing.scalaCheck
   val scalaCheckGenerators =
     "com.github.fsanaulla" %% "scalacheck-generators" % Versions.Testing.scalaCheckGenerators exclude("org.scala-lang", "scala-reflect")
-
-  val httpClientTesting = List(
-    // if, you want to use it by your own, publish this deps from tests library first
-    "com.github.fsanaulla"  %% "chronicler-it-testing"   % Versions.testing % Scope.test,
-    "com.github.fsanaulla"  %% "chronicler-unit-testing" % Versions.testing % Scope.test
-  )
+  val akkaTestKit = "com.typesafe.akka" %% "akka-testkit" % Versions.Akka.akka
 
   def macroDeps(scalaVersion: String): List[ModuleID] = List(
     "org.scala-lang"       %  "scala-reflect"         % scalaVersion,
-    "com.github.fsanaulla" %% "scalacheck-generators" % "0.2.0" % Scope.test exclude("org.scala-lang", "scala-reflect")
+    "com.github.fsanaulla" %% "scalacheck-generators" % "0.2.0"       % Scope.test exclude("org.scala-lang", "scala-reflect")
   ) ::: List(scalaTest, scalaCheck).map(_ % Scope.test)
 
   // testing
-  val itTestingDeps: Seq[ModuleID] = Seq(
-    "org.jetbrains"        %  "annotations" % "15.0", // to solve evicted warning
-    "org.testcontainers"   %  "influxdb"    % "1.7.3" exclude("org.jetbrains", "annotations")
-  ) :+ scalaTest % Scope.compileTimeOnly
+  val testingDeps: Seq[ModuleID] = Seq(
+    "org.jetbrains"      %  "annotations" % "15.0", // to solve evicted warning
+    "org.testcontainers" %  "influxdb"    % "1.7.3" exclude("org.jetbrains", "annotations")
+  )
 
   // core
   val coreDep: List[ModuleID] = List(
@@ -54,29 +50,23 @@ object Dependencies {
 
   // akka-http
   val akkaDep: List[ModuleID] = List(
-    "com.typesafe.akka"    %% "akka-stream"  % Versions.Akka.akka     % Scope.compileTimeOnly,
-    "com.typesafe.akka"    %% "akka-actor"   % Versions.Akka.akka     % Scope.compileTimeOnly,
-    "com.typesafe.akka"    %% "akka-testkit" % Versions.Akka.akka     % Scope.all,
+    "com.typesafe.akka"    %% "akka-stream"  % Versions.Akka.akka,
+    "com.typesafe.akka"    %% "akka-actor"   % Versions.Akka.akka,
+    "com.typesafe.akka"    %% "akka-testkit" % Versions.Akka.akka % Scope.test,
     "com.typesafe.akka"    %% "akka-http"    % Versions.Akka.akkaHttp
-  ) ::: httpClientTesting
+  )
 
   // async-http
-  val asyncHttp: Seq[ModuleID] = List(
+  val asyncDeps: Seq[ModuleID] = List(
     "io.netty"              %  "netty-handler"                    % Versions.netty, // to solve evicted warning
     "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp exclude("io.netty", "netty-handler")
-  ) ::: httpClientTesting
-
-  // url-http
-  val urlHttp: Seq[ModuleID] = List(
-    "com.softwaremill.sttp" %% "core" % Versions.sttp
-  ) ::: httpClientTesting
+  )
 
   // udp
   val udpDep: Seq[ModuleID] =
     Seq(
       "com.github.fsanaulla"  %% "scalatest-embedinflux"   % "0.1.7",
       "com.github.fsanaulla"  %% "chronicler-url-http"     % "0.3.3",
-      "com.github.fsanaulla"  %% "chronicler-unit-testing" % Versions.testing,
       scalaTest
-    ) map (_ % Scope.it)
+    ) map (_ % Scope.test)
 }
