@@ -5,7 +5,7 @@ At the top of read operation results stands `ReadResult[_]`. It's separated into
 - `GroupedResult[_]`
 
 1. `QueryResult[_]` used to represent simply select request without `GROUP BY` clause. For example
-`SELECT * FROM db.measurement`. To extract query request result from `ReadResult`, simple execute `.queryResult` on `ReadREsult`.
+`SELECT * FROM db.measurement`. To extract query request result from `ReadResult`, simple execute `.queryResult` on `ReadResult`.
 
 2. `GroupedResult[_]` used to represent result of query with `GROUP BY` clause. Can  be received by executing `.groupedResult`.
 
