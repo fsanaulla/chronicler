@@ -140,7 +140,7 @@ class DatabaseApiSpec
 
     db.readJs("SELECT * FROM test6").futureValue.queryResult.length shouldEqual 1
 
-    mng.close()
-    io.close()
+    mng.close() shouldEqual {}
+    io.close() shouldEqual {}
   }
 }

@@ -25,16 +25,16 @@ class DatabaseApiSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with 
   lazy val influxConf =
     InfluxConfig(host, port, credentials = Some(creds), gzipped = false)
 
-  lazy val management: UrlManagementClient =
-    MngInflux.apply(influxConf)
+  lazy val mng: UrlManagementClient =
+    MngInflux(influxConf)
 
   lazy val io: UrlIOClient =
-    IOInflux.apply(influxConf)
+    IOInflux(influxConf)
 
   lazy val db: Database = io.database(testDB)
 
   "Database API" should "write data from file" in {
-    management.createDatabase(testDB).success.value shouldEqual OkResult
+    mng.createDatabase(testDB).success.value shouldEqual OkResult
 
     db.writeFromFile(getClass.getResource("/points.txt").getPath)
       .success
@@ -128,7 +128,18 @@ class DatabaseApiSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with 
       .groupedResult
       .map { case (k, v) => k.toSeq -> v } shouldEqual Array(Seq("Male") -> JArray(Array(JNum(0), JNum(49))))
 
-    management.close() shouldEqual {}
+  }
+
+  it should "write escaped value" in {
+    val p = Point("test6")
+      .addTag("key,", "value,")
+      .addField("field=key", 1)
+
+    db.writePoint(p).success.value shouldEqual NoContentResult
+
+    db.readJs("SELECT * FROM test6").success.value.queryResult.length shouldEqual 1
+
+    mng.close() shouldEqual {}
     io.close() shouldEqual {}
   }
 }
