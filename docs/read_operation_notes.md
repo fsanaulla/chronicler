@@ -18,7 +18,7 @@ For more details [see](response_handling.md).
 
 At the moment only unsafe method exist. The base one is:
 ```
-db.readJs("SELEC * FROM measurement")
+db.readJs("SELECT * FROM measurement")
 res0: Future[ReadResult[JsArray]] // where JsArray it's influx point representation
 ```
 You can execute multiple query's in one request:
