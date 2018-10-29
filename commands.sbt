@@ -4,7 +4,7 @@ addCommandAlias("fullRelease", ";clean;publishSigned;sonatypeRelease")
 // core testing
 addCommandAlias(
   "coreTest",
-  ";project coreShared;clean;compile;pt:compile;pt:test")
+  ";project coreShared;clean;compile;pt:compile;pt:test;test:compile;test")
 
 // akka testing
 addCommandAlias(

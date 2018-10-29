@@ -37,5 +37,10 @@ private[chronicler] object Extensions {
       case _ => None
     }
   }
+
+  implicit final class RichString(private val str: String) extends AnyVal {
+    def escapeFull: String = str.replaceAll("([ ,=])", "\\\\$1")
+    def escape: String = str.replaceAll("([ ,])", "\\\\$1")
+  }
 }
 

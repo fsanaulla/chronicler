@@ -16,6 +16,8 @@
 
 package com.github.fsanaulla.chronicler.core.model
 
+import com.github.fsanaulla.chronicler.core.utils.Extensions.RichString
+
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
@@ -30,31 +32,31 @@ sealed trait InfluxField extends Product with scala.Serializable {
 }
 
 final case class StringField(key: String, value: String) extends InfluxField {
-  override def toString: String = key + "=" + "\"" + value + "\""
+  override def toString: String = key.escapeFull + "=" + "\"" + value + "\""
 }
 
 final case class IntField(key: String, value: Int) extends InfluxField {
-  override def toString: String = key + "=" + value + "i"
+  override def toString: String = key.escapeFull + "=" + value + "i"
 }
 
 final case class LongField(key: String, value: Long) extends InfluxField {
-  override def toString: String = key + "=" + value
+  override def toString: String = key.escapeFull + "=" + value
 }
 
 final case class DoubleField(key: String, value: Double) extends InfluxField {
-  override def toString: String = key + "=" + value
+  override def toString: String = key.escapeFull + "=" + value
 }
 
 final case class BooleanField(key: String, value: Boolean) extends InfluxField {
-  override def toString: String = key + "=" + value
+  override def toString: String = key.escapeFull + "=" + value
 }
 
 final case class CharField(key: String, value: Char) extends InfluxField {
-  override def toString: String = key + "=" + value
+  override def toString: String = key.escapeFull + "=" + value
 }
 
 final case class BigDecimalField(key: String, value: BigDecimal) extends InfluxField {
-  override def toString: String = key + "=" + value
+  override def toString: String = key.escapeFull + "=" + value
 }
 
 final case class Point(measurement: String,
@@ -84,8 +86,8 @@ final case class Point(measurement: String,
   def serialize: String = {
     val sb = StringBuilder.newBuilder
 
-    sb.append(measurement).append(",")
-    sb.append(tags.map(tag => tag.key + "=" + tag.value).mkString(","))
+    sb.append(measurement.escape).append(",")
+    sb.append(tags.map(tag => tag.key.escapeFull + "=" + tag.value.escapeFull).mkString(","))
     sb.append(" ")
     sb.append(fields.map(_.toString).mkString(","))
 
