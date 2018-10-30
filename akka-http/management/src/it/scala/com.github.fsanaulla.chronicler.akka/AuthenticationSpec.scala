@@ -31,10 +31,10 @@ class AuthenticationSpec
   val adminPass = "admin"
 
   lazy val influx: AkkaManagementClient =
-    InfluxMng.apply(host, port)
+    InfluxMng(host, port)
 
   lazy val authInflux: AkkaManagementClient =
-    InfluxMng.apply(host = host, port = port, credentials = Some(creds))
+    InfluxMng(host = host, port = port, credentials = Some(creds))
 
   "AuthenticationUserManagement" should  "create admin user " in {
     influx.showUsers.futureValue.ex.get shouldBe a[AuthorizationException]

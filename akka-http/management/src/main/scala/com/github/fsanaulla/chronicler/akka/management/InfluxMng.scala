@@ -43,7 +43,7 @@ object InfluxMng {
   def apply(host: String,
             port: Int = 8086,
             credentials: Option[InfluxCredentials] = None,
-            httpsContext: Option[HttpsConnectionContext])
+            httpsContext: Option[HttpsConnectionContext] = None)
            (implicit ex: ExecutionContext, system: ActorSystem): AkkaManagementClient =
     new AkkaManagementClient(host, port, credentials, httpsContext)(ex, system)
 }
