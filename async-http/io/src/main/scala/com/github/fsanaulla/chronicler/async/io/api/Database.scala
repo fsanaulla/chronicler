@@ -16,8 +16,8 @@
 
 package com.github.fsanaulla.chronicler.async.io.api
 
-import com.github.fsanaulla.chronicler.async.io.models.AsyncSerializers._
 import com.github.fsanaulla.chronicler.async.io.models.{AsyncReader, AsyncWriter}
+import com.github.fsanaulla.chronicler.async.io.serializers._
 import com.github.fsanaulla.chronicler.core.api.DatabaseApi
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._

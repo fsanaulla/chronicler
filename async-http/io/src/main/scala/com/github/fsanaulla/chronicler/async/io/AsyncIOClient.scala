@@ -17,10 +17,10 @@
 package com.github.fsanaulla.chronicler.async.io
 
 import com.github.fsanaulla.chronicler.async.io.api.{Database, Measurement}
+import com.github.fsanaulla.chronicler.async.shared.AsyncInfluxClient
 import com.github.fsanaulla.chronicler.core.IOClient
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
-import com.softwaremill.sttp.SttpBackend
-import com.softwaremill.sttp.asynchttpclient.future.AsyncHttpClientFutureBackend
+import org.asynchttpclient.AsyncHttpClientConfig
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
@@ -28,19 +28,13 @@ import scala.reflect.ClassTag
 final class AsyncIOClient(val host: String,
                           val port: Int,
                           val credentials: Option[InfluxCredentials],
-                          gzipped: Boolean)
-                         (implicit val ex: ExecutionContext)
-  extends IOClient[Future, String] {
-
-  private[async] implicit val backend: SttpBackend[Future, Nothing] =
-    AsyncHttpClientFutureBackend()
+                          gzipped: Boolean,
+                          val asyncClientConfig: Option[AsyncHttpClientConfig])
+                         (implicit val ex: ExecutionContext) extends IOClient[Future, String] with AsyncInfluxClient {
 
   override def database(dbName: String): Database =
     new Database(host, port, credentials, dbName, gzipped)
 
-  override def measurement[A: ClassTag](dbName: String,
-                                        measurementName: String): Measurement[A] =
+  override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] =
     new Measurement[A](host, port, credentials, dbName, measurementName, gzipped)
-
-  override def close(): Unit = backend.close()
 }

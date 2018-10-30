@@ -16,7 +16,7 @@
 
 package com.github.fsanaulla.chronicler.async.io.models
 
-import com.github.fsanaulla.chronicler.async.io.models.ResponseFormats.asJson
+import com.github.fsanaulla.chronicler.async.shared.formats._
 import com.github.fsanaulla.chronicler.async.shared.handlers.{AsyncQueryBuilder, AsyncRequestExecutor, AsyncResponseHandler}
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
 import com.github.fsanaulla.chronicler.core.io.WriteOperations

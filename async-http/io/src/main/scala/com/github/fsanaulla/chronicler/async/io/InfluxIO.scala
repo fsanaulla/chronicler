@@ -16,7 +16,9 @@
 
 package com.github.fsanaulla.chronicler.async.io
 
-import com.github.fsanaulla.chronicler.core.model.{InfluxConfig, InfluxCredentials}
+import com.github.fsanaulla.chronicler.async.io.models.InfluxConfig
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import org.asynchttpclient.AsyncHttpClientConfig
 
 import scala.concurrent.ExecutionContext
 
@@ -25,19 +27,21 @@ object InfluxIO {
   /**
     * Retrieve IO InfluxDB client, without management functionality
     *
-    * @param host        - hostname
-    * @param port        - port value
-    * @param credentials - user credentials
-    * @param gzipped     - enable gzip compression
-    * @param ex          - implicit execution context, by default use standard one
-    * @return            - [[AsyncIOClient]]
+    * @param host              - hostname
+    * @param port              - port value
+    * @param credentials       - user credentials
+    * @param gzipped           - enable gzip compression
+    * @param asyncClientConfig - custom configuration for [[org.asynchttpclient.AsyncHttpClient]]
+    * @param ex                - implicit execution context, by default use standard one
+    * @return                  - [[AsyncIOClient]]
     */
   def apply(host: String,
             port: Int = 8086,
             credentials: Option[InfluxCredentials] = None,
-            gzipped: Boolean = false)
+            gzipped: Boolean = false,
+            asyncClientConfig: Option[AsyncHttpClientConfig] = None)
            (implicit ex: ExecutionContext): AsyncIOClient =
-    new AsyncIOClient(host, port, credentials, gzipped)
+    new AsyncIOClient(host, port, credentials, gzipped, asyncClientConfig)
 
   /**
     * Retrieve IO InfluxDB client, without management functionality using configuration object
@@ -48,5 +52,5 @@ object InfluxIO {
     */
   def apply(conf: InfluxConfig)
            (implicit ex: ExecutionContext): AsyncIOClient =
-    apply(conf.host, conf.port, conf.credentials, conf.gzipped)
+    apply(conf.host, conf.port, conf.credentials, conf.gzipped, conf.asyncClientConfig)
 }
