@@ -16,34 +16,32 @@
 
 package com.github.fsanaulla.chronicler.async.management
 
+import com.github.fsanaulla.chronicler.async.shared.AsyncInfluxClient
 import com.github.fsanaulla.chronicler.async.shared.alias._
 import com.github.fsanaulla.chronicler.async.shared.handlers.{AsyncQueryBuilder, AsyncRequestExecutor, AsyncResponseHandler}
 import com.github.fsanaulla.chronicler.core.ManagementClient
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, WriteResult}
 import com.github.fsanaulla.chronicler.core.typeclasses.FlatMap
-import com.softwaremill.sttp.asynchttpclient.future.AsyncHttpClientFutureBackend
-import com.softwaremill.sttp.{Response, SttpBackend, Uri}
+import com.softwaremill.sttp.{Response, Uri}
 import jawn.ast.JValue
+import org.asynchttpclient.AsyncHttpClientConfig
 
 import scala.concurrent.{ExecutionContext, Future}
 
 final class AsyncManagementClient(val host: String,
                                   val port: Int,
-                                  val credentials: Option[InfluxCredentials])
+                                  val credentials: Option[InfluxCredentials],
+                                  val asyncClientConfig: Option[AsyncHttpClientConfig])
                                  (implicit val ex: ExecutionContext)
-  extends ManagementClient[Future, Request, Response[JValue], Uri, String]
+  extends AsyncInfluxClient
+    with ManagementClient[Future, Request, Response[JValue], Uri, String]
     with AsyncRequestExecutor
     with AsyncResponseHandler
     with AsyncQueryBuilder
     with FlatMap[Future]
     with AutoCloseable {
 
-  private[async] implicit val backend: SttpBackend[Future, Nothing] =
-    AsyncHttpClientFutureBackend()
-
   private[chronicler] override def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
-
-  override def close(): Unit = backend.close()
 
   override def ping: Future[WriteResult] =
     execute(buildQuery("/ping", Map.empty[String, String])).flatMap(toResult)

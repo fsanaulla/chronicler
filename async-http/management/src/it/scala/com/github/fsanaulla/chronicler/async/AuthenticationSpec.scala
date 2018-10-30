@@ -26,10 +26,10 @@ class AuthenticationSpec extends FlatSpecWithMatchers with DockerizedInfluxDB wi
   val adminPass = "admin"
 
   lazy val influx: AsyncManagementClient =
-    InfluxMng.apply(host, port)
+    InfluxMng(host, port)
 
   lazy val authInflux: AsyncManagementClient =
-    InfluxMng.apply(host, port, Some(creds))
+    InfluxMng(host, port, Some(creds))
 
   "AuthenticationManagement" should  "create admin user " in {
     influx.showUsers.futureValue.ex.value shouldBe a[AuthorizationException]

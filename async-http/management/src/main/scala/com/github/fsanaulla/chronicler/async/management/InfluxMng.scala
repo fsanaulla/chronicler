@@ -17,6 +17,7 @@
 package com.github.fsanaulla.chronicler.async.management
 
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import org.asynchttpclient.AsyncHttpClientConfig
 
 import scala.concurrent.ExecutionContext
 
@@ -25,15 +26,17 @@ object InfluxMng {
   /**
     * Retrieve InfluxDB management client, without IO functionality
     *
-    * @param host        - hostname
-    * @param port        - port value
-    * @param credentials - user credentials
-    * @param ex          - implicit execution context, by default use standard one
-    * @return            - [[AsyncManagementClient]]
+    * @param host              - hostname
+    * @param port              - port value
+    * @param credentials       - user credentials
+    * @param asyncClientConfig - custom configuration for [[org.asynchttpclient.AsyncHttpClient]]
+    * @param ex                - implicit execution context, by default use standard one
+    * @return                  - [[AsyncManagementClient]]
     */
   def apply(host: String,
             port: Int = 8086,
-            credentials: Option[InfluxCredentials] = None)
+            credentials: Option[InfluxCredentials] = None,
+            asyncClientConfig: Option[AsyncHttpClientConfig] = None)
            (implicit ex: ExecutionContext): AsyncManagementClient =
-    new AsyncManagementClient(host, port, credentials)
+    new AsyncManagementClient(host, port, credentials, asyncClientConfig)
 }

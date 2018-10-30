@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class SystemManagementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with Futures {
 
   lazy val influx: AsyncManagementClient =
-    InfluxMng.apply(host, port, Some(creds))
+    InfluxMng(host, port, Some(creds))
 
   "System api" should "ping InfluxDB" in {
     influx.ping.futureValue shouldEqual NoContentResult
