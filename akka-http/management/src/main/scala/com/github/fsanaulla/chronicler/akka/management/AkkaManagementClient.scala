@@ -16,11 +16,10 @@
 
 package com.github.fsanaulla.chronicler.akka.management
 
-import _root_.akka.http.scaladsl.Http
+import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.model.{HttpRequest, HttpResponse, RequestEntity, Uri}
-import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, StreamTcpException}
-import com.github.fsanaulla.chronicler.akka.shared.alias.Connection
+import _root_.akka.http.scaladsl.{Http, HttpsConnectionContext}
+import com.github.fsanaulla.chronicler.akka.shared.AkkaInfluxClient
 import com.github.fsanaulla.chronicler.akka.shared.handlers.{AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.core.ManagementClient
 import com.github.fsanaulla.chronicler.core.model._
@@ -31,9 +30,11 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
 final class AkkaManagementClient(host: String,
                                  port: Int,
-                                 val credentials: Option[InfluxCredentials])
+                                 val credentials: Option[InfluxCredentials],
+                                 httpsContext: Option[HttpsConnectionContext])
                                 (implicit val ex: ExecutionContext, val system: ActorSystem)
-  extends ManagementClient[Future, HttpRequest, HttpResponse, Uri, RequestEntity]
+  extends AkkaInfluxClient(host, port, httpsContext)
+    with ManagementClient[Future, HttpRequest, HttpResponse, Uri, RequestEntity]
     with AkkaRequestExecutor
     with AkkaResponseHandler
     with AkkaQueryBuilder
@@ -42,14 +43,6 @@ final class AkkaManagementClient(host: String,
     with AutoCloseable {
 
   private[chronicler] override def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
-
-  private[akka] implicit val mat: ActorMaterializer = ActorMaterializer()
-  private[akka] implicit val connection: Connection = Http()
-    .outgoingConnection(host, port)
-    .recover {
-      case ex: StreamTcpException => throw new ConnectionException(ex.getMessage)
-      case unknown => throw new UnknownConnectionException(unknown.getMessage)
-    }
 
   override def close(): Unit =
     Await.ready(Http().shutdownAllConnectionPools(), Duration.Inf)

@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.akka.io.models
+package com.github.fsanaulla.chronicler.akka.io
 
-import _root_.akka.http.scaladsl.model.{HttpEntity, RequestEntity}
-import _root_.akka.util.ByteString
-import com.github.fsanaulla.chronicler.akka.shared.types._
+import akka.http.scaladsl.model.{HttpEntity, RequestEntity}
+import akka.util.ByteString
+import com.github.fsanaulla.chronicler.akka.shared.types.OctetStream
 import com.github.fsanaulla.chronicler.core.model.{Point, Serializer}
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 15.03.18
-  */
-private[akka] object AkkaSeserializers {
-
+package object serializers {
   implicit val seq2Http: Serializer[Seq[String], RequestEntity] = new Serializer[Seq[String], RequestEntity] {
     def serialize(obj: Seq[String]) = HttpEntity(ByteString(obj.mkString("\n")))
   }

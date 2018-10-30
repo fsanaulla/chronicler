@@ -21,6 +21,7 @@ import java.nio.file.Paths
 import akka.http.scaladsl.model._
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.FileIO
+import com.github.fsanaulla.chronicler.akka.io.headers._
 import com.github.fsanaulla.chronicler.akka.shared.alias.Connection
 import com.github.fsanaulla.chronicler.akka.shared.handlers.{AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
@@ -60,7 +61,7 @@ private[akka] trait AkkaWriter
         retentionPolicy
       ),
       method = HttpMethods.POST,
-      headers = if (gzipped) AkkaHeaders.gzipEncoding :: Nil else Nil,
+      headers = if (gzipped) gzipEncoding :: Nil else Nil,
       entity = entity
     )
 
@@ -82,7 +83,7 @@ private[akka] trait AkkaWriter
         retentionPolicy
       ),
       method = HttpMethods.POST,
-      headers = if (gzipped) AkkaHeaders.gzipEncoding :: Nil else Nil,
+      headers = if (gzipped) gzipEncoding :: Nil else Nil,
       entity = HttpEntity(MediaTypes.`application/octet-stream`, FileIO.fromPath(Paths.get(filePath), 1024))
     )
 

@@ -16,12 +16,11 @@
 
 package com.github.fsanaulla.chronicler.akka.io.models
 
-import akka.http.scaladsl.model.headers.{HttpEncodings, `Accept-Encoding`}
+import akka.http.scaladsl.HttpsConnectionContext
+import com.github.fsanaulla.chronicler.core.model.{GzippedHttpConfig, InfluxCredentials}
 
-
-/** All headers required during client lifecycle */
-private[akka] object AkkaHeaders {
-
-  /** Header for GZIP content encoding */
-  val gzipEncoding = `Accept-Encoding`(HttpEncodings.gzip)
-}
+final case class InfluxConfig(host: String,
+                              port: Int,
+                              credentials: Option[InfluxCredentials],
+                              gzipped: Boolean,
+                              httpsContext: Option[HttpsConnectionContext]) extends GzippedHttpConfig

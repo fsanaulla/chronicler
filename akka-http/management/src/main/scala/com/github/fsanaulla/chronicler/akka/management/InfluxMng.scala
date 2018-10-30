@@ -17,7 +17,8 @@
 package com.github.fsanaulla.chronicler.akka.management
 
 import akka.actor.ActorSystem
-import com.github.fsanaulla.chronicler.core.model.{InfluxConfig, InfluxCredentials}
+import akka.http.scaladsl.HttpsConnectionContext
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 
 import scala.concurrent.ExecutionContext
 
@@ -30,27 +31,19 @@ object InfluxMng {
 
   /**
     * Retrieve InfluxDB management client, without IO functionality
-    * @param host        - hostname
-    * @param port        - port value
-    * @param credentials - user credentials
-    * @param system      - actor system, by default will create new one
-    * @param ex          - implicit execution context, by default use standard one
-    * @return            - AkkaManagementClient
+    *
+    * @param host         - hostname
+    * @param port         - port value
+    * @param credentials  - user credentials
+    * @param httpsContext - Context for enabling HTTPS
+    * @param system       - actor system, by default will create new one
+    * @param ex           - implicit execution context, by default use standard one
+    * @return             - [[AkkaManagementClient]]
     */
   def apply(host: String,
             port: Int = 8086,
-            credentials: Option[InfluxCredentials] = None)
+            credentials: Option[InfluxCredentials] = None,
+            httpsContext: Option[HttpsConnectionContext])
            (implicit ex: ExecutionContext, system: ActorSystem): AkkaManagementClient =
-    new AkkaManagementClient(host, port, credentials)(ex, system)
-
-  /**
-    * Retrieve InfluxDB management client, without IO functionality
-    * @param conf        - configuration object
-    * @param system      - actor system, by default will create new one
-    * @param ex          - implicit execution context, by default use standard one
-    * @return            - AkkaManagementClient
-    */
-  def apply(conf: InfluxConfig)
-           (implicit ex: ExecutionContext, system: ActorSystem): AkkaManagementClient =
-    apply(conf.host, conf.port, conf.credentials)(ex, system)
+    new AkkaManagementClient(host, port, credentials, httpsContext)(ex, system)
 }

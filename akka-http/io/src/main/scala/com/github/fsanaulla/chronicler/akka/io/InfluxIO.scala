@@ -17,7 +17,9 @@
 package com.github.fsanaulla.chronicler.akka.io
 
 import akka.actor.ActorSystem
-import com.github.fsanaulla.chronicler.core.model.{InfluxConfig, InfluxCredentials}
+import akka.http.scaladsl.HttpsConnectionContext
+import com.github.fsanaulla.chronicler.akka.io.models.InfluxConfig
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 
 import scala.concurrent.ExecutionContext
 
@@ -30,20 +32,23 @@ object InfluxIO {
 
   /**
     * Retrieve IO InfluxDB client, without management functionality
-    * @param host        - hostname
-    * @param port        - port value
-    * @param credentials - user credentials
-    * @param system      - actor system, by default will create new one
-    * @param gzipped     - enable gzip compression
-    * @param ex          - implicit execution context, by default use standard one
-    * @return            - AkkaIOClient
+    *
+    * @param host         - hostname
+    * @param port         - port value
+    * @param credentials  - user credentials
+    * @param httpsContext - Context for enabling HTTPS
+    * @param system       - actor system, by default will create new one
+    * @param gzipped      - enable gzip compression
+    * @param ex           - implicit execution context, by default use standard one
+    * @return             - [[AkkaIOClient]]
     */
   def apply(host: String,
             port: Int = 8086,
             credentials: Option[InfluxCredentials] = None,
-            gzipped: Boolean = false)
+            gzipped: Boolean = false,
+            httpsContext: Option[HttpsConnectionContext])
            (implicit ex: ExecutionContext, system: ActorSystem): AkkaIOClient =
-    new AkkaIOClient(host, port, credentials, gzipped)(ex, system)
+    new AkkaIOClient(host, port, credentials, gzipped, httpsContext)(ex, system)
 
   /**
     * Retrieve IO InfluxDB client, without management functionality using configuration object
@@ -54,5 +59,5 @@ object InfluxIO {
     */
   def apply(conf: InfluxConfig)
            (implicit ex: ExecutionContext, system: ActorSystem): AkkaIOClient =
-    apply(conf.host, conf.port, conf.credentials, conf.gzipped)(ex, system)
+    apply(conf.host, conf.port, conf.credentials, conf.gzipped, conf.httpsContext)(ex, system)
 }

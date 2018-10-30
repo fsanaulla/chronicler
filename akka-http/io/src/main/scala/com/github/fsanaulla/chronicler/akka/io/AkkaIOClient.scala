@@ -17,37 +17,28 @@
 package com.github.fsanaulla.chronicler.akka.io
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl.Http
+import akka.http.scaladsl.HttpsConnectionContext
 import akka.http.scaladsl.model.RequestEntity
-import akka.stream.{ActorMaterializer, StreamTcpException}
 import com.github.fsanaulla.chronicler.akka.io.api.{Database, Measurement}
-import com.github.fsanaulla.chronicler.akka.shared.alias.Connection
+import com.github.fsanaulla.chronicler.akka.shared.AkkaInfluxClient
 import com.github.fsanaulla.chronicler.core.IOClient
-import com.github.fsanaulla.chronicler.core.model.{ConnectionException, InfluxCredentials, UnknownConnectionException}
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 
-import scala.concurrent.duration._
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
 final class AkkaIOClient(host: String,
                          port: Int,
                          val credentials: Option[InfluxCredentials],
-                         gzipped: Boolean)
+                         gzipped: Boolean,
+                         httpsContext: Option[HttpsConnectionContext])
                         (implicit val ex: ExecutionContext, val system: ActorSystem)
-  extends IOClient[Future, RequestEntity] {
+  extends AkkaInfluxClient(host, port, httpsContext) with IOClient[Future, RequestEntity] {
 
-  private[akka] implicit val mat: ActorMaterializer = ActorMaterializer()
-  private[akka] implicit val connection: Connection = Http().outgoingConnection(host, port) recover {
-    case ex: StreamTcpException => throw new ConnectionException(ex.getMessage)
-    case unknown => throw new UnknownConnectionException(unknown.getMessage)
-  }
   override def database(dbName: String): Database =
     new Database(dbName, credentials, gzipped)
 
   override def measurement[A: ClassTag](dbName: String,
                                         measurementName: String): Measurement[A] =
     new Measurement[A](dbName, measurementName, credentials, gzipped)
-
-  override def close(): Unit =
-    Await.ready(Http().shutdownAllConnectionPools(), Duration.Inf)
 }

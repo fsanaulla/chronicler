@@ -19,8 +19,8 @@ package com.github.fsanaulla.chronicler.akka.io.api
 import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.model.RequestEntity
 import _root_.akka.stream.ActorMaterializer
-import com.github.fsanaulla.chronicler.akka.io.models.AkkaSeserializers._
 import com.github.fsanaulla.chronicler.akka.io.models.{AkkaReader, AkkaWriter}
+import com.github.fsanaulla.chronicler.akka.io.serializers._
 import com.github.fsanaulla.chronicler.akka.shared.alias.Connection
 import com.github.fsanaulla.chronicler.core.api.DatabaseApi
 import com.github.fsanaulla.chronicler.core.enums._
