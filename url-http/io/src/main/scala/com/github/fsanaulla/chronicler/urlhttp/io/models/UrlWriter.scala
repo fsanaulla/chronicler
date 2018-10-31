@@ -21,8 +21,8 @@ import com.github.fsanaulla.chronicler.core.io.WriteOperations
 import com.github.fsanaulla.chronicler.core.model.{HasCredentials, PointTransformer, WriteResult}
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
 import com.github.fsanaulla.chronicler.core.utils.Encodings
+import com.github.fsanaulla.chronicler.urlhttp.shared.formats.asJson
 import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlQueryBuilder, UrlRequestExecutor, UrlResponseHandler}
-import com.github.fsanaulla.chronicler.urlhttp.shared.utils.ResponseFormats.asJson
 import com.softwaremill.sttp._
 
 import scala.io.Source

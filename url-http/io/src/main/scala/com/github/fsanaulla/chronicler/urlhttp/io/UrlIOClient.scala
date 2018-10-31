@@ -19,7 +19,8 @@ package com.github.fsanaulla.chronicler.urlhttp.io
 import com.github.fsanaulla.chronicler.core.IOClient
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.urlhttp.io.api.{Database, Measurement}
-import com.softwaremill.sttp.{SttpBackend, TryHttpURLConnectionBackend}
+import com.github.fsanaulla.chronicler.urlhttp.shared.UrlHttpClient
+import com.github.fsanaulla.chronicler.urlhttp.shared.UrlHttpClient.CustomizationF
 
 import scala.reflect.ClassTag
 import scala.util.Try
@@ -27,11 +28,9 @@ import scala.util.Try
 final class UrlIOClient(val host: String,
                         val port: Int,
                         val credentials: Option[InfluxCredentials],
-                        gzipped: Boolean)
-  extends IOClient[Try, String] {
-
-  private[urlhttp] implicit val backend: SttpBackend[Try, Nothing] =
-    TryHttpURLConnectionBackend()
+                        gzipped: Boolean,
+                        customization: Option[CustomizationF])
+  extends UrlHttpClient(customization) with IOClient[Try, String] {
 
   override def database(dbName: String): Database =
     new Database(host, port, credentials, dbName, gzipped)
@@ -39,6 +38,4 @@ final class UrlIOClient(val host: String,
   override def measurement[A: ClassTag](dbName: String,
                                         measurementName: String): Measurement[A] =
     new Measurement[A](host, port, credentials, dbName, measurementName, gzipped)
-
-  override def close(): Unit = backend.close()
 }

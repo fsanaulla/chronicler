@@ -17,8 +17,8 @@
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
 import com.github.fsanaulla.chronicler.core.typeclasses.RequestExecutor
-import com.github.fsanaulla.chronicler.urlhttp.shared.utils.Aliases.Request
-import com.github.fsanaulla.chronicler.urlhttp.shared.utils.ResponseFormats.asJson
+import com.github.fsanaulla.chronicler.urlhttp.shared.alias.Request
+import com.github.fsanaulla.chronicler.urlhttp.shared.formats.asJson
 import com.softwaremill.sttp.{Response, SttpBackend, Uri, sttp}
 import jawn.ast.JValue
 

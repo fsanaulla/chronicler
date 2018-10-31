@@ -19,8 +19,8 @@ package com.github.fsanaulla.chronicler.urlhttp.io.api
 import com.github.fsanaulla.chronicler.core.api.DatabaseApi
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
-import com.github.fsanaulla.chronicler.urlhttp.io.models.UrlDeserializers._
 import com.github.fsanaulla.chronicler.urlhttp.io.models.{UrlReader, UrlWriter}
+import com.github.fsanaulla.chronicler.urlhttp.io.serializers._
 import com.softwaremill.sttp.SttpBackend
 import jawn.ast.JArray
 
