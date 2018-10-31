@@ -17,7 +17,7 @@
 package com.github.fsanaulla.chronicler.async.io
 
 import com.github.fsanaulla.chronicler.async.io.api.{Database, Measurement}
-import com.github.fsanaulla.chronicler.async.shared.AsyncInfluxClient
+import com.github.fsanaulla.chronicler.async.shared.AsyncHttpClient
 import com.github.fsanaulla.chronicler.core.IOClient
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import org.asynchttpclient.AsyncHttpClientConfig
@@ -29,8 +29,10 @@ final class AsyncIOClient(val host: String,
                           val port: Int,
                           val credentials: Option[InfluxCredentials],
                           gzipped: Boolean,
-                          val asyncClientConfig: Option[AsyncHttpClientConfig])
-                         (implicit val ex: ExecutionContext) extends IOClient[Future, String] with AsyncInfluxClient {
+                          asyncClientConfig: Option[AsyncHttpClientConfig])
+                         (implicit val ex: ExecutionContext)
+  extends AsyncHttpClient(asyncClientConfig)
+    with IOClient[Future, String] {
 
   override def database(dbName: String): Database =
     new Database(host, port, credentials, dbName, gzipped)

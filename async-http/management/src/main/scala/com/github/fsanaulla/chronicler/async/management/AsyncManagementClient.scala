@@ -16,7 +16,7 @@
 
 package com.github.fsanaulla.chronicler.async.management
 
-import com.github.fsanaulla.chronicler.async.shared.AsyncInfluxClient
+import com.github.fsanaulla.chronicler.async.shared.AsyncHttpClient
 import com.github.fsanaulla.chronicler.async.shared.alias._
 import com.github.fsanaulla.chronicler.async.shared.handlers.{AsyncQueryBuilder, AsyncRequestExecutor, AsyncResponseHandler}
 import com.github.fsanaulla.chronicler.core.ManagementClient
@@ -31,9 +31,9 @@ import scala.concurrent.{ExecutionContext, Future}
 final class AsyncManagementClient(val host: String,
                                   val port: Int,
                                   val credentials: Option[InfluxCredentials],
-                                  val asyncClientConfig: Option[AsyncHttpClientConfig])
+                                  asyncClientConfig: Option[AsyncHttpClientConfig])
                                  (implicit val ex: ExecutionContext)
-  extends AsyncInfluxClient
+  extends AsyncHttpClient(asyncClientConfig)
     with ManagementClient[Future, Request, Response[JValue], Uri, String]
     with AsyncRequestExecutor
     with AsyncResponseHandler
