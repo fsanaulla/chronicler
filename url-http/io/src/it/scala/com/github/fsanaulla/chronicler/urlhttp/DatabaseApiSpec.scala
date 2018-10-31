@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
-import com.github.fsanaulla.chronicler.core.model.{InfluxConfig, Point}
+import com.github.fsanaulla.chronicler.core.model.Point
 import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
 import com.github.fsanaulla.chronicler.testing.it.FakeEntity.fmt
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
@@ -8,6 +8,7 @@ import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntit
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.github.fsanaulla.chronicler.urlhttp.SampleEntitys.largeMultiJsonEntity
 import com.github.fsanaulla.chronicler.urlhttp.io.api.Database
+import com.github.fsanaulla.chronicler.urlhttp.io.models.InfluxConfig
 import com.github.fsanaulla.chronicler.urlhttp.io.{UrlIOClient, InfluxIO => IOInflux}
 import com.github.fsanaulla.chronicler.urlhttp.management.{UrlManagementClient, InfluxMng => MngInflux}
 import jawn.ast.{JArray, JNum}
@@ -23,10 +24,10 @@ class DatabaseApiSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with 
   val testDB = "db"
 
   lazy val influxConf =
-    InfluxConfig(host, port, credentials = Some(creds), gzipped = false)
+    InfluxConfig(host, port, credentials = Some(creds), gzipped = false, None)
 
   lazy val mng: UrlManagementClient =
-    MngInflux(influxConf)
+    MngInflux(host, port, credentials = Some(creds))
 
   lazy val io: UrlIOClient =
     IOInflux(influxConf)
