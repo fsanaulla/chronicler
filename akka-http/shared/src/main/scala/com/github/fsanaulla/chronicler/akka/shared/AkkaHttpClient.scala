@@ -25,10 +25,10 @@ import com.github.fsanaulla.chronicler.core.model.{ConnectionException, UnknownC
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-abstract class AkkaInfluxClient(host: String,
-                                port: Int,
-                                httpsContext: Option[HttpsConnectionContext])
-                               (implicit as: ActorSystem) { self: AutoCloseable =>
+abstract class AkkaHttpClient(host: String,
+                              port: Int,
+                              httpsContext: Option[HttpsConnectionContext])
+                             (implicit as: ActorSystem) { self: AutoCloseable =>
 
   private[akka] implicit val mat: ActorMaterializer = ActorMaterializer()
   private[akka] implicit val connection: Connection =

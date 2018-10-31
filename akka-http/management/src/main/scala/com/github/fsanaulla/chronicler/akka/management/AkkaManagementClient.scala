@@ -17,23 +17,22 @@
 package com.github.fsanaulla.chronicler.akka.management
 
 import _root_.akka.actor.ActorSystem
+import _root_.akka.http.scaladsl.HttpsConnectionContext
 import _root_.akka.http.scaladsl.model.{HttpRequest, HttpResponse, RequestEntity, Uri}
-import _root_.akka.http.scaladsl.{Http, HttpsConnectionContext}
-import com.github.fsanaulla.chronicler.akka.shared.AkkaInfluxClient
+import com.github.fsanaulla.chronicler.akka.shared.AkkaHttpClient
 import com.github.fsanaulla.chronicler.akka.shared.handlers.{AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.core.ManagementClient
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.typeclasses.FlatMap
 
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future}
 
 final class AkkaManagementClient(host: String,
                                  port: Int,
                                  val credentials: Option[InfluxCredentials],
                                  httpsContext: Option[HttpsConnectionContext])
                                 (implicit val ex: ExecutionContext, val system: ActorSystem)
-  extends AkkaInfluxClient(host, port, httpsContext)
+  extends AkkaHttpClient(host, port, httpsContext)
     with ManagementClient[Future, HttpRequest, HttpResponse, Uri, RequestEntity]
     with AkkaRequestExecutor
     with AkkaResponseHandler
@@ -43,9 +42,6 @@ final class AkkaManagementClient(host: String,
     with AutoCloseable {
 
   private[chronicler] override def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
-
-  override def close(): Unit =
-    Await.ready(Http().shutdownAllConnectionPools(), Duration.Inf)
 
   override def ping: Future[WriteResult] =
     flatMap(execute(Uri("/ping")))(toResult)
