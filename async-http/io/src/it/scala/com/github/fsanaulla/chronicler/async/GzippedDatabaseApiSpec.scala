@@ -2,9 +2,10 @@ package com.github.fsanaulla.chronicler.async
 
 import com.github.fsanaulla.chronicler.async.SampleEntitys.largeMultiJsonEntity
 import com.github.fsanaulla.chronicler.async.io.api.Database
+import com.github.fsanaulla.chronicler.async.io.models.InfluxConfig
 import com.github.fsanaulla.chronicler.async.io.{AsyncIOClient, InfluxIO}
-import com.github.fsanaulla.chronicler.async.management.AsyncManagementClient
-import com.github.fsanaulla.chronicler.core.model.{InfluxConfig, Point}
+import com.github.fsanaulla.chronicler.async.management.{AsyncManagementClient, InfluxMng}
+import com.github.fsanaulla.chronicler.core.model.Point
 import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity, Futures}
@@ -23,10 +24,10 @@ class GzippedDatabaseApiSpec extends FlatSpecWithMatchers with Futures with Dock
   val testDB = "db"
 
   lazy val influxConf =
-    InfluxConfig(host, port, credentials = Some(creds), gzipped = true)
+    InfluxConfig(host, port, credentials = Some(creds), gzipped = false, None)
 
   lazy val mng: AsyncManagementClient =
-    management.InfluxMng.apply(influxConf)
+    InfluxMng(host, port, credentials = Some(creds))
 
   lazy val io: AsyncIOClient =
     InfluxIO.apply(influxConf)
