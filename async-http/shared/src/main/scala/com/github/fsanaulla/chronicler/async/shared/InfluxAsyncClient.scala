@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.async.io.models
+package com.github.fsanaulla.chronicler.async.shared
 
-import com.github.fsanaulla.chronicler.core.model.{GzippedHttpConfig, InfluxCredentials}
+import com.softwaremill.sttp.SttpBackend
+import com.softwaremill.sttp.asynchttpclient.future.AsyncHttpClientFutureBackend
 import org.asynchttpclient.AsyncHttpClientConfig
 
-final case class InfluxConfig(host: String,
-                              port: Int,
-                              credentials: Option[InfluxCredentials],
-                              gzipped: Boolean,
-                              asyncClientConfig: Option[AsyncHttpClientConfig]) extends GzippedHttpConfig
+import scala.concurrent.Future
+
+abstract class InfluxAsyncClient(asyncClientConfig: Option[AsyncHttpClientConfig]) { self: AutoCloseable =>
+
+  private[async] implicit val backend: SttpBackend[Future, Nothing] =
+    asyncClientConfig.fold(AsyncHttpClientFutureBackend())(AsyncHttpClientFutureBackend.usingConfig)
+  private[async] def close(): Unit = backend.close()
+}
