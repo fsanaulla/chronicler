@@ -19,8 +19,8 @@ package com.github.fsanaulla.chronicler.urlhttp.management
 import com.github.fsanaulla.chronicler.core.ManagementClient
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, WriteResult}
 import com.github.fsanaulla.chronicler.core.typeclasses.FlatMap
-import com.github.fsanaulla.chronicler.urlhttp.shared.UrlHttpClient
-import com.github.fsanaulla.chronicler.urlhttp.shared.UrlHttpClient.CustomizationF
+import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlHttpClient
+import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlHttpClient.CustomizationF
 import com.github.fsanaulla.chronicler.urlhttp.shared.alias.Request
 import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlQueryBuilder, UrlRequestExecutor, UrlResponseHandler}
 import com.softwaremill.sttp.{Response, Uri}
@@ -32,7 +32,7 @@ final class UrlManagementClient(val host: String,
                                 val port: Int,
                                 val credentials: Option[InfluxCredentials],
                                 customization: Option[CustomizationF])
-  extends UrlHttpClient(customization)
+  extends InfluxUrlHttpClient(customization)
     with ManagementClient[Try, Request, Response[JValue], Uri, String]
     with UrlRequestExecutor
     with UrlResponseHandler

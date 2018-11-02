@@ -21,4 +21,3 @@ addCommandAlias(
   "urlTest",
   ";project urlHttpShared; clean; compile; test:compile; coverage; test;project urlHttpManagement; clean; compile; test:compile; coverage; test; it:compile; coverage; it:test;project urlHttpIO;clean;compile;test:compile;coverage;test;it:compile;coverage;it:test")
 
-addCommandAlias("udpTest", ";project udp;clean;compile;it:compile;coverage;it:test;coverageReport")

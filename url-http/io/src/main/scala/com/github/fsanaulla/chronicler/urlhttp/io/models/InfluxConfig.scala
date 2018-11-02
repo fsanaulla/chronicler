@@ -17,7 +17,7 @@
 package com.github.fsanaulla.chronicler.urlhttp.io.models
 
 import com.github.fsanaulla.chronicler.core.model.{GzippedHttpConfig, InfluxCredentials}
-import com.github.fsanaulla.chronicler.urlhttp.shared.UrlHttpClient.CustomizationF
+import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlHttpClient.CustomizationF
 
 final case class InfluxConfig(host: String,
                               port: Int,

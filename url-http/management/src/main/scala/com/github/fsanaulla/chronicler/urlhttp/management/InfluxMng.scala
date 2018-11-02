@@ -17,7 +17,7 @@
 package com.github.fsanaulla.chronicler.urlhttp.management
 
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
-import com.github.fsanaulla.chronicler.urlhttp.shared.UrlHttpClient.CustomizationF
+import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlHttpClient.CustomizationF
 
 object InfluxMng {
 

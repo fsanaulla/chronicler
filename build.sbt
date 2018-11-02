@@ -50,7 +50,7 @@ lazy val coreShared = project
 //////////////////////////////////////////////////////
 lazy val urlHttpManagement = project
   .in(file("url-http/management"))
-  .configs(LocalIntegrationTest)
+  .configs(CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -62,7 +62,7 @@ lazy val urlHttpManagement = project
 
 lazy val urlHttpIO = project
   .in(file("url-http/io"))
-  .configs(LocalIntegrationTest)
+  .configs(CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -91,7 +91,7 @@ lazy val urlHttpShared = project
 //////////////////////////////////////////////////////
 lazy val akkaHttpManagement = project
   .in(file("akka-http/management"))
-  .configs(LocalIntegrationTest)
+  .configs(CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -106,7 +106,7 @@ lazy val akkaHttpManagement = project
 
 lazy val akkaHttpIO = project
   .in(file("akka-http/io"))
-  .configs(LocalIntegrationTest)
+  .configs(CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -138,7 +138,7 @@ lazy val akkaHttpShared = project
 //////////////////////////////////////////////////////
 lazy val asyncHttpManagement = project
   .in(file("async-http/management"))
-  .configs(LocalIntegrationTest)
+  .configs(CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -150,7 +150,7 @@ lazy val asyncHttpManagement = project
 
 lazy val asyncHttpIO = project
   .in(file("async-http/io"))
-  .configs(LocalIntegrationTest)
+  .configs(CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -178,7 +178,7 @@ lazy val asyncHttpShared = project
 //////////////////////////////////////////////////////
 lazy val udp = project
   .in(file("udp"))
-  .configs(LocalIntegrationTest)
+  .configs(CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
