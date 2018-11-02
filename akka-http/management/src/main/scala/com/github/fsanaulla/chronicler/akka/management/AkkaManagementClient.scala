@@ -19,7 +19,7 @@ package com.github.fsanaulla.chronicler.akka.management
 import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.HttpsConnectionContext
 import _root_.akka.http.scaladsl.model.{HttpRequest, HttpResponse, RequestEntity, Uri}
-import com.github.fsanaulla.chronicler.akka.shared.AkkaHttpClient
+import com.github.fsanaulla.chronicler.akka.shared.InfluxAkkaClient
 import com.github.fsanaulla.chronicler.akka.shared.handlers.{AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.core.ManagementClient
 import com.github.fsanaulla.chronicler.core.model._
@@ -32,7 +32,7 @@ final class AkkaManagementClient(host: String,
                                  val credentials: Option[InfluxCredentials],
                                  httpsContext: Option[HttpsConnectionContext])
                                 (implicit val ex: ExecutionContext, val system: ActorSystem)
-  extends AkkaHttpClient(host, port, httpsContext)
+  extends InfluxAkkaClient(host, port, httpsContext)
     with ManagementClient[Future, HttpRequest, HttpResponse, Uri, RequestEntity]
     with AkkaRequestExecutor
     with AkkaResponseHandler

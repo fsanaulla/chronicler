@@ -20,7 +20,7 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.HttpsConnectionContext
 import akka.http.scaladsl.model.RequestEntity
 import com.github.fsanaulla.chronicler.akka.io.api.{Database, Measurement}
-import com.github.fsanaulla.chronicler.akka.shared.AkkaHttpClient
+import com.github.fsanaulla.chronicler.akka.shared.InfluxAkkaClient
 import com.github.fsanaulla.chronicler.core.IOClient
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 
@@ -33,12 +33,11 @@ final class AkkaIOClient(host: String,
                          gzipped: Boolean,
                          httpsContext: Option[HttpsConnectionContext])
                         (implicit val ex: ExecutionContext, val system: ActorSystem)
-  extends AkkaHttpClient(host, port, httpsContext) with IOClient[Future, RequestEntity] {
+  extends InfluxAkkaClient(host, port, httpsContext) with IOClient[Future, RequestEntity] {
 
   override def database(dbName: String): Database =
     new Database(dbName, credentials, gzipped)
 
-  override def measurement[A: ClassTag](dbName: String,
-                                        measurementName: String): Measurement[A] =
+  override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] =
     new Measurement[A](dbName, measurementName, credentials, gzipped)
 }

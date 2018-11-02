@@ -22,24 +22,26 @@ import akka.stream.{ActorMaterializer, StreamTcpException}
 import com.github.fsanaulla.chronicler.akka.shared.alias.Connection
 import com.github.fsanaulla.chronicler.core.model.{ConnectionException, UnknownConnectionException}
 
-import scala.concurrent.Await
 import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 
-abstract class AkkaHttpClient(host: String,
-                              port: Int,
-                              httpsContext: Option[HttpsConnectionContext])
-                             (implicit as: ActorSystem) { self: AutoCloseable =>
+abstract class InfluxAkkaClient(host: String,
+                                port: Int,
+                                httpsContext: Option[HttpsConnectionContext])
+                               (implicit system: ActorSystem) { self: AutoCloseable =>
 
   private[akka] implicit val mat: ActorMaterializer = ActorMaterializer()
   private[akka] implicit val connection: Connection =
-    httpsContext
-      .fold(Http().outgoingConnection(host, port)) { context =>
-        Http().outgoingConnectionHttps(host, port, context)
+    httpsContext.fold(Http().outgoingConnection(host, port)) { ctx =>
+        Http().outgoingConnectionHttps(host, port, ctx)
       } recover {
-      case ex: StreamTcpException => throw new ConnectionException(ex.getMessage)
-      case unknown => throw new UnknownConnectionException(unknown.getMessage)
-    }
+        case ex: StreamTcpException => throw new ConnectionException(ex.getMessage)
+        case unknown => throw new UnknownConnectionException(unknown.getMessage)
+      }
 
   override def close(): Unit =
-    Await.ready(Http().shutdownAllConnectionPools(), Duration.Inf)
+    Await.ready(closeAsync, Duration.Inf)
+
+  def closeAsync: Future[Unit] =
+    Http().shutdownAllConnectionPools()
 }
