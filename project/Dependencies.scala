@@ -9,7 +9,7 @@ object Dependencies {
 
   object Versions {
     val sttp       = "1.4.0"
-    val netty      = "4.1.31.Final"
+    val netty      = "4.1.27.Final"
 
     object Akka {
       val akka     = "2.5.17"
@@ -67,7 +67,7 @@ object Dependencies {
     "io.netty"              %  "netty-common"                     % Versions.netty,
     "io.netty"              %  "netty-resolver"                   % Versions.netty,
     "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp   excludeAll ExclusionRule(organization = "io.netty") exclude("org.reactivestreams", "reactive-streams"),
-    "org.reactivestreams"   % "reactive-streams"                  % "1.0.2"
+    "org.reactivestreams"   %  "reactive-streams"                  % "1.0.2"
   )
 
   // udp
