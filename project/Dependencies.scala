@@ -61,13 +61,8 @@ object Dependencies {
   // async-http
   val asyncDeps: Seq[ModuleID] = List(
     "io.netty"              %  "netty-handler"                    % Versions.netty,
-    "io.netty"              %  "netty-codec"                      % Versions.netty,
-    "io.netty"              %  "netty-transport"                  % Versions.netty,
-    "io.netty"              %  "netty-buffer"                     % Versions.netty,
-    "io.netty"              %  "netty-common"                     % Versions.netty,
-    "io.netty"              %  "netty-resolver"                   % Versions.netty,
-    "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp   excludeAll ExclusionRule(organization = "io.netty") exclude("org.reactivestreams", "reactive-streams"),
-    "org.reactivestreams"   %  "reactive-streams"                  % "1.0.2"
+    "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp   exclude("io.netty", "netty-handler") exclude("org.reactivestreams", "reactive-streams"),
+    "org.reactivestreams"   %  "reactive-streams"                 % "1.0.2"
   )
 
   // udp
