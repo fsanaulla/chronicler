@@ -18,7 +18,7 @@ package com.github.fsanaulla.chronicler.macros
 
 import com.github.fsanaulla.chronicler.core.model.InfluxFormatter
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
-import jawn.ast.{JArray, JNull, JNum, JString}
+import jawn.ast._
 import org.scalatest.{FlatSpec, Matchers}
 
 class MacroFormatterSpec extends FlatSpec with Matchers {
@@ -28,7 +28,7 @@ class MacroFormatterSpec extends FlatSpec with Matchers {
                   @field age: Int,
                   @timestamp time: Long)
 
-  val fm: InfluxFormatter[Test] = Macros.format[Test]
+  val fm: InfluxFormatter[Test] = Influx.formatter[Test]
 
   "Macros.format" should "read with None" in {
     fm
