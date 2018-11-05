@@ -138,10 +138,10 @@ private[macros] final class MacrosImpl(val c: blackbox.Context) {
 
         q"""
            def read(js: jawn.ast.JArray): $tpe = {
-            def toTime(str: String): Long = {
-              val i = java.time.Instant.parse(str)
-              i.getEpochSecond * 1000000000 + i.getNano
-            }
+              @inline def toTime(str: String): Long = {
+                val i = java.time.Instant.parse(str)
+                i.getEpochSecond * 1000000000 + i.getNano
+              }
 
             js.vs match { case ..$cases }
            }
@@ -166,7 +166,7 @@ private[macros] final class MacrosImpl(val c: blackbox.Context) {
         // todo: refactor it
         q"""
            def read(js: jawn.ast.JArray): $tpe = {
-             def toTime(jv: jawn.ast.JValue): Long = {
+             @inline def toTime(jv: jawn.ast.JValue): Long = {
                 jv.getString.fold(jv.asLong) { str =>
                    val i = java.time.Instant.parse(str)
                    i.getEpochSecond * 1000000000 + i.getNano
