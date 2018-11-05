@@ -33,8 +33,8 @@ class MacroWriterSpec extends FlatSpec with Matchers {
                    @field school: String,
                    @timestamp time: Long)
 
-  val wr: InfluxWriter[Test] = Macros.writer[Test]
-  val wr1: InfluxWriter[Test1] = Macros.writer[Test1]
+  val wr: InfluxWriter[Test] = Influx.writer[Test]
+  val wr1: InfluxWriter[Test1] = Influx.writer[Test1]
 
   "Macros.writer" should "write with None" in {
     wr.write(Test("nm", None, "Berkly", 65)) shouldEqual "name=nm school=\"Berkly\",age=65i"
