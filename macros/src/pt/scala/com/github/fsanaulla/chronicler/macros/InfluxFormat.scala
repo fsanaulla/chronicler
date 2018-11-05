@@ -17,7 +17,7 @@ trait InfluxFormat {
                   @field city: String,
                   @timestamp time: Long)
 
-  val fmt: InfluxFormatter[Test] = Macros.format[Test]
+  val fmt: InfluxFormatter[Test] = Influx.formatter[Test]
   implicit val gen: Arbitrary[Test] = Arb.dummy[Test]
 
   val validStr: Gen[String] = for (s <- Gen.alphaStr if s.nonEmpty && s != null) yield s
