@@ -91,7 +91,7 @@ lazy val urlHttpShared = project
 //////////////////////////////////////////////////////
 lazy val akkaHttpManagement = project
   .in(file("akka-http/management"))
-  .configs(CompileTimeIntegrationTest, FunctionalTest)
+  .configs(CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)

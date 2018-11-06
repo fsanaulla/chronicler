@@ -11,7 +11,6 @@ object Settings extends LibraryManagementSyntax {
   private val apacheUrl = "https://www.apache.org/licenses/LICENSE-2.0.txt"
 
   val CompileTimeIntegrationTest = config("it") extend Test
-  val FunctionalTest = config("ft") extend Test
   val PropertyTest = config("pt") extend Test
   
   val propertyTestSettings: Seq[Def.Setting[_]] =
