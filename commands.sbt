@@ -9,15 +9,15 @@ addCommandAlias(
 // akka testing
 addCommandAlias(
   "akkaTest",
-  ";project akkaHttpShared;clean;compile;test:compile;coverage;test;project akkaHttpManagement;clean;compile;test:compile;coverage;test;it:compile;coverage;it:test;project akkaHttpIO;clean;compile;test:compile;coverage;test;it:compile;coverage;it:test")
+  ";project akkaShared;clean;compile;test:compile;coverage;test;project akkaManagement;clean;compile;test:compile;coverage;test;it:compile;coverage;it:test;project akkaIO;clean;compile;test:compile;coverage;test;it:compile;coverage;it:test")
 
 // url testing
 addCommandAlias(
-  "asyncTest",
-  ";project asyncHttpShared;clean;compile;test:compile;coverage;test;project asyncHttpManagement;clean;compile;test:compile;coverage;test;it:compile;coverage;it:test;project asyncHttpIO;clean;compile;test:compile;coverage;test;it:compile;coverage;it:test")
+  "nettyTest",
+  ";project nettyShared;clean;compile;test:compile;coverage;test;project nettyManagement;clean;compile;test:compile;coverage;test;it:compile;coverage;it:test;project nettyIO;clean;compile;test:compile;coverage;test;it:compile;coverage;it:test")
 
 // url testing
 addCommandAlias(
   "urlTest",
-  ";project urlHttpShared; clean; compile; test:compile; coverage; test;project urlHttpManagement; clean; compile; test:compile; coverage; test; it:compile; coverage; it:test;project urlHttpIO;clean;compile;test:compile;coverage;test;it:compile;coverage;it:test")
+  ";project urlShared; clean; compile; test:compile; coverage; test;project urlManagement; clean; compile; test:compile; coverage; test; it:compile; coverage; it:test;project urlIO;clean;compile;test:compile;coverage;test;it:compile;coverage;it:test")
 
