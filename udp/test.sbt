@@ -1,1 +1,1 @@
-addCommandAlias("udpTest", ";project udp;clean;compile;it:compile;coverage;it:test;coverageReport")
+addCommandAlias("udpTest", ";project udp;clean;compile;it:compile;it:test")
