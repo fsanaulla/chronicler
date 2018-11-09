@@ -13,8 +13,8 @@ addCommandAlias(
 
 // url testing
 addCommandAlias(
-  "nettyTest",
-  ";project nettyShared;clean;compile;test:compile;coverage;test;project nettyManagement;clean;compile;test:compile;coverage;test;it:compile;coverage;it:test;project nettyIO;clean;compile;test:compile;coverage;test;it:compile;coverage;it:test")
+  "ahcTest",
+  ";project ahcShared;clean;compile;test:compile;coverage;test;project ahcManagement;clean;compile;test:compile;coverage;test;it:compile;coverage;it:test;project ahcIO;clean;compile;test:compile;coverage;test;it:compile;coverage;it:test")
 
 // url testing
 addCommandAlias(
