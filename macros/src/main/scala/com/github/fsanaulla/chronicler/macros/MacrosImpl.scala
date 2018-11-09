@@ -163,7 +163,6 @@ private[macros] final class MacrosImpl(val c: blackbox.Context) {
 
         val cases = successCase :: failureCase :: Nil
 
-        // todo: refactor it
         q"""
            def read(js: jawn.ast.JArray): $tpe = {
              @inline def toTime(jv: jawn.ast.JValue): Long = {

@@ -8,28 +8,28 @@ import sbt._
 object Dependencies {
 
   object Versions {
-    val sttp       = "1.3.5"
+    val sttp       = "1.4.0"
     val netty      = "4.1.27.Final"
-    val testing    = "0.1.0"
 
     object Akka {
-      val akka = "2.5.17"
+      val akka     = "2.5.17"
       val akkaHttp = "10.1.5"
     }
 
     object Testing {
-      val scalaTest  = "3.0.5"
-      val scalaCheck = "1.14.0"
+      val scalaTest            = "3.0.5"
+      val scalaCheck           = "1.14.0"
       val scalaCheckGenerators = "0.2.0"
     }
   }
 
-  val sttp = "com.softwaremill.sttp" %% "core" % Versions.sttp
-  val scalaTest  = "org.scalatest"  %% "scalatest"  % Versions.Testing.scalaTest
-  val scalaCheck = "org.scalacheck" %% "scalacheck" % Versions.Testing.scalaCheck
+  val sttp        = "com.softwaremill.sttp" %% "core"         % Versions.sttp
+  val scalaTest   = "org.scalatest"         %% "scalatest"    % Versions.Testing.scalaTest
+  val scalaCheck  = "org.scalacheck"        %% "scalacheck"   % Versions.Testing.scalaCheck
+  val akkaTestKit = "com.typesafe.akka"     %% "akka-testkit" % Versions.Akka.akka
+
   val scalaCheckGenerators =
     "com.github.fsanaulla" %% "scalacheck-generators" % Versions.Testing.scalaCheckGenerators exclude("org.scala-lang", "scala-reflect")
-  val akkaTestKit = "com.typesafe.akka" %% "akka-testkit" % Versions.Akka.akka
 
   def macroDeps(scalaVersion: String): List[ModuleID] = List(
     "org.scala-lang"       %  "scala-reflect"         % scalaVersion,
@@ -38,28 +38,31 @@ object Dependencies {
 
   // testing
   val testingDeps: Seq[ModuleID] = Seq(
-    "org.jetbrains"      %  "annotations" % "15.0", // to solve evicted warning
-    "org.testcontainers" %  "influxdb"    % "1.7.3" exclude("org.jetbrains", "annotations")
+    "org.jetbrains"      % "annotations" % "16.0.3",
+    "org.testcontainers" % "influxdb"    % "1.9.1"   exclude("org.jetbrains", "annotations") exclude("org.slf4j", "slf4j-api"),
+    "org.slf4j"          % "slf4j-api"   % "1.7.25"
   )
 
   // core
   val coreDep: List[ModuleID] = List(
     "com.beachape"   %% "enumeratum" % "1.5.13",
-    "org.spire-math" %% "jawn-ast"   % "0.12.1"
+    "org.spire-math" %% "jawn-ast"   % "0.13.0"
   ) ::: List(scalaTest, scalaCheck, scalaCheckGenerators).map(_ % Scope.test)
 
   // akka-http
   val akkaDep: List[ModuleID] = List(
-    "com.typesafe.akka"    %% "akka-stream"  % Versions.Akka.akka,
-    "com.typesafe.akka"    %% "akka-actor"   % Versions.Akka.akka,
-    "com.typesafe.akka"    %% "akka-testkit" % Versions.Akka.akka % Scope.test,
-    "com.typesafe.akka"    %% "akka-http"    % Versions.Akka.akkaHttp
+    "com.typesafe.akka" %% "akka-stream"  % Versions.Akka.akka exclude("com.typesafe", "config"),
+    "com.typesafe.akka" %% "akka-actor"   % Versions.Akka.akka,
+    "com.typesafe.akka" %% "akka-http"    % Versions.Akka.akkaHttp,
+    "com.typesafe"      %  "config"       % "1.3.3",
+    akkaTestKit % Scope.test
   )
 
   // async-http
   val asyncDeps: Seq[ModuleID] = List(
-    "io.netty"              %  "netty-handler"                    % Versions.netty, // to solve evicted warning
-    "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp exclude("io.netty", "netty-handler")
+    "io.netty"              %  "netty-handler"                    % Versions.netty,
+    "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp   exclude("io.netty", "netty-handler") exclude("org.reactivestreams", "reactive-streams"),
+    "org.reactivestreams"   %  "reactive-streams"                 % "1.0.2"
   )
 
   // udp

@@ -10,15 +10,11 @@ object Settings extends LibraryManagementSyntax {
 
   private val apacheUrl = "https://www.apache.org/licenses/LICENSE-2.0.txt"
 
-  lazy val LocalIntegrationTest = config("it") extend Test
-  lazy val PropertyTest = config("pt") extend Test
-
-  lazy val propertyTestSettings: Seq[Def.Setting[_]] = 
+  val CompileTimeIntegrationTest = config("it") extend Test
+  val PropertyTest = config("pt") extend Test
+  
+  val propertyTestSettings: Seq[Def.Setting[_]] =
     inConfig(PropertyTest)(Defaults.testSettings)
-
-  lazy val localIntegrationTestSettings: Seq[Def.Setting[_]] = 
-    inConfig(LocalIntegrationTest)(Defaults.testSettings ++ (parallelExecution in LocalIntegrationTest := false)
-  )
 
   private object Owner {
     val id = "fsanaulla"

@@ -17,7 +17,7 @@ services:
   - docker
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION coreTest macrosTest urlTest asyncTest akkaTest
+  - sbt ++$TRAVIS_SCALA_VERSION coreTest macrosTest urlTest ahcTest akkaTest
 
 after_success:
  - bash <(curl -s https://codecov.io/bash)

@@ -16,9 +16,7 @@
 
 package com.github.fsanaulla.chronicler.core.model
 
-import scala.concurrent.Future
 import scala.reflect.ClassTag
-import scala.util.{Success, Try}
 
 /**
   * Created by
@@ -27,7 +25,7 @@ import scala.util.{Success, Try}
   */
 
 /** Entity that represent result types */
-sealed trait InfluxResult extends scala.Serializable{
+sealed trait InfluxResult extends scala.Serializable {
   def code: Int
   def isSuccess: Boolean
   def ex: Option[Throwable]
@@ -46,7 +44,7 @@ sealed trait ReadResult[A] extends InfluxResult {
   *
   * @param code      - HTTP response code
   * @param isSuccess - is it complete successfully
-  * @param ex        - optional [[Throwable]]
+  * @param ex        - optional exception
   */
 final case class WriteResult(code: Int, isSuccess: Boolean, ex: Option[Throwable] = None) extends InfluxResult
 
@@ -55,10 +53,6 @@ object WriteResult {
   def successful(code: Int): WriteResult = WriteResult(code, isSuccess = true, None)
   /** Create failed result entity */
   def failed(code: Int, ex: Throwable): WriteResult = WriteResult(code, isSuccess = false, Some(ex))
-  /** Successfully created result inside compiled Future */
-  def successfulFuture(code: Int): Future[WriteResult] = Future.successful(successful(code))
-  /** Successfully created result inside scala.util.Success */
-  def successfulTry(code: Int): Try[WriteResult] = Success(successful(code))
 }
 
 /**
@@ -100,7 +94,7 @@ object QueryResult {
   * @param isSuccess     - is it complete successfully
   * @param groupedResult - array of group by results
   * @param ex            - exception if exist
-  * @tparam A            - which entity should be retrieveed from query result
+  * @tparam A            - which entity should be retrieved from query result
   */
 final case class GroupedResult[A](code: Int,
                                   isSuccess: Boolean,

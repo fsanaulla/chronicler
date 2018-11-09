@@ -2,7 +2,7 @@ object Scalac {
 
   def options(version: String): Seq[String] = version match {
     case v if v.startsWith("2.12") => options12
-    case _ => options11
+    case _                         => options11
   }
 
   // scalac 2.11 options

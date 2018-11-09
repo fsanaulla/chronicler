@@ -48,38 +48,38 @@ lazy val coreShared = project
 //////////////////////////////////////////////////////
 ////////////////// URL HTTP MODULES //////////////////
 //////////////////////////////////////////////////////
-lazy val urlHttpManagement = project
-  .in(file("url-http/management"))
-  .configs(LocalIntegrationTest)
+lazy val urlManagement = project
+  .in(file("url/management"))
+  .configs(CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
-  .settings(name := "chronicler-url-http-management")
-  .dependsOn(coreManagement, urlHttpShared)
+  .settings(name := "chronicler-url-management")
+  .dependsOn(coreManagement, urlShared)
   .dependsOn(itTesting % "test->test")
   .enablePlugins(AutomateHeaderPlugin)
 
-lazy val urlHttpIO = project
-  .in(file("url-http/io"))
-  .configs(LocalIntegrationTest)
+lazy val urlIO = project
+  .in(file("url/io"))
+  .configs(CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
-  .settings(name := "chronicler-url-http-io")
-  .dependsOn(coreIO, urlHttpShared)
-  .dependsOn(urlHttpManagement % "test->test")
+  .settings(name := "chronicler-url-io")
+  .dependsOn(coreIO, urlShared)
+  .dependsOn(urlManagement % "test->test")
   .dependsOn(itTesting % "test->test")
   .enablePlugins(AutomateHeaderPlugin)
 
-lazy val urlHttpShared = project
-  .in(file("url-http/shared"))
+lazy val urlShared = project
+  .in(file("url/shared"))
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
   .settings(
-    name := "chronicler-url-http-shared",
+    name := "chronicler-url-shared",
     libraryDependencies += Dependencies.sttp
   )
   .dependsOn(coreShared)
@@ -89,44 +89,44 @@ lazy val urlHttpShared = project
 //////////////////////////////////////////////////////
 ////////////////// AKKA HTTP MODULES /////////////////
 //////////////////////////////////////////////////////
-lazy val akkaHttpManagement = project
-  .in(file("akka-http/management"))
-  .configs(LocalIntegrationTest)
+lazy val akkaManagement = project
+  .in(file("akka/management"))
+  .configs(CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
   .settings(
-    name := "chronicler-akka-http-management",
+    name := "chronicler-akka-management",
     libraryDependencies += Dependencies.akkaTestKit % Scope.test
   )
-  .dependsOn(coreManagement, akkaHttpShared)
+  .dependsOn(coreManagement, akkaShared)
   .dependsOn(itTesting % "test->test")
   .enablePlugins(AutomateHeaderPlugin)
 
-lazy val akkaHttpIO = project
-  .in(file("akka-http/io"))
-  .configs(LocalIntegrationTest)
+lazy val akkaIO = project
+  .in(file("akka/io"))
+  .configs(CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
   .settings(
-    name := "chronicler-akka-http-io",
+    name := "chronicler-akka-io",
     libraryDependencies += Dependencies.akkaTestKit % Scope.test
   )
-  .dependsOn(coreIO, akkaHttpShared)
-  .dependsOn(akkaHttpManagement % "test->test")
+  .dependsOn(coreIO, akkaShared)
+  .dependsOn(akkaManagement % "test->test")
   .dependsOn(itTesting % "test->test")
   .enablePlugins(AutomateHeaderPlugin)
 
-lazy val akkaHttpShared = project
-  .in(file("akka-http/shared"))
+lazy val akkaShared = project
+  .in(file("akka/shared"))
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
   .settings(
-    name := "chronicler-akka-http-shared",
+    name := "chronicler-akka-shared",
     libraryDependencies ++= Dependencies.akkaDep
   )
   .dependsOn(coreShared)
@@ -136,38 +136,38 @@ lazy val akkaHttpShared = project
 //////////////////////////////////////////////////////
 ///////////////// ASYNC HTTP MODULES /////////////////
 //////////////////////////////////////////////////////
-lazy val asyncHttpManagement = project
-  .in(file("async-http/management"))
-  .configs(LocalIntegrationTest)
+lazy val ahcManagement = project
+  .in(file("ahc/management"))
+  .configs(CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
-  .settings(name := "chronicler-async-http-management")
-  .dependsOn(coreManagement, asyncHttpShared)
+  .settings(name := "chronicler-ahc-management")
+  .dependsOn(coreManagement, ahcShared)
   .dependsOn(itTesting % "test->test")
   .enablePlugins(AutomateHeaderPlugin)
 
-lazy val asyncHttpIO = project
-  .in(file("async-http/io"))
-  .configs(LocalIntegrationTest)
+lazy val ahcIO = project
+  .in(file("ahc/io"))
+  .configs(CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
-  .settings(name := "chronicler-async-http-io")
-  .dependsOn(coreIO, asyncHttpShared)
-  .dependsOn(asyncHttpManagement % "test->test")
+  .settings(name := "chronicler-ahc-io")
+  .dependsOn(coreIO, ahcShared)
+  .dependsOn(ahcManagement % "test->test")
   .dependsOn(itTesting % "test->test")
   .enablePlugins(AutomateHeaderPlugin)
 
-lazy val asyncHttpShared = project
-  .in(file("async-http/shared"))
+lazy val ahcShared = project
+  .in(file("ahc/shared"))
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
   .settings(
-    name := "chronicler-async-http-shared",
+    name := "chronicler-ahc-shared",
     libraryDependencies ++= Dependencies.asyncDeps
   )
   .dependsOn(coreShared)
@@ -178,7 +178,7 @@ lazy val asyncHttpShared = project
 //////////////////////////////////////////////////////
 lazy val udp = project
   .in(file("udp"))
-  .configs(LocalIntegrationTest)
+  .configs(CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
