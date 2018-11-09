@@ -136,38 +136,38 @@ lazy val akkaShared = project
 //////////////////////////////////////////////////////
 ///////////////// ASYNC HTTP MODULES /////////////////
 //////////////////////////////////////////////////////
-lazy val nettyManagement = project
-  .in(file("netty/management"))
+lazy val ahcManagement = project
+  .in(file("ahc/management"))
   .configs(CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
-  .settings(name := "chronicler-netty-management")
-  .dependsOn(coreManagement, nettyShared)
+  .settings(name := "chronicler-ahc-management")
+  .dependsOn(coreManagement, ahcShared)
   .dependsOn(itTesting % "test->test")
   .enablePlugins(AutomateHeaderPlugin)
 
-lazy val nettyIO = project
-  .in(file("netty/io"))
+lazy val ahcIO = project
+  .in(file("ahc/io"))
   .configs(CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
-  .settings(name := "chronicler-netty-io")
-  .dependsOn(coreIO, nettyShared)
-  .dependsOn(nettyManagement % "test->test")
+  .settings(name := "chronicler-ahc-io")
+  .dependsOn(coreIO, ahcShared)
+  .dependsOn(ahcManagement % "test->test")
   .dependsOn(itTesting % "test->test")
   .enablePlugins(AutomateHeaderPlugin)
 
-lazy val nettyShared = project
-  .in(file("netty/shared"))
+lazy val ahcShared = project
+  .in(file("ahc/shared"))
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
   .settings(
-    name := "chronicler-netty-shared",
+    name := "chronicler-ahc-shared",
     libraryDependencies ++= Dependencies.asyncDeps
   )
   .dependsOn(coreShared)
