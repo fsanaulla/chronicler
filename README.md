@@ -1,7 +1,7 @@
 <div align="center">
 
 ## Chronicler
-Open-source [Scala](https://www.scala-lang.org/) client tool for [InfluxDB](https://www.influxdata.com/).
+Open-source [Scala](https://www.scala-lang.org/) toolchain for [InfluxDB](https://www.influxdata.com/).
 
 [![Build Status](https://travis-ci.org/fsanaulla/chronicler.svg?branch=master)](https://travis-ci.org/fsanaulla/chronicler)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.fsanaulla/chronicler-core-api_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.fsanaulla/chronicler-core-api_2.12)
@@ -17,6 +17,7 @@ Open-source [Scala](https://www.scala-lang.org/) client tool for [InfluxDB](http
 - Easy to customize
 
 # Documentation
+0. [Modules](docs/modules.md)
 1. [Get Started](docs/get_started.md)
 1. [Clients tutorial](docs/clients.md)
 2. [Read operation](docs/read_operation_notes.md)
