@@ -19,8 +19,8 @@ package com.github.fsanaulla.chronicler.urlhttp.io
 import com.github.fsanaulla.chronicler.core.IOClient
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.urlhttp.io.api.{Database, Measurement}
-import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlHttpClient
-import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlHttpClient.CustomizationF
+import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient
+import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient.CustomizationF
 
 import scala.reflect.ClassTag
 import scala.util.Try
@@ -30,7 +30,7 @@ final class UrlIOClient(val host: String,
                         val credentials: Option[InfluxCredentials],
                         gzipped: Boolean,
                         customization: Option[CustomizationF])
-  extends InfluxUrlHttpClient(customization) with IOClient[Try, String] {
+  extends InfluxUrlClient(customization) with IOClient[Try, String] {
 
   override def database(dbName: String): Database =
     new Database(host, port, credentials, dbName, gzipped)

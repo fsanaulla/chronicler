@@ -18,12 +18,12 @@ package com.github.fsanaulla.chronicler.urlhttp.shared
 
 import java.net.HttpURLConnection
 
-import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlHttpClient.CustomizationF
+import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient.CustomizationF
 import com.softwaremill.sttp.{SttpBackend, TryHttpURLConnectionBackend}
 
 import scala.util.Try
 
-abstract class InfluxUrlHttpClient(customization: Option[CustomizationF]) { self: AutoCloseable =>
+abstract class InfluxUrlClient(customization: Option[CustomizationF]) { self: AutoCloseable =>
 
   private[urlhttp] implicit val backend: SttpBackend[Try, Nothing] =
     customization.fold(TryHttpURLConnectionBackend())(cust => TryHttpURLConnectionBackend(customizeConnection = cust))
@@ -31,6 +31,6 @@ abstract class InfluxUrlHttpClient(customization: Option[CustomizationF]) { self
   def close(): Unit = backend.close()
 }
 
-object InfluxUrlHttpClient {
+object InfluxUrlClient {
   type CustomizationF = HttpURLConnection => Unit
 }
