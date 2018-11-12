@@ -31,7 +31,7 @@ object InfluxIO {
     * @param port              - port value
     * @param credentials       - user credentials
     * @param gzipped           - enable gzip compression
-    * @param asyncClientConfig - custom configuration for [[org.asynchttpclient.AsyncHttpClient]]
+    * @param asyncClientConfig - custom configuration
     * @param ex                - implicit execution context, by default use standard one
     * @return                  - [[AhcIOClient]]
     */
