@@ -16,7 +16,8 @@
 
 package com.github.fsanaulla.chronicler.macros
 
-import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
+import com.github.fsanaulla.chronicler.core.utils.Extensions.RichString
+import com.github.fsanaulla.chronicler.macros.annotations._
 
 import scala.reflect.macros.blackbox
 
@@ -28,38 +29,43 @@ import scala.reflect.macros.blackbox
 private[macros] final class MacrosImpl(val c: blackbox.Context) {
   import c.universe._
 
-  private val TIMESTAMP_TYPE = tpdls[Long]
-
-  private val SUPPORTED_TAGS_TYPES =
-    Seq(tpdls[Option[String]], tpdls[String])
-
-  final private val SUPPORTED_FIELD_TYPES =
-    Seq(tpdls[Boolean], tpdls[Int], tpdls[Double], tpdls[String], tpdls[Float], TIMESTAMP_TYPE)
-
   /** return type dealias */
-  def tpdls[A: TypeTag]: c.universe.Type = typeOf[A].dealias
+  def getType[A: TypeTag]: c.universe.Type = typeOf[A].dealias
+
+  private val TIMESTAMP_TYPE = getType[Long]
+  private val SUPPORTED_TAGS_TYPES =
+    Seq(getType[Option[String]], getType[String])
+  private val SUPPORTED_FIELD_TYPES =
+    Seq(getType[Boolean], getType[Int], getType[Double], getType[String], getType[Float], TIMESTAMP_TYPE)
+  private val SUPPORTED_ANNOTATIONS =
+    Seq(getType[timestamp], getType[timestampEpoch], getType[timestampUTC])
 
   /** Check if this method valid timestamp */
   def isTimestamp(m: MethodSymbol): Boolean = {
-    if (m.annotations.exists(_.tree.tpe =:= typeOf[timestamp])) {
+    if (m.annotations.count(isSupportedTimestamp) > 1)
+      c.abort(c.enclosingPosition, "Only one timestamp annotation can be used.")
+    else if (m.annotations.exists(isSupportedTimestamp)) {
       if (m.returnType =:= TIMESTAMP_TYPE) true
-      else c.abort(c.enclosingPosition, s"@timestamp ${m.name} has unsupported type ${m.returnType}. Timestamp must be Long")
+      else c.abort(c.enclosingPosition, s"@timestamp/timestampEpoch/timestampUTC ${m.name} has unsupported type ${m.returnType}. Timestamp must be Long")
     } else false
   }
 
+  def isSupportedTimestamp(m: c.universe.Annotation): Boolean =
+    SUPPORTED_ANNOTATIONS.exists(_ =:= m.tree.tpe)
+
   /**
     * Generate read method for specified type
+    *
     * @param tpe  - for which type
     * @return     - AST that will be expanded to read method
     */
   def createReadMethod(tpe: c.universe.Type): Tree = {
-
-    val bool = tpdls[Boolean]
-    val int = tpdls[Int]
-    val long = tpdls[Long]
-    val double = tpdls[Double]
-    val string = tpdls[String]
-    val optString = tpdls[Option[String]]
+    val bool = getType[Boolean]
+    val int = getType[Int]
+    val long = getType[Long]
+    val double = getType[Double]
+    val string = getType[String]
+    val optString = getType[Option[String]]
 
     val (timeField, othFields) = tpe.decls.toList
       .collect { case m: MethodSymbol if m.isCaseAccessor => m }
@@ -77,47 +83,98 @@ private[macros] final class MacrosImpl(val c: blackbox.Context) {
       .sortBy(_._1)
       .map { case (k, v) => TermName(k) -> v }
       .map {
-        case (k, `bool`) => q"$k = $k.asBoolean"
-        case (k, `string`) => q"$k = $k.asString"
-        case (k, `int`) => q"$k = $k.asInt"
-        case (k, `long`) => q"$k = $k.asLong"
-        case (k, `double`) => q"$k = $k.asDouble"
+        case (k, `bool`)      => q"$k = $k.asBoolean"
+        case (k, `string`)    => q"$k = $k.asString"
+        case (k, `int`)       => q"$k = $k.asInt"
+        case (k, `long`)      => q"$k = $k.asLong"
+        case (k, `double`)    => q"$k = $k.asDouble"
         case (k, `optString`) => q"$k = $k.getString"
-        case (_, other) => c.abort(c.enclosingPosition, s"Unsupported type $other")
+        case (_, other)       => c.abort(c.enclosingPosition, s"Unsupported type $other")
       }
 
     val patternParams: List[Tree] = fields
       .map(_._1)
       .sorted // influx return results in alphabetical order
-      .map(k => TermName(k))
-      .map(k => pq"$k: JValue")
+      .map(k => pq"${TermName(k)}: jawn.ast.JValue")
 
-    val readMethodDefinition: Tree = if (timeField.nonEmpty) {
-
+    if (timeField.nonEmpty) {
       val timestamp = TermName(timeField.head.name.decodedName.toString)
+      val marker = timeField.head.annotations
 
-      val constructorTime: Tree = q"$timestamp = toNanoLong($timestamp.asString)"
+      if (marker.exists(_.tree.tpe =:= getType[timestampEpoch])) {
+        val constructorTime: Tree =  q"$timestamp = $timestamp.asLong"
+        val patternTime: Tree = pq"$timestamp: jawn.ast.JValue"
 
-      val patternTime: Tree = pq"$timestamp: JValue"
+        // success case clause component
+        val successPat = pq"Array(..${patternTime :: patternParams})"
+        val successBody = q"new $tpe(..${constructorTime :: constructorParams})"
+        val successCase = cq"$successPat => $successBody"
 
-      val patterns: List[Tree] = patternTime :: patternParams
-      val constructor: List[Tree] = constructorTime :: constructorParams
+        // failure case clause component
+        val failurePat = pq"_"
+        val failureMsg = s"Can't deserialize $tpe object."
+        val failureBody = q"throw new com.github.fsanaulla.chronicler.core.model.DeserializationException($failureMsg)"
+        val failureCase = cq"$failurePat => $failureBody"
 
-      // success case clause component
-      val successPat = pq"Array(..$patterns)"
-      val successBody = q"new $tpe(..$constructor)"
-      val successCase = cq"$successPat => $successBody"
+        val cases = successCase :: failureCase :: Nil
 
-      // failure case clause component
-      val failurePat = pq"_"
-      val failureMsg = s"Can't deserialize $tpe object."
-      val failureBody = q"throw new DeserializationException($failureMsg)"
-      val failureCase = cq"$failurePat => $failureBody"
+        q"""def read(js: jawn.ast.JArray): $tpe = js.vs match { case ..$cases }"""
+      } else if (marker.exists(_.tree.tpe =:= getType[timestampUTC])) {
+        val constructorTime: Tree =  q"$timestamp = toTime($timestamp.asString)"
+        val patternTime: Tree = pq"$timestamp: jawn.ast.JValue"
 
-      val cases = successCase :: failureCase :: Nil
+        // success case clause component
+        val successPat = pq"Array(..${patternTime :: patternParams})"
+        val successBody = q"new $tpe(..${constructorTime :: constructorParams})"
+        val successCase = cq"$successPat => $successBody"
 
-      q"js.vs match { case ..$cases }"
+        // failure case clause component
+        val failurePat = pq"_"
+        val failureMsg = s"Can't deserialize $tpe object."
+        val failureBody = q"throw new com.github.fsanaulla.chronicler.core.model.DeserializationException($failureMsg)"
+        val failureCase = cq"$failurePat => $failureBody"
 
+        val cases = successCase :: failureCase :: Nil
+
+        q"""
+           def read(js: jawn.ast.JArray): $tpe = {
+              @inline def toTime(str: String): Long = {
+                val i = java.time.Instant.parse(str)
+                i.getEpochSecond * 1000000000 + i.getNano
+              }
+
+            js.vs match { case ..$cases }
+           }
+        """
+      } else {
+        val constructorTime: Tree = q"$timestamp = toTime($timestamp)"
+        val patternTime: Tree = pq"$timestamp: jawn.ast.JValue"
+
+        // success case clause component
+        val successPat = pq"Array(..${patternTime :: patternParams})"
+        val successBody = q"new $tpe(..${constructorTime :: constructorParams})"
+        val successCase = cq"$successPat => $successBody"
+
+        // failure case clause component
+        val failurePat = pq"_"
+        val failureMsg = s"Can't deserialize $tpe object."
+        val failureBody = q"throw new com.github.fsanaulla.chronicler.core.model.DeserializationException($failureMsg)"
+        val failureCase = cq"$failurePat => $failureBody"
+
+        val cases = successCase :: failureCase :: Nil
+
+        q"""
+           def read(js: jawn.ast.JArray): $tpe = {
+             @inline def toTime(jv: jawn.ast.JValue): Long = {
+                jv.getString.fold(jv.asLong) { str =>
+                   val i = java.time.Instant.parse(str)
+                   i.getEpochSecond * 1000000000 + i.getNano
+               }
+             }
+            js.vs match { case ..$cases }
+           }
+        """
+      }
     } else {
 
       // success case clause component
@@ -128,15 +185,13 @@ private[macros] final class MacrosImpl(val c: blackbox.Context) {
       // failure case clause component
       val failurePat = pq"_"
       val failureMsg = s"Can't deserialize $tpe object."
-      val failureBody = q"throw new DeserializationException($failureMsg)"
+      val failureBody = q"throw new com.github.fsanaulla.chronicler.core.model.DeserializationException($failureMsg)"
       val failureCase = cq"$failurePat => $failureBody"
 
       val cases = successCase :: failureCase :: Nil
 
-      q"js.vs.tail match { case ..$cases }"
+      q"def read(js: jawn.ast.JArray): $tpe = js.vs.tail match { case ..$cases }"
     }
-
-    q"""def read(js: JArray): $tpe = $readMethodDefinition"""
   }
 
   /**
@@ -174,7 +229,7 @@ private[macros] final class MacrosImpl(val c: blackbox.Context) {
       } else false
     }
 
-    /** Check method for one of @tag, @field annotaions */
+    /** Check method for one of @tag, @field annotations */
     def isMarked(m: MethodSymbol): Boolean = isTag(m) || isField(m)
 
     val (timeField, othField) = tpe.decls.toList
@@ -196,17 +251,17 @@ private[macros] final class MacrosImpl(val c: blackbox.Context) {
 
     val optTags: Seq[Tree] = tagsMethods collect {
       case m: MethodSymbol if isOption(m.returnType) =>
-        q"${m.name.decodedName.toString} -> obj.${m.name}"
+        q"${m.name.decodedName.toString.escapeFull} -> obj.${m.name}"
     }
 
     val nonOptTags: Seq[Tree] = tagsMethods collect {
       case m: MethodSymbol if !isOption(m.returnType) =>
-        q"${m.name.decodedName.toString} -> obj.${m.name}"
+        q"${m.name.decodedName.toString.escapeFull} -> obj.${m.name}"
     }
 
     val fields: Seq[Tree] = fieldsMethods map {
       m: MethodSymbol =>
-        q"${m.name.decodedName.toString} -> obj.${m.name}"
+        q"${m.name.decodedName.toString.escapeFull} -> obj.${m.name}"
     }
 
     def write(tpe: Type,
@@ -216,6 +271,7 @@ private[macros] final class MacrosImpl(val c: blackbox.Context) {
               optTime: Option[Tree]): c.universe.Tree = {
 
       q"""def write(obj: $tpe): String = {
+                import com.github.fsanaulla.chronicler.core.utils.Extensions.RichString
                 val fields: String =  Seq[(String, Any)](..$fields) map {
                   case (k, v: String) => k + "=" + "\"" + v + "\""
                   case (k, v: Int)    => k + "=" + v + "i"
@@ -223,12 +279,12 @@ private[macros] final class MacrosImpl(val c: blackbox.Context) {
                 } mkString(",")
 
                 val nonOptTags: String = Seq[(String, String)](..$nonOptTags) map {
-                  case (k, v) if v.nonEmpty => k + "=" + v
+                  case (k, v) if v.nonEmpty => k + "=" + v.escapeFull
                   case (k, _) => throw new IllegalArgumentException("Tag " + k + " can't be an empty string")
                 } mkString(",")
 
                 val optTags: String = Seq[(String, Option[String])](..$optTags) collect {
-                  case (k, Some(v)) => k + "=" + v
+                  case (k, Some(v)) => k + "=" + v.escapeFull
                 } mkString(",")
 
                 val combTags: String = if (optTags.isEmpty) nonOptTags else nonOptTags + "," + optTags
@@ -240,10 +296,8 @@ private[macros] final class MacrosImpl(val c: blackbox.Context) {
     timeField
       .headOption
       .map(m => q"obj.${m.name}") match {
-        case None =>
-          write(tpe, fields, nonOptTags, optTags, None)
-        case some =>
-          write(tpe, fields, nonOptTags, optTags, some)
+        case None => write(tpe, fields, nonOptTags, optTags, None)
+        case some => write(tpe, fields, nonOptTags, optTags, some)
       }
   }
 
@@ -253,7 +307,7 @@ private[macros] final class MacrosImpl(val c: blackbox.Context) {
     */
   def writer_impl[T: c.WeakTypeTag]: Tree = {
     val tpe = c.weakTypeOf[T]
-    q"""new InfluxWriter[$tpe] {${createWriteMethod(tpe)}} """
+    q"new com.github.fsanaulla.chronicler.core.model.InfluxWriter[$tpe] { ${createWriteMethod(tpe)} }"
   }
 
   /***
@@ -262,19 +316,7 @@ private[macros] final class MacrosImpl(val c: blackbox.Context) {
     */
   def reader_impl[T: c.WeakTypeTag]: Tree = {
     val tpe = c.weakTypeOf[T]
-
-    q"""new InfluxReader[$tpe] {
-          import jawn.ast.{JValue, JArray}
-          import java.time.Instant
-          import com.github.fsanaulla.chronicler.core.model.DeserializationException
-
-          def toNanoLong(str: String): Long = {
-            val i = Instant.parse(str)
-            i.getEpochSecond * 1000000000 + i.getNano
-          }
-
-          ${createReadMethod(tpe)}
-       }"""
+    q"new com.github.fsanaulla.chronicler.core.model.InfluxReader[$tpe] { ${createReadMethod(tpe)} }"
   }
 
   /***
@@ -284,19 +326,9 @@ private[macros] final class MacrosImpl(val c: blackbox.Context) {
   def format_impl[T: c.WeakTypeTag]: Tree = {
     val tpe = c.weakTypeOf[T]
 
-    q"""
-       new InfluxFormatter[$tpe] {
-          import jawn.ast.{JValue, JArray}
-          import java.time.Instant
-          import com.github.fsanaulla.chronicler.core.model.DeserializationException
-
-          def toNanoLong(str: String): Long = {
-            val i = Instant.parse(str)
-            i.getEpochSecond * 1000000000 + i.getNano
-          }
-
+    q"""new com.github.fsanaulla.chronicler.core.model.InfluxFormatter[$tpe] {
           ${createWriteMethod(tpe)}
           ${createReadMethod(tpe)}
-       }"""
+     }"""
   }
 }

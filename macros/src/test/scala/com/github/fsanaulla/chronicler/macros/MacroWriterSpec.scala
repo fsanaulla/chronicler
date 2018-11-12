@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017-2018 Faiaz Sanaulla
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.fsanaulla.chronicler.macros
 
 import com.github.fsanaulla.chronicler.core.model.InfluxWriter
@@ -17,8 +33,8 @@ class MacroWriterSpec extends FlatSpec with Matchers {
                    @field school: String,
                    @timestamp time: Long)
 
-  val wr: InfluxWriter[Test] = Macros.writer[Test]
-  val wr1: InfluxWriter[Test1] = Macros.writer[Test1]
+  val wr: InfluxWriter[Test] = Influx.writer[Test]
+  val wr1: InfluxWriter[Test1] = Influx.writer[Test1]
 
   "Macros.writer" should "write with None" in {
     wr.write(Test("nm", None, "Berkly", 65)) shouldEqual "name=nm school=\"Berkly\",age=65i"

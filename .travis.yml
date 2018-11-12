@@ -2,7 +2,7 @@ language: scala
 
 scala:
   - 2.11.8
-  - 2.12.6
+  - 2.12.7
 
 jdk:
   - oraclejdk8
@@ -17,13 +17,4 @@ services:
   - docker
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION unitTesting/publishLocal
-  - sbt ++$TRAVIS_SCALA_VERSION itTesting/publishLocal
-  - sbt ++$TRAVIS_SCALA_VERSION coreTest macrosTest
-  - sbt ++$TRAVIS_SCALA_VERSION urlTest
-#  - sbt ++$TRAVIS_SCALA_VERSION urlHttp/publishLocal
-#  - sbt ++$TRAVIS_SCALA_VERSION udpTest
-  - sbt ++$TRAVIS_SCALA_VERSION asyncTest akkaTest
-  
-after_success:
- - bash <(curl -s https://codecov.io/bash)
+  - sbt ++$TRAVIS_SCALA_VERSION coreTest macrosTest urlTest ahcTest akkaTest

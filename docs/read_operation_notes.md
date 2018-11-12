@@ -16,7 +16,7 @@ For more details [see](response_handling.md).
 
 ## API
 
-At the moment only unsafe method exist. The base one is:
+At the moment only untyped method exist. The base one is:
 ```
 db.readJs("SELECT * FROM measurement")
 res0: Future[ReadResult[JsArray]] // where JsArray it's influx point representation

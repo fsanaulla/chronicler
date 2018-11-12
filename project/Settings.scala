@@ -3,12 +3,18 @@ import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.headerLicense
 import de.heikoseeberger.sbtheader.License
 import sbt.Keys.{publishArtifact, _}
 import sbt.librarymanagement.{Configurations, LibraryManagementSyntax}
-import sbt.{Developer, Opts, ScmInfo, url}
+import sbt.{Def, Defaults, Developer, Opts, ScmInfo, config, inConfig, url}
 
 /** Basic sbt settings */
 object Settings extends LibraryManagementSyntax {
 
   private val apacheUrl = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+
+  val CompileTimeIntegrationTest = config("it") extend Test
+  val PropertyTest = config("pt") extend Test
+  
+  val propertyTestSettings: Seq[Def.Setting[_]] =
+    inConfig(PropertyTest)(Defaults.testSettings)
 
   private object Owner {
     val id = "fsanaulla"
@@ -18,7 +24,7 @@ object Settings extends LibraryManagementSyntax {
   }
 
    val common = Seq(
-     scalaVersion := "2.12.6",
+     scalaVersion := "2.12.7",
      organization := "com.github.fsanaulla",
      scalacOptions ++= Scalac.options(scalaVersion.value),
      crossScalaVersions := Seq("2.11.8", scalaVersion.value),
@@ -30,10 +36,8 @@ object Settings extends LibraryManagementSyntax {
        email = Owner.email,
        url = url(Owner.github)
      ),
-     parallelExecution in IntegrationTest := false,
      makePomConfiguration := makePomConfiguration.value.withConfigurations(Configurations.defaultMavenConfigurations)
    )
-
 
   val publish = Seq(
     useGpg := false,

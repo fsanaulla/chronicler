@@ -1,8 +1,6 @@
-import sbt.{IntegrationTest, Provided, Test}
+import sbt.{Provided, Test}
 
 object Scope {
-  val test = Test
-  val it = IntegrationTest
-  val all = "test,it"
+  val test            = Test
   val compileTimeOnly = Provided
 }

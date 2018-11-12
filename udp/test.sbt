@@ -1,0 +1,1 @@
+addCommandAlias("udpTest", ";project udp;clean;compile;it:compile;it:test")
