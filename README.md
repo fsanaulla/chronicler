@@ -17,7 +17,7 @@ Open-source [Scala](https://www.scala-lang.org/) toolchain for [InfluxDB](https:
 - Easy to customize
 
 # Documentation
-0. [Modules](docs/modules.md)
+1. [Modules](docs/modules.md)
 1. [Get Started](docs/get_started.md)
 1. [Clients tutorial](docs/clients.md)
 2. [Read operation](docs/read_operation_notes.md)
