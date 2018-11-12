@@ -1,33 +1,24 @@
 ## Modules
-There are several backend specific modules.
+There are several backend specific modules. All HTTP modules split into smaller jars.
+First one provide `io` aka write/query api. And second one provide `management` api.
 
 ### Akka HTTP
 ```
-// provide writing/quering api for Influx
 libraryDependencies += "com.github.fsanaulla" %% "chronicler-akka-io" % <version>
-
-// provide management api for Influx
 libraryDependencies += "com.github.fsanaulla" %% "chronicler-akka-management" % <version>
 ```
 ### AHC(Async HTTP Client)
 ```
-// provide writing/quering api for Influx
 libraryDependencies += "com.github.fsanaulla" %% "chronicler-ahc-io" % <version>
-
-// provide management api for Influx
 libraryDependencies += "com.github.fsanaulla" %% "chronicler-ahc-management" % <version>
 ```
 ### HttpURLConnection
 ```
-// provide writing/quering api for Influx
 libraryDependencies += "com.github.fsanaulla" %% "chronicler-url-io" % <version>
-
-// provide management api for Influx
 libraryDependencies += "com.github.fsanaulla" %% "chronicler-url-management" % <version>
 ```
 ### UDP
 ```
-// provide UDP client for Influx
 libraryDependencies += "com.github.fsanaulla" %% "chronicler-udp" % <version>
 ```
 ### Macros
