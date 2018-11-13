@@ -41,44 +41,44 @@ final class Database(private[ahc] val host: String,
       with AhcReader {
 
   def writeFromFile(filePath: String,
-                    consistency: Consistency = Consistencies.ONE,
-                    precision: Precision = Precisions.NANOSECONDS,
+                    consistency: Option[Consistency] = None,
+                    precision: Option[Precision] = None,
                     retentionPolicy: Option[String] = None): Future[WriteResult] =
     writeFromFile(dbName, filePath, consistency, precision, retentionPolicy, gzipped)
 
 
   def writeNative(point: String,
-                  consistency: Consistency = Consistencies.ONE,
-                  precision: Precision = Precisions.NANOSECONDS,
+                  consistency: Option[Consistency] = None,
+                  precision: Option[Precision] = None,
                   retentionPolicy: Option[String] = None): Future[WriteResult] =
     writeTo(dbName, point, consistency, precision, retentionPolicy, gzipped)
 
 
   def bulkWriteNative(points: Seq[String],
-                      consistency: Consistency = Consistencies.ONE,
-                      precision: Precision = Precisions.NANOSECONDS,
+                      consistency: Option[Consistency] = None,
+                      precision: Option[Precision] = None,
                       retentionPolicy: Option[String] = None): Future[WriteResult] =
     writeTo(dbName, points, consistency, precision, retentionPolicy, gzipped)
 
 
   def writePoint(point: Point,
-                 consistency: Consistency = Consistencies.ONE,
-                 precision: Precision = Precisions.NANOSECONDS,
+                 consistency: Option[Consistency] = None,
+                 precision: Option[Precision] = None,
                  retentionPolicy: Option[String] = None): Future[WriteResult] =
     writeTo(dbName, point, consistency, precision, retentionPolicy, gzipped)
 
 
   def bulkWritePoints(points: Seq[Point],
-                      consistency: Consistency = Consistencies.ONE,
-                      precision: Precision = Precisions.NANOSECONDS,
+                      consistency: Option[Consistency] = None,
+                      precision: Option[Precision] = None,
                       retentionPolicy: Option[String] = None): Future[WriteResult] =
     writeTo(dbName, points, consistency, precision, retentionPolicy, gzipped)
 
 
   override def read[A: ClassTag](query: String,
-                                 epoch: Epoch,
-                                 pretty: Boolean,
-                                 chunked: Boolean)
+                                 epoch: Option[Epoch] = None,
+                                 pretty: Boolean = false,
+                                 chunked: Boolean = false)
                                 (implicit reader: InfluxReader[A]): Future[ReadResult[A]] = {
     readJs(query, epoch, pretty, chunked) map {
       case qr: QueryResult[JArray] => qr.map(reader.read)

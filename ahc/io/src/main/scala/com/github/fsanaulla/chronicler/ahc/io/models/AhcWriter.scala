@@ -37,11 +37,11 @@ private[ahc] trait AhcWriter
     with PointTransformer { self: HasCredentials =>
 
   private[chronicler] override def writeTo(dbName: String,
-                       entity: String,
-                       consistency: Consistency,
-                       precision: Precision,
-                       retentionPolicy: Option[String],
-                       gzipped: Boolean): Future[WriteResult] = {
+                                           entity: String,
+                                           consistency: Option[Consistency],
+                                           precision: Option[Precision],
+                                           retentionPolicy: Option[String],
+                                           gzipped: Boolean): Future[WriteResult] = {
 
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
     val req = sttp
@@ -54,11 +54,11 @@ private[ahc] trait AhcWriter
   }
 
   private[chronicler] override def writeFromFile(dbName: String,
-                             filePath: String,
-                             consistency: Consistency,
-                             precision: Precision,
-                             retentionPolicy: Option[String],
-                             gzipped: Boolean): Future[WriteResult] = {
+                                                 filePath: String,
+                                                 consistency: Option[Consistency],
+                                                 precision: Option[Precision],
+                                                 retentionPolicy: Option[String],
+                                                 gzipped: Boolean): Future[WriteResult] = {
 
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
     val req = sttp

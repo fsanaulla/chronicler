@@ -22,6 +22,8 @@ import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.softwaremill.sttp.Uri
 
+import scala.language.implicitConversions
+
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
@@ -38,6 +40,8 @@ class DatabaseApiOperationQuerySpec extends FlatSpecWithMatchers {
 
   val testDB = "db"
   val testQuery = "SELECT * FROM test"
+
+  implicit def a2Opt[A](a: A): Option[A] = Some(a)
 
 
   it should "return correct write query" in new AuthEnv {
@@ -66,10 +70,10 @@ class DatabaseApiOperationQuerySpec extends FlatSpecWithMatchers {
 
   it should "return correct write query without auth " in new NonAuthEnv {
     writeToInfluxQuery(testDB, Consistencies.ONE, Precisions.NANOSECONDS, None).toString() shouldEqual
-      queryTester("/write", Map("db" -> testDB, "precision" -> "ns", "consistency" -> "one"))
+      queryTester("/write", Map("db" -> testDB, "consistency" -> "one", "precision" -> "ns"))
 
     writeToInfluxQuery(testDB, Consistencies.ONE, Precisions.MICROSECONDS, None).toString() shouldEqual
-      queryTester("/write", Map("db" -> testDB, "precision" -> "u", "consistency" -> "one"))
+      queryTester("/write", Map("db" -> testDB, "consistency" -> "one", "precision" -> "u"))
   }
 
   it should "return correct single read query" in new AuthEnv {

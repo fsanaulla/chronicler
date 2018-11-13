@@ -4,6 +4,7 @@ import com.github.fsanaulla.chronicler.ahc.io.api.Database
 import com.github.fsanaulla.chronicler.ahc.io.models.InfluxConfig
 import com.github.fsanaulla.chronicler.ahc.io.{AhcIOClient, InfluxIO}
 import com.github.fsanaulla.chronicler.ahc.management.{AsyncManagementClient, InfluxMng}
+import com.github.fsanaulla.chronicler.core.enums.Epochs
 import com.github.fsanaulla.chronicler.core.model.Point
 import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
@@ -119,7 +120,7 @@ class GzippedDatabaseApiSpec extends FlatSpecWithMatchers with Futures with Dock
       .futureValue shouldEqual NoContentResult
 
     db
-      .readJs("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"")
+      .readJs("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"", epoch = Some(Epochs.NANOSECONDS))
       .futureValue
       .groupedResult
       .map { case (k, v) => k.toSeq -> v } shouldEqual Array(Seq("Male") -> JArray(Array(JNum(0), JNum(49))))
