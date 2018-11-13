@@ -4,9 +4,8 @@ import java.io.File
 
 import com.github.fsanaulla.chronicler.core.model.{InfluxFormatter, Point}
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
-import com.github.fsanaulla.chronicler.urlhttp.Influx
-import com.github.fsanaulla.chronicler.urlhttp.api.Database
-import com.github.fsanaulla.chronicler.urlhttp.clients.UrlIOClient
+import com.github.fsanaulla.chronicler.urlhttp.io.api.Database
+import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.core.testing.configurations.InfluxUDPConf
 import com.github.fsanaulla.scalatest.EmbeddedInfluxDB
 import jawn.ast.{JArray, JNum, JString}
@@ -29,7 +28,7 @@ class UdpClientSpec
   val host = "localhost"
   lazy val influxUdp: InfluxUDPClient = InfluxUdp(host)
 
-  lazy val influxHttp: UrlIOClient = Influx.io(host)
+  lazy val influxHttp: UrlIOClient = InfluxIO(host)
 
   lazy val udp: Database = influxHttp.database("udp")
 

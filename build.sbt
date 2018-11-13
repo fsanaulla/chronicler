@@ -188,7 +188,7 @@ lazy val udp = project
     libraryDependencies ++= Dependencies.udpDep
   )
   .dependsOn(coreShared)
-  .dependsOn(unitTesting)
+  .dependsOn(itTesting, urlIO, urlManagement % "test->test")
   .enablePlugins(AutomateHeaderPlugin)
 
 //////////////////////////////////////////////////////
