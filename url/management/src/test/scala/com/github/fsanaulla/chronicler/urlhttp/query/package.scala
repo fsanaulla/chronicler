@@ -20,11 +20,7 @@ import java.net.URLEncoder
 
 import com.github.fsanaulla.chronicler.core.model.{AuthorizationException, InfluxCredentials, WriteResult}
 
-/**
-  * Created by fayaz on 11.07.17.
-  */
-object TestHelper {
-
+package object query {
   implicit class StringRich(val str: String) extends AnyVal {
     def encode: String = URLEncoder.encode(str, "UTF-8")
   }
