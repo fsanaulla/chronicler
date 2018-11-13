@@ -49,8 +49,8 @@ final class Measurement[E: ClassTag](dbName: String,
       with PointTransformer {
 
   def write(entity: E,
-            consistency: Consistency = Consistencies.ONE,
-            precision: Precision = Precisions.NANOSECONDS,
+            consistency: Option[Consistency] = None,
+            precision: Option[Precision] = None,
             retentionPolicy: Option[String] = None)(implicit wr: InfluxWriter[E]): Future[WriteResult] =
     writeTo(
       dbName,
@@ -63,8 +63,8 @@ final class Measurement[E: ClassTag](dbName: String,
 
 
   def bulkWrite(entitys: Seq[E],
-                consistency: Consistency = Consistencies.ONE,
-                precision: Precision = Precisions.NANOSECONDS,
+                consistency: Option[Consistency] = None,
+                precision: Option[Precision] = None,
                 retentionPolicy: Option[String] = None)(implicit wr: InfluxWriter[E]): Future[WriteResult] =
     writeTo(
       dbName,
@@ -77,7 +77,7 @@ final class Measurement[E: ClassTag](dbName: String,
 
 
   def read(query: String,
-           epoch: Epoch = Epochs.NANOSECONDS,
+           epoch: Option[Epoch] = None,
            pretty: Boolean = false,
            chunked: Boolean = false)(implicit reader: InfluxReader[E]): Future[ReadResult[E]] =
     readJs(dbName, query, epoch, pretty, chunked) map {

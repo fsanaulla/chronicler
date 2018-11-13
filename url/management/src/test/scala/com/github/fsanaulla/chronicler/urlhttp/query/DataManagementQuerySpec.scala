@@ -18,7 +18,6 @@ package com.github.fsanaulla.chronicler.urlhttp.query
 
 import com.github.fsanaulla.chronicler.core.query.DataManagementQuery
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
-import com.github.fsanaulla.chronicler.urlhttp.TestHelper._
 import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.UrlQueryBuilder
 import com.softwaremill.sttp.Uri
 

@@ -39,8 +39,8 @@ private[urlhttp] trait UrlWriter
 
   private[chronicler] override def writeTo(dbName: String,
                                            entity: String,
-                                           consistency: Consistency,
-                                           precision: Precision,
+                                           consistency: Option[Consistency],
+                                           precision: Option[Precision],
                                            retentionPolicy: Option[String],
                                            gzipped: Boolean): Try[WriteResult] = {
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
@@ -52,8 +52,8 @@ private[urlhttp] trait UrlWriter
 
   private[chronicler] override def writeFromFile(dbName: String,
                                               filePath: String,
-                                              consistency: Consistency,
-                                              precision: Precision,
+                                              consistency: Option[Consistency],
+                                              precision: Option[Precision],
                                               retentionPolicy: Option[String],
                                               gzipped: Boolean): Try[WriteResult] = {
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)

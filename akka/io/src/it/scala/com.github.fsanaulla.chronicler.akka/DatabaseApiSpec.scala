@@ -7,6 +7,7 @@ import com.github.fsanaulla.chronicler.akka.io.api.Database
 import com.github.fsanaulla.chronicler.akka.io.models.InfluxConfig
 import com.github.fsanaulla.chronicler.akka.io.{AkkaIOClient, InfluxIO}
 import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, InfluxMng}
+import com.github.fsanaulla.chronicler.core.enums.Epochs
 import com.github.fsanaulla.chronicler.core.model.Point
 import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
@@ -126,7 +127,7 @@ class DatabaseApiSpec
       .futureValue shouldEqual NoContentResult
 
     db
-      .readJs("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"")
+      .readJs("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"", epoch = Some(Epochs.NANOSECONDS))
       .futureValue
       .groupedResult
       .map { case (k, v) => k.toSeq -> v } shouldEqual Array(Seq("Male") -> JArray(Array(JNum(0), JNum(49))))

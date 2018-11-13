@@ -34,10 +34,10 @@ private[ahc] trait AhcReader
     with ReadOperations[Future] { self: HasCredentials =>
 
   private[chronicler] override def readJs(dbName: String,
-                      query: String,
-                      epoch: Epoch,
-                      pretty: Boolean,
-                      chunked: Boolean): Future[ReadResult[JArray]] = {
+                                          query: String,
+                                          epoch: Option[Epoch],
+                                          pretty: Boolean,
+                                          chunked: Boolean): Future[ReadResult[JArray]] = {
     val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
     val executionResult = execute(uri)
     query match {
@@ -47,10 +47,10 @@ private[ahc] trait AhcReader
   }
 
   private[chronicler] override def bulkReadJs(dbName: String,
-                          queries: Seq[String],
-                          epoch: Epoch,
-                          pretty: Boolean,
-                          chunked: Boolean): Future[QueryResult[Array[JArray]]] = {
+                                              queries: Seq[String],
+                                              epoch: Option[Epoch],
+                                              pretty: Boolean,
+                                              chunked: Boolean): Future[QueryResult[Array[JArray]]] = {
     val uri = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)
     execute(uri).flatMap(toBulkQueryJsResult)
   }

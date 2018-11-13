@@ -32,57 +32,50 @@ import scala.reflect.ClassTag
 abstract class DatabaseApi[F[_], E](dbName: String) extends ReadOperations[F] {
 
   def read[A: ClassTag](query: String,
-                        epoch: Epoch = Epochs.NANOSECONDS,
+                        epoch: Option[Epoch],
                         pretty: Boolean = false,
                         chunked: Boolean = false)(implicit reader: InfluxReader[A]): F[ReadResult[A]]
 
   def writeFromFile(filePath: String,
-                    consistency: Consistency = Consistencies.ONE,
-                    precision: Precision = Precisions.NANOSECONDS,
+                    consistency: Option[Consistency],
+                    precision: Option[Precision],
                     retentionPolicy: Option[String] = None): F[WriteResult]
 
 
   def writeNative(point: String,
-                  consistency: Consistency = Consistencies.ONE,
-                  precision: Precision = Precisions.NANOSECONDS,
+                  consistency: Option[Consistency],
+                  precision: Option[Precision],
                   retentionPolicy: Option[String] = None): F[WriteResult]
 
 
   def bulkWriteNative(points: Seq[String],
-                      consistency: Consistency = Consistencies.ONE,
-                      precision: Precision = Precisions.NANOSECONDS,
+                      consistency: Option[Consistency],
+                      precision: Option[Precision],
                       retentionPolicy: Option[String] = None): F[WriteResult]
 
 
   def writePoint(point: Point,
-                 consistency: Consistency = Consistencies.ONE,
-                 precision: Precision = Precisions.NANOSECONDS,
+                 consistency: Option[Consistency],
+                 precision: Option[Precision],
                  retentionPolicy: Option[String] = None): F[WriteResult]
 
 
   def bulkWritePoints(points: Seq[Point],
-                      consistency: Consistency = Consistencies.ONE,
-                      precision: Precision = Precisions.NANOSECONDS,
+                      consistency: Option[Consistency],
+                      precision: Option[Precision],
                       retentionPolicy: Option[String] = None): F[WriteResult]
 
 
   final def readJs(query: String,
-                   epoch: Epoch = Epochs.NANOSECONDS,
+                   epoch: Option[Epoch] = None,
                    pretty: Boolean = false,
                    chunked: Boolean = false): F[ReadResult[JArray]] =
     readJs(dbName, query, epoch, pretty, chunked)
 
 
   final def bulkReadJs(queries: Seq[String],
-                       epoch: Epoch = Epochs.NANOSECONDS,
+                       epoch: Option[Epoch] = None,
                        pretty: Boolean = false,
                        chunked: Boolean = false): F[QueryResult[Array[JArray]]] =
     bulkReadJs(dbName, queries, epoch, pretty, chunked)
-
-  final def writeUniversal(measurement: String,
-                           point: String,
-                           consistency: Consistency = Consistencies.ONE,
-                           precision: Precision = Precisions.NANOSECONDS,
-                           retentionPolicy: Option[String] = None): F[WriteResult] =
-    writeNative(measurement + "," + point, consistency, precision, retentionPolicy)
 }

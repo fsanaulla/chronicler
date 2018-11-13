@@ -40,7 +40,7 @@ private[akka] trait AkkaReader
 
   private[chronicler] override def readJs(dbName: String,
                                           query: String,
-                                          epoch: Epoch,
+                                          epoch: Option[Epoch],
                                           pretty: Boolean,
                                           chunked: Boolean): Future[ReadResult[JArray]] = {
 
@@ -56,7 +56,7 @@ private[akka] trait AkkaReader
 
   private[chronicler] override def bulkReadJs(dbName: String,
                                               queries: Seq[String],
-                                              epoch: Epoch,
+                                              epoch: Option[Epoch],
                                               pretty: Boolean,
                                               chunked: Boolean): Future[QueryResult[Array[JArray]]] = {
     val uri = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)

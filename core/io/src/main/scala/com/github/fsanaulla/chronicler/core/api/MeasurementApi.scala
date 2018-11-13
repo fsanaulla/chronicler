@@ -36,9 +36,9 @@ trait MeasurementApi[F[_], E] {
     * @return                - Write result on backend container
     */
   def write(entity: E,
-            consistency: Consistency,
-            precision: Precision,
-            retentionPolicy: Option[String] = None)(implicit writer: InfluxWriter[E]): F[WriteResult]
+            consistency: Option[Consistency],
+            precision: Option[Precision],
+            retentionPolicy: Option[String])(implicit writer: InfluxWriter[E]): F[WriteResult]
 
   /**
     * Make bulk write
@@ -50,7 +50,7 @@ trait MeasurementApi[F[_], E] {
     * @return                - Write result on backend container
     */
   def bulkWrite(entities: Seq[E],
-                consistency: Consistency,
-                precision: Precision,
-                retentionPolicy: Option[String] = None)(implicit writer: InfluxWriter[E]): F[WriteResult]
+                consistency: Option[Consistency],
+                precision: Option[Precision],
+                retentionPolicy: Option[String])(implicit writer: InfluxWriter[E]): F[WriteResult]
 }
