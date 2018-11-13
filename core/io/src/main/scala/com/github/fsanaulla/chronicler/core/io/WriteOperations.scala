@@ -39,8 +39,8 @@ trait WriteOperations[F[_], E] {
     */
   private[chronicler] def writeTo(dbName: String,
                                   entity: E,
-                                  consistency: Consistency,
-                                  precision: Precision,
+                                  consistency: Option[Consistency],
+                                  precision: Option[Precision],
                                   retentionPolicy: Option[String],
                                   gzipped: Boolean): F[WriteResult]
 
@@ -55,8 +55,8 @@ trait WriteOperations[F[_], E] {
     */
   private[chronicler] def writeFromFile(dbName: String,
                                         filePath: String,
-                                        consistency: Consistency,
-                                        precision: Precision,
+                                        consistency: Option[Consistency],
+                                        precision: Option[Precision],
                                         retentionPolicy: Option[String],
                                         gzipped: Boolean): F[WriteResult]
 

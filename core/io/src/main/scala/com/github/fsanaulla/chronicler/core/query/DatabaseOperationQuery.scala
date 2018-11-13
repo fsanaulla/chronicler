@@ -30,27 +30,22 @@ import scala.collection.mutable
 private[chronicler] trait DatabaseOperationQuery[U] { self: QueryBuilder[U] =>
 
   private[chronicler] final def writeToInfluxQuery(dbName: String,
-                                                   consistency: Consistency,
-                                                   precision: Precision,
+                                                   consistency: Option[Consistency],
+                                                   precision: Option[Precision],
                                                    retentionPolicy: Option[String])
                                                   (implicit credentials: Option[InfluxCredentials]): U = {
 
-    val queryParams = scala.collection.mutable.Map[String, String](
-      "db" -> dbName,
-      "consistency" -> consistency.toString,
-      "precision" -> precision.toString
-    )
-
-    for (rp <- retentionPolicy) {
-      queryParams += ("rp" -> rp)
-    }
+    val queryParams = scala.collection.mutable.Map[String, String]("db" -> dbName)
+    for (rp <- retentionPolicy) queryParams += ("rp" -> rp)
+    for (pr <- precision) queryParams += ("precision" -> pr.toString)
+    for (cons <- consistency) queryParams += ("consistency" -> cons.toString)
 
     buildQuery("/write", buildQueryParams(queryParams))
   }
 
   private[chronicler] final def readFromInfluxSingleQuery(dbName: String,
                                                           query: String,
-                                                          epoch: Epoch,
+                                                          epoch: Option[Epoch],
                                                           pretty: Boolean,
                                                           chunked: Boolean)
                                                          (implicit credentials: Option[InfluxCredentials]): U = {
@@ -59,16 +54,17 @@ private[chronicler] trait DatabaseOperationQuery[U] { self: QueryBuilder[U] =>
       "db" -> dbName,
       "pretty" -> pretty.toString,
       "chunked" -> chunked.toString,
-      "epoch" -> epoch.toString,
       "q" -> query
     )
+
+    for (ep <- epoch) queryParams += ("epoch" -> ep.toString)
 
     buildQuery("/query", buildQueryParams(queryParams))
   }
 
   private[chronicler] final def readFromInfluxBulkQuery(dbName: String,
                                                         queries: Seq[String],
-                                                        epoch: Epoch,
+                                                        epoch: Option[Epoch],
                                                         pretty: Boolean,
                                                         chunked: Boolean)
                                                        (implicit credentials: Option[InfluxCredentials]): U = {
@@ -76,9 +72,10 @@ private[chronicler] trait DatabaseOperationQuery[U] { self: QueryBuilder[U] =>
       "db" -> dbName,
       "pretty" -> pretty.toString,
       "chunked" -> chunked.toString,
-      "epoch" -> epoch.toString,
       "q" -> queries.mkString(";")
     )
+
+    for (ep <- epoch) queryParams += ("epoch" -> ep.toString)
 
     buildQuery("/query", buildQueryParams(queryParams))
   }
