@@ -17,6 +17,7 @@
 package com.github.fsanaulla.chronicler.urlhttp.management
 
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient.CustomizationF
 
 object InfluxMng {
@@ -34,4 +35,13 @@ object InfluxMng {
             credentials: Option[InfluxCredentials] = None,
             customization: Option[CustomizationF] = None): UrlManagementClient =
     new UrlManagementClient(host, port, credentials, customization)
+
+  /**
+    * Retrieve management InfluxDB client, without IO functionality using [[InfluxConfig]]
+    *
+    * @param conf - configuration object
+    * @return     - [[UrlManagementClient]]
+    */
+  def apply(conf: InfluxConfig): UrlManagementClient =
+    apply(conf.host, conf.port, conf.credentials, conf.customization)
 }
