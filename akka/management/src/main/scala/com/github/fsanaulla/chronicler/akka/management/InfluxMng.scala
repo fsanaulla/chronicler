@@ -18,6 +18,7 @@ package com.github.fsanaulla.chronicler.akka.management
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.HttpsConnectionContext
+import com.github.fsanaulla.chronicler.akka.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 
 import scala.concurrent.ExecutionContext
@@ -45,5 +46,17 @@ object InfluxMng {
             credentials: Option[InfluxCredentials] = None,
             httpsContext: Option[HttpsConnectionContext] = None)
            (implicit ex: ExecutionContext, system: ActorSystem): AkkaManagementClient =
-    new AkkaManagementClient(host, port, credentials, httpsContext)(ex, system)
+    new AkkaManagementClient(host, port, credentials, httpsContext)
+
+  /**
+    * Retrieve management InfluxDB client, without IO functionality using configuration object
+    *
+    * @param conf        - configuration object
+    * @param system      - actor system, by default will create new one
+    * @param ex          - implicit execution context, by default use standard one
+    * @return            - [[AkkaManagementClient]]
+    */
+  def apply(conf: InfluxConfig)
+           (implicit ex: ExecutionContext, system: ActorSystem): AkkaManagementClient =
+    apply(conf.host, conf.port, conf.credentials, conf.httpsContext)
 }

@@ -18,7 +18,7 @@ package com.github.fsanaulla.chronicler.akka.io
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.HttpsConnectionContext
-import com.github.fsanaulla.chronicler.akka.io.models.InfluxConfig
+import com.github.fsanaulla.chronicler.akka.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 
 import scala.concurrent.ExecutionContext
