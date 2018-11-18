@@ -28,11 +28,11 @@ import org.asynchttpclient.AsyncHttpClientConfig
 
 import scala.concurrent.{ExecutionContext, Future}
 
-final class AsyncManagementClient(val host: String,
-                                  val port: Int,
-                                  val credentials: Option[InfluxCredentials],
-                                  asyncClientConfig: Option[AsyncHttpClientConfig])
-                                 (implicit val ex: ExecutionContext)
+final class AhcManagementClient(val host: String,
+                                val port: Int,
+                                val credentials: Option[InfluxCredentials],
+                                asyncClientConfig: Option[AsyncHttpClientConfig])
+                               (implicit val ex: ExecutionContext)
   extends InfluxAhcClient(asyncClientConfig)
     with ManagementClient[Future, Request, Response[JValue], Uri, String]
     with AhcRequestExecutor
@@ -41,7 +41,7 @@ final class AsyncManagementClient(val host: String,
     with FlatMap[Future]
     with AutoCloseable {
 
-  private[chronicler] override def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
+  protected override def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
 
   override def ping: Future[WriteResult] =
     execute(buildQuery("/ping", Map.empty[String, String])).flatMap(toResult)

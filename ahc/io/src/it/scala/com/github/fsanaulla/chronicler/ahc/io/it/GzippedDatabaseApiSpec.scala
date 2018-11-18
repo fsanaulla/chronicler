@@ -1,9 +1,9 @@
 package com.github.fsanaulla.chronicler.ahc.io.it
 
 import com.github.fsanaulla.chronicler.ahc.io.api.Database
-import com.github.fsanaulla.chronicler.ahc.io.models.InfluxConfig
 import com.github.fsanaulla.chronicler.ahc.io.{AhcIOClient, InfluxIO}
-import com.github.fsanaulla.chronicler.ahc.management.{AsyncManagementClient, InfluxMng}
+import com.github.fsanaulla.chronicler.ahc.management.{AhcManagementClient, InfluxMng}
+import com.github.fsanaulla.chronicler.ahc.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.core.enums.Epochs
 import com.github.fsanaulla.chronicler.core.model.Point
 import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
@@ -26,7 +26,7 @@ class GzippedDatabaseApiSpec extends FlatSpecWithMatchers with Futures with Dock
   lazy val influxConf =
     InfluxConfig(host, port, credentials = Some(creds), gzipped = false, None)
 
-  lazy val mng: AsyncManagementClient =
+  lazy val mng: AhcManagementClient =
     InfluxMng(host, port, credentials = Some(creds))
 
   lazy val io: AhcIOClient =

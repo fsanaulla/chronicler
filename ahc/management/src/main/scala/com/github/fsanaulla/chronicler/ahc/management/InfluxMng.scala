@@ -16,6 +16,7 @@
 
 package com.github.fsanaulla.chronicler.ahc.management
 
+import com.github.fsanaulla.chronicler.ahc.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import org.asynchttpclient.AsyncHttpClientConfig
 
@@ -31,12 +32,22 @@ object InfluxMng {
     * @param credentials       - user credentials
     * @param asyncClientConfig - custom configuration
     * @param ex                - implicit execution context, by default use standard one
-    * @return                  - [[AsyncManagementClient]]
+    * @return                  - [[AhcManagementClient]]
     */
   def apply(host: String,
             port: Int = 8086,
             credentials: Option[InfluxCredentials] = None,
             asyncClientConfig: Option[AsyncHttpClientConfig] = None)
-           (implicit ex: ExecutionContext): AsyncManagementClient =
-    new AsyncManagementClient(host, port, credentials, asyncClientConfig)
+           (implicit ex: ExecutionContext): AhcManagementClient =
+    new AhcManagementClient(host, port, credentials, asyncClientConfig)
+
+  /**
+    * Retrieve management InfluxDB client, without management functionality using configuration object
+    *
+    * @param conf - configuration object
+    * @param ex   - implicit execution context, by default use standard one
+    * @return     - [[AhcManagementClient]]
+    */
+  def apply(conf: InfluxConfig)(implicit ex: ExecutionContext): AhcManagementClient =
+    apply(conf.host, conf.port, conf.credentials, conf.asyncClientConfig)
 }

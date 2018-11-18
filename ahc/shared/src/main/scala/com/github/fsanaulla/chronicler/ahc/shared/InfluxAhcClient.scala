@@ -26,5 +26,5 @@ abstract class InfluxAhcClient(asyncClientConfig: Option[AsyncHttpClientConfig])
 
   private[ahc] implicit val backend: SttpBackend[Future, Nothing] =
     asyncClientConfig.fold(AsyncHttpClientFutureBackend())(AsyncHttpClientFutureBackend.usingConfig)
-  private[ahc] def close(): Unit = backend.close()
+  override def close(): Unit = backend.close()
 }

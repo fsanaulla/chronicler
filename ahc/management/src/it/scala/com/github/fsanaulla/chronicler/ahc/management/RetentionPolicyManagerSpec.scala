@@ -18,7 +18,7 @@ class RetentionPolicyManagerSpec extends FlatSpecWithMatchers with DockerizedInf
 
   val rpDB = "db"
 
-  lazy val influx: AsyncManagementClient =
+  lazy val influx: AhcManagementClient =
     InfluxMng(host, port, Some(creds))
 
   it should "create retention policy" in {

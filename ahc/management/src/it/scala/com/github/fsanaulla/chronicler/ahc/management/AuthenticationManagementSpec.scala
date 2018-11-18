@@ -24,10 +24,10 @@ class AuthenticationManagementSpec extends FlatSpecWithMatchers with DockerizedI
   val admin = "admin"
   val adminPass = "admin"
 
-  lazy val influx: AsyncManagementClient =
+  lazy val influx: AhcManagementClient =
     InfluxMng(host, port)
 
-  lazy val authInflux: AsyncManagementClient =
+  lazy val authInflux: AhcManagementClient =
     InfluxMng(host, port, Some(creds))
 
   it should  "create admin user" in {

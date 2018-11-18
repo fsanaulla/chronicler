@@ -23,7 +23,7 @@ class UserManagementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB wi
   val admin = "Admin"
   val adminPass = "admin_pass"
 
-  lazy val influx: AsyncManagementClient =
+  lazy val influx: AhcManagementClient =
     InfluxMng(host, port, Some(creds))
 
   it should "create user" in {
