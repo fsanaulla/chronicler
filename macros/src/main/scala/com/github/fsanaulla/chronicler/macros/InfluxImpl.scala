@@ -26,7 +26,7 @@ import scala.reflect.macros.blackbox
   * Author: fayaz.sanaulla@gmail.com
   * Date: 13.02.18
   */
-private[macros] final class MacrosImpl(val c: blackbox.Context) {
+private[macros] final class InfluxImpl(val c: blackbox.Context) {
   import c.universe._
 
   /** return type dealias */
