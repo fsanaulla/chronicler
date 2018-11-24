@@ -1,9 +1,9 @@
-import com.typesafe.sbt.SbtPgp.autoImportImpl.useGpg
+import com.typesafe.sbt.SbtPgp.autoImportImpl.{pgpPassphrase, pgpPublicRing, pgpSecretRing, useGpg}
 import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.headerLicense
 import de.heikoseeberger.sbtheader.License
 import sbt.Keys.{publishArtifact, _}
 import sbt.librarymanagement.{Configurations, LibraryManagementSyntax}
-import sbt.{Def, Defaults, Developer, Opts, ScmInfo, config, inConfig, url}
+import sbt.{Def, Defaults, Developer, Opts, ScmInfo, config, file, inConfig, url}
 
 /** Basic sbt settings */
 object Settings extends LibraryManagementSyntax {
@@ -54,7 +54,10 @@ object Settings extends LibraryManagementSyntax {
       else
         Opts.resolver.sonatypeStaging
     ),
-    publishArtifact in Test := false
+    publishArtifact in Test := false,
+    pgpPublicRing := file("pubring.asc"),
+    pgpSecretRing := file("secring.asc"),
+    pgpPassphrase := sys.env.get("PGP_PASSPHRASE").map(_.toCharArray)
   )
 
   val header = headerLicense := Some(License.ALv2("2017-2018", Owner.name))

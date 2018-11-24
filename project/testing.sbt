@@ -1,6 +1,3 @@
-// release
-addCommandAlias("fullRelease", ";clean;publishSigned;sonatypeRelease")
-
 // core testing
 addCommandAlias(
   "coreTest",
@@ -20,4 +17,3 @@ addCommandAlias(
 addCommandAlias(
   "urlTest",
   ";project urlShared; clean; compile; test:compile; ; test;project urlManagement; clean; compile; test:compile; ; test; it:compile; ; it:test;project urlIO;clean;compile;test:compile;test;it:compile;it:test")
-
