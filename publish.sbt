@@ -1,3 +1,5 @@
+addCommandAlias("fullRelease", ";clean;publishSigned;sonatypeRelease")
+
 addCommandAlias(
   "corePublish",
   ";project coreShared; fullRelease; project coreIO; fullRelease; project coreManagement; fullRelease"
