@@ -1,5 +1,16 @@
-import Settings._
 import sbt.Keys.{libraryDependencies, name}
+
+lazy val chronicler = project
+  .in(file("."))
+  .settings(parallelExecution in Compile := false)
+  .aggregate(
+    coreShared, coreIO, coreManagement,
+    akkaShared, akkaIO, akkaManagement,
+    ahcShared,  ahcIO,  ahcManagement,
+    urlShared,  urlIO,  urlManagement,
+    udp,
+    macros
+  )
 
 //////////////////////////////////////////////////////
 //////////////////// CORE MODULES ////////////////////
@@ -30,8 +41,8 @@ lazy val coreManagement = project
 
 lazy val coreShared = project
   .in(file("core/shared"))
-  .settings(propertyTestSettings: _*)
-  .configs(PropertyTest)
+  .settings(Settings.propertyTestSettings: _*)
+  .configs(Settings.PropertyTest)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
@@ -50,7 +61,7 @@ lazy val coreShared = project
 //////////////////////////////////////////////////////
 lazy val urlManagement = project
   .in(file("url/management"))
-  .configs(CompileTimeIntegrationTest)
+  .configs(Settings.CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -62,7 +73,7 @@ lazy val urlManagement = project
 
 lazy val urlIO = project
   .in(file("url/io"))
-  .configs(CompileTimeIntegrationTest)
+  .configs(Settings.CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -91,7 +102,7 @@ lazy val urlShared = project
 //////////////////////////////////////////////////////
 lazy val akkaManagement = project
   .in(file("akka/management"))
-  .configs(CompileTimeIntegrationTest)
+  .configs(Settings.CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -106,7 +117,7 @@ lazy val akkaManagement = project
 
 lazy val akkaIO = project
   .in(file("akka/io"))
-  .configs(CompileTimeIntegrationTest)
+  .configs(Settings.CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -138,7 +149,7 @@ lazy val akkaShared = project
 //////////////////////////////////////////////////////
 lazy val ahcManagement = project
   .in(file("ahc/management"))
-  .configs(CompileTimeIntegrationTest)
+  .configs(Settings.CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -150,7 +161,7 @@ lazy val ahcManagement = project
 
 lazy val ahcIO = project
   .in(file("ahc/io"))
-  .configs(CompileTimeIntegrationTest)
+  .configs(Settings.CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -173,12 +184,13 @@ lazy val ahcShared = project
   .dependsOn(coreShared)
   .dependsOn(unitTesting % "test->test")
   .enablePlugins(AutomateHeaderPlugin)
+
 //////////////////////////////////////////////////////
 ///////////////////// UPD MODULE /////////////////////
 //////////////////////////////////////////////////////
 lazy val udp = project
   .in(file("udp"))
-  .configs(CompileTimeIntegrationTest)
+  .configs(Settings.CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
@@ -196,8 +208,8 @@ lazy val udp = project
 //////////////////////////////////////////////////////
 lazy val macros = project
   .in(file("macros"))
-  .settings(propertyTestSettings: _*)
-  .configs(PropertyTest)
+  .settings(Settings.propertyTestSettings: _*)
+  .configs(Settings.PropertyTest)
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
