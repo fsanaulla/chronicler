@@ -19,6 +19,22 @@ before_install:
       tar xvf secrets.tar
       chmod 777 scripts/publish.sh
     fi
+
+jobs:
+  include:
+    - stage: test
+      script: sbt ++2.11.8 coreTest macroTest akkaTest ahcTest urlTest
+      name: "Running test on scala 2.11.8"
+    - script: sbt ++2.12.7 coreTest macroTest akkaTest ahcTest urlTest
+      name: "Running test on scala 2.12.7"
+    - stage: deploy
+      script: ./scripts/publish.sh
+
+stages:
+  - name: test
+  - name: deploy
+    if: branch = master AND type = push
+
 script:
   - chmod 777 scripts/test.sh && ./scripts/test.sh
 after_success:
