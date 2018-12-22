@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.utils
+package com.github.fsanaulla.chronicler.core
 
+import _root_.jawn.ast.{JArray, JValue}
 import com.github.fsanaulla.chronicler.core.enums.{Destinations, Privileges}
+import com.github.fsanaulla.chronicler.core.jawn._
 import com.github.fsanaulla.chronicler.core.model._
-import com.github.fsanaulla.chronicler.core.utils.PrimitiveJawnImplicits._
-import jawn.ast.{JArray, JValue}
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 30.07.17
-  */
-object DefaultInfluxImplicits {
+package object implicits {
+  implicit final class RichString(private val str: String) extends AnyVal {
+    def escapeFull: String = str.replaceAll("([ ,=])", "\\\\$1")
+    def escape: String = str.replaceAll("([ ,])", "\\\\$1")
+  }
 
   implicit object StringInfluxReader extends InfluxReader[String] {
     def read(js: JArray): String = js.vs match {

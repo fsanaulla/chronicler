@@ -17,8 +17,8 @@
 package com.github.fsanaulla.chronicler.ahc.management
 
 import com.github.fsanaulla.chronicler.ahc.shared.handlers.AhcQueryBuilder
+import com.github.fsanaulla.chronicler.core.duration._
 import com.github.fsanaulla.chronicler.core.query.RetentionPolicyManagementQuery
-import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.softwaremill.sttp.Uri
 

@@ -16,8 +16,8 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.query
 
+import com.github.fsanaulla.chronicler.core.duration._
 import com.github.fsanaulla.chronicler.core.query.RetentionPolicyManagementQuery
-import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.UrlQueryBuilder
 import com.softwaremill.sttp.Uri

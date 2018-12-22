@@ -18,11 +18,11 @@ package com.github.fsanaulla.chronicler.ahc.io.models
 
 import com.github.fsanaulla.chronicler.ahc.shared.formats._
 import com.github.fsanaulla.chronicler.ahc.shared.handlers.{AhcQueryBuilder, AhcRequestExecutor, AhcResponseHandler}
+import com.github.fsanaulla.chronicler.core.encoding._
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
 import com.github.fsanaulla.chronicler.core.io.WriteOperations
 import com.github.fsanaulla.chronicler.core.model.{HasCredentials, PointTransformer, WriteResult}
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.chronicler.core.utils.Encodings
 import com.softwaremill.sttp.{Uri, sttp}
 
 import scala.concurrent.Future
@@ -48,7 +48,7 @@ private[ahc] trait AhcWriter
       .post(uri)
       .body(entity)
       .response(asJson)
-    val maybeEncoded = if (gzipped) req.acceptEncoding(Encodings.gzipEncoding) else req
+    val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
 
     execute(maybeEncoded).flatMap(toResult)
   }

@@ -1,8 +1,8 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
 import com.github.fsanaulla.chronicler.core.enums.Epochs
+import com.github.fsanaulla.chronicler.core.jawn._
 import com.github.fsanaulla.chronicler.core.model.Point
-import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
 import com.github.fsanaulla.chronicler.testing.it.FakeEntity.fmt
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity}

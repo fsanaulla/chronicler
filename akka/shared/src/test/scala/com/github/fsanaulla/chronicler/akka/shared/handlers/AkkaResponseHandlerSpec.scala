@@ -21,8 +21,8 @@ import _root_.akka.http.scaladsl.model.HttpResponse
 import _root_.akka.stream.ActorMaterializer
 import _root_.akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.shared.Extensions.RichString
+import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
-import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import jawn.ast.{JArray, JNum, JString}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}

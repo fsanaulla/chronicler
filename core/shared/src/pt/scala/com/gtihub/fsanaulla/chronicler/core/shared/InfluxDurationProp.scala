@@ -1,6 +1,6 @@
 package com.gtihub.fsanaulla.chronicler.core.shared
 
-import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
+import com.github.fsanaulla.chronicler.core.duration._
 import org.scalatest.FlatSpec
 import org.scalatest.prop.Checkers
 

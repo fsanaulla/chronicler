@@ -16,10 +16,10 @@
 
 package com.github.fsanaulla.chronicler.core.management
 
+import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.RetentionPolicyManagementQuery
 import com.github.fsanaulla.chronicler.core.typeclasses.{FlatMap, QueryBuilder, RequestExecutor, ResponseHandler}
-import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
 
 /**
   * Created by

@@ -16,10 +16,10 @@
 
 package com.github.fsanaulla.chronicler.core.management
 
+import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.QueriesManagementQuery
 import com.github.fsanaulla.chronicler.core.typeclasses.{FlatMap, QueryBuilder, RequestExecutor, ResponseHandler}
-import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
 
 /**
   * Created by
@@ -37,9 +37,7 @@ private[chronicler] trait QueriesManagement[F[_], Req, Resp, Uri, Entity] extend
   final def showQueries: F[QueryResult[QueryInfo]] =
     flatMap(execute(showQuerysQuery))(toQueryResult[QueryInfo])
 
-
   /** Kill query */
   final def killQuery(queryId: Int): F[WriteResult] =
     flatMap(execute(killQueryQuery(queryId)))(toResult)
-
 }

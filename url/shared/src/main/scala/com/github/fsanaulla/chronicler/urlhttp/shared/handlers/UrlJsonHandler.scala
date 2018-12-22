@@ -16,8 +16,8 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
+import com.github.fsanaulla.chronicler.core.jawn._
 import com.github.fsanaulla.chronicler.core.typeclasses.JsonHandler
-import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
 import com.softwaremill.sttp.Response
 import jawn.ast.{JParser, JValue}
 
