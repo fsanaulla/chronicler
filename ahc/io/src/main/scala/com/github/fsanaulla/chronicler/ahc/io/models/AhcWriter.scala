@@ -65,7 +65,7 @@ private[ahc] trait AhcWriter
       .post(uri)
       .body(Source.fromFile(filePath).getLines().mkString("\n"))
       .response(asJson)
-    val maybeEncoded = if (gzipped) req.acceptEncoding(Encodings.gzipEncoding) else req
+    val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
 
     execute(maybeEncoded).flatMap(toResult)
   }

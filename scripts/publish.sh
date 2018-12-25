@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-modules=( coreShared coreIO coreManagement akkaShared akkaIO akkaManagement )
+modules=(
+    coreShared coreIO coreManagement
+    akkaShared akkaIO akkaManagement
+    ahcShared ahcIO ahcManagement
+    urlShared urlIO urlManagement
+    udp macros
+)
 
 for md in "${modules[@]}"
 do
    sbt "project $md" "+ fullRelease"
 done
-#sbt ++${TRAVIS_SCALA_VERSION} corePublish
-#sbt ++${TRAVIS_SCALA_VERSION} akkaPublish
-#sbt ++${TRAVIS_SCALA_VERSION} ahcPublish
-#sbt ++${TRAVIS_SCALA_VERSION} urlPublish
-#sbt ++${TRAVIS_SCALA_VERSION} macrosPublish
-#sbt ++${TRAVIS_SCALA_VERSION} udpPublish
