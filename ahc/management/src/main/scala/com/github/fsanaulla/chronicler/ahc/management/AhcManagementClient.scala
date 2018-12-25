@@ -41,7 +41,7 @@ final class AhcManagementClient(val host: String,
     with FlatMap[Future]
     with AutoCloseable {
 
-  protected override def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
+  private[chronicler] override def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
 
   override def ping: Future[WriteResult] =
     execute(buildQuery("/ping", Map.empty[String, String])).flatMap(toResult)
