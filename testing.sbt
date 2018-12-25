@@ -17,3 +17,7 @@ addCommandAlias(
 addCommandAlias(
   "urlTest",
   ";project urlShared; clean; compile; test:compile; test; project urlManagement; clean; compile; test:compile; test; it:compile; it:test; project urlIO; clean; compile; test:compile; test; it:compile; it:test")
+
+addCommandAlias(
+  "macrosTest",
+  ";project macros;clean;compile;test:compile;test;pt:compile;pt:test")

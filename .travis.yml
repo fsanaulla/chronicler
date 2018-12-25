@@ -1,9 +1,8 @@
 language: scala
 sudo: required
-
 scala:
   - 2.11.8
-  - 2.12.7
+  - 2.12.8
 jdk:
   - oraclejdk8
 services:
@@ -35,10 +34,6 @@ stages:
   - name: deploy
     if: branch = master AND type = push
 
-script:
-  - chmod 777 scripts/test.sh && ./scripts/test.sh
-after_success:
-  - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then bash scripts/publish.sh; fi
 env:
   global:
   - secure: eQb2hjfBI8JTWgKgk7SQSY/ap7ZAOeHKxcmFT08sGuu85rnEHf5OCSpZdCmbmB4Ct5mt8k2rhULGw8z5XWtmE8aoXZ0jPEl9ny9EMN0chSaBpmrr0lEJqIO7Hy/IpfvHKU48+bxh/+D/zO2jWKfzh1x+oDZES6e6SCqo5b6lrA3X0k1foJE/PzBXIa06Zntzyq2B8zfdmgSNKf76ByV1K3kAF6ohVM3bNnCFw9AsGBSfHQ/RCNNarlzZO8ZIpadHayY/Xl6faTtKwGSByfDoo67gbFFkE3FLb3Wh0aj1cyJ4eeI5VQL0D4Rrf6hMjX3X1tHe7brFpgZp9qciEY/MAD43RqYjXTnl8GNrYRqG0ytEEP/udN/b9CKd5/m9cmvxL2U1S1qwu+OXl6h8ICcfwiGijb4pkOG88b2SuUSQLx0luCJ6PuOl5ExEwiTjwuTJQnhkYfAMZu1SEowfCnFDynsVDPDs6/uXoQvm/CXsCtc38qH8xFEpli8XA5R6ihQgFljK7D5oAyyVFQk+RbH/lyzHTnmjSucvsAziNvFXpV0bPO0Mv2Imn+EoDrvnEUKFlz3YxUfVcCx+TgFkDIuJnJhTU5Uou/OOQrq6Zc5AiyAflMJ5k9EqcU1l2SdzN2tvyrHAZabrMELtS9b2qP6XynefSBoAlFecbmO76rpfmZo=
