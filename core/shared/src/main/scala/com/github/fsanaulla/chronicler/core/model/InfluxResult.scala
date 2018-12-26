@@ -101,7 +101,13 @@ final case class GroupedResult[A](code: Int,
                                   groupedResult: Array[(Array[String], A)],
                                   ex: Option[Throwable] = None) extends ReadResult[A] {
   def map[B: ClassTag](f: A => B): GroupedResult[B] =
-    GroupedResult[B](code, isSuccess, groupedResult.map(p => p._1 -> f(p._2)), ex)
+    GroupedResult[B](
+      code,
+      isSuccess,
+      // map values
+      groupedResult.map { case (tags, values) => tags -> f(values) },
+      ex
+    )
 
   override def queryResult: Array[A] =
     throw new UnsupportedOperationException("Query result unsupported in grouped result")
