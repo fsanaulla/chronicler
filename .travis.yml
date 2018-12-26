@@ -34,7 +34,7 @@ jobs:
 stages:
   - name: test
   - name: deploy
-    if: branch = master AND type = push
+    if: branch = master AND type != pull_request
 
 env:
   global:
