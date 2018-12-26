@@ -161,7 +161,7 @@ private[chronicler] trait ResponseHandler[F[_], R] {
     * Check response for success
     *
     * @param code - response code
-    * @return - is it success
+    * @return     - is it success
     */
   private[chronicler] final def isSuccessful(code: Int): Boolean = code >= 200 && code < 300
 }

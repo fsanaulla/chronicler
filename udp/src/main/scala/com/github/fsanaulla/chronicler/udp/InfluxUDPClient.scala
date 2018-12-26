@@ -20,6 +20,7 @@ import java.io.File
 import java.net._
 
 import com.github.fsanaulla.chronicler.core.model.{InfluxWriter, Point, PointTransformer, UdpConnection}
+import com.github.fsanaulla.chronicler.udp.InfluxUDPClient._
 
 import scala.io.Source
 
@@ -29,9 +30,6 @@ import scala.io.Source
   * Date: 27.08.17
   */
 final class InfluxUDPClient(host: String, port: Int) extends PointTransformer with AutoCloseable {
-
-  import InfluxUDPClient._
-
   private implicit val conn: UdpConnection = UdpConnection(InetAddress.getByName(host), port)
 
   def writeNative(point: String): Unit =

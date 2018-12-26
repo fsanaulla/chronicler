@@ -61,8 +61,7 @@ private[urlhttp] trait UrlResponseHandler extends ResponseHandler[Try, Response[
               QueryResult.empty[B](code)
           }
       case other =>
-        errorHandler(response, other)
-          .map(ex => QueryResult.failed[B](other, ex))
+        queryErrorHandler[B](response, other)
     }
   }
 
@@ -77,8 +76,7 @@ private[urlhttp] trait UrlResponseHandler extends ResponseHandler[Try, Response[
             case _ =>
               QueryResult.empty[JArray](code)}
       case other =>
-        errorHandler(response, other)
-          .map(ex => QueryResult.failed[JArray](other, ex))
+        queryErrorHandler[JArray](response, other)
     }
   }
 
@@ -110,8 +108,7 @@ private[urlhttp] trait UrlResponseHandler extends ResponseHandler[Try, Response[
               QueryResult.empty[Array[JArray]](code)
           }
       case other =>
-        errorHandler(response, other)
-          .map(ex => QueryResult.failed[Array[JArray]](other, ex))
+        queryErrorHandler[Array[JArray]](response, other)
     }
   }
 
@@ -133,4 +130,8 @@ private[urlhttp] trait UrlResponseHandler extends ResponseHandler[Try, Response[
     case _ =>
       getResponseError(response).map(errMsg => new UnknownResponseException(errMsg))
   }
+
+  private[this] def queryErrorHandler[A](response: Response[JValue],
+                                         code: Int): Try[QueryResult[A]] =
+    errorHandler(response, code).map(ex => QueryResult.failed[A](code, ex))
 }
