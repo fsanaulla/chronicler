@@ -41,12 +41,12 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
   val string: c.universe.Type = getType[String]
   val optString: c.universe.Type = getType[Option[String]]
 
-  private[this] val TIMESTAMP_TYPE = Seq(getType[Long], getType[String])
-  private[this] val SUPPORTED_TAGS_TYPES =
+  private[this] val timestampTypes = Seq(getType[Long], getType[String])
+  private[this] val tagsTypes =
     Seq(getType[Option[String]], getType[String])
-  private[this] val SUPPORTED_FIELD_TYPES =
+  private[this] val fieldTypes =
     Seq(getType[Boolean], getType[Int], getType[Double], getType[String], getType[Float])
-  private[this] val SUPPORTED_ANNOTATIONS =
+  private[this] val annotationTypes =
     Seq(getType[timestamp], getType[timestampEpoch], getType[timestampUTC])
 
   /** Check if this method valid timestamp */
@@ -60,10 +60,10 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
   }
 
   def isTimestampAnnotation(m: c.universe.Annotation): Boolean =
-    SUPPORTED_ANNOTATIONS.exists(_ =:= m.tree.tpe)
+    annotationTypes.exists(_ =:= m.tree.tpe)
 
   def isTimestampType(t: c.universe.Type): Boolean =
-    TIMESTAMP_TYPE.exists(_ =:= t)
+    timestampTypes.exists(_ =:= t)
 
   def getFieldInfo(lst: List[MethodSymbol]): List[FieldInfo] =
     lst.map(m => m.name.decodedName.toString -> m.returnType.dealias)
@@ -187,62 +187,6 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
         val cases = sCase :: fCase :: Nil
         q"def read(js: jawn.ast.JArray): $tpe = js.vs.tail match { case ..$cases }"
     }
-
-//    if (timeField.nonEmpty) {
-//      val timestamp = TermName(timeField.head.name.decodedName.toString)
-//      val timeAnnotations = timeField.head.annotations
-//
-//      if (timeAnnotations.exists(_.tree.tpe =:= getType[timestampEpoch])) {
-//        val constructorTime: Tree = q"$timestamp = $timestamp.asLong"
-//        val patternTime: Tree     = pq"$timestamp: jawn.ast.JValue"
-//
-//        val sCase = successCase(tpe, patternTime :: patternParams, constructorTime :: constructorParams)
-//        val fCase = failureCase(tpe)
-//        val cases = sCase :: fCase :: Nil
-//
-//        q"""def read(js: jawn.ast.JArray): $tpe = js.vs match { case ..$cases }"""
-//      } else if (timeAnnotations.exists(_.tree.tpe =:= getType[timestampUTC])) {
-//        val constructorTime: Tree =  q"$timestamp = toTime($timestamp.asString)"
-//        val patternTime: Tree = pq"$timestamp: jawn.ast.JValue"
-//
-//        val sCase = successCase(tpe, patternTime :: patternParams, constructorTime :: constructorParams)
-//        val fCase = failureCase(tpe)
-//        val cases = sCase :: fCase :: Nil
-//
-//        q"""
-//           def read(js: jawn.ast.JArray): $tpe = {
-//              @inline def toTime(str: String): Long = {
-//                val i = java.time.Instant.parse(str)
-//                i.getEpochSecond * 1000000000 + i.getNano
-//              }
-//
-//            js.vs match { case ..$cases }
-//           }
-//        """
-//      } else {
-//        val constructorTime: Tree = q"$timestamp = toTime($timestamp)"
-//        val patternTime: Tree = pq"$timestamp: jawn.ast.JValue"
-//        val sCase = successCase(tpe, patternTime :: patternParams, constructorTime :: constructorParams)
-//        val fCase = failureCase(tpe)
-//        val cases = sCase :: fCase :: Nil
-//        q"""
-//           def read(js: jawn.ast.JArray): $tpe = {
-//             @inline def toTime(jv: jawn.ast.JValue): Long = {
-//                jv.getString.fold(jv.asLong) { str =>
-//                   val i = java.time.Instant.parse(str)
-//                   i.getEpochSecond * 1000000000 + i.getNano
-//               }
-//             }
-//            js.vs match { case ..$cases }
-//           }
-//        """
-//      }
-//    } else {
-//      val sCase = successCase(tpe, patternParams, constructorParams)
-//      val fCase = failureCase(tpe)
-//      val cases = sCase :: fCase :: Nil
-//      q"def read(js: jawn.ast.JArray): $tpe = js.vs.tail match { case ..$cases }"
-//    }
   }
 
   /**
@@ -259,11 +203,11 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
 
     /** Is it valid tag type */
     def isSupportedTagType(tpe: c.universe.Type): Boolean =
-      SUPPORTED_TAGS_TYPES.exists(t => t =:= tpe)
+      tagsTypes.exists(t => t =:= tpe)
 
     /** Is it valid field type */
     def isSupportedFieldType(tpe: c.universe.Type): Boolean =
-      SUPPORTED_FIELD_TYPES.exists(t => t =:= tpe)
+      fieldTypes.exists(t => t =:= tpe)
 
     /** Predicate for finding fields of instance marked with '@tag' annotation */
     def isTag(m: MethodSymbol): Boolean = {
