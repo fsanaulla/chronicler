@@ -129,7 +129,7 @@ private[akka] trait AkkaResponseHandler extends ResponseHandler[Future, HttpResp
       getResponseError(response).map(errMsg => new UnknownResponseException(errMsg))
   }
 
-  private[this] def queryErrorHandler[A](response: HttpResponse,
-                                         code: Int): Future[QueryResult[A]] =
+  private[this] def queryErrorHandler[A: ClassTag](response: HttpResponse,
+                                                   code: Int): Future[QueryResult[A]] =
     errorHandler(response, code).map(ex => QueryResult.failed[A](code, ex))
 }

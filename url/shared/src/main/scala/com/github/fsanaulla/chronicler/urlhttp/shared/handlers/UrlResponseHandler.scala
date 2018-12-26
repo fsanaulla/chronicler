@@ -131,7 +131,7 @@ private[urlhttp] trait UrlResponseHandler extends ResponseHandler[Try, Response[
       getResponseError(response).map(errMsg => new UnknownResponseException(errMsg))
   }
 
-  private[this] def queryErrorHandler[A](response: Response[JValue],
-                                         code: Int): Try[QueryResult[A]] =
+  private[this] def queryErrorHandler[A: ClassTag](response: Response[JValue],
+                                                   code: Int): Try[QueryResult[A]] =
     errorHandler(response, code).map(ex => QueryResult.failed[A](code, ex))
 }

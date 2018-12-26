@@ -128,6 +128,7 @@ private[ahc] trait AhcResponseHandler extends ResponseHandler[Future, Response[J
       getResponseError(response).map(errMsg => new UnknownResponseException(errMsg))
   }
 
-  private[this] def queryErrorHandler[A](response: Response[JValue], code: Int): Future[QueryResult[A]] =
+  private[this] def queryErrorHandler[A: ClassTag](response: Response[JValue],
+                                                   code: Int): Future[QueryResult[A]] =
     errorHandler(response, code).map(ex => QueryResult.failed[A](code, ex))
 }
