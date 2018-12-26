@@ -16,11 +16,11 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.io.models
 
+import com.github.fsanaulla.chronicler.core.encoding._
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
 import com.github.fsanaulla.chronicler.core.io.WriteOperations
 import com.github.fsanaulla.chronicler.core.model.{HasCredentials, PointTransformer, WriteResult}
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.chronicler.core.utils.Encodings
 import com.github.fsanaulla.chronicler.urlhttp.shared.formats.asJson
 import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlQueryBuilder, UrlRequestExecutor, UrlResponseHandler}
 import com.softwaremill.sttp._
@@ -45,7 +45,7 @@ private[urlhttp] trait UrlWriter
                                            gzipped: Boolean): Try[WriteResult] = {
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
     val req = sttp.post(uri).body(entity).response(asJson)
-    val maybeEncoded = if (gzipped) req.acceptEncoding(Encodings.gzipEncoding) else req
+    val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
 
     execute(maybeEncoded).flatMap(toResult)
   }
@@ -58,7 +58,7 @@ private[urlhttp] trait UrlWriter
                                               gzipped: Boolean): Try[WriteResult] = {
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
     val req = sttp.post(uri).body(Source.fromFile(filePath).getLines().mkString("\n")).response(asJson)
-    val maybeEncoded = if (gzipped) req.acceptEncoding(Encodings.gzipEncoding) else req
+    val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
 
     execute(maybeEncoded).flatMap(toResult)
   }

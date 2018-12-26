@@ -17,10 +17,10 @@
 package com.github.fsanaulla.chronicler.core.management
 
 import com.github.fsanaulla.chronicler.core.enums.Privilege
+import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.UserManagementQuery
 import com.github.fsanaulla.chronicler.core.typeclasses.{FlatMap, QueryBuilder, RequestExecutor, ResponseHandler}
-import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
 
 private[fsanaulla] trait UserManagement[F[_], Req, Resp, Uri, Entity] extends UserManagementQuery[Uri] {
   self: RequestExecutor[F, Req, Resp, Uri]

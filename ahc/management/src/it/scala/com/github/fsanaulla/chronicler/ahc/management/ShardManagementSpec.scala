@@ -16,7 +16,7 @@ class ShardManagementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB w
 
   val testDb = "_internal"
 
-  lazy val influx: AsyncManagementClient =
+  lazy val influx: AhcManagementClient =
     InfluxMng(host, port, Some(creds))
 
   it should "show shards" in {

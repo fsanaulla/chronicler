@@ -8,7 +8,7 @@ import scala.util.Try
 
 class InfluxWriterProperties extends FlatSpec with Checkers with InfluxFormat {
 
-  "Macros" should "generate InfluxWriter" in {
+  it should "generate InfluxWriter" in {
     check { t: Test =>
       if (t.name.isEmpty) {
         val f = Try(fmt.write(t)).isFailure

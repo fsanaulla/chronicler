@@ -16,8 +16,8 @@
 
 package com.github.fsanaulla.chronicler.core.typeclasses
 
+import com.github.fsanaulla.chronicler.core.jawn._
 import com.github.fsanaulla.chronicler.core.model.InfluxReader
-import com.github.fsanaulla.chronicler.core.utils.Extensions.RichJValue
 import jawn.ast.{JArray, JValue}
 
 import scala.reflect.ClassTag

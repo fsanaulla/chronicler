@@ -16,10 +16,10 @@
 
 package com.github.fsanaulla.chronicler.core.management
 
+import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.ContinuousQueries
 import com.github.fsanaulla.chronicler.core.typeclasses.{FlatMap, QueryBuilder, RequestExecutor, ResponseHandler}
-import com.github.fsanaulla.chronicler.core.utils.DefaultInfluxImplicits._
 
 /**
   * Created by
@@ -61,6 +61,5 @@ private[chronicler] trait ContinuousQueryManagement[F[_], Req, Resp, Uri, Entity
     flatMap(execute(dropCQQuery(dbName, cqName)))(toResult)
 
   private def validCQQuery(query: String): Boolean =
-    if (query.contains("INTO") && query.contains("GROUP BY")) true else false
-
+    query.contains("INTO") && query.contains("GROUP BY")
 }

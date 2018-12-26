@@ -24,7 +24,7 @@ import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
   * Date: 10.04.18
   */
 object Extensions {
-  implicit final class RichString(private val str: String) extends AnyVal {
+  implicit final class RichStringOps(private val str: String) extends AnyVal {
     def toResponse: HttpResponse =
       HttpResponse(entity = HttpEntity(types.AppJson, str))
   }

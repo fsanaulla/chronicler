@@ -16,7 +16,7 @@
 
 package com.github.fsanaulla.chronicler.ahc.io
 
-import com.github.fsanaulla.chronicler.ahc.io.models.InfluxConfig
+import com.github.fsanaulla.chronicler.ahc.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import org.asynchttpclient.AsyncHttpClientConfig
 
@@ -46,11 +46,10 @@ object InfluxIO {
   /**
     * Retrieve IO InfluxDB client, without management functionality using configuration object
     *
-    * @param conf        - configuration object
-    * @param ex          - implicit execution context, by default use standard one
-    * @return            - [[AhcIOClient]]
+    * @param conf - configuration object
+    * @param ex   - implicit execution context, by default use standard one
+    * @return     - [[AhcIOClient]]
     */
-  def apply(conf: InfluxConfig)
-           (implicit ex: ExecutionContext): AhcIOClient =
+  def apply(conf: InfluxConfig)(implicit ex: ExecutionContext): AhcIOClient =
     apply(conf.host, conf.port, conf.credentials, conf.gzipped, conf.asyncClientConfig)
 }

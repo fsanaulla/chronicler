@@ -5,9 +5,9 @@ import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntit
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.github.fsanaulla.chronicler.urlhttp.SampleEntitys._
 import com.github.fsanaulla.chronicler.urlhttp.io.api.Measurement
-import com.github.fsanaulla.chronicler.urlhttp.io.models.InfluxConfig
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
-import com.github.fsanaulla.chronicler.urlhttp.management.{UrlManagementClient, InfluxMng => MngInflux}
+import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
+import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
 import org.scalatest.TryValues
 
 /**
@@ -20,14 +20,9 @@ class MeasurementApiSpec extends FlatSpecWithMatchers with DockerizedInfluxDB wi
   val safeDB = "db"
   val measName = "meas"
 
-  lazy val influxConf =
-    InfluxConfig(host, port, credentials = Some(creds), gzipped = false, None)
-
-  lazy val management: UrlManagementClient =
-    MngInflux.apply(host, port, credentials = Some(creds))
-
-  lazy val io: UrlIOClient =
-    InfluxIO.apply(influxConf)
+  lazy val influxConf = InfluxConfig(host, port, credentials = Some(creds), gzipped = false, None)
+  lazy val management: UrlManagementClient = InfluxMng(influxConf)
+  lazy val io: UrlIOClient = InfluxIO(influxConf)
 
   lazy val meas: Measurement[FakeEntity] = io.measurement[FakeEntity](safeDB, measName)
 

@@ -20,17 +20,11 @@ import com.github.fsanaulla.chronicler.core.model.{InfluxFormatter, InfluxReader
 
 import scala.language.experimental.macros
 
-/***
-  * Provide all necessary method for compile-time code generation
-  */
 object Influx {
-
   /** Generate [[InfluxWriter]] for type A */
-  def writer[A]: InfluxWriter[A] = macro MacrosImpl.writer_impl[A]
-
+  def writer[A]: InfluxWriter[A]       = macro InfluxImpl.writer_impl[A]
   /** Generate [[InfluxReader]] for type A */
-  def reader[A]: InfluxReader[A] = macro MacrosImpl.reader_impl[A]
-
+  def reader[A]: InfluxReader[A]       = macro InfluxImpl.reader_impl[A]
   /** Generate [[InfluxFormatter]] for type A */
-  def formatter[A]: InfluxFormatter[A] = macro MacrosImpl.format_impl[A]
+  def formatter[A]: InfluxFormatter[A] = macro InfluxImpl.format_impl[A]
 }
