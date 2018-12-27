@@ -64,8 +64,7 @@ private[akka] trait AkkaResponseHandler extends ResponseHandler[Future, HttpResp
               QueryResult.empty[B](code)
           }
       case other =>
-        errorHandler(response, other)
-          .map(ex => QueryResult.failed[B](other, ex))
+        queryErrorHandler[B](response, other)
     }
   }
 
@@ -75,11 +74,12 @@ private[akka] trait AkkaResponseHandler extends ResponseHandler[Future, HttpResp
         getResponseBody(response)
           .map(getOptQueryResult)
           .map {
-            case Some(seq) => QueryResult.successful[JArray](code, seq)
-            case _ => QueryResult.empty[JArray](code)}
+            case Some(seq) =>
+              QueryResult.successful[JArray](code, seq)
+            case _ =>
+              QueryResult.empty[JArray](code)}
       case other =>
-        errorHandler(response, other)
-          .map(ex => QueryResult.failed[JArray](other, ex))
+        queryErrorHandler[JArray](response, other)
     }
   }
 
@@ -107,8 +107,7 @@ private[akka] trait AkkaResponseHandler extends ResponseHandler[Future, HttpResp
             case _ => QueryResult.empty[Array[JArray]](code)
           }
       case other =>
-        errorHandler(response, other)
-          .map(ex => QueryResult.failed[Array[JArray]](other, ex))
+        queryErrorHandler[Array[JArray]](response, other)
     }
   }
 
@@ -129,4 +128,8 @@ private[akka] trait AkkaResponseHandler extends ResponseHandler[Future, HttpResp
     case _ =>
       getResponseError(response).map(errMsg => new UnknownResponseException(errMsg))
   }
+
+  private[this] def queryErrorHandler[A: ClassTag](response: HttpResponse,
+                                                   code: Int): Future[QueryResult[A]] =
+    errorHandler(response, code).map(ex => QueryResult.failed[A](code, ex))
 }

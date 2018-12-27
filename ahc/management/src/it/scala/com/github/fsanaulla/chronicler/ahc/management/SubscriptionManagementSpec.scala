@@ -1,8 +1,8 @@
 package com.github.fsanaulla.chronicler.ahc.management
 
+import com.github.fsanaulla.chronicler.core.duration._
 import com.github.fsanaulla.chronicler.core.enums.{Destination, Destinations}
 import com.github.fsanaulla.chronicler.core.model.Subscription
-import com.github.fsanaulla.chronicler.core.utils.InfluxDuration._
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
@@ -27,7 +27,7 @@ class SubscriptionManagementSpec extends FlatSpecWithMatchers with DockerizedInf
 
   val duration: String = 1.hours + 30.minutes
 
-  lazy val influx: AsyncManagementClient =
+  lazy val influx: AhcManagementClient =
     InfluxMng(host, port, Some(creds))
 
   it should "create subscription" in {

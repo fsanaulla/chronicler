@@ -14,20 +14,8 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.model
+package com.github.fsanaulla.chronicler.core
 
-sealed trait Config {
-  def host: String
-  def port: Int
+package object encoding {
+  val gzipEncoding = "gzip"
 }
-
-sealed trait HttpConfig extends Config {
-  def credentials: Option[InfluxCredentials]
-}
-
-trait GzippedHttpConfig extends HttpConfig {
-  def gzipped: Boolean
-}
-
-
-

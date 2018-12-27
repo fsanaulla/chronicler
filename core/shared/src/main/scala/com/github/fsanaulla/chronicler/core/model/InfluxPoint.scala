@@ -16,7 +16,7 @@
 
 package com.github.fsanaulla.chronicler.core.model
 
-import com.github.fsanaulla.chronicler.core.utils.Extensions.RichString
+import com.github.fsanaulla.chronicler.core.implicits.RichString
 
 /**
   * Created by

@@ -28,11 +28,11 @@ import org.asynchttpclient.AsyncHttpClientConfig
 
 import scala.concurrent.{ExecutionContext, Future}
 
-final class AsyncManagementClient(val host: String,
-                                  val port: Int,
-                                  val credentials: Option[InfluxCredentials],
-                                  asyncClientConfig: Option[AsyncHttpClientConfig])
-                                 (implicit val ex: ExecutionContext)
+final class AhcManagementClient(val host: String,
+                                val port: Int,
+                                val credentials: Option[InfluxCredentials],
+                                asyncClientConfig: Option[AsyncHttpClientConfig])
+                               (implicit val ex: ExecutionContext)
   extends InfluxAhcClient(asyncClientConfig)
     with ManagementClient[Future, Request, Response[JValue], Uri, String]
     with AhcRequestExecutor

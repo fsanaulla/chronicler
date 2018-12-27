@@ -44,23 +44,24 @@ private[urlhttp] trait UrlResponseHandler extends ResponseHandler[Try, Response[
     }
   }
 
-  private[chronicler] override def toComplexQueryResult[A: ClassTag, B: ClassTag](
-                                                      response: Response[JValue],
-                                                      f: (String, Array[A]) => B)
-                                                    (implicit reader: InfluxReader[A]): Try[QueryResult[B]] = {
+  private[chronicler] override def toComplexQueryResult[A: ClassTag, B: ClassTag](response: Response[JValue],
+                                                                                  f: (String, Array[A]) => B)
+                                                                                 (implicit reader: InfluxReader[A]): Try[QueryResult[B]] = {
     response.code match {
       case code if isSuccessful(code) =>
         getResponseBody(response)
           .map(getOptInfluxInfo[A])
           .map {
             case Some(arr) =>
-              QueryResult.successful[B](code, arr.map(e => f(e._1, e._2)))
+              QueryResult.successful[B](
+                code,
+                arr.map { case (dbName, values) => f(dbName, values) }
+              )
             case _ =>
               QueryResult.empty[B](code)
           }
       case other =>
-        errorHandler(response, other)
-          .map(ex => QueryResult.failed[B](other, ex))
+        queryErrorHandler[B](response, other)
     }
   }
 
@@ -70,11 +71,12 @@ private[urlhttp] trait UrlResponseHandler extends ResponseHandler[Try, Response[
         getResponseBody(response)
           .map(getOptQueryResult)
           .map {
-            case Some(seq) => QueryResult.successful[JArray](code, seq)
-            case _ => QueryResult.empty[JArray](code)}
+            case Some(seq) =>
+              QueryResult.successful[JArray](code, seq)
+            case _ =>
+              QueryResult.empty[JArray](code)}
       case other =>
-        errorHandler(response, other)
-          .map(ex => QueryResult.failed[JArray](other, ex))
+        queryErrorHandler[JArray](response, other)
     }
   }
 
@@ -84,8 +86,10 @@ private[urlhttp] trait UrlResponseHandler extends ResponseHandler[Try, Response[
         getResponseBody(response)
           .map(getOptGropedResult)
           .map {
-            case Some(arr) => GroupedResult.successful[JArray](code, arr)
-            case _ => GroupedResult.empty[JArray](code)}
+            case Some(arr) =>
+              GroupedResult.successful[JArray](code, arr)
+            case _ =>
+              GroupedResult.empty[JArray](code)}
       case other =>
         errorHandler(response, other)
           .map(ex => GroupedResult.failed[JArray](other, ex))
@@ -98,20 +102,23 @@ private[urlhttp] trait UrlResponseHandler extends ResponseHandler[Try, Response[
         getResponseBody(response)
           .map(getOptBulkInfluxPoints)
           .map {
-            case Some(seq) => QueryResult.successful[Array[JArray]](code, seq)
-            case _ => QueryResult.empty[Array[JArray]](code)
+            case Some(seq) =>
+              QueryResult.successful[Array[JArray]](code, seq)
+            case _ =>
+              QueryResult.empty[Array[JArray]](code)
           }
       case other =>
-        errorHandler(response, other)
-          .map(ex => QueryResult.failed[Array[JArray]](other, ex))
+        queryErrorHandler[Array[JArray]](response, other)
     }
   }
 
-  private[chronicler] override def toQueryResult[A: ClassTag](response: Response[JValue])(implicit reader: InfluxReader[A]): Try[QueryResult[A]] =
+  private[chronicler] override def toQueryResult[A: ClassTag](response: Response[JValue])
+                                                             (implicit reader: InfluxReader[A]): Try[QueryResult[A]] =
     toQueryJsResult(response).map(_.map(reader.read))
 
 
-  private[chronicler] override def errorHandler(response: Response[JValue], code: Int): Try[InfluxException] = code match {
+  private[chronicler] override def errorHandler(response: Response[JValue],
+                                                code: Int): Try[InfluxException] = code match {
     case 400 =>
       getResponseError(response).map(errMsg => new BadRequestException(errMsg))
     case 401 =>
@@ -123,4 +130,8 @@ private[urlhttp] trait UrlResponseHandler extends ResponseHandler[Try, Response[
     case _ =>
       getResponseError(response).map(errMsg => new UnknownResponseException(errMsg))
   }
+
+  private[this] def queryErrorHandler[A: ClassTag](response: Response[JValue],
+                                                   code: Int): Try[QueryResult[A]] =
+    errorHandler(response, code).map(ex => QueryResult.failed[A](code, ex))
 }

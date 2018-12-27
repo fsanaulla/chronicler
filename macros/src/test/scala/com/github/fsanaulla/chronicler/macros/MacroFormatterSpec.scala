@@ -30,7 +30,7 @@ class MacroFormatterSpec extends FlatSpec with Matchers {
 
   val fm: InfluxFormatter[Test] = Influx.formatter[Test]
 
-  "Macros.format" should "read with None" in {
+  it should "read with None" in {
     fm
       .read(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull)))
       .shouldEqual(Test("Fz", None, 4, 1438715114318570484L))

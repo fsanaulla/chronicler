@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.akka.io.models
+package com.github.fsanaulla.chronicler.akka.shared
 
 import akka.http.scaladsl.HttpsConnectionContext
-import com.github.fsanaulla.chronicler.core.model.{GzippedHttpConfig, InfluxCredentials}
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 
 final case class InfluxConfig(host: String,
-                              port: Int,
-                              credentials: Option[InfluxCredentials],
-                              gzipped: Boolean,
-                              httpsContext: Option[HttpsConnectionContext]) extends GzippedHttpConfig
+                              port: Int = 8086,
+                              credentials: Option[InfluxCredentials] = None,
+                              gzipped: Boolean = false,
+                              httpsContext: Option[HttpsConnectionContext] = None)

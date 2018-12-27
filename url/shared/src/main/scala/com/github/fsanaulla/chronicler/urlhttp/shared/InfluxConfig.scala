@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.utils
+package com.github.fsanaulla.chronicler.urlhttp.shared
 
-import jawn.ast.JValue
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient.CustomizationF
 
-private[chronicler] object PrimitiveJawnImplicits {
-  implicit def jv2Int(jv: JValue): Int = jv.asInt
-  implicit def jv2Long(jv: JValue): Long = jv.asLong
-  implicit def jv2Double(jv: JValue): Double = jv.asDouble
-  implicit def jv2Boolean(jv: JValue): Boolean = jv.asBoolean
-  implicit def jv2String(jv: JValue): String = jv.asString
-}
+final case class InfluxConfig(host: String,
+                              port: Int = 8086,
+                              credentials: Option[InfluxCredentials] = None,
+                              gzipped: Boolean = false,
+                              customization: Option[CustomizationF] = None)

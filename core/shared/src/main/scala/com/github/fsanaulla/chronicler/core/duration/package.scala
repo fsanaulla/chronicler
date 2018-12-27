@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.utils
+package com.github.fsanaulla.chronicler.core
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 29.07.17
-  */
-object InfluxDuration {
+package object duration {
 
   implicit final class IntDurationExtension(private val i: Int) extends AnyVal {
     def nanoseconds: String = i.toString + "ns"
@@ -44,4 +39,5 @@ object InfluxDuration {
     def days: String = l.toString + "d"
     def weeks: String = l.toString + "w"
   }
+
 }

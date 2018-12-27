@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.utils
+package com.github.fsanaulla.chronicler.core
 
-import jawn.ast.{JArray, JObject, JValue}
+import _root_.jawn.ast.{JArray, JObject, JValue}
 
-private[chronicler] object Extensions {
+package object jawn {
+  implicit def jv2Int(jv: JValue): Int = jv.asInt
+  implicit def jv2Long(jv: JValue): Long = jv.asLong
+  implicit def jv2Double(jv: JValue): Double = jv.asDouble
+  implicit def jv2Boolean(jv: JValue): Boolean = jv.asBoolean
+  implicit def jv2String(jv: JValue): String = jv.asString
 
   /** Extension to simplify parsing JAWN AST */
   implicit final class RichJValue(private val jv: JValue) extends AnyVal {
@@ -37,10 +42,4 @@ private[chronicler] object Extensions {
       case _ => None
     }
   }
-
-  implicit final class RichString(private val str: String) extends AnyVal {
-    def escapeFull: String = str.replaceAll("([ ,=])", "\\\\$1")
-    def escape: String = str.replaceAll("([ ,])", "\\\\$1")
-  }
 }
-

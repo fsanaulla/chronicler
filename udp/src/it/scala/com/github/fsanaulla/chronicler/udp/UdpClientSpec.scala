@@ -137,7 +137,7 @@ class UdpClientSpec
 }
 
 object UdpClientSpec {
-  import com.github.fsanaulla.chronicler.core.utils.PrimitiveJawnImplicits._
+  import com.github.fsanaulla.chronicler.core.jawn._
 
   case class Test(name: String, age: Int)
 

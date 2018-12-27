@@ -85,7 +85,8 @@ private[chronicler] trait ResponseHandler[F[_], R] {
     * @tparam A - Deserializer entity type
     * @return - Query result in future container
     */
-  private[chronicler] def toQueryResult[A: ClassTag](response: R)(implicit reader: InfluxReader[A]): F[QueryResult[A]]
+  private[chronicler] def toQueryResult[A: ClassTag](response: R)
+                                                    (implicit reader: InfluxReader[A]): F[QueryResult[A]]
 
   /***
     * Handler error codes by it's value
@@ -103,10 +104,11 @@ private[chronicler] trait ResponseHandler[F[_], R] {
     * @param reader - implicit influx reader, predefined
     * @return - CQ results
     */
-  private[chronicler] final def toCqQueryResult(response: R)(implicit reader: InfluxReader[ContinuousQuery]): F[QueryResult[ContinuousQueryInfo]] = {
+  private[chronicler] final def toCqQueryResult(response: R)
+                                               (implicit reader: InfluxReader[ContinuousQuery]): F[QueryResult[ContinuousQueryInfo]] = {
     toComplexQueryResult[ContinuousQuery, ContinuousQueryInfo](
       response,
-      (name: String, arr: Array[ContinuousQuery]) => ContinuousQueryInfo(name, arr)
+      (dbName: String, queries: Array[ContinuousQuery]) => ContinuousQueryInfo(dbName, queries)
     )
   }
 
@@ -117,10 +119,11 @@ private[chronicler] trait ResponseHandler[F[_], R] {
     * @param reader - implicit influx reader, predefined
     * @return - Shard info  results
     */
-  private[chronicler] final def toShardQueryResult(response: R)(implicit reader: InfluxReader[Shard]): F[QueryResult[ShardInfo]] = {
+  private[chronicler] final def toShardQueryResult(response: R)
+                                                  (implicit reader: InfluxReader[Shard]): F[QueryResult[ShardInfo]] = {
     toComplexQueryResult[Shard, ShardInfo](
       response,
-      (name: String, arr: Array[Shard]) => ShardInfo(name, arr)
+      (dbName: String, shards: Array[Shard]) => ShardInfo(dbName, shards)
     )
   }
 
@@ -131,10 +134,11 @@ private[chronicler] trait ResponseHandler[F[_], R] {
     * @param reader - implicit influx reader, predefined
     * @return - Subscription info  results
     */
-  private[chronicler] final def toSubscriptionQueryResult(response: R)(implicit reader: InfluxReader[Subscription]): F[QueryResult[SubscriptionInfo]] = {
+  private[chronicler] final def toSubscriptionQueryResult(response: R)
+                                                         (implicit reader: InfluxReader[Subscription]): F[QueryResult[SubscriptionInfo]] = {
     toComplexQueryResult[Subscription, SubscriptionInfo](
       response,
-      (name: String, arr: Array[Subscription]) => SubscriptionInfo(name, arr)
+      (dbName: String, subscriptions: Array[Subscription]) => SubscriptionInfo(dbName, subscriptions)
     )
   }
 
@@ -145,10 +149,11 @@ private[chronicler] trait ResponseHandler[F[_], R] {
     * @param reader - implicit influx reader, predefined
     * @return - Shard group info  results
     */
-  private[chronicler] final def toShardGroupQueryResult(response: R)(implicit reader: InfluxReader[ShardGroup]): F[QueryResult[ShardGroupsInfo]] = {
+  private[chronicler] final def toShardGroupQueryResult(response: R)
+                                                       (implicit reader: InfluxReader[ShardGroup]): F[QueryResult[ShardGroupsInfo]] = {
     toComplexQueryResult[ShardGroup, ShardGroupsInfo](
       response,
-      (name: String, arr: Array[ShardGroup]) => ShardGroupsInfo(name, arr)
+      (dbName: String, shardGroups: Array[ShardGroup]) => ShardGroupsInfo(dbName, shardGroups)
     )
   }
 
@@ -156,7 +161,7 @@ private[chronicler] trait ResponseHandler[F[_], R] {
     * Check response for success
     *
     * @param code - response code
-    * @return - is it success
+    * @return     - is it success
     */
   private[chronicler] final def isSuccessful(code: Int): Boolean = code >= 200 && code < 300
 }
