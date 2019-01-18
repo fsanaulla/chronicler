@@ -10,5 +10,5 @@ modules=(
 
 for md in "${modules[@]}"
 do
-   sbt "project $md" "+ fullRelease"
+   sbt ";project $md; ++$1; fullRelease"
 done
