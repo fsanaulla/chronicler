@@ -19,13 +19,11 @@ trait DockerizedInfluxDB extends BeforeAndAfterAll { self: Suite =>
 
   override def beforeAll(): Unit = {
     super.beforeAll()
-
     influx.start()
   }
 
   override def afterAll(): Unit = {
     super.afterAll()
-
     influx.stop()
   }
 }

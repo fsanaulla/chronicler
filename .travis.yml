@@ -35,13 +35,20 @@ jobs:
 #      name: "Running test on scala 2.11.8"
 #    - script: sbt ++2.12.8 coreTest macrosTest akkaTest ahcTest urlTest
 #      name: "Running test on scala 2.12.8"
-    - stage: deploy
+    - stage: deploy_2.11
       script: ./scripts/publish.sh $TRAVIS_SCALA_VERSION
       env: INFLUXDB_VERSION=1.7.3
+      scala: 2.11.8
+    - stage: deploy_2.12
+      script: ./scripts/publish.sh $TRAVIS_SCALA_VERSION
+      env: INFLUXDB_VERSION=1.7.3
+      scala: 2.12.8
 
 stages:
   - name: test
-  - name: deploy
+  - name: deploy_2.11
+    if: branch = master AND type != pull_request
+  - name: deploy_2.12
     if: branch = master AND type != pull_request
 
 env:
