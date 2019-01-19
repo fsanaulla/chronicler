@@ -12,6 +12,8 @@ scala:
 services:
   - docker
 
+script: ./scripts/test.sh
+
 cache:
   directories:
     - "$HOME/.ivy2/cache"
