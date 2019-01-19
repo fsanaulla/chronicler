@@ -8,12 +8,12 @@ import sbt._
 object Dependencies {
 
   object Versions {
-    val sttp       = "1.4.0"
-    val netty      = "4.1.27.Final"
+    val sttp       = "1.5.7"
+    val netty      = "4.1.30.Final"
 
     object Akka {
-      val akka     = "2.5.17"
-      val akkaHttp = "10.1.5"
+      val akka     = "2.5.19"
+      val akkaHttp = "10.1.7"
     }
 
     object Testing {
