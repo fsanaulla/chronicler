@@ -13,25 +13,25 @@ libraryDependencies ++= Seq(
 Our code:
 ```
 import com.github.fsanaulla.chronicler.ahc.io.{AhcIOClient, InfluxIO}
-import com.github.fsanaulla.macros.annotations.{field, tag, timestamp}
-import com.github.fsanaulla.core.model.InfluxFormatter
+import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
+import com.github.fsanaulla.chronicler.core.model.InfluxFormatter
 import com.github.fsanaulla.chronicler.ahc.io.api.Measurement
 
 import scala.util.{Success, Failure}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 // let's define our model, and mark them with annotations for macro-code generation
-case class Resume(
+final case class Resume(
  @tag id: String,
  @tag candidateName: Option[String],
  @tag candidateSurname: String,
  @field position: String,
  @field age: Int,
  @field rate: Double,
- @timestamp created: Long)
+ @timestampEpoch created: Long)
 
 // let's create serializers/deserializers 
-implicit val fmt: InfluxFormatter[Resume] = Macros.format[Resume]
+implicit val fmt: InfluxFormatter[Resume] = Influx.formatter[Resume]
 
 // setup credentials if exist
 private val credentials: InfluxCredentials = InfluxCredentials("username", "password")

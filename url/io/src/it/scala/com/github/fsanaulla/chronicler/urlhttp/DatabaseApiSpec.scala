@@ -20,7 +20,11 @@ import org.scalatest.{OptionValues, TryValues}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 28.09.17
   */
-class DatabaseApiSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with TryValues with OptionValues {
+class DatabaseApiSpec
+  extends FlatSpecWithMatchers
+    with DockerizedInfluxDB
+    with TryValues
+    with OptionValues {
 
   val testDB = "db"
 
