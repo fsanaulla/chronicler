@@ -16,7 +16,7 @@ lazy val chronicler = project
 //////////////////// CORE MODULES ////////////////////
 //////////////////////////////////////////////////////
 lazy val coreIO = project
-  .in(file("core/io"))
+  .in(file("modules/core/io"))
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header: _*)
@@ -28,7 +28,7 @@ lazy val coreIO = project
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val coreManagement = project
-  .in(file("core/management"))
+  .in(file("modules/core/management"))
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header: _*)
@@ -40,7 +40,7 @@ lazy val coreManagement = project
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val coreShared = project
-  .in(file("core/shared"))
+  .in(file("modules/core/shared"))
   .settings(Settings.propertyTestSettings: _*)
   .configs(Settings.PropertyTest)
   .settings(Settings.common: _*)
@@ -60,7 +60,7 @@ lazy val coreShared = project
 ////////////////// URL HTTP MODULES //////////////////
 //////////////////////////////////////////////////////
 lazy val urlManagement = project
-  .in(file("url/management"))
+  .in(file("modules/url/management"))
   .configs(Settings.CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
@@ -72,7 +72,7 @@ lazy val urlManagement = project
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val urlIO = project
-  .in(file("url/io"))
+  .in(file("modules/url/io"))
   .configs(Settings.CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
@@ -85,7 +85,7 @@ lazy val urlIO = project
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val urlShared = project
-  .in(file("url/shared"))
+  .in(file("modules/url/shared"))
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
@@ -101,7 +101,7 @@ lazy val urlShared = project
 ////////////////// AKKA HTTP MODULES /////////////////
 //////////////////////////////////////////////////////
 lazy val akkaManagement = project
-  .in(file("akka/management"))
+  .in(file("modules/akka/management"))
   .configs(Settings.CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
@@ -116,7 +116,7 @@ lazy val akkaManagement = project
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val akkaIO = project
-  .in(file("akka/io"))
+  .in(file("modules/akka/io"))
   .configs(Settings.CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
@@ -132,7 +132,7 @@ lazy val akkaIO = project
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val akkaShared = project
-  .in(file("akka/shared"))
+  .in(file("modules/akka/shared"))
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
@@ -148,7 +148,7 @@ lazy val akkaShared = project
 ///////////////// ASYNC HTTP MODULES /////////////////
 //////////////////////////////////////////////////////
 lazy val ahcManagement = project
-  .in(file("ahc/management"))
+  .in(file("modules/ahc/management"))
   .configs(Settings.CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
@@ -160,7 +160,7 @@ lazy val ahcManagement = project
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val ahcIO = project
-  .in(file("ahc/io"))
+  .in(file("modules/ahc/io"))
   .configs(Settings.CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
@@ -173,7 +173,7 @@ lazy val ahcIO = project
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val ahcShared = project
-  .in(file("ahc/shared"))
+  .in(file("modules/ahc/shared"))
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
@@ -189,7 +189,7 @@ lazy val ahcShared = project
 ///////////////////// UPD MODULE /////////////////////
 //////////////////////////////////////////////////////
 lazy val udp = project
-  .in(file("udp"))
+  .in(file("modules/udp"))
   .configs(Settings.CompileTimeIntegrationTest)
   .settings(Defaults.itSettings)
   .settings(Settings.common: _*)
@@ -207,7 +207,7 @@ lazy val udp = project
 ///////////////////// MACRO MODULE ///////////////////
 //////////////////////////////////////////////////////
 lazy val macros = project
-  .in(file("macros"))
+  .in(file("modules/macros"))
   .settings(Settings.propertyTestSettings: _*)
   .configs(Settings.PropertyTest)
   .settings(Settings.common: _*)
@@ -224,7 +224,7 @@ lazy val macros = project
 /////////////////// TESTING MODULES //////////////////
 //////////////////////////////////////////////////////
 lazy val itTesting = project
-  .in(file("testing/it"))
+  .in(file("modules/testing/it"))
   .settings(Settings.common: _*)
   .settings(
     name := "chronicler-it-testing",
@@ -234,10 +234,15 @@ lazy val itTesting = project
   .dependsOn(unitTesting)
 
 lazy val unitTesting = project
-  .in(file("testing/unit"))
+  .in(file("modules/testing/unit"))
   .settings(Settings.common: _*)
   .settings(
     name := "chronicler-unit-testing",
     libraryDependencies += Dependencies.scalaTest
   )
   .dependsOn(coreShared)
+
+//////////////////////////////////////////////////////
+////////////////////// EXAMPLES //////////////////////
+//////////////////////////////////////////////////////
+lazy val akkaIOExample = project.in(file("examples/akka/io"))

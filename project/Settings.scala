@@ -60,5 +60,5 @@ object Settings extends LibraryManagementSyntax {
     pgpPassphrase := sys.env.get("PGP_PASSPHRASE").map(_.toCharArray)
   )
 
-  val header = headerLicense := Some(License.ALv2("2017-2018", Owner.name))
+  val header = headerLicense := Some(License.ALv2("2017-2019", Owner.name))
 }
