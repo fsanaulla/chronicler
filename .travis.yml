@@ -30,11 +30,6 @@ before_install:
 
 jobs:
   include:
-#    - stage: test
-#      script: sbt ++2.11.8 coreTest macrosTest akkaTest ahcTest urlTest
-#      name: "Running test on scala 2.11.8"
-#    - script: sbt ++2.12.8 coreTest macrosTest akkaTest ahcTest urlTest
-#      name: "Running test on scala 2.12.8"
     - stage: deploy_2.11
       script: ./scripts/publish.sh $TRAVIS_SCALA_VERSION
       env: INFLUXDB_VERSION=1.7.3

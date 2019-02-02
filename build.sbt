@@ -195,10 +195,7 @@ lazy val udp = project
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
-  .settings(
-    name := "chronicler-udp",
-    libraryDependencies ++= Dependencies.udpDep
-  )
+  .settings(name := "chronicler-udp")
   .dependsOn(coreShared)
   .dependsOn(itTesting, urlIO, urlManagement % "test->test")
   .enablePlugins(AutomateHeaderPlugin)

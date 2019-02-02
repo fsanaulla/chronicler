@@ -18,58 +18,84 @@ package com.github.fsanaulla.chronicler.udp
 
 import java.io.File
 import java.net._
+import java.nio.charset.{Charset, StandardCharsets}
 
-import com.github.fsanaulla.chronicler.core.model.{InfluxWriter, Point, PointTransformer, UdpConnection}
-import com.github.fsanaulla.chronicler.udp.InfluxUDPClient._
+import com.github.fsanaulla.chronicler.core.model.{InfluxWriter, Point, PointTransformer}
 
 import scala.io.Source
+import scala.util.Try
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-final class InfluxUDPClient(host: String, port: Int) extends PointTransformer with AutoCloseable {
-  private implicit val conn: UdpConnection = UdpConnection(InetAddress.getByName(host), port)
+final class InfluxUDPClient(host: String, port: Int)
+  extends PointTransformer
+    with AutoCloseable {
 
-  def writeNative(point: String): Unit =
-    send(buildDatagram(point.getBytes()))
+  private val socket = new DatagramSocket()
+  private def buildAndSend(msg: Array[Byte]): Try[Unit] =
+    Try(
+      socket.send(
+        new DatagramPacket(
+          msg,
+          msg.length,
+          new InetSocketAddress(host, port)
+        )
+      )
+    )
 
-  def bulkWriteNative(points: Seq[String]): Unit =
-    send(buildDatagram(points.mkString("\n").getBytes()))
+  def writeNative(point: String,
+                  charset: Charset = StandardCharsets.UTF_8): Try[Unit] =
+    buildAndSend(point.getBytes(charset))
 
-  def write[T](measurement: String, entity: T)(implicit writer: InfluxWriter[T]): Unit = {
-    val sendEntity = toPoint(measurement, writer.write(entity)).getBytes()
+  def bulkWriteNative(points: Seq[String],
+                      charset: Charset = StandardCharsets.UTF_8): Try[Unit] =
+    buildAndSend(points.mkString("\n").getBytes(charset))
 
-    send(buildDatagram(sendEntity))
+  def write[T](measurement: String,
+               entity: T,
+               charset: Charset = StandardCharsets.UTF_8)
+              (implicit writer: InfluxWriter[T]): Try[Unit] = {
+    val sendEntity = toPoint(measurement, writer.write(entity))
+
+    buildAndSend(sendEntity.getBytes(charset))
   }
 
-  def bulkWrite[T](measurement: String, entitys: Seq[T])(implicit writer: InfluxWriter[T]): Unit = {
-    val sendEntity = toPoints(measurement, entitys.map(writer.write)).getBytes()
+  def bulkWrite[T](measurement: String,
+                   entities: Seq[T],
+                   charset: Charset = StandardCharsets.UTF_8)
+                  (implicit writer: InfluxWriter[T]): Try[Unit] = {
+    val sendEntity =
+      toPoints(measurement, entities.map(writer.write)).getBytes(charset)
 
-    send(buildDatagram(sendEntity))
+    buildAndSend(sendEntity)
   }
 
-  def writeFromFile(file: File): Unit = {
-    val sendData = Source.fromFile(file).getLines().mkString("\n").getBytes()
+  def writeFromFile(file: File,
+                    charset: Charset = StandardCharsets.UTF_8): Try[Unit] = {
+    val sendData = Source
+      .fromFile(file)
+      .getLines()
+      .mkString("\n")
+      .getBytes(charset)
 
-    send(buildDatagram(sendData))
+    buildAndSend(sendData)
   }
 
-  def writePoint(point: Point): Unit =
-    send(buildDatagram(point.serialize.getBytes()))
+  def writePoint(point: Point,
+                 charset: Charset = StandardCharsets.UTF_8): Try[Unit] =
+    buildAndSend(point.serialize.getBytes(charset))
 
-  def bulkWritePoints(points: Seq[Point]): Unit =
-    send(buildDatagram(points.map(_.serialize).mkString("\n").getBytes()))
+  def bulkWritePoints(points: Seq[Point],
+                      charset: Charset = StandardCharsets.UTF_8): Try[Unit] =
+    buildAndSend(
+      points
+        .map(_.serialize)
+        .mkString("\n")
+        .getBytes(charset)
+    )
 
   def close(): Unit = socket.close()
-}
-
-private[udp] object InfluxUDPClient {
-  private val socket = new DatagramSocket()
-
-  def buildDatagram(msg: Array[Byte])(implicit conn: UdpConnection): DatagramPacket =
-    new DatagramPacket(msg, msg.length, conn.address, conn.port)
-
-  def send(dp: DatagramPacket): Unit = socket.send(dp)
 }

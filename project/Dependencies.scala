@@ -39,7 +39,7 @@ object Dependencies {
   // testing
   val testingDeps: Seq[ModuleID] = Seq(
     "org.jetbrains"      % "annotations" % "16.0.3",
-    "org.testcontainers" % "influxdb"    % "1.10.5"   exclude("org.jetbrains", "annotations") exclude("org.slf4j", "slf4j-api"),
+    "org.testcontainers" % "influxdb"    % "1.10.6"   exclude("org.jetbrains", "annotations") exclude("org.slf4j", "slf4j-api"),
     "org.slf4j"          % "slf4j-api"   % "1.7.25"
   )
 
@@ -64,11 +64,4 @@ object Dependencies {
     "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp   exclude("io.netty", "netty-handler") exclude("org.reactivestreams", "reactive-streams"),
     "org.reactivestreams"   %  "reactive-streams"                 % "1.0.2"
   )
-
-  // udp
-  val udpDep: Seq[ModuleID] =
-    Seq(
-      "com.github.fsanaulla" %% "scalatest-embedinflux" % "0.1.7",
-      scalaTest
-    ) map (_ % Scope.test)
 }
