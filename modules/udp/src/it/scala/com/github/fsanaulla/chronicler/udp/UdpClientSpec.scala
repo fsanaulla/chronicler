@@ -29,9 +29,15 @@ class UdpClientSpec
 
   val service = "influxdb"
   val servicePort = 8086
-  val container: DockerComposeContainer[Nothing] =
-    new DockerComposeContainer(new File(getClass.getResource("/docker-compose.yml").getPath))
-      .withExposedService(service, 8086, Wait.forHttp("/ping").forStatusCode(204))
+
+  val container: DockerComposeContainer[Nothing] = {
+    val cont = new DockerComposeContainer(new File(getClass.getResource("/docker-compose.yml").getPath))
+
+    cont.withLocalCompose(true)
+    cont.withExposedService(service, 8086, Wait.forHttp("/ping").forStatusCode(204))
+
+    cont
+  }
 
   override def beforeAll(): Unit = {
     super.beforeAll()
