@@ -1,7 +1,7 @@
 version: "2"
 services:
   influxdb:
-    image: "influxdb:1.7.3"
+    image: "influxdb:${INFLUXDB_VERSION}"
     environment:
       INFLUXDB_UDP_ENABLED: "true"
     ports:
