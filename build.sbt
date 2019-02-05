@@ -215,12 +215,23 @@ lazy val unitTesting = project
 //////////////////////////////////////////////////////
 ////////////////////// EXAMPLES //////////////////////
 //////////////////////////////////////////////////////
-lazy val akkaIOExample = project
-  .in(file("examples/akka/io"))
-  .settings(Settings.common: _*)
-  .settings(
-    name := s"$projectName-akka-io-example"
-  ).dependsOn(akkaIO, macros)
+lazy val akkaIOExample =
+  exampleModule("akka-io-example", "akka/io", akkaIO, macros)
+
+lazy val akkaManagementExample =
+  exampleModule("akka-management-example", "akka/management", akkaManagement)
+
+lazy val ahcIOExample =
+  exampleModule("ahc-io-example", "ahc/io", ahcIO, macros)
+
+lazy val ahcManagementExample =
+  exampleModule("ahc-management-example", "ahc/management", ahcManagement)
+
+lazy val urlIOExample =
+  exampleModule("url-io-example", "url/io", urlIO, macros)
+
+lazy val urlManagementExample =
+  exampleModule("url-management-example", "url/management", urlManagement)
 
 //////////////////////////////////////////////////////
 ////////////////////// UTILS /////////////////////////
@@ -229,3 +240,10 @@ def withDefaultSettings: Project => Project = _
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
+
+def exampleModule(moduleName: String,
+                  moduleDir: String,
+                  dependsOn: sbt.ClasspathDep[sbt.ProjectReference]*): Project =
+  Project(s"$projectName-$moduleName", file(s"examples/$moduleDir"))
+    .settings(Settings.common: _*)
+    .dependsOn(dependsOn: _*)
