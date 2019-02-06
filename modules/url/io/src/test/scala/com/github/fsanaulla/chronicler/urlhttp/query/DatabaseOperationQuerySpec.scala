@@ -96,8 +96,6 @@ class DatabaseOperationQuerySpec extends FlatSpecWithMatchers {
       "db" -> testDB,
       "u" -> credentials.get.username,
       "p" -> credentials.get.password,
-      "pretty" -> "false",
-      "chunked" -> "false",
       "epoch" -> "ns",
       "q" -> "SELECT * FROM test"
     )
@@ -110,12 +108,22 @@ class DatabaseOperationQuerySpec extends FlatSpecWithMatchers {
       "db" -> testDB,
       "u" -> credentials.get.username,
       "p" -> credentials.get.password,
-      "pretty" -> "false",
-      "chunked" -> "false",
       "epoch" -> "ns",
       "q" -> "SELECT * FROM test;SELECT * FROM test1"
     )
     readFromInfluxBulkQuery(testDB, Seq("SELECT * FROM test", "SELECT * FROM test1"), Epochs.NANOSECONDS, pretty = false, chunked = false).toString() shouldEqual
       queryTester("/query", map)
+
+    val map1: Map[String, String] = Map[String, String](
+      "db" -> testDB,
+      "u" -> credentials.get.username,
+      "p" -> credentials.get.password,
+      "pretty" -> "true",
+      "chunked" -> "true",
+      "epoch" -> "ns",
+      "q" -> "SELECT * FROM test;SELECT * FROM test1"
+    )
+    readFromInfluxBulkQuery(testDB, Seq("SELECT * FROM test", "SELECT * FROM test1"), Epochs.NANOSECONDS, pretty = true, chunked = true).toString() shouldEqual
+      queryTester("/query", map1)
   }
 }
