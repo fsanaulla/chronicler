@@ -19,7 +19,6 @@ object Main {
     for {
       // write record to Influx
       _ <- influx.write("cpu", t)
-      // retrieve written record from Influx
       // close client
       _ <- influx.close()
     } yield println("Stored!")
