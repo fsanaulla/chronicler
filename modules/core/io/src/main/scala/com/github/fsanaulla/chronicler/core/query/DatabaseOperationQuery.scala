@@ -52,12 +52,12 @@ private[chronicler] trait DatabaseOperationQuery[U] { self: QueryBuilder[U] =>
 
     val queryParams = scala.collection.mutable.Map[String, String](
       "db" -> dbName,
-      "pretty" -> pretty.toString,
-      "chunked" -> chunked.toString,
       "q" -> query
     )
 
     for (ep <- epoch) queryParams += ("epoch" -> ep.toString)
+    if (chunked) queryParams += ("chunked" -> chunked.toString)
+    if (pretty) queryParams += ("pretty" -> pretty.toString)
 
     buildQuery("/query", buildQueryParams(queryParams))
   }
@@ -70,12 +70,12 @@ private[chronicler] trait DatabaseOperationQuery[U] { self: QueryBuilder[U] =>
                                                        (implicit credentials: Option[InfluxCredentials]): U = {
     val queryParams = mutable.Map[String, String](
       "db" -> dbName,
-      "pretty" -> pretty.toString,
-      "chunked" -> chunked.toString,
       "q" -> queries.mkString(";")
     )
 
     for (ep <- epoch) queryParams += ("epoch" -> ep.toString)
+    if (chunked) queryParams += ("chunked" -> chunked.toString)
+    if (pretty) queryParams += ("pretty" -> pretty.toString)
 
     buildQuery("/query", buildQueryParams(queryParams))
   }

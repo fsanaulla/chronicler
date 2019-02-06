@@ -43,7 +43,6 @@ class DatabaseApiOperationQuerySpec extends FlatSpecWithMatchers {
 
   implicit def a2Opt[A](a: A): Option[A] = Some(a)
 
-
   it should "return correct write query" in new AuthEnv {
 
     writeToInfluxQuery(testDB, Consistencies.ONE, Precisions.NANOSECONDS, None).toString() shouldEqual queryTester(
@@ -81,8 +80,6 @@ class DatabaseApiOperationQuerySpec extends FlatSpecWithMatchers {
       "db" -> testDB,
       "u" -> credentials.get.username,
       "p" -> credentials.get.password,
-      "pretty" -> "false",
-      "chunked" -> "false",
       "epoch" -> "ns",
       "q" -> "SELECT * FROM test"
     )
@@ -95,12 +92,22 @@ class DatabaseApiOperationQuerySpec extends FlatSpecWithMatchers {
       "db" -> testDB,
       "u" -> credentials.get.username,
       "p" -> credentials.get.password,
-      "pretty" -> "false",
-      "chunked" -> "false",
       "epoch" -> "ns",
       "q" -> "SELECT * FROM test;SELECT * FROM test1"
     )
     readFromInfluxBulkQuery(testDB, Seq("SELECT * FROM test", "SELECT * FROM test1"), Epochs.NANOSECONDS, pretty = false, chunked = false).toString() shouldEqual
       queryTester("/query", map)
+
+    val map1: Map[String, String] = Map[String, String](
+      "db" -> testDB,
+      "u" -> credentials.get.username,
+      "p" -> credentials.get.password,
+      "pretty" -> "true",
+      "chunked" -> "true",
+      "epoch" -> "ns",
+      "q" -> "SELECT * FROM test;SELECT * FROM test1"
+    )
+    readFromInfluxBulkQuery(testDB, Seq("SELECT * FROM test", "SELECT * FROM test1"), Epochs.NANOSECONDS, pretty = true, chunked = true).toString() shouldEqual
+      queryTester("/query", map1)
   }
 }
