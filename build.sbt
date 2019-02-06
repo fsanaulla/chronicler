@@ -209,7 +209,7 @@ lazy val urlManagementExample =
   exampleModule("url-management-example", "url/management", urlManagement)
 
 lazy val udpExample =
-  exampleModule("udp-example", "udp", udp)
+  exampleModule("udp-example", "udp", udp, macros)
 
 //////////////////////////////////////////////////////
 ////////////////////// UTILS /////////////////////////
