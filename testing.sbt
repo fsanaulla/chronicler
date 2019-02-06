@@ -21,3 +21,5 @@ addCommandAlias(
 addCommandAlias(
   "macrosTest",
   ";project macros;clean;compile;test:compile;test;pt:compile;pt:test")
+
+addCommandAlias("udpTest", ";project udp;clean;compile;it:compile;it:test")
