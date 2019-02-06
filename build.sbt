@@ -22,7 +22,7 @@ lazy val coreIO = project
     name := s"$projectName-core-io",
     scalacOptions += "-language:higherKinds"
   )
-  .configure(withDefaultSettings)
+  .configure(defaultSettings)
   .dependsOn(coreShared)
   .enablePlugins(AutomateHeaderPlugin)
 
@@ -32,7 +32,7 @@ lazy val coreManagement = project
     name := s"$projectName-core-management",
     scalacOptions += "-language:higherKinds"
   )
-  .configure(withDefaultSettings)
+  .configure(defaultSettings)
   .dependsOn(coreShared)
   .enablePlugins(AutomateHeaderPlugin)
 
@@ -48,7 +48,7 @@ lazy val coreShared = project
       "-language:higherKinds"
     )
   )
-  .configure(withDefaultSettings)
+  .configure(defaultSettings)
   .enablePlugins(AutomateHeaderPlugin)
 
 //////////////////////////////////////////////////////
@@ -56,24 +56,18 @@ lazy val coreShared = project
 //////////////////////////////////////////////////////
 lazy val urlManagement = project
   .in(file("modules/url/management"))
-  .configs(Settings.CompileTimeIntegrationTest)
-  .settings(Defaults.itSettings)
   .settings(name := s"$projectName-url-management")
-  .configure(withDefaultSettings)
+  .configure(defaultSettingsWithIt)
   .dependsOn(coreManagement, urlShared)
   .dependsOn(itTesting % "test->test")
-  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val urlIO = project
   .in(file("modules/url/io"))
-  .configs(Settings.CompileTimeIntegrationTest)
-  .settings(Defaults.itSettings)
   .settings(name := s"$projectName-url-io")
-  .configure(withDefaultSettings)
+  .configure(defaultSettingsWithIt)
   .dependsOn(coreIO, urlShared)
   .dependsOn(urlManagement % "test->test")
   .dependsOn(itTesting % "test->test")
-  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val urlShared = project
   .in(file("modules/url/shared"))
@@ -81,40 +75,33 @@ lazy val urlShared = project
     name := s"$projectName-url-shared",
     libraryDependencies += Dependencies.sttp
   )
-  .configure(withDefaultSettings)
+  .configure(defaultSettings)
   .dependsOn(coreShared)
   .dependsOn(unitTesting % "test->test")
-  .enablePlugins(AutomateHeaderPlugin)
 
 //////////////////////////////////////////////////////
 ////////////////// AKKA HTTP MODULES /////////////////
 //////////////////////////////////////////////////////
 lazy val akkaManagement = project
   .in(file("modules/akka/management"))
-  .configs(Settings.CompileTimeIntegrationTest)
-  .settings(Defaults.itSettings)
   .settings(
     name := s"$projectName-akka-management",
     libraryDependencies += Dependencies.akkaTestKit % Scope.test
   )
-  .configure(withDefaultSettings)
+  .configure(defaultSettingsWithIt)
   .dependsOn(coreManagement, akkaShared)
   .dependsOn(itTesting % "test->test")
-  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val akkaIO = project
   .in(file("modules/akka/io"))
-  .configs(Settings.CompileTimeIntegrationTest)
-  .settings(Defaults.itSettings)
   .settings(
     name := s"$projectName-akka-io",
     libraryDependencies += Dependencies.akkaTestKit % Scope.test
   )
-  .configure(withDefaultSettings)
+  .configure(defaultSettingsWithIt)
   .dependsOn(coreIO, akkaShared)
   .dependsOn(akkaManagement % "test->test")
   .dependsOn(itTesting % "test->test")
-  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val akkaShared = project
   .in(file("modules/akka/shared"))
@@ -122,34 +109,27 @@ lazy val akkaShared = project
     name := s"$projectName-akka-shared",
     libraryDependencies ++= Dependencies.akkaDep
   )
-  .configure(withDefaultSettings)
+  .configure(defaultSettings)
   .dependsOn(coreShared)
   .dependsOn(unitTesting % "test->test")
-  .enablePlugins(AutomateHeaderPlugin)
 
 //////////////////////////////////////////////////////
 ///////////////// ASYNC HTTP MODULES /////////////////
 //////////////////////////////////////////////////////
 lazy val ahcManagement = project
   .in(file("modules/ahc/management"))
-  .configs(Settings.CompileTimeIntegrationTest)
-  .settings(Defaults.itSettings)
   .settings(name := s"$projectName-ahc-management")
-  .configure(withDefaultSettings)
+  .configure(defaultSettingsWithIt)
   .dependsOn(coreManagement, ahcShared)
   .dependsOn(itTesting % "test->test")
-  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val ahcIO = project
   .in(file("modules/ahc/io"))
-  .configs(Settings.CompileTimeIntegrationTest)
-  .settings(Defaults.itSettings)
   .settings(name := s"$projectName-ahc-io")
-  .configure(withDefaultSettings)
+  .configure(defaultSettingsWithIt)
   .dependsOn(coreIO, ahcShared)
   .dependsOn(ahcManagement % "test->test")
   .dependsOn(itTesting % "test->test")
-  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val ahcShared = project
   .in(file("modules/ahc/shared"))
@@ -157,23 +137,19 @@ lazy val ahcShared = project
     name := s"$projectName-ahc-shared",
     libraryDependencies ++= Dependencies.asyncDeps
   )
-  .configure(withDefaultSettings)
+  .configure(defaultSettings)
   .dependsOn(coreShared)
   .dependsOn(unitTesting % "test->test")
-  .enablePlugins(AutomateHeaderPlugin)
 
 //////////////////////////////////////////////////////
 ///////////////////// UPD MODULE /////////////////////
 //////////////////////////////////////////////////////
 lazy val udp = project
   .in(file("modules/udp"))
-  .configs(Settings.CompileTimeIntegrationTest)
-  .settings(Defaults.itSettings)
   .settings(name := s"$projectName-udp")
-  .configure(withDefaultSettings)
+  .configure(defaultSettingsWithIt)
   .dependsOn(coreShared)
   .dependsOn(itTesting, urlIO, urlManagement % "test->test")
-  .enablePlugins(AutomateHeaderPlugin)
 
 //////////////////////////////////////////////////////
 ///////////////////// MACRO MODULE ///////////////////
@@ -186,9 +162,8 @@ lazy val macros = project
     name := s"$projectName-macros",
     libraryDependencies ++= Dependencies.macroDeps(scalaVersion.value)
   )
-  .configure(withDefaultSettings)
+  .configure(defaultSettings)
   .dependsOn(coreShared)
-  .enablePlugins(AutomateHeaderPlugin)
 
 //////////////////////////////////////////////////////
 /////////////////// TESTING MODULES //////////////////
@@ -233,13 +208,22 @@ lazy val urlIOExample =
 lazy val urlManagementExample =
   exampleModule("url-management-example", "url/management", urlManagement)
 
+lazy val udpExample =
+  exampleModule("udp-example", "udp", udp)
+
 //////////////////////////////////////////////////////
 ////////////////////// UTILS /////////////////////////
 //////////////////////////////////////////////////////
-def withDefaultSettings: Project => Project = _
+def defaultSettings: Project => Project = _
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(Settings.header)
+  .enablePlugins(AutomateHeaderPlugin)
+
+def defaultSettingsWithIt: Project => Project = _
+  .configs(Settings.CompileTimeIntegrationTest)
+  .settings(Defaults.itSettings)
+  .configure(defaultSettings)
 
 def exampleModule(moduleName: String,
                   moduleDir: String,
