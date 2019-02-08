@@ -2,6 +2,7 @@ package com.github.fsanaulla.chronicler.ahc.management
 
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.NoContentResult
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
+import org.scalatest.{FlatSpec, Matchers}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
