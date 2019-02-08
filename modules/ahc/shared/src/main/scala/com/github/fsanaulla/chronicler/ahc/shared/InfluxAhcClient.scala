@@ -22,9 +22,9 @@ import org.asynchttpclient.AsyncHttpClientConfig
 
 import scala.concurrent.Future
 
-abstract class InfluxAhcClient(asyncClientConfig: Option[AsyncHttpClientConfig]) { self: AutoCloseable =>
-
+class InfluxAhcClient(asyncClientConfig: Option[AsyncHttpClientConfig]) { self: AutoCloseable =>
   private[ahc] implicit val backend: SttpBackend[Future, Nothing] =
     asyncClientConfig.fold(AsyncHttpClientFutureBackend())(AsyncHttpClientFutureBackend.usingConfig)
+
   override def close(): Unit = backend.close()
 }

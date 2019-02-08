@@ -18,13 +18,12 @@ package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
 import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers}
 
-class AhcQueryBuilderSpec
-  extends FlatSpecWithMatchers
-    with EmptyCredentials
-    with AhcQueryBuilder {
+class AhcQueryBuilderSpec extends FlatSpecWithMatchers with EmptyCredentials {
 
   val host = "localhost"
   val port = 8080
+
+  val qb = new AhcQueryBuilder(host, port, None)
 
   it should "properly generate URI" in {
     val queryMap = scala.collection.mutable.Map[String, String](
@@ -32,7 +31,7 @@ class AhcQueryBuilderSpec
     )
     val res = s"http://$host:$port/query?q=FirstQuery%3BSecondQuery"
 
-    buildQuery("/query", buildQueryParams(queryMap)).toString() shouldEqual res
+    qb.buildQuery("/query", qb.buildQueryParams(queryMap)).toString() shouldEqual res
   }
 
 }

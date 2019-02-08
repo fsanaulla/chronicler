@@ -16,22 +16,23 @@
 
 package com.github.fsanaulla.chronicler.ahc.io.models
 
-import com.github.fsanaulla.chronicler.ahc.shared.handlers.{AhcQueryBuilder, AhcRequestExecutor, AhcResponseHandler}
+import com.github.fsanaulla.chronicler.ahc.shared.alias.Request
 import com.github.fsanaulla.chronicler.core.enums.Epoch
 import com.github.fsanaulla.chronicler.core.io.ReadOperations
-import com.github.fsanaulla.chronicler.core.model.{HasCredentials, QueryResult, ReadResult}
+import com.github.fsanaulla.chronicler.core.model.{QueryResult, ReadResult}
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import com.softwaremill.sttp.Uri
-import jawn.ast.JArray
+import com.github.fsanaulla.chronicler.core.typeclasses.{QueryBuilder, RequestExecutor, ResponseHandler}
+import com.softwaremill.sttp.{Response, Uri}
+import jawn.ast.{JArray, JValue}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-private[ahc] trait AhcReader
-  extends AhcQueryBuilder
-    with AhcRequestExecutor
-    with AhcResponseHandler
-    with DatabaseOperationQuery[Uri]
-    with ReadOperations[Future] { self: HasCredentials =>
+private[ahc] final class AhcReader(implicit qb: QueryBuilder[Uri],
+                                   re: RequestExecutor[Future, Request, Response[JValue], Uri],
+                                   rh: ResponseHandler[Future, Response[JValue]],
+                                   ec: ExecutionContext)
+  extends DatabaseOperationQuery[Uri] with ReadOperations[Future] {
+  import re.buildRequest
 
   private[chronicler] override def readJs(dbName: String,
                                           query: String,
@@ -39,10 +40,12 @@ private[ahc] trait AhcReader
                                           pretty: Boolean,
                                           chunked: Boolean): Future[ReadResult[JArray]] = {
     val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
-    val executionResult = execute(uri)
+    val executionResult = re.execute(uri)
     query match {
-      case q: String if q.contains("GROUP BY") => executionResult.flatMap(toGroupedJsResult)
-      case _ => executionResult.flatMap(toQueryJsResult)
+      case q: String if q.contains("GROUP BY") =>
+        executionResult.flatMap(rh.toGroupedJsResult)
+      case _ =>
+        executionResult.flatMap(rh.toQueryJsResult)
     }
   }
 
@@ -52,6 +55,6 @@ private[ahc] trait AhcReader
                                               pretty: Boolean,
                                               chunked: Boolean): Future[QueryResult[Array[JArray]]] = {
     val uri = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)
-    execute(uri).flatMap(toBulkQueryJsResult)
+    re.execute(uri).flatMap(rh.toBulkQueryJsResult)
   }
 }

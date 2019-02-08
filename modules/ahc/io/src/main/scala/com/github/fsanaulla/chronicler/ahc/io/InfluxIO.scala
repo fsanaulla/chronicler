@@ -41,7 +41,7 @@ object InfluxIO {
             gzipped: Boolean = false,
             asyncClientConfig: Option[AsyncHttpClientConfig] = None)
            (implicit ex: ExecutionContext): AhcIOClient =
-    new AhcIOClient(host, port, credentials, gzipped, asyncClientConfig)
+    new AhcIOClient(host, port, gzipped, credentials, asyncClientConfig)
 
   /**
     * Retrieve IO InfluxDB client, without management functionality using configuration object

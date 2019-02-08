@@ -28,21 +28,22 @@ import org.asynchttpclient.AsyncHttpClientConfig
 
 import scala.concurrent.{ExecutionContext, Future}
 
-final class AhcManagementClient(val host: String,
-                                val port: Int,
-                                val credentials: Option[InfluxCredentials],
+final class AhcManagementClient(host: String,
+                                port: Int,
+                                credentials: Option[InfluxCredentials],
                                 asyncClientConfig: Option[AsyncHttpClientConfig])
-                               (implicit val ex: ExecutionContext)
-  extends InfluxAhcClient(asyncClientConfig)
-    with ManagementClient[Future, Request, Response[JValue], Uri, String]
-    with AhcRequestExecutor
-    with AhcResponseHandler
-    with AhcQueryBuilder
-    with FlatMap[Future]
-    with AutoCloseable {
+                               (implicit ex: ExecutionContext)
+  extends InfluxAhcClient(asyncClientConfig) with ManagementClient[Future, Request, Response[JValue], Uri, String] {
 
-  private[chronicler] override def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
+  implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
+  implicit val re: AhcRequestExecutor = new AhcRequestExecutor
+  implicit val rh: AhcResponseHandler = new AhcResponseHandler
+  implicit val fm: FlatMap[Future] = new FlatMap[Future] {
+    def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
+  }
+
+  import re.buildRequest
 
   override def ping: Future[WriteResult] =
-    execute(buildQuery("/ping", Map.empty[String, String])).flatMap(toResult)
+    re.execute(qb.buildQuery("/ping", Map.empty[String, String])).flatMap(rh.toResult)
 }

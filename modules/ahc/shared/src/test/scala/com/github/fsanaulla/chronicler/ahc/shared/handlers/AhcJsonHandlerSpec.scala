@@ -22,17 +22,16 @@ import jawn.ast._
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.ScalaFutures
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class AhcJsonHandlerSpec extends FlatSpecWithMatchers with AhcJsonHandler with ScalaFutures with OptionValues {
+class AhcJsonHandlerSpec extends FlatSpecWithMatchers with ScalaFutures with OptionValues {
 
-  override implicit val ex: ExecutionContext = ExecutionContext.Implicits.global
-
+  val jsHandler = new AhcJsonHandler()
   val singleStrJson = """{
                       "results": [
                           {
@@ -69,7 +68,7 @@ class AhcJsonHandlerSpec extends FlatSpecWithMatchers with AhcJsonHandler with S
   val result: JValue = JParser.parseFromString(singleStrJson).get
 
   it should "extract JSON from HTTP response" in {
-    getResponseBody(resp).futureValue shouldEqual result
+    jsHandler.getResponseBody(resp).futureValue shouldEqual result
   }
 
   it should "extract single query result from JSON" in {
@@ -118,7 +117,7 @@ class AhcJsonHandlerSpec extends FlatSpecWithMatchers with AhcJsonHandler with S
       JArray(Array(JString("2015-06-11T20:46:02Z"), JNull, JNum(0.64)))
     )
 
-    getOptQueryResult(json).value shouldEqual result
+    jsHandler.getOptQueryResult(json).value shouldEqual result
   }
 
   it should "extract bulk query result from JSON" in {
@@ -184,7 +183,7 @@ class AhcJsonHandlerSpec extends FlatSpecWithMatchers with AhcJsonHandler with S
       )
     )
 
-    getOptBulkInfluxPoints(json).value shouldEqual result
+    jsHandler.getOptBulkInfluxPoints(json).value shouldEqual result
   }
 
   it should "extract influx information from JSON" in {
@@ -230,7 +229,7 @@ class AhcJsonHandlerSpec extends FlatSpecWithMatchers with AhcJsonHandler with S
       )
     )
 
-    val res = getOptJsInfluxInfo(json)
+    val res = jsHandler.getOptJsInfluxInfo(json)
 
     res should not be None
     res.value.length shouldEqual 1
@@ -288,7 +287,7 @@ class AhcJsonHandlerSpec extends FlatSpecWithMatchers with AhcJsonHandler with S
         |}
       """.stripMargin).toOption.value
 
-    val optResult = getOptGropedResult(json)
+    val optResult = jsHandler.getOptGropedResult(json)
 
     optResult should not be None
 

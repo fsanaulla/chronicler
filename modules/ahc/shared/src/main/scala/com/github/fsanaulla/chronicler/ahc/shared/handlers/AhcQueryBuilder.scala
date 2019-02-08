@@ -16,7 +16,7 @@
 
 package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
-import com.github.fsanaulla.chronicler.core.model.HasCredentials
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 import com.softwaremill.sttp.Uri.QueryFragment
 import com.softwaremill.sttp.Uri.QueryFragment.KeyValue
@@ -24,10 +24,9 @@ import com.softwaremill.sttp._
 
 import scala.annotation.tailrec
 
-private[ahc] trait AhcQueryBuilder extends QueryBuilder[Uri] with HasCredentials {
-
-  private[ahc] val host: String
-  private[ahc] val port: Int
+private[ahc] class AhcQueryBuilder(host: String,
+                                   port: Int,
+                                   credentials: Option[InfluxCredentials]) extends QueryBuilder[Uri](credentials) {
 
   private[chronicler] override def buildQuery(uri: String,
                                               queryParams: Map[String, String]): Uri = {

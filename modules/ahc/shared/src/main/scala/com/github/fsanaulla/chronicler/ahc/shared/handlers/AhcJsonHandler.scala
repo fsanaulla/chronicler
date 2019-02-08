@@ -17,15 +17,13 @@
 package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
 import com.github.fsanaulla.chronicler.core.jawn._
-import com.github.fsanaulla.chronicler.core.model.Executable
 import com.github.fsanaulla.chronicler.core.typeclasses.JsonHandler
 import com.softwaremill.sttp.Response
 import jawn.ast.{JParser, JValue}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-private[ahc] trait AhcJsonHandler
-    extends JsonHandler[Future, Response[JValue]] with Executable {
+private[ahc] class AhcJsonHandler(implicit ex: ExecutionContext) extends JsonHandler[Future, Response[JValue]] {
 
   private[chronicler] override def getResponseBody(response: Response[JValue]): Future[JValue] = {
     response.body match {

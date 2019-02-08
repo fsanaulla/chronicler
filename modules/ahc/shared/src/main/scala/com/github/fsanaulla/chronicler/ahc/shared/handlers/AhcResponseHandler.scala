@@ -22,10 +22,12 @@ import com.github.fsanaulla.chronicler.core.typeclasses.ResponseHandler
 import com.softwaremill.sttp.Response
 import jawn.ast.{JArray, JValue}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
-private[ahc] trait AhcResponseHandler extends ResponseHandler[Future, Response[JValue]] with AhcJsonHandler {
+private[ahc] class AhcResponseHandler(implicit ex: ExecutionContext)
+  extends AhcJsonHandler
+    with ResponseHandler[Future, Response[JValue]] {
 
   // Simply result's
   private[chronicler] override def toResult(response: Response[JValue]): Future[WriteResult] = {

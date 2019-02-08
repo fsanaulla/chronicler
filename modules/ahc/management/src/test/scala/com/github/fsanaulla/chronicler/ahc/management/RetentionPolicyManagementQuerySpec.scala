@@ -18,8 +18,9 @@ package com.github.fsanaulla.chronicler.ahc.management
 
 import com.github.fsanaulla.chronicler.ahc.shared.handlers.AhcQueryBuilder
 import com.github.fsanaulla.chronicler.core.duration._
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.RetentionPolicyManagementQuery
-import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.softwaremill.sttp.Uri
 
 import scala.language.postfixOps
@@ -29,14 +30,19 @@ import scala.language.postfixOps
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class RetentionPolicyManagementQuerySpec extends FlatSpecWithMatchers {
+class RetentionPolicyManagementQuerySpec extends FlatSpecWithMatchers with RetentionPolicyManagementQuery[Uri] {
 
-  trait Env extends RetentionPolicyManagementQuery[Uri] with AhcQueryBuilder {
+  trait Env {
     val host = "localhost"
     val port = 8086
   }
-  trait AuthEnv extends Env with NonEmptyCredentials
-  trait NonAuthEnv extends Env with EmptyCredentials
+  trait AuthEnv extends Env {
+    val credentials = Some(InfluxCredentials("admin", "admin"))
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
+  }
+  trait NonAuthEnv extends Env {
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, None)
+  }
 
   val testRPName = "testRP"
   val testDBName = "testDB"
