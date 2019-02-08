@@ -20,31 +20,24 @@ import com.github.fsanaulla.chronicler.core.api.MeasurementApi
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.urlhttp.io.models.{UrlReader, UrlWriter}
-import com.softwaremill.sttp.SttpBackend
 import jawn.ast.JArray
 
 import scala.reflect.ClassTag
 import scala.util.Try
 
-final class Measurement[E: ClassTag](private[urlhttp] val host: String,
-                                     private[urlhttp] val port: Int,
-                                     private[chronicler] val credentials: Option[InfluxCredentials],
-                                     dbName: String,
+final class Measurement[E: ClassTag](dbName: String,
                                      measurementName: String,
-                                     gzipped: Boolean)
-                                    (private[urlhttp] implicit val backend: SttpBackend[Try, Nothing])
-  extends MeasurementApi[Try, E]
-    with HasCredentials
-    with UrlWriter
-    with UrlReader {
+                                     gzipped: Boolean)(implicit wr: UrlWriter, rd: UrlReader)
+  extends MeasurementApi[Try, E] with PointTransformer {
 
   def write(entity: E,
             consistency: Option[Consistency] = None,
             precision: Option[Precision] = None,
-            retentionPolicy: Option[String] = None)(implicit wr: InfluxWriter[E]): Try[WriteResult] =
-    writeTo(
+            retentionPolicy: Option[String] = None)
+           (implicit writer: InfluxWriter[E]): Try[WriteResult] =
+    wr.writeTo(
       dbName,
-      toPoint(measurementName, wr.write(entity)),
+      toPoint(measurementName, writer.write(entity)),
       consistency,
       precision,
       retentionPolicy,
@@ -55,10 +48,10 @@ final class Measurement[E: ClassTag](private[urlhttp] val host: String,
   def bulkWrite(entitys: Seq[E],
                 consistency: Option[Consistency] = None,
                 precision: Option[Precision] = None,
-                retentionPolicy: Option[String] = None)(implicit wr: InfluxWriter[E]): Try[WriteResult] =
-    writeTo(
+                retentionPolicy: Option[String] = None)(implicit writer: InfluxWriter[E]): Try[WriteResult] =
+    wr.writeTo(
       dbName,
-      toPoints(measurementName, entitys.map(wr.write)),
+      toPoints(measurementName, entitys.map(writer.write)),
       consistency,
       precision,
       retentionPolicy,
@@ -69,10 +62,10 @@ final class Measurement[E: ClassTag](private[urlhttp] val host: String,
   def read(query: String,
            epoch: Option[Epoch] = None,
            pretty: Boolean = false,
-           chunked: Boolean = false)(implicit rd: InfluxReader[E]): Try[ReadResult[E]] = {
-    readJs(dbName, query, epoch, pretty, chunked) map {
-      case qr: QueryResult[JArray] => qr.map(rd.read)
-      case gr: GroupedResult[JArray] => gr.map(rd.read)
+           chunked: Boolean = false)(implicit reader: InfluxReader[E]): Try[ReadResult[E]] = {
+    rd.readJs(dbName, query, epoch, pretty, chunked) map {
+      case qr: QueryResult[JArray] => qr.map(reader.read)
+      case gr: GroupedResult[JArray] => gr.map(reader.read)
     }
   }
 }

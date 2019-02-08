@@ -16,25 +16,10 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.query
 
-/*
- * Copyright 2017-2018 Faiaz Sanaulla
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import com.github.fsanaulla.chronicler.core.enums.{Consistencies, Epochs, Precisions}
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.UrlQueryBuilder
 import com.softwaremill.sttp.Uri
 
@@ -45,14 +30,19 @@ import scala.language.implicitConversions
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class DatabaseOperationQuerySpec extends FlatSpecWithMatchers {
+class DatabaseOperationQuerySpec extends FlatSpecWithMatchers with DatabaseOperationQuery[Uri] {
 
-  trait Env extends UrlQueryBuilder with DatabaseOperationQuery[Uri] {
+  trait Env {
     val host = "localhost"
     val port = 8086
   }
-  trait AuthEnv extends Env with NonEmptyCredentials
-  trait NonAuthEnv extends Env with EmptyCredentials
+  trait AuthEnv extends Env {
+    val credentials = Some(InfluxCredentials("admin", "admin"))
+    implicit val qb: UrlQueryBuilder = new UrlQueryBuilder(host, port, credentials)
+  }
+  trait NonAuthEnv extends Env {
+    implicit val qb: UrlQueryBuilder = new UrlQueryBuilder(host, port, None)
+  }
 
   val testDB = "db"
   val testQuery = "SELECT * FROM test"

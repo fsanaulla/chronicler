@@ -19,7 +19,7 @@ package com.github.fsanaulla.chronicler.urlhttp.io.models
 import com.github.fsanaulla.chronicler.core.encoding._
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
 import com.github.fsanaulla.chronicler.core.io.WriteOperations
-import com.github.fsanaulla.chronicler.core.model.{HasCredentials, PointTransformer, WriteResult}
+import com.github.fsanaulla.chronicler.core.model.WriteResult
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
 import com.github.fsanaulla.chronicler.urlhttp.shared.formats.asJson
 import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlQueryBuilder, UrlRequestExecutor, UrlResponseHandler}
@@ -28,14 +28,10 @@ import com.softwaremill.sttp._
 import scala.io.Source
 import scala.util.Try
 
-private[urlhttp] trait UrlWriter
-  extends DatabaseOperationQuery[Uri]
-    with UrlRequestExecutor
-    with UrlResponseHandler
-    with UrlQueryBuilder
-    with PointTransformer
-    with HasCredentials
-    with WriteOperations[Try, String] {
+private[urlhttp] class UrlWriter(implicit qb: UrlQueryBuilder,
+                                 re: UrlRequestExecutor,
+                                 rh: UrlResponseHandler)
+  extends DatabaseOperationQuery[Uri] with WriteOperations[Try, String]{
 
   private[chronicler] override def writeTo(dbName: String,
                                            entity: String,
@@ -47,7 +43,7 @@ private[urlhttp] trait UrlWriter
     val req = sttp.post(uri).body(entity).response(asJson)
     val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
 
-    execute(maybeEncoded).flatMap(toResult)
+    re.execute(maybeEncoded).flatMap(rh.toResult)
   }
 
   private[chronicler] override def writeFromFile(dbName: String,
@@ -60,7 +56,7 @@ private[urlhttp] trait UrlWriter
     val req = sttp.post(uri).body(Source.fromFile(filePath).getLines().mkString("\n")).response(asJson)
     val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
 
-    execute(maybeEncoded).flatMap(toResult)
+    re.execute(maybeEncoded).flatMap(rh.toResult)
   }
 
 }

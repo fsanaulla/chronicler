@@ -18,7 +18,7 @@ package com.github.fsanaulla.chronicler.urlhttp.io.models
 
 import com.github.fsanaulla.chronicler.core.enums.Epoch
 import com.github.fsanaulla.chronicler.core.io.ReadOperations
-import com.github.fsanaulla.chronicler.core.model.{HasCredentials, QueryResult, ReadResult}
+import com.github.fsanaulla.chronicler.core.model.{QueryResult, ReadResult}
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
 import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlQueryBuilder, UrlRequestExecutor, UrlResponseHandler}
 import com.softwaremill.sttp.Uri
@@ -26,23 +26,22 @@ import jawn.ast.JArray
 
 import scala.util.Try
 
-private[urlhttp] trait UrlReader
-  extends UrlQueryBuilder
-    with UrlRequestExecutor
-    with UrlResponseHandler
-    with DatabaseOperationQuery[Uri]
-    with ReadOperations[Try] { self: HasCredentials =>
+private[urlhttp] class UrlReader(implicit qb: UrlQueryBuilder,
+                                 re: UrlRequestExecutor,
+                                 rh: UrlResponseHandler)
+  extends DatabaseOperationQuery[Uri] with ReadOperations[Try] {
+  import re.buildRequest
 
   private[chronicler] override def readJs(dbName: String,
                                           query: String,
                                           epoch: Option[Epoch],
                                           pretty: Boolean,
                                           chunked: Boolean): Try[ReadResult[JArray]] = {
-    val executionResult = execute(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked))
+    val executionResult = re.execute(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked))
 
     query match {
-      case q: String if q.contains("GROUP BY") => executionResult.flatMap(toGroupedJsResult)
-      case _ => executionResult.flatMap(toQueryJsResult)
+      case q: String if q.contains("GROUP BY") => executionResult.flatMap(rh.toGroupedJsResult)
+      case _ => executionResult.flatMap(rh.toQueryJsResult)
     }
   }
 
@@ -52,6 +51,6 @@ private[urlhttp] trait UrlReader
                                               pretty: Boolean,
                                               chunked: Boolean): Try[QueryResult[Array[JArray]]] = {
     val query = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)
-    execute(query).flatMap(toBulkQueryJsResult)
+    re.execute(query).flatMap(rh.toBulkQueryJsResult)
   }
 }
