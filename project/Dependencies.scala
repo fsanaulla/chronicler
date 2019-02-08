@@ -37,9 +37,10 @@ object Dependencies {
   ) ::: List(scalaTest, scalaCheck).map(_ % Scope.test)
 
   // testing
-  val testingDeps: Seq[ModuleID] = Seq(
+  val testingDeps: List[ModuleID] = List(
+    scalaTest,
     "org.jetbrains"      % "annotations" % "16.0.3",
-    "org.testcontainers" % "influxdb"    % "1.9.1"   exclude("org.jetbrains", "annotations") exclude("org.slf4j", "slf4j-api"),
+    "org.testcontainers" % "influxdb"    % "1.10.6"   exclude("org.jetbrains", "annotations") exclude("org.slf4j", "slf4j-api"),
     "org.slf4j"          % "slf4j-api"   % "1.7.25"
   )
 
@@ -59,16 +60,9 @@ object Dependencies {
   )
 
   // async-http
-  val asyncDeps: Seq[ModuleID] = List(
+  val asyncDeps: List[ModuleID] = List(
     "io.netty"              %  "netty-handler"                    % Versions.netty,
     "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp   exclude("io.netty", "netty-handler") exclude("org.reactivestreams", "reactive-streams"),
     "org.reactivestreams"   %  "reactive-streams"                 % "1.0.2"
   )
-
-  // udp
-  val udpDep: Seq[ModuleID] =
-    Seq(
-      "com.github.fsanaulla" %% "scalatest-embedinflux" % "0.1.7",
-      scalaTest
-    ) map (_ % Scope.test)
 }

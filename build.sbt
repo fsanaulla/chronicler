@@ -1,5 +1,6 @@
 import sbt.Keys.{libraryDependencies, name}
 
+val projectName = "chronicler"
 lazy val chronicler = project
   .in(file("."))
   .settings(parallelExecution in Compile := false)
@@ -16,228 +17,207 @@ lazy val chronicler = project
 //////////////////// CORE MODULES ////////////////////
 //////////////////////////////////////////////////////
 lazy val coreIO = project
-  .in(file("core/io"))
-  .settings(Settings.common: _*)
-  .settings(Settings.publish: _*)
-  .settings(Settings.header: _*)
+  .in(file("modules/core/io"))
   .settings(
-    name := "chronicler-core-io",
+    name := s"$projectName-core-io",
     scalacOptions += "-language:higherKinds"
   )
+  .configure(defaultSettings)
   .dependsOn(coreShared)
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val coreManagement = project
-  .in(file("core/management"))
-  .settings(Settings.common: _*)
-  .settings(Settings.publish: _*)
-  .settings(Settings.header: _*)
+  .in(file("modules/core/management"))
   .settings(
-    name := "chronicler-core-management",
+    name := s"$projectName-core-management",
     scalacOptions += "-language:higherKinds"
   )
+  .configure(defaultSettings)
   .dependsOn(coreShared)
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val coreShared = project
-  .in(file("core/shared"))
+  .in(file("modules/core/shared"))
   .settings(Settings.propertyTestSettings: _*)
   .configs(Settings.PropertyTest)
-  .settings(Settings.common: _*)
-  .settings(Settings.publish: _*)
-  .settings(Settings.header)
   .settings(
-    name := "chronicler-core-shared",
+    name := s"$projectName-core-shared",
     libraryDependencies ++= Dependencies.coreDep,
     scalacOptions ++= Seq(
       "-language:implicitConversions",
       "-language:higherKinds"
     )
   )
+  .configure(defaultSettings)
   .enablePlugins(AutomateHeaderPlugin)
 
 //////////////////////////////////////////////////////
 ////////////////// URL HTTP MODULES //////////////////
 //////////////////////////////////////////////////////
 lazy val urlManagement = project
-  .in(file("url/management"))
-  .configs(Settings.CompileTimeIntegrationTest)
-  .settings(Defaults.itSettings)
-  .settings(Settings.common: _*)
-  .settings(Settings.publish: _*)
-  .settings(Settings.header)
-  .settings(name := "chronicler-url-management")
+  .in(file("modules/url/management"))
+  .settings(name := s"$projectName-url-management")
+  .configure(defaultSettingsWithIt)
   .dependsOn(coreManagement, urlShared)
   .dependsOn(itTesting % "test->test")
-  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val urlIO = project
-  .in(file("url/io"))
-  .configs(Settings.CompileTimeIntegrationTest)
-  .settings(Defaults.itSettings)
-  .settings(Settings.common: _*)
-  .settings(Settings.publish: _*)
-  .settings(Settings.header)
-  .settings(name := "chronicler-url-io")
+  .in(file("modules/url/io"))
+  .settings(name := s"$projectName-url-io")
+  .configure(defaultSettingsWithIt)
   .dependsOn(coreIO, urlShared)
   .dependsOn(urlManagement % "test->test")
   .dependsOn(itTesting % "test->test")
-  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val urlShared = project
-  .in(file("url/shared"))
-  .settings(Settings.common: _*)
-  .settings(Settings.publish: _*)
-  .settings(Settings.header)
+  .in(file("modules/url/shared"))
   .settings(
-    name := "chronicler-url-shared",
-    libraryDependencies += Dependencies.sttp
+    name := s"$projectName-url-shared",
+    libraryDependencies ++= 
+      Dependencies.scalaTest :: Dependencies.sttp :: Nil
   )
+  .configure(defaultSettings)
   .dependsOn(coreShared)
-  .dependsOn(unitTesting % "test->test")
-  .enablePlugins(AutomateHeaderPlugin)
 
 //////////////////////////////////////////////////////
 ////////////////// AKKA HTTP MODULES /////////////////
 //////////////////////////////////////////////////////
 lazy val akkaManagement = project
-  .in(file("akka/management"))
-  .configs(Settings.CompileTimeIntegrationTest)
-  .settings(Defaults.itSettings)
-  .settings(Settings.common: _*)
-  .settings(Settings.publish: _*)
-  .settings(Settings.header)
+  .in(file("modules/akka/management"))
   .settings(
-    name := "chronicler-akka-management",
+    name := s"$projectName-akka-management",
     libraryDependencies += Dependencies.akkaTestKit % Scope.test
   )
+  .configure(defaultSettingsWithIt)
   .dependsOn(coreManagement, akkaShared)
   .dependsOn(itTesting % "test->test")
-  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val akkaIO = project
-  .in(file("akka/io"))
-  .configs(Settings.CompileTimeIntegrationTest)
-  .settings(Defaults.itSettings)
-  .settings(Settings.common: _*)
-  .settings(Settings.publish: _*)
-  .settings(Settings.header)
+  .in(file("modules/akka/io"))
   .settings(
-    name := "chronicler-akka-io",
+    name := s"$projectName-akka-io",
     libraryDependencies += Dependencies.akkaTestKit % Scope.test
   )
+  .configure(defaultSettingsWithIt)
   .dependsOn(coreIO, akkaShared)
   .dependsOn(akkaManagement % "test->test")
   .dependsOn(itTesting % "test->test")
-  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val akkaShared = project
-  .in(file("akka/shared"))
-  .settings(Settings.common: _*)
-  .settings(Settings.publish: _*)
-  .settings(Settings.header)
+  .in(file("modules/akka/shared"))
   .settings(
-    name := "chronicler-akka-shared",
-    libraryDependencies ++= Dependencies.akkaDep
+    name := s"$projectName-akka-shared",
+    libraryDependencies ++=
+      Dependencies.scalaTest :: Dependencies.akkaDep
   )
+  .configure(defaultSettings)
   .dependsOn(coreShared)
-  .dependsOn(unitTesting % "test->test")
-  .enablePlugins(AutomateHeaderPlugin)
 
 //////////////////////////////////////////////////////
 ///////////////// ASYNC HTTP MODULES /////////////////
 //////////////////////////////////////////////////////
 lazy val ahcManagement = project
-  .in(file("ahc/management"))
-  .configs(Settings.CompileTimeIntegrationTest)
-  .settings(Defaults.itSettings)
-  .settings(Settings.common: _*)
-  .settings(Settings.publish: _*)
-  .settings(Settings.header)
-  .settings(name := "chronicler-ahc-management")
+  .in(file("modules/ahc/management"))
+  .settings(name := s"$projectName-ahc-management")
+  .configure(defaultSettingsWithIt)
   .dependsOn(coreManagement, ahcShared)
   .dependsOn(itTesting % "test->test")
-  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val ahcIO = project
-  .in(file("ahc/io"))
-  .configs(Settings.CompileTimeIntegrationTest)
-  .settings(Defaults.itSettings)
-  .settings(Settings.common: _*)
-  .settings(Settings.publish: _*)
-  .settings(Settings.header)
-  .settings(name := "chronicler-ahc-io")
+  .in(file("modules/ahc/io"))
+  .settings(name := s"$projectName-ahc-io")
+  .configure(defaultSettingsWithIt)
   .dependsOn(coreIO, ahcShared)
   .dependsOn(ahcManagement % "test->test")
   .dependsOn(itTesting % "test->test")
-  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val ahcShared = project
-  .in(file("ahc/shared"))
-  .settings(Settings.common: _*)
-  .settings(Settings.publish: _*)
-  .settings(Settings.header)
+  .in(file("modules/ahc/shared"))
   .settings(
-    name := "chronicler-ahc-shared",
-    libraryDependencies ++= Dependencies.asyncDeps
+    name := s"$projectName-ahc-shared",
+    libraryDependencies ++=
+      Dependencies.scalaTest :: Dependencies.asyncDeps
   )
+  .configure(defaultSettings)
   .dependsOn(coreShared)
-  .dependsOn(unitTesting % "test->test")
-  .enablePlugins(AutomateHeaderPlugin)
 
 //////////////////////////////////////////////////////
 ///////////////////// UPD MODULE /////////////////////
 //////////////////////////////////////////////////////
 lazy val udp = project
-  .in(file("udp"))
-  .configs(Settings.CompileTimeIntegrationTest)
-  .settings(Defaults.itSettings)
-  .settings(Settings.common: _*)
-  .settings(Settings.publish: _*)
-  .settings(Settings.header)
-  .settings(
-    name := "chronicler-udp",
-    libraryDependencies ++= Dependencies.udpDep
-  )
+  .in(file("modules/udp"))
+  .settings(name := s"$projectName-udp")
+  .configure(defaultSettingsWithIt)
   .dependsOn(coreShared)
   .dependsOn(itTesting, urlIO, urlManagement % "test->test")
-  .enablePlugins(AutomateHeaderPlugin)
 
 //////////////////////////////////////////////////////
 ///////////////////// MACRO MODULE ///////////////////
 //////////////////////////////////////////////////////
 lazy val macros = project
-  .in(file("macros"))
+  .in(file("modules/macros"))
   .settings(Settings.propertyTestSettings: _*)
   .configs(Settings.PropertyTest)
-  .settings(Settings.common: _*)
-  .settings(Settings.publish: _*)
-  .settings(Settings.header)
   .settings(
-    name := "chronicler-macros",
+    name := s"$projectName-macros",
     libraryDependencies ++= Dependencies.macroDeps(scalaVersion.value)
   )
+  .configure(defaultSettings)
   .dependsOn(coreShared)
-  .enablePlugins(AutomateHeaderPlugin)
 
 //////////////////////////////////////////////////////
 /////////////////// TESTING MODULES //////////////////
 //////////////////////////////////////////////////////
 lazy val itTesting = project
-  .in(file("testing/it"))
+  .in(file("modules/testing/it"))
   .settings(Settings.common: _*)
   .settings(
-    name := "chronicler-it-testing",
+    name := s"$projectName-it-testing",
     libraryDependencies ++= Dependencies.testingDeps
   )
   .dependsOn(coreShared)
-  .dependsOn(unitTesting)
 
-lazy val unitTesting = project
-  .in(file("testing/unit"))
+//////////////////////////////////////////////////////
+////////////////////// EXAMPLES //////////////////////
+//////////////////////////////////////////////////////
+lazy val akkaIOExample =
+  exampleModule("akka-io-example", "akka/io", akkaIO, macros)
+
+lazy val akkaManagementExample =
+  exampleModule("akka-management-example", "akka/management", akkaManagement)
+
+lazy val ahcIOExample =
+  exampleModule("ahc-io-example", "ahc/io", ahcIO, macros)
+
+lazy val ahcManagementExample =
+  exampleModule("ahc-management-example", "ahc/management", ahcManagement)
+
+lazy val urlIOExample =
+  exampleModule("url-io-example", "url/io", urlIO, macros)
+
+lazy val urlManagementExample =
+  exampleModule("url-management-example", "url/management", urlManagement)
+
+lazy val udpExample =
+  exampleModule("udp-example", "udp", udp, macros)
+
+//////////////////////////////////////////////////////
+////////////////////// UTILS /////////////////////////
+//////////////////////////////////////////////////////
+def defaultSettings: Project => Project = _
   .settings(Settings.common: _*)
-  .settings(
-    name := "chronicler-unit-testing",
-    libraryDependencies += Dependencies.scalaTest
-  )
-  .dependsOn(coreShared)
+  .settings(Settings.publish: _*)
+  .settings(Settings.header)
+  .enablePlugins(AutomateHeaderPlugin)
+
+def defaultSettingsWithIt: Project => Project = _
+  .configs(Settings.CompileTimeIntegrationTest)
+  .settings(Defaults.itSettings)
+  .configure(defaultSettings)
+
+def exampleModule(moduleName: String,
+                  moduleDir: String,
+                  dependsOn: sbt.ClasspathDep[sbt.ProjectReference]*): Project =
+  Project(s"$projectName-$moduleName", file(s"examples/$moduleDir"))
+    .settings(Settings.common: _*)
+    .dependsOn(dependsOn: _*)
