@@ -32,17 +32,17 @@ final class AkkaManagementClient(host: String,
                                  val credentials: Option[InfluxCredentials],
                                  httpsContext: Option[HttpsConnectionContext])
                                 (implicit val ex: ExecutionContext, val system: ActorSystem)
-  extends InfluxAkkaClient(host, port, httpsContext)
-    with ManagementClient[Future, HttpRequest, HttpResponse, Uri, RequestEntity]
-    with AkkaRequestExecutor
-    with AkkaResponseHandler
-    with AkkaQueryBuilder
-    with HasCredentials
-    with FlatMap[Future]
-    with AutoCloseable {
+  extends InfluxAkkaClient(host, port, httpsContext) with ManagementClient[Future, HttpRequest, HttpResponse, Uri, RequestEntity] {
 
-  private[chronicler] override def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
+  implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(credentials)
+  implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor
+  implicit val rh: AkkaResponseHandler = new AkkaResponseHandler
+  implicit val fm: FlatMap[Future] = new FlatMap[Future] {
+    def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
+  }
+
+  import re.buildRequest
 
   override def ping: Future[WriteResult] =
-    flatMap(execute(Uri("/ping")))(toResult)
+    fm.flatMap(re.execute(Uri("/ping")))(rh.toResult)
 }

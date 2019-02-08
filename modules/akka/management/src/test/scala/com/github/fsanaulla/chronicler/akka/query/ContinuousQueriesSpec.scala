@@ -19,24 +19,24 @@ package com.github.fsanaulla.chronicler.akka.query
 import _root_.akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.TestHelper._
 import com.github.fsanaulla.chronicler.akka.shared.handlers.AkkaQueryBuilder
-import com.github.fsanaulla.chronicler.core.model.HasCredentials
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.ContinuousQueries
-import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class ContinuousQueriesSpec extends FlatSpecWithMatchers {
+class ContinuousQueriesSpec extends FlatSpecWithMatchers with ContinuousQueries[Uri] {
 
-  trait Env extends AkkaQueryBuilder with ContinuousQueries[Uri] { self: HasCredentials =>
-    val host = "localhost"
-    val port = 8086
+  trait AuthEnv {
+    val credentials = Some(InfluxCredentials("admin", "admin"))
+    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(credentials)
   }
-
-  trait AuthEnv extends Env with NonEmptyCredentials
-  trait NonAuthEnv extends Env with EmptyCredentials
+  trait NonAuthEnv {
+    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(None)
+  }
 
   val db = "mydb"
   val cq = "bee_cq"

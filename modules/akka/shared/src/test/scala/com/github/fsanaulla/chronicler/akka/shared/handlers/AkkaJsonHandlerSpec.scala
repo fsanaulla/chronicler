@@ -34,12 +34,15 @@ class AkkaJsonHandlerSpec
     with ScalaFutures
     with IntegrationPatience
     with OptionValues
-    with AkkaJsonHandler
     with BeforeAndAfterAll
     with TryValues {
 
   implicit val mat: ActorMaterializer = ActorMaterializer()
-  implicit val ex: ExecutionContext = system.dispatcher
+  implicit val ec: ExecutionContext = system.dispatcher
+
+  val jsHandler: AkkaJsonHandler = new AkkaJsonHandler() {
+    implicit val ec: ExecutionContext = system.dispatcher
+  }
 
   override def afterAll: Unit = {
     super.afterAll()
@@ -84,7 +87,7 @@ class AkkaJsonHandlerSpec
   val jsResult: JValue =
     JParser.parseFromString(singleStrJson).toOption.value
 
-    getResponseBody(singleHttpResponse).futureValue shouldEqual jsResult
+    jsHandler.getResponseBody(singleHttpResponse).futureValue shouldEqual jsResult
   }
 
   it should "extract single query result from JSON" in {
@@ -133,7 +136,7 @@ class AkkaJsonHandlerSpec
       JArray(Array(JString("2015-06-11T20:46:02Z"), JNull, JNum(0.64)))
     )
 
-    getOptQueryResult(json).value shouldEqual result
+    jsHandler.getOptQueryResult(json).value shouldEqual result
   }
 
   it should "extract bulk query result from JSON" in {
@@ -199,7 +202,7 @@ class AkkaJsonHandlerSpec
       )
     )
 
-    getOptBulkInfluxPoints(json).value shouldEqual result
+    jsHandler.getOptBulkInfluxPoints(json).value shouldEqual result
   }
 
   it should "extract influx information from JSON" in {
@@ -245,7 +248,7 @@ class AkkaJsonHandlerSpec
       )
     )
 
-    val res = getOptJsInfluxInfo(json)
+    val res = jsHandler.getOptJsInfluxInfo(json)
 
     res should not be None
     res.value.length shouldEqual 1
@@ -303,7 +306,7 @@ class AkkaJsonHandlerSpec
         |}
       """.stripMargin).success.value
 
-    val optResult = getOptGropedResult(json)
+    val optResult = jsHandler.getOptGropedResult(json)
 
     optResult should not be None
 

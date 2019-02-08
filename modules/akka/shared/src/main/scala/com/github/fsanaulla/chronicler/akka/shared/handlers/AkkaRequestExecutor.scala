@@ -30,11 +30,8 @@ import scala.language.implicitConversions
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[akka] trait AkkaRequestExecutor
+private[akka] class AkkaRequestExecutor(implicit mat: ActorMaterializer, connection: Connection)
   extends RequestExecutor[Future, HttpRequest, HttpResponse, Uri] {
-
-  private[akka] implicit val mat: ActorMaterializer
-  private[akka] implicit val connection: Connection
 
   private[chronicler] override implicit def buildRequest(uri: Uri): HttpRequest =
     HttpRequest(uri = uri)

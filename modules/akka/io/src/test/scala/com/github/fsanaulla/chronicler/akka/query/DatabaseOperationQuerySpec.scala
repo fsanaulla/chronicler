@@ -20,9 +20,9 @@ import _root_.akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.TestHelper._
 import com.github.fsanaulla.chronicler.akka.shared.handlers.AkkaQueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.{Consistencies, Epochs, Precisions}
-import com.github.fsanaulla.chronicler.core.model.HasCredentials
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
+import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 
 import scala.language.implicitConversions
 
@@ -31,14 +31,15 @@ import scala.language.implicitConversions
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class DatabaseOperationQuerySpec extends FlatSpecWithMatchers {
+class DatabaseOperationQuerySpec extends FlatSpecWithMatchers with DatabaseOperationQuery[Uri] {
 
-  trait Env extends AkkaQueryBuilder with DatabaseOperationQuery[Uri] { self: HasCredentials =>
-    val host = "localhost"
-    val port = 8086
+  trait AuthEnv {
+    val credentials = Some(InfluxCredentials("admin", "admin"))
+    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(credentials)
   }
-  trait AuthEnv extends Env with NonEmptyCredentials
-  trait NonAuthEnv extends Env with EmptyCredentials
+  trait NonAuthEnv {
+    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(None)
+  }
 
   val testDB = "db"
   val testQuery = "SELECT * FROM test"

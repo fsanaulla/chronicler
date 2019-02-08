@@ -19,9 +19,10 @@ package com.github.fsanaulla.chronicler.akka.shared.handlers
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 
-class AkkaQueryBuilderSpec extends FlatSpecWithMatchers with AkkaQueryBuilder {
+class AkkaQueryBuilderSpec extends FlatSpecWithMatchers {
 
   implicit val credentials: Option[InfluxCredentials] = None
+  val qb: AkkaQueryBuilder = new AkkaQueryBuilder(credentials)
 
   "Query handler" should "properly generate URI" in {
     val queryMap = scala.collection.mutable.Map[String, String](
@@ -29,7 +30,7 @@ class AkkaQueryBuilderSpec extends FlatSpecWithMatchers with AkkaQueryBuilder {
     )
     val res = s"/query?q=FirstQuery%3BSecondQuery"
 
-    buildQuery("/query", buildQueryParams(queryMap)).toString() shouldEqual res
+    qb.buildQuery("/query", qb.buildQueryParams(queryMap)).toString() shouldEqual res
   }
 
 }
