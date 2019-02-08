@@ -16,7 +16,6 @@
 
 package com.github.fsanaulla.chronicler.core.query
 
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 
 import scala.collection.mutable
@@ -24,14 +23,14 @@ import scala.collection.mutable
 /**
   * Created by fayaz on 27.06.17.
   */
-private[chronicler] trait DataManagementQuery[U] { self: QueryBuilder[U] =>
+private[chronicler] trait DataManagementQuery[U] {
 
   final def createDatabaseQuery(dbName: String,
                                 duration: Option[String],
                                 replication: Option[Int],
                                 shardDuration: Option[String],
                                 rpName: Option[String])
-                               (implicit credentials: Option[InfluxCredentials]): U = {
+                               (implicit qb: QueryBuilder[U]): U = {
 
     val sb = StringBuilder.newBuilder
 
@@ -57,40 +56,36 @@ private[chronicler] trait DataManagementQuery[U] { self: QueryBuilder[U] =>
       sb.append(s" NAME $rp")
     }
 
-    buildQuery("/query", buildQueryParams(sb.toString()))
+    qb.buildQuery("/query", qb.buildQueryParams(sb.toString()))
   }
 
-  final def dropDatabaseQuery(dbName: String)
-                             (implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(s"DROP DATABASE $dbName"))
+  final def dropDatabaseQuery(dbName: String)(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(s"DROP DATABASE $dbName"))
 
-  final def dropSeriesQuery(dbName: String, seriesName: String)
-                           (implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DROP SERIES FROM $seriesName")))
+  final def dropSeriesQuery(dbName: String, seriesName: String)(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DROP SERIES FROM $seriesName")))
 
-  final def dropMeasurementQuery(dbName: String, measurementName: String)
-                                (implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DROP MEASUREMENT $measurementName")))
+  final def dropMeasurementQuery(dbName: String, measurementName: String)(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DROP MEASUREMENT $measurementName")))
 
-  final def deleteAllSeriesQuery(dbName: String, seriesName: String)
-                                (implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DELETE FROM $seriesName")))
+  final def deleteAllSeriesQuery(dbName: String, seriesName: String)(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DELETE FROM $seriesName")))
 
-  final def showMeasurementQuery(dbName: String)
-                                (implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"SHOW MEASUREMENTS")))
+  final def showMeasurementQuery(dbName: String)(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"SHOW MEASUREMENTS")))
 
-  final def showDatabasesQuery(implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(s"SHOW DATABASES"))
+  final def showDatabasesQuery(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(s"SHOW DATABASES"))
 
-  final def showFieldKeysQuery(dbName: String, measurementName: String)(implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(s"SHOW FIELD KEYS ON $dbName FROM $measurementName"))
+  final def showFieldKeysQuery(dbName: String, measurementName: String)(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(s"SHOW FIELD KEYS ON $dbName FROM $measurementName"))
 
   final def showTagKeysQuery(dbName: String,
                              measurementName: String,
                              whereClause: Option[String],
                              limit: Option[Int],
-                             offset: Option[Int])(implicit credentials: Option[InfluxCredentials]): U = {
+                             offset: Option[Int])
+                            (implicit qb: QueryBuilder[U]): U = {
     val sb = StringBuilder.newBuilder
 
     sb.append("SHOW TAG KEYS ON ")
@@ -110,7 +105,7 @@ private[chronicler] trait DataManagementQuery[U] { self: QueryBuilder[U] =>
       sb.append(" OFFSET ").append(o)
     }
 
-    buildQuery("/query", buildQueryParams(sb.toString()))
+    qb.buildQuery("/query", qb.buildQueryParams(sb.toString()))
   }
 
   final def showTagValuesQuery(dbName: String,
@@ -118,7 +113,8 @@ private[chronicler] trait DataManagementQuery[U] { self: QueryBuilder[U] =>
                                withKey: Seq[String],
                                whereClause: Option[String],
                                limit: Option[Int],
-                               offset: Option[Int])(implicit credentials: Option[InfluxCredentials]): U = {
+                               offset: Option[Int])
+                              (implicit qb: QueryBuilder[U]): U = {
     require(withKey.nonEmpty, "Keys can't be empty")
 
     val sb = StringBuilder.newBuilder
@@ -146,6 +142,6 @@ private[chronicler] trait DataManagementQuery[U] { self: QueryBuilder[U] =>
       sb.append(" OFFSET ").append(o)
     }
 
-    buildQuery("/query", buildQueryParams(sb.toString()))
+    qb.buildQuery("/query", qb.buildQueryParams(sb.toString()))
   }
 }

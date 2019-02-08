@@ -27,17 +27,18 @@ import com.github.fsanaulla.chronicler.core.typeclasses.{FlatMap, QueryBuilder, 
   * Date: 19.08.17
   */
 private[chronicler] trait QueriesManagement[F[_], Req, Resp, Uri, Entity] extends QueriesManagementQuery[Uri] {
-  self: RequestExecutor[F, Req, Resp, Uri]
-    with ResponseHandler[F, Resp]
-    with QueryBuilder[Uri]
-    with FlatMap[F]
-    with HasCredentials =>
+  implicit val qb: QueryBuilder[Uri]
+  implicit val re: RequestExecutor[F, Req, Resp, Uri]
+  implicit val rh: ResponseHandler[F, Resp]
+  implicit val fm: FlatMap[F]
+
+  import re.buildRequest
 
   /** Show list of queries */
   final def showQueries: F[QueryResult[QueryInfo]] =
-    flatMap(execute(showQuerysQuery))(toQueryResult[QueryInfo])
+    fm.flatMap(re.execute(showQuerysQuery))(rh.toQueryResult[QueryInfo])
 
   /** Kill query */
   final def killQuery(queryId: Int): F[WriteResult] =
-    flatMap(execute(killQueryQuery(queryId)))(toResult)
+    fm.flatMap(re.execute(killQueryQuery(queryId)))(rh.toResult)
 }

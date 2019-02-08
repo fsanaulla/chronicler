@@ -27,21 +27,22 @@ import com.github.fsanaulla.chronicler.core.typeclasses.{FlatMap, QueryBuilder, 
   * Date: 19.08.17
   */
 private[chronicler] trait ShardManagement[F[_], Req, Resp, Uri, Entity] extends ShardManagementQuery[Uri] {
-  self: RequestExecutor[F, Req, Resp, Uri]
-    with ResponseHandler[F, Resp]
-    with QueryBuilder[Uri]
-    with FlatMap[F]
-    with HasCredentials =>
+  implicit val qb: QueryBuilder[Uri]
+  implicit val re: RequestExecutor[F, Req, Resp, Uri]
+  implicit val rh: ResponseHandler[F, Resp]
+  implicit val fm: FlatMap[F]
+
+  import re.buildRequest
 
   /** Drop shard */
   final def dropShard(shardId: Int): F[WriteResult] =
-    flatMap(execute(dropShardQuery(shardId)))(toResult)
+    fm.flatMap(re.execute(dropShardQuery(shardId)))(rh.toResult)
 
   /** Show shard groups */
   final def showShardGroups: F[QueryResult[ShardGroupsInfo]] =
-    flatMap(execute(showShardGroupsQuery))(toShardGroupQueryResult)
+    fm.flatMap(re.execute(showShardGroupsQuery))(rh.toShardGroupQueryResult)
 
   /** Show shards */
   final def showShards: F[QueryResult[ShardInfo]] =
-    flatMap(execute(showShardsQuery))(toShardQueryResult)
+    fm.flatMap(re.execute(showShardsQuery))(rh.toShardQueryResult)
 }

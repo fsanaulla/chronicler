@@ -16,7 +16,6 @@
 
 package com.github.fsanaulla.chronicler.core.query
 
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 
 /**
@@ -24,15 +23,15 @@ import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-private[chronicler] trait ShardManagementQuery[U] { self: QueryBuilder[U] =>
+private[chronicler] trait ShardManagementQuery[U] {
 
-  private[chronicler] final def dropShardQuery(shardId: Int)(implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(s"DROP SHARD $shardId"))
+  private[chronicler] final def dropShardQuery(shardId: Int)(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(s"DROP SHARD $shardId"))
 
-  private[chronicler] final def showShardsQuery(implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams("SHOW SHARDS"))
+  private[chronicler] final def showShardsQuery(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams("SHOW SHARDS"))
 
-  private[chronicler] final def showShardGroupsQuery(implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams("SHOW SHARD GROUPS"))
+  private[chronicler] final def showShardGroupsQuery(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams("SHOW SHARD GROUPS"))
 
 }

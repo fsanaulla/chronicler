@@ -17,61 +17,59 @@
 package com.github.fsanaulla.chronicler.core.query
 
 import com.github.fsanaulla.chronicler.core.enums.Privilege
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 
-private[fsanaulla] trait UserManagementQuery[U] { self: QueryBuilder[U] =>
+private[fsanaulla] trait UserManagementQuery[U] {
 
-  private[chronicler] final def showUsersQuery(implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams("SHOW USERS"))
-
+  private[chronicler] final def showUsersQuery(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams("SHOW USERS"))
 
   private[chronicler] final def showUserPrivilegesQuery(username: String)
-                                                       (implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(s"SHOW GRANTS FOR $username"))
+                                                       (implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(s"SHOW GRANTS FOR $username"))
 
 
   private[chronicler] final def setUserPasswordQuery(username: String, password: String)
-                                                    (implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(s"SET PASSWORD FOR $username = '$password'"))
+                                                    (implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(s"SET PASSWORD FOR $username = '$password'"))
 
 
   private[chronicler] final def createAdminQuery(username: String, password: String)
-                                                (implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(s"CREATE USER $username WITH PASSWORD '$password' WITH ALL PRIVILEGES"))
+                                                (implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(s"CREATE USER $username WITH PASSWORD '$password' WITH ALL PRIVILEGES"))
 
 
   private[chronicler] final def makeAdminQuery(username: String)
-                                              (implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(s"GRANT ALL PRIVILEGES TO $username"))
+                                              (implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(s"GRANT ALL PRIVILEGES TO $username"))
 
 
   private[chronicler] final def disableAdminQuery(username: String)
-                                                 (implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(s"REVOKE ALL PRIVILEGES FROM $username"))
+                                                 (implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(s"REVOKE ALL PRIVILEGES FROM $username"))
 
 
   private[chronicler] final def createUserQuery(username: String, password: String)
-                                               (implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(s"CREATE USER $username WITH PASSWORD '$password'"))
+                                               (implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(s"CREATE USER $username WITH PASSWORD '$password'"))
 
 
   private[chronicler] final def dropUserQuery(username: String)
-                                             (implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(s"DROP USER $username"))
+                                             (implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(s"DROP USER $username"))
 
 
   private[chronicler] final def setPrivilegesQuery(dbName: String,
                                                    username: String,
                                                    privileges: Privilege)
-                                                  (implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(s"GRANT $privileges ON $dbName TO $username"))
+                                                  (implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(s"GRANT $privileges ON $dbName TO $username"))
 
 
   private[chronicler] final def revokePrivilegesQuery(dbName: String,
                                                       username: String,
                                                       privileges: Privilege)
-                                                     (implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(s"REVOKE $privileges ON $dbName FROM $username"))
+                                                     (implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(s"REVOKE $privileges ON $dbName FROM $username"))
 
 }

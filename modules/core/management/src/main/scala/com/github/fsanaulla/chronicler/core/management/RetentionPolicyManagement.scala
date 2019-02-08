@@ -27,11 +27,12 @@ import com.github.fsanaulla.chronicler.core.typeclasses.{FlatMap, QueryBuilder, 
   * Date: 08.08.17
   */
 private[chronicler] trait RetentionPolicyManagement[F[_], Req, Resp, Uri, Entity] extends RetentionPolicyManagementQuery[Uri] {
-  self: RequestExecutor[F, Req, Resp, Uri]
-    with ResponseHandler[F, Resp]
-    with QueryBuilder[Uri]
-    with FlatMap[F]
-    with HasCredentials =>
+  implicit val qb: QueryBuilder[Uri]
+  implicit val re: RequestExecutor[F, Req, Resp, Uri]
+  implicit val rh: ResponseHandler[F, Resp]
+  implicit val fm: FlatMap[F]
+
+  import re.buildRequest
 
   /**
     * Create retention policy for specified database
@@ -50,7 +51,7 @@ private[chronicler] trait RetentionPolicyManagement[F[_], Req, Resp, Uri, Entity
                                   shardDuration: Option[String] = None,
                                   default: Boolean = false): F[WriteResult] = {
     require(replication > 0, "Replication must greater that 0")
-    flatMap(execute(createRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)))(toResult)
+    fm.flatMap(re.execute(createRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)))(rh.toResult)
   }
 
   /** Update retention policy */
@@ -60,15 +61,15 @@ private[chronicler] trait RetentionPolicyManagement[F[_], Req, Resp, Uri, Entity
                                   replication: Option[Int] = None,
                                   shardDuration: Option[String] = None,
                                   default: Boolean = false): F[WriteResult] =
-    flatMap(execute(updateRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)))(toResult)
+    fm.flatMap(re.execute(updateRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)))(rh.toResult)
 
 
   /** Drop retention policy */
   final def dropRetentionPolicy(rpName: String, dbName: String): F[WriteResult] =
-    flatMap(execute(dropRetentionPolicyQuery(rpName, dbName)))(toResult)
+    fm.flatMap(re.execute(dropRetentionPolicyQuery(rpName, dbName)))(rh.toResult)
 
   /** Show list of retention polices */
   final def showRetentionPolicies(dbName: String): F[QueryResult[RetentionPolicyInfo]] =
-    flatMap(execute(showRetentionPoliciesQuery(dbName)))(toQueryResult[RetentionPolicyInfo])
+    fm.flatMap(re.execute(showRetentionPoliciesQuery(dbName)))(rh.toQueryResult[RetentionPolicyInfo])
 
 }

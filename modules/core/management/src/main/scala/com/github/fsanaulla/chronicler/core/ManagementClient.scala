@@ -17,8 +17,6 @@
 package com.github.fsanaulla.chronicler.core
 
 import com.github.fsanaulla.chronicler.core.management._
-import com.github.fsanaulla.chronicler.core.model.HasCredentials
-import com.github.fsanaulla.chronicler.core.typeclasses.{FlatMap, QueryBuilder, RequestExecutor, ResponseHandler}
 
 /**
   * Functionality of management client
@@ -30,10 +28,7 @@ import com.github.fsanaulla.chronicler.core.typeclasses.{FlatMap, QueryBuilder, 
   * @tparam Entity - Request entity type
   */
 trait ManagementClient[F[_], Req, Resp, Uri, Entity]
-  extends RequestExecutor[F, Req, Resp, Uri]
-    with ResponseHandler[F, Resp]
-    with QueryBuilder[Uri]
-    with SystemManagement[F]
+  extends SystemManagement[F]
     with DatabaseManagement[F, Req, Resp, Uri, Entity]
     with UserManagement[F, Req, Resp, Uri, Entity]
     with QueriesManagement[F, Req, Resp, Uri, Entity]
@@ -41,5 +36,4 @@ trait ManagementClient[F[_], Req, Resp, Uri, Entity]
     with ContinuousQueryManagement[F, Req, Resp, Uri, Entity]
     with ShardManagement[F, Req, Resp, Uri, Entity]
     with SubscriptionManagement[F, Req, Resp, Uri, Entity]
-    with FlatMap[F]
-    with HasCredentials
+    with AutoCloseable

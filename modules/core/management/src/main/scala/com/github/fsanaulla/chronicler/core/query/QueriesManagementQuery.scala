@@ -16,7 +16,6 @@
 
 package com.github.fsanaulla.chronicler.core.query
 
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 
 /**
@@ -24,11 +23,11 @@ import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-private[chronicler] trait QueriesManagementQuery[U] { self: QueryBuilder[U] =>
+private[chronicler] trait QueriesManagementQuery[U] {
 
-  private[chronicler] final def showQuerysQuery(implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams("SHOW QUERIES"))
+  private[chronicler] final def showQuerysQuery(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams("SHOW QUERIES"))
 
-  private[chronicler] final def killQueryQuery(queryId: Int)(implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(s"KILL QUERY $queryId"))
+  private[chronicler] final def killQueryQuery(queryId: Int)(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(s"KILL QUERY $queryId"))
 }

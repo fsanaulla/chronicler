@@ -27,11 +27,13 @@ import com.github.fsanaulla.chronicler.core.typeclasses.{FlatMap, QueryBuilder, 
   * Date: 08.08.17
   */
 private[chronicler] trait DatabaseManagement[F[_], Req, Resp, Uri, Entity] extends DataManagementQuery[Uri] {
-  self: RequestExecutor[F, Req, Resp, Uri]
-    with ResponseHandler[F, Resp]
-    with QueryBuilder[Uri]
-    with FlatMap[F]
-    with HasCredentials =>
+
+  implicit val qb: QueryBuilder[Uri]
+  implicit val re: RequestExecutor[F, Req, Resp, Uri]
+  implicit val rh: ResponseHandler[F, Resp]
+  implicit val fm: FlatMap[F]
+
+  import re.buildRequest
 
   /**
     * Create database
@@ -47,28 +49,28 @@ private[chronicler] trait DatabaseManagement[F[_], Req, Resp, Uri, Entity] exten
                            replication: Option[Int] = None,
                            shardDuration: Option[String] = None,
                            rpName: Option[String] = None): F[WriteResult] =
-    flatMap(execute(createDatabaseQuery(dbName, duration, replication, shardDuration, rpName)))(toResult)
+    fm.flatMap(re.execute(createDatabaseQuery(dbName, duration, replication, shardDuration, rpName)))(rh.toResult)
 
 
   /** Drop database */
   final def dropDatabase(dbName: String): F[WriteResult] =
-    flatMap(execute(dropDatabaseQuery(dbName)))(toResult)
+    fm.flatMap(re.execute(dropDatabaseQuery(dbName)))(rh.toResult)
 
   /** Drop measurement */
   final def dropMeasurement(dbName: String, measurementName: String): F[WriteResult] =
-    flatMap(execute(dropMeasurementQuery(dbName, measurementName)))( toResult)
+    fm.flatMap(re.execute(dropMeasurementQuery(dbName, measurementName)))(rh.toResult)
 
   /** Show measurements */
   final def showMeasurement(dbName: String): F[QueryResult[String]] =
-    flatMap(execute(showMeasurementQuery(dbName)))(toQueryResult[String])
+    fm.flatMap(re.execute(showMeasurementQuery(dbName)))(rh.toQueryResult[String])
 
   /** Show database list */
   final def showDatabases(): F[QueryResult[String]] =
-    flatMap(execute(showDatabasesQuery))(toQueryResult[String])
+    fm.flatMap(re.execute(showDatabasesQuery))(rh.toQueryResult[String])
 
   /** Show field tags list */
   final def showFieldKeys(dbName: String, measurementName: String): F[QueryResult[FieldInfo]] =
-    flatMap(execute(showFieldKeysQuery(dbName, measurementName)))(toQueryResult[FieldInfo])
+    fm.flatMap(re.execute(showFieldKeysQuery(dbName, measurementName)))(rh.toQueryResult[FieldInfo])
 
   /** Show tags keys list */
   final def showTagKeys(dbName: String, 
@@ -76,7 +78,7 @@ private[chronicler] trait DatabaseManagement[F[_], Req, Resp, Uri, Entity] exten
                         whereClause: Option[String] = None, 
                         limit: Option[Int] = None, 
                         offset: Option[Int] = None): F[QueryResult[String]] =
-    flatMap(execute(showTagKeysQuery(dbName, measurementName, whereClause, limit, offset)))(toQueryResult[String])
+    fm.flatMap(re.execute(showTagKeysQuery(dbName, measurementName, whereClause, limit, offset)))(rh.toQueryResult[String])
 
   /** Show tag values list */
   final def showTagValues(dbName: String, 
@@ -85,5 +87,5 @@ private[chronicler] trait DatabaseManagement[F[_], Req, Resp, Uri, Entity] exten
                           whereClause: Option[String] = None, 
                           limit: Option[Int] = None, 
                           offset: Option[Int] = None): F[QueryResult[TagValue]] =
-    flatMap(execute(showTagValuesQuery(dbName, measurementName, withKey, whereClause, limit, offset)))(toQueryResult[TagValue])
+    fm.flatMap(re.execute(showTagValuesQuery(dbName, measurementName, withKey, whereClause, limit, offset)))(rh.toQueryResult[TagValue])
 }

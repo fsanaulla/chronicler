@@ -24,9 +24,9 @@ import scala.collection.mutable
   * Trait that define functionality for handling query building
   *
   * @tparam A - Result type parameter, for example for AkkaHttpBackend
-  *             used `akka.http.scaladsl.model.Uri`
+  *           - used `akka.http.scaladsl.model.Uri`
   */
-private[chronicler] trait QueryBuilder[A] {
+private[chronicler] abstract class QueryBuilder[A](credentials: Option[InfluxCredentials]) {
 
   /**
     * Method that build result URI object of type [A], from uri path, and query parameters
@@ -43,8 +43,7 @@ private[chronicler] trait QueryBuilder[A] {
     * @param queryMap - query parameters map
     * @return         - updated query parameters map with embedded credentials
     */
-  private[chronicler] final def buildQueryParams(queryMap: mutable.Map[String, String])
-                                                (implicit credentials: Option[InfluxCredentials]): Map[String, String] = {
+  private[chronicler] final def buildQueryParams(queryMap: mutable.Map[String, String]): Map[String, String] = {
     for {
       c <- credentials
     } yield queryMap += ("u" -> c.username, "p" -> c.password)
@@ -58,7 +57,6 @@ private[chronicler] trait QueryBuilder[A] {
     * @param query - query string parameter
     * @return      - query parameters
     */
-  private[chronicler] final def buildQueryParams(query: String)
-                                                (implicit credentials: Option[InfluxCredentials]): Map[String, String] =
+  private[chronicler] final def buildQueryParams(query: String): Map[String, String] =
     buildQueryParams(scala.collection.mutable.Map("q" -> query))
 }
