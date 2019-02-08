@@ -25,8 +25,8 @@ import jawn.ast.JValue
 import scala.concurrent.Future
 import scala.language.implicitConversions
 
-private[ahc] trait AhcRequestExecutor extends RequestExecutor[Future, Request, Response[JValue], Uri] {
-  private[ahc] implicit val backend: SttpBackend[Future, Nothing]
+private[ahc] class AhcRequestExecutor(implicit backend: SttpBackend[Future, Nothing])
+  extends RequestExecutor[Future, Request, Response[JValue], Uri] {
 
   private[chronicler] override implicit def buildRequest(uri: Uri): Request = sttp.get(uri).response(asJson)
 

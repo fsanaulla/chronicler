@@ -18,9 +18,10 @@ package com.github.fsanaulla.chronicler.ahc.io.unit
 
 import com.github.fsanaulla.chronicler.ahc.shared.handlers.AhcQueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.{Consistencies, Epochs, Precisions}
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.softwaremill.sttp.Uri
+import org.scalatest.{FlatSpec, Matchers}
 
 import scala.language.implicitConversions
 
@@ -29,14 +30,19 @@ import scala.language.implicitConversions
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class DatabaseApiOperationQuerySpec extends FlatSpecWithMatchers {
+class DatabaseApiOperationQuerySpec extends FlatSpec with Matchers with DatabaseOperationQuery[Uri] {
 
-  trait Env extends AhcQueryBuilder with DatabaseOperationQuery[Uri] {
+  trait Env {
     val host = "localhost"
     val port = 8086
   }
-  trait AuthEnv extends Env with NonEmptyCredentials
-  trait NonAuthEnv extends Env with EmptyCredentials
+  trait AuthEnv extends Env {
+    val credentials = Some(InfluxCredentials("admin", "admin"))
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
+  }
+  trait NonAuthEnv extends Env {
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, None)
+  }
 
   val testDB = "db"
   val testQuery = "SELECT * FROM test"

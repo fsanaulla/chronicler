@@ -21,53 +21,57 @@ import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.urlhttp.io.models.{UrlReader, UrlWriter}
 import com.github.fsanaulla.chronicler.urlhttp.io.serializers._
-import com.softwaremill.sttp.SttpBackend
 import jawn.ast.JArray
 
 import scala.reflect.ClassTag
 import scala.util.Try
 
-final class Database(private[urlhttp] val host: String,
-                     private[urlhttp] val port: Int,
-                     private[chronicler] val credentials: Option[InfluxCredentials],
-                     dbName: String,
-                     gzipped: Boolean)
-                    (private[urlhttp] implicit val backend: SttpBackend[Try, Nothing])
-  extends DatabaseApi[Try, String](dbName)
-    with HasCredentials
-    with Serializable[String]
-    with UrlWriter
-    with UrlReader {
+final class Database(dbName: String, gzipped: Boolean)
+                    (implicit wr: UrlWriter, rd: UrlReader)
+  extends DatabaseApi[Try, String] with Serializable[String] {
 
   def writeFromFile(filePath: String,
                     consistency: Option[Consistency] = None,
                     precision: Option[Precision] = None,
                     retentionPolicy: Option[String] = None): Try[WriteResult] =
-    writeFromFile(dbName, filePath, consistency, precision, retentionPolicy, gzipped)
+    wr.writeFromFile(dbName, filePath, consistency, precision, retentionPolicy, gzipped)
 
   def writeNative(point: String,
                   consistency: Option[Consistency] = None,
                   precision: Option[Precision] = None,
                   retentionPolicy: Option[String] = None): Try[WriteResult] =
-    writeTo(dbName, point, consistency, precision, retentionPolicy, gzipped)
+    wr.writeTo(dbName, point, consistency, precision, retentionPolicy, gzipped)
 
   def bulkWriteNative(points: Seq[String],
                       consistency: Option[Consistency] = None,
                       precision: Option[Precision] = None,
                       retentionPolicy: Option[String] = None): Try[WriteResult] =
-    writeTo(dbName, points, consistency, precision, retentionPolicy, gzipped)
+    wr.writeTo(dbName, points, consistency, precision, retentionPolicy, gzipped)
 
   def writePoint(point: Point,
                  consistency: Option[Consistency] = None,
                  precision: Option[Precision] = None,
                  retentionPolicy: Option[String] = None): Try[WriteResult] =
-    writeTo(dbName, point, consistency, precision, retentionPolicy, gzipped)
+    wr.writeTo(dbName, point, consistency, precision, retentionPolicy, gzipped)
 
   def bulkWritePoints(points: Seq[Point],
                       consistency: Option[Consistency] = None,
                       precision: Option[Precision] = None,
                       retentionPolicy: Option[String] = None): Try[WriteResult] =
-    writeTo(dbName, points, consistency, precision, retentionPolicy, gzipped)
+    wr.writeTo(dbName, points, consistency, precision, retentionPolicy, gzipped)
+
+  override def readJs(query: String,
+                      epoch: Option[Epoch] = None,
+                      pretty: Boolean = false,
+                      chunked: Boolean = false): Try[ReadResult[JArray]] =
+    rd.readJs(dbName, query, epoch, pretty, chunked)
+
+  override def bulkReadJs(queries: Seq[String],
+                          epoch: Option[Epoch] = None,
+                          pretty: Boolean = false,
+                          chunked: Boolean = false): Try[QueryResult[Array[JArray]]] =
+    rd.bulkReadJs(dbName, queries, epoch, pretty, chunked)
+
 
   override def read[A: ClassTag](query: String,
                                  epoch: Option[Epoch] = None,

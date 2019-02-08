@@ -3,13 +3,12 @@ package com.github.fsanaulla.chronicler.udp
 import java.io.File
 
 import com.github.fsanaulla.chronicler.core.model.{InfluxFormatter, Point}
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.github.fsanaulla.chronicler.urlhttp.io.api.Database
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import jawn.ast.{JArray, JNum, JString}
 import org.scalatest.concurrent.{Eventually, IntegrationPatience}
-import org.scalatest.{BeforeAndAfterAll, TryValues}
+import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers, TryValues}
 import org.testcontainers.containers.DockerComposeContainer
 import org.testcontainers.containers.wait.strategy.Wait
 
@@ -19,7 +18,8 @@ import org.testcontainers.containers.wait.strategy.Wait
   * Date: 24.02.18
   */
 class UdpClientSpec
-  extends FlatSpecWithMatchers
+  extends FlatSpec
+    with Matchers
     with TryValues
     with Eventually
     with IntegrationPatience

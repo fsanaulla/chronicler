@@ -18,20 +18,20 @@ package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.github.fsanaulla.chronicler.urlhttp.shared.Extensions.RichString
 import com.softwaremill.sttp.Response
 import jawn.ast._
-import org.scalatest.TryValues
+import org.scalatest.{FlatSpec, Matchers, TryValues}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UrlResponseHandlerSpec extends FlatSpecWithMatchers with UrlResponseHandler with TryValues {
+class UrlResponseHandlerSpec extends FlatSpec with Matchers with TryValues {
 
   implicit val p: JParser.type = JParser
+  val jsHandler = new UrlResponseHandler
 
   "UrlResponseHandler" should "extract single query result from response" in {
 
@@ -81,7 +81,7 @@ class UrlResponseHandlerSpec extends FlatSpecWithMatchers with UrlResponseHandle
         JNum(0.64)))
     )
 
-    toQueryJsResult(singleResponse).success.value.queryResult shouldEqual result
+    jsHandler.toQueryJsResult(singleResponse).success.value.queryResult shouldEqual result
   }
 
   it should "extract bulk query results from response" in {
@@ -138,7 +138,7 @@ class UrlResponseHandlerSpec extends FlatSpecWithMatchers with UrlResponseHandle
         |}
       """.stripMargin.toResponse()
 
-    toBulkQueryJsResult(bulkResponse).success.value.queryResult shouldEqual Array(
+    jsHandler.toBulkQueryJsResult(bulkResponse).success.value.queryResult shouldEqual Array(
       Array(
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
@@ -204,7 +204,7 @@ class UrlResponseHandlerSpec extends FlatSpecWithMatchers with UrlResponseHandle
   """
     val cqHttpResponse = Response.ok(p.parseFromString(cqStrJson).get)
 
-    val cqi = toCqQueryResult(cqHttpResponse).success.value.queryResult.filter(_.querys.nonEmpty).head
+    val cqi = jsHandler.toCqQueryResult(cqHttpResponse).success.value.queryResult.filter(_.querys.nonEmpty).head
     cqi.dbName shouldEqual "mydb"
     cqi.querys.head shouldEqual ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")
   }
@@ -223,7 +223,7 @@ class UrlResponseHandlerSpec extends FlatSpecWithMatchers with UrlResponseHandle
         |}
       """.stripMargin.toResponse()
 
-    getOptResponseError(errorResponse).success.value shouldEqual Some("user not found")
+    jsHandler.getOptResponseError(errorResponse).success.value shouldEqual Some("user not found")
   }
 
   it should "extract error message" in {
@@ -231,6 +231,6 @@ class UrlResponseHandlerSpec extends FlatSpecWithMatchers with UrlResponseHandle
     val errorResponse: Response[JValue] =
       """ { "error": "user not found" } """.toResponse()
 
-    getResponseError(errorResponse).success.value shouldEqual "user not found"
+    jsHandler.getResponseError(errorResponse).success.value shouldEqual "user not found"
   }
 }

@@ -6,7 +6,7 @@ import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, In
 import com.github.fsanaulla.chronicler.core.model.ShardGroupsInfo
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+import org.scalatest.{FlatSpecLike, Matchers}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -17,7 +17,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class ShardManagementSpec
   extends TestKit(ActorSystem())
-    with FlatSpecWithMatchers
+    with FlatSpecLike
+    with Matchers
     with Futures
     with DockerizedInfluxDB {
 

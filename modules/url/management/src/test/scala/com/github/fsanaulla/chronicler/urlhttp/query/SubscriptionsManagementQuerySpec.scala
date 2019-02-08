@@ -17,24 +17,30 @@
 package com.github.fsanaulla.chronicler.urlhttp.query
 
 import com.github.fsanaulla.chronicler.core.enums.Destinations
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.SubscriptionsManagementQuery
-import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.UrlQueryBuilder
 import com.softwaremill.sttp.Uri
+import org.scalatest.{FlatSpec, Matchers}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 21.08.17
   */
-class SubscriptionsManagementQuerySpec extends FlatSpecWithMatchers {
+class SubscriptionsManagementQuerySpec extends FlatSpec with Matchers with SubscriptionsManagementQuery[Uri] {
 
-  trait Env extends UrlQueryBuilder with SubscriptionsManagementQuery[Uri] {
+  trait Env {
     val host = "localhost"
     val port = 8086
   }
-  trait AuthEnv extends Env with NonEmptyCredentials
-  trait NonAuthEnv extends Env with EmptyCredentials
+  trait AuthEnv extends Env {
+    val credentials = Some(InfluxCredentials("admin", "admin"))
+    implicit val qb: UrlQueryBuilder = new UrlQueryBuilder(host, port, credentials)
+  }
+  trait NonAuthEnv extends Env {
+    implicit val qb: UrlQueryBuilder = new UrlQueryBuilder(host, port, None)
+  }
 
   val subName = "subs"
   val dbName = "db"

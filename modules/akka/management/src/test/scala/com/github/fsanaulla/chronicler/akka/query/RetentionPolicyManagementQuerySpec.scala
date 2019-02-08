@@ -20,9 +20,9 @@ import _root_.akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.TestHelper._
 import com.github.fsanaulla.chronicler.akka.shared.handlers.AkkaQueryBuilder
 import com.github.fsanaulla.chronicler.core.duration._
-import com.github.fsanaulla.chronicler.core.model.HasCredentials
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.RetentionPolicyManagementQuery
-import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
+import org.scalatest.{FlatSpec, Matchers}
 
 import scala.language.postfixOps
 
@@ -31,14 +31,15 @@ import scala.language.postfixOps
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class RetentionPolicyManagementQuerySpec extends FlatSpecWithMatchers {
+class RetentionPolicyManagementQuerySpec extends FlatSpec with Matchers with RetentionPolicyManagementQuery[Uri] {
 
-  trait Env extends AkkaQueryBuilder with RetentionPolicyManagementQuery[Uri] { self: HasCredentials =>
-    val host = "localhost"
-    val port = 8086
+  trait AuthEnv {
+    val credentials = Some(InfluxCredentials("admin", "admin"))
+    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(credentials)
   }
-  trait AuthEnv extends Env with NonEmptyCredentials
-  trait NonAuthEnv extends Env with EmptyCredentials
+  trait NonAuthEnv {
+    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(None)
+  }
 
   val testRPName = "testRP"
   val testDBName = "testDB"

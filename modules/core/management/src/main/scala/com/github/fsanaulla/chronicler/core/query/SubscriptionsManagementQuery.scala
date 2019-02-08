@@ -17,7 +17,6 @@
 package com.github.fsanaulla.chronicler.core.query
 
 import com.github.fsanaulla.chronicler.core.enums.Destination
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 
 /**
@@ -25,25 +24,25 @@ import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-private[chronicler] trait SubscriptionsManagementQuery[U] { self: QueryBuilder[U] =>
+private[chronicler] trait SubscriptionsManagementQuery[U] {
 
   private[chronicler] final def createSubscriptionQuery(subsName: String,
                                                         dbName: String,
                                                         rpName: String,
                                                         destinationType: Destination,
-                                                        addresses: Seq[String])(implicit credentials: Option[InfluxCredentials]): U = {
+                                                        addresses: Seq[String])(implicit qb: QueryBuilder[U]): U = {
 
     val addressesStr = addresses.map(str => s"\'$str\'").mkString(", ")
-    buildQuery("/query", buildQueryParams(s"CREATE SUBSCRIPTION $subsName ON $dbName.$rpName DESTINATIONS $destinationType $addressesStr"))
+    qb.buildQuery("/query", qb.buildQueryParams(s"CREATE SUBSCRIPTION $subsName ON $dbName.$rpName DESTINATIONS $destinationType $addressesStr"))
   }
 
   private[chronicler] final def dropSubscriptionQuery(subsName: String,
                                                       dbName: String,
-                                                      rpName: String)(implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(s"DROP SUBSCRIPTION $subsName ON $dbName.$rpName"))
+                                                      rpName: String)(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(s"DROP SUBSCRIPTION $subsName ON $dbName.$rpName"))
 
 
-  private[chronicler] final def showSubscriptionsQuery(implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams("SHOW SUBSCRIPTIONS"))
+  private[chronicler] final def showSubscriptionsQuery(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams("SHOW SUBSCRIPTIONS"))
 
 }

@@ -21,58 +21,61 @@ import com.github.fsanaulla.chronicler.ahc.io.serializers._
 import com.github.fsanaulla.chronicler.core.api.DatabaseApi
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
-import com.softwaremill.sttp.SttpBackend
 import jawn.ast.JArray
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
-final class Database(private[ahc] val host: String,
-                     private[ahc] val port: Int,
-                     private[chronicler] val credentials: Option[InfluxCredentials],
-                     dbName: String,
-                     gzipped: Boolean)(private[ahc] implicit val backend: SttpBackend[Future, Nothing],
-                                       private[chronicler] implicit val ex: ExecutionContext)
-    extends DatabaseApi[Future, String](dbName)
-      with HasCredentials
-      with Executable
-      with Serializable[String]
-      with AhcWriter
-      with AhcReader {
+final class Database(dbName: String, gzipped: Boolean)
+                    (implicit ex: ExecutionContext, wr: AhcWriter, rd: AhcReader)
+    extends DatabaseApi[Future, String] with Serializable[String] {
 
-  def writeFromFile(filePath: String,
+  override def writeFromFile(filePath: String,
                     consistency: Option[Consistency] = None,
                     precision: Option[Precision] = None,
                     retentionPolicy: Option[String] = None): Future[WriteResult] =
-    writeFromFile(dbName, filePath, consistency, precision, retentionPolicy, gzipped)
+    wr.writeFromFile(dbName, filePath, consistency, precision, retentionPolicy, gzipped)
 
 
-  def writeNative(point: String,
+  override def writeNative(point: String,
                   consistency: Option[Consistency] = None,
                   precision: Option[Precision] = None,
                   retentionPolicy: Option[String] = None): Future[WriteResult] =
-    writeTo(dbName, point, consistency, precision, retentionPolicy, gzipped)
+    wr.writeTo(dbName, point, consistency, precision, retentionPolicy, gzipped)
 
 
-  def bulkWriteNative(points: Seq[String],
+  override def bulkWriteNative(points: Seq[String],
                       consistency: Option[Consistency] = None,
                       precision: Option[Precision] = None,
                       retentionPolicy: Option[String] = None): Future[WriteResult] =
-    writeTo(dbName, points, consistency, precision, retentionPolicy, gzipped)
+    wr.writeTo(dbName, points, consistency, precision, retentionPolicy, gzipped)
 
 
-  def writePoint(point: Point,
+  override def writePoint(point: Point,
                  consistency: Option[Consistency] = None,
                  precision: Option[Precision] = None,
                  retentionPolicy: Option[String] = None): Future[WriteResult] =
-    writeTo(dbName, point, consistency, precision, retentionPolicy, gzipped)
+    wr.writeTo(dbName, point, consistency, precision, retentionPolicy, gzipped)
 
 
-  def bulkWritePoints(points: Seq[Point],
+  override def bulkWritePoints(points: Seq[Point],
                       consistency: Option[Consistency] = None,
                       precision: Option[Precision] = None,
                       retentionPolicy: Option[String] = None): Future[WriteResult] =
-    writeTo(dbName, points, consistency, precision, retentionPolicy, gzipped)
+    wr.writeTo(dbName, points, consistency, precision, retentionPolicy, gzipped)
+
+
+  override def readJs(query: String,
+                      epoch: Option[Epoch] = None,
+                      pretty: Boolean = false,
+                      chunked: Boolean = false): Future[ReadResult[JArray]] =
+    rd.readJs(dbName, query, epoch, pretty, chunked)
+
+  override def bulkReadJs(queries: Seq[String],
+                          epoch: Option[Epoch] = None,
+                          pretty: Boolean = false,
+                          chunked: Boolean = false): Future[QueryResult[Array[JArray]]] =
+    rd.bulkReadJs(dbName, queries, epoch, pretty, chunked)
 
 
   override def read[A: ClassTag](query: String,

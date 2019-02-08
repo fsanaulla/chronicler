@@ -19,32 +19,26 @@ package com.github.fsanaulla.chronicler.akka.io.models
 import java.nio.file.Paths
 
 import akka.http.scaladsl.model._
-import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.FileIO
 import com.github.fsanaulla.chronicler.akka.io.headers._
-import com.github.fsanaulla.chronicler.akka.shared.alias.Connection
 import com.github.fsanaulla.chronicler.akka.shared.handlers.{AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
 import com.github.fsanaulla.chronicler.core.io.WriteOperations
-import com.github.fsanaulla.chronicler.core.model.{Executable, HasCredentials, WriteResult}
+import com.github.fsanaulla.chronicler.core.model.WriteResult
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 03.09.17
   */
-private[akka] trait AkkaWriter
-  extends DatabaseOperationQuery[Uri]
-    with AkkaRequestExecutor
-    with AkkaResponseHandler
-    with AkkaQueryBuilder
-    with WriteOperations[Future, RequestEntity] { self: HasCredentials with Executable =>
-
-  private[akka] implicit val mat: ActorMaterializer
-  private[akka] implicit val connection: Connection
+private[akka] class AkkaWriter(implicit qb: AkkaQueryBuilder,
+                               re: AkkaRequestExecutor,
+                               rh: AkkaResponseHandler,
+                               ec: ExecutionContext)
+  extends DatabaseOperationQuery[Uri] with WriteOperations[Future, RequestEntity]{
 
   private[chronicler] override def writeTo(dbName: String,
                                            entity: RequestEntity,
@@ -65,7 +59,7 @@ private[akka] trait AkkaWriter
       entity = entity
     )
 
-    execute(request).flatMap(toResult)
+    re.execute(request).flatMap(rh.toResult)
   }
 
   private[chronicler] override def writeFromFile(dbName: String,
@@ -87,6 +81,6 @@ private[akka] trait AkkaWriter
       entity = HttpEntity(MediaTypes.`application/octet-stream`, FileIO.fromPath(Paths.get(filePath), 1024))
     )
 
-    execute(request).flatMap(toResult)
+    re.execute(request).flatMap(rh.toResult)
   }
 }

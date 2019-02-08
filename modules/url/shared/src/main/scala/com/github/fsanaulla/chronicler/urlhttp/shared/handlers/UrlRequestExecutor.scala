@@ -25,8 +25,8 @@ import jawn.ast.JValue
 import scala.language.implicitConversions
 import scala.util.Try
 
-private[urlhttp] trait UrlRequestExecutor extends RequestExecutor[Try, Request, Response[JValue], Uri] {
-  private[urlhttp] implicit val backend: SttpBackend[Try, Nothing]
+private[urlhttp] class UrlRequestExecutor(implicit backend: SttpBackend[Try, Nothing])
+  extends RequestExecutor[Try, Request, Response[JValue], Uri] {
 
   private[chronicler] override implicit def buildRequest(uri: Uri): Request = sttp.get(uri).response(asJson)
   private[chronicler] override def execute(request: Request): Try[Response[JValue]] = request.send()

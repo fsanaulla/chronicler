@@ -73,11 +73,11 @@ lazy val urlShared = project
   .in(file("modules/url/shared"))
   .settings(
     name := s"$projectName-url-shared",
-    libraryDependencies += Dependencies.sttp
+    libraryDependencies ++= 
+      Dependencies.scalaTest :: Dependencies.sttp :: Nil
   )
   .configure(defaultSettings)
   .dependsOn(coreShared)
-  .dependsOn(unitTesting % "test->test")
 
 //////////////////////////////////////////////////////
 ////////////////// AKKA HTTP MODULES /////////////////
@@ -107,11 +107,11 @@ lazy val akkaShared = project
   .in(file("modules/akka/shared"))
   .settings(
     name := s"$projectName-akka-shared",
-    libraryDependencies ++= Dependencies.akkaDep
+    libraryDependencies ++=
+      Dependencies.scalaTest :: Dependencies.akkaDep
   )
   .configure(defaultSettings)
   .dependsOn(coreShared)
-  .dependsOn(unitTesting % "test->test")
 
 //////////////////////////////////////////////////////
 ///////////////// ASYNC HTTP MODULES /////////////////
@@ -135,11 +135,11 @@ lazy val ahcShared = project
   .in(file("modules/ahc/shared"))
   .settings(
     name := s"$projectName-ahc-shared",
-    libraryDependencies ++= Dependencies.asyncDeps
+    libraryDependencies ++=
+      Dependencies.scalaTest :: Dependencies.asyncDeps
   )
   .configure(defaultSettings)
   .dependsOn(coreShared)
-  .dependsOn(unitTesting % "test->test")
 
 //////////////////////////////////////////////////////
 ///////////////////// UPD MODULE /////////////////////
@@ -174,16 +174,6 @@ lazy val itTesting = project
   .settings(
     name := s"$projectName-it-testing",
     libraryDependencies ++= Dependencies.testingDeps
-  )
-  .dependsOn(coreShared)
-  .dependsOn(unitTesting)
-
-lazy val unitTesting = project
-  .in(file("modules/testing/unit"))
-  .settings(Settings.common: _*)
-  .settings(
-    name := s"$projectName-unit-testing",
-    libraryDependencies += Dependencies.scalaTest
   )
   .dependsOn(coreShared)
 

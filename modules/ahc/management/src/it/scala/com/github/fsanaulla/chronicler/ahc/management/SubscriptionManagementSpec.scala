@@ -5,7 +5,7 @@ import com.github.fsanaulla.chronicler.core.enums.{Destination, Destinations}
 import com.github.fsanaulla.chronicler.core.model.Subscription
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+import org.scalatest.{FlatSpec, Matchers}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 21.08.17
   */
-class SubscriptionManagementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with Futures {
+class SubscriptionManagementSpec extends FlatSpec with Matchers with DockerizedInfluxDB with Futures {
 
   val subName = "subs"
   val dbName = "async_subs_spec_db"

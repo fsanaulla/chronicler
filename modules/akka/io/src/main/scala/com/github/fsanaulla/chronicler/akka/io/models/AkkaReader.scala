@@ -20,23 +20,24 @@ import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.shared.handlers.{AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.core.enums.Epoch
 import com.github.fsanaulla.chronicler.core.io.ReadOperations
-import com.github.fsanaulla.chronicler.core.model.{Executable, HasCredentials, QueryResult, ReadResult}
+import com.github.fsanaulla.chronicler.core.model.{QueryResult, ReadResult}
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
 import jawn.ast.JArray
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[akka] trait AkkaReader
-  extends AkkaRequestExecutor
-    with AkkaResponseHandler
-    with AkkaQueryBuilder
-    with DatabaseOperationQuery[Uri]
-    with ReadOperations[Future]{ self: Executable with HasCredentials =>
+private[akka] final class AkkaReader(implicit qb: AkkaQueryBuilder,
+                                     re: AkkaRequestExecutor,
+                                     rh: AkkaResponseHandler,
+                                     ec: ExecutionContext)
+extends DatabaseOperationQuery[Uri] with ReadOperations[Future] {
+
+  import re.buildRequest
 
   private[chronicler] override def readJs(dbName: String,
                                           query: String,
@@ -45,11 +46,11 @@ private[akka] trait AkkaReader
                                           chunked: Boolean): Future[ReadResult[JArray]] = {
 
     val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
-    val executionResult = execute(uri)
+    val executionResult = re.execute(uri)
 
     query match {
-      case q: String if q.contains("GROUP BY") => executionResult.flatMap(toGroupedJsResult)
-      case _ => executionResult.flatMap(toQueryJsResult)
+      case q: String if q.contains("GROUP BY") => executionResult.flatMap(rh.toGroupedJsResult)
+      case _ => executionResult.flatMap(rh.toQueryJsResult)
     }
   }
 
@@ -61,6 +62,6 @@ private[akka] trait AkkaReader
                                               chunked: Boolean): Future[QueryResult[Array[JArray]]] = {
     val uri = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)
 
-    execute(uri).flatMap(toBulkQueryJsResult)
+    re.execute(uri).flatMap(rh.toBulkQueryJsResult)
   }
 }

@@ -16,17 +16,19 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+
 import com.softwaremill.sttp.Response
 import jawn.ast._
-import org.scalatest.{OptionValues, TryValues}
+import org.scalatest.{FlatSpec, Matchers, OptionValues, TryValues}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UrlJsonHandlerSpec extends FlatSpecWithMatchers with UrlJsonHandler with TryValues with OptionValues {
+class UrlJsonHandlerSpec extends FlatSpec with Matchers with TryValues with OptionValues {
+
+  val jsHandler = new UrlJsonHandler
 
   val singleStrJson = """{
                       "results": [
@@ -64,7 +66,7 @@ class UrlJsonHandlerSpec extends FlatSpecWithMatchers with UrlJsonHandler with T
   val result: JValue = JParser.parseFromString(singleStrJson).get
 
   "UrlJsonHandler" should "extract JSON from HTTP response" in {
-    getResponseBody(resp).success.value shouldEqual result
+    jsHandler.getResponseBody(resp).success.value shouldEqual result
   }
 
   it should "extract single query result from JSON" in {
@@ -113,7 +115,7 @@ class UrlJsonHandlerSpec extends FlatSpecWithMatchers with UrlJsonHandler with T
       JArray(Array(JString("2015-06-11T20:46:02Z"), JNull, JNum(0.64)))
     )
 
-    getOptQueryResult(json).value shouldEqual result
+    jsHandler.getOptQueryResult(json).value shouldEqual result
   }
 
   it should "extract bulk query result from JSON" in {
@@ -179,7 +181,7 @@ class UrlJsonHandlerSpec extends FlatSpecWithMatchers with UrlJsonHandler with T
       )
     )
 
-    getOptBulkInfluxPoints(json).value shouldEqual result
+    jsHandler.getOptBulkInfluxPoints(json).value shouldEqual result
   }
 
   it should "extract influx information from JSON" in {
@@ -225,7 +227,7 @@ class UrlJsonHandlerSpec extends FlatSpecWithMatchers with UrlJsonHandler with T
       )
     )
 
-    val res = getOptJsInfluxInfo(json)
+    val res = jsHandler.getOptJsInfluxInfo(json)
 
     res should not be None
     res.value.length shouldEqual 1
@@ -283,7 +285,7 @@ class UrlJsonHandlerSpec extends FlatSpecWithMatchers with UrlJsonHandler with T
         |}
       """.stripMargin).success.value
 
-    val optResult = getOptGropedResult(json)
+    val optResult = jsHandler.getOptGropedResult(json)
 
     optResult should not be None
 

@@ -21,25 +21,24 @@ import _root_.akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
 import _root_.akka.stream.ActorMaterializer
 import _root_.akka.util.ByteString
 import com.github.fsanaulla.chronicler.core.jawn._
-import com.github.fsanaulla.chronicler.core.model.Executable
 import com.github.fsanaulla.chronicler.core.typeclasses.JsonHandler
 import jawn.ast.{JParser, JValue}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[akka] trait AkkaJsonHandler extends JsonHandler[Future, HttpResponse] with Executable {
+private[akka] abstract class AkkaJsonHandler(implicit mat: ActorMaterializer) extends JsonHandler[Future, HttpResponse] {
 
-  private[akka] implicit val mat: ActorMaterializer
+  implicit val ec: ExecutionContext
 
   /** Custom Unmarshaller for Jawn JSON */
   private implicit val unm: Unmarshaller[HttpEntity, JValue] = {
     Unmarshaller.withMaterializer {
-      implicit ex =>
+      implicit ec =>
         implicit mat =>
           entity: HttpEntity =>
             entity.dataBytes
@@ -48,13 +47,16 @@ private[akka] trait AkkaJsonHandler extends JsonHandler[Future, HttpResponse] wi
     }
   }
 
-  private[chronicler] override def getResponseBody(response: HttpResponse): Future[JValue] =
+  private[chronicler]
+  override def getResponseBody(response: HttpResponse): Future[JValue] =
     Unmarshal(response.entity).to[JValue]
 
-  private[chronicler]override def getResponseError(response: HttpResponse): Future[String] =
+  private[chronicler]
+  override def getResponseError(response: HttpResponse): Future[String] =
     getResponseBody(response).map(_.get("error").asString)
 
-  private[chronicler]override def getOptResponseError(response: HttpResponse): Future[Option[String]] =
+  private[chronicler]
+  override def getOptResponseError(response: HttpResponse): Future[Option[String]] =
     getResponseBody(response)
       .map(_.get("results").arrayValue.flatMap(_.headOption))
       .map(_.flatMap(_.get("error").getString))

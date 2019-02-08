@@ -17,7 +17,6 @@
 package com.github.fsanaulla.chronicler.core.api
 
 import com.github.fsanaulla.chronicler.core.enums._
-import com.github.fsanaulla.chronicler.core.io.ReadOperations
 import com.github.fsanaulla.chronicler.core.model._
 import jawn.ast.JArray
 
@@ -25,11 +24,10 @@ import scala.reflect.ClassTag
 
 /**
   * Generic interface for basic database IO operation
-  * @param dbName - database name
-  * @tparam F     - container type
-  * @tparam E     - Entity type
+  * @tparam F - container type
+  * @tparam E - Entity type
   */
-abstract class DatabaseApi[F[_], E](dbName: String) extends ReadOperations[F] {
+trait DatabaseApi[F[_], E] {
 
   def read[A: ClassTag](query: String,
                         epoch: Option[Epoch],
@@ -66,16 +64,13 @@ abstract class DatabaseApi[F[_], E](dbName: String) extends ReadOperations[F] {
                       retentionPolicy: Option[String] = None): F[WriteResult]
 
 
-  final def readJs(query: String,
+  def readJs(query: String,
                    epoch: Option[Epoch] = None,
                    pretty: Boolean = false,
-                   chunked: Boolean = false): F[ReadResult[JArray]] =
-    readJs(dbName, query, epoch, pretty, chunked)
+                   chunked: Boolean = false): F[ReadResult[JArray]]
 
-
-  final def bulkReadJs(queries: Seq[String],
-                       epoch: Option[Epoch] = None,
-                       pretty: Boolean = false,
-                       chunked: Boolean = false): F[QueryResult[Array[JArray]]] =
-    bulkReadJs(dbName, queries, epoch, pretty, chunked)
+  def bulkReadJs(queries: Seq[String],
+                 epoch: Option[Epoch] = None,
+                 pretty: Boolean = false,
+                 chunked: Boolean = false): F[QueryResult[Array[JArray]]]
 }

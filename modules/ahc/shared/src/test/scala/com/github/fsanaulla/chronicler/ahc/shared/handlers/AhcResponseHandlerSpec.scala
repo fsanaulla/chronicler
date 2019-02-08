@@ -18,11 +18,11 @@ package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.softwaremill.sttp.Response
 import jawn.ast._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Second, Seconds, Span}
+import org.scalatest.{FlatSpec, Matchers}
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
@@ -33,7 +33,7 @@ import scala.language.postfixOps
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class AhcResponseHandlerSpec extends FlatSpecWithMatchers with AhcResponseHandler with ScalaFutures {
+class AhcResponseHandlerSpec extends FlatSpec with Matchers with ScalaFutures {
 
   implicit val pc: PatienceConfig = PatienceConfig(Span(20, Seconds), Span(1, Second))
 
@@ -42,6 +42,8 @@ class AhcResponseHandlerSpec extends FlatSpecWithMatchers with AhcResponseHandle
   implicit val timeout: FiniteDuration = 1 second
 
   implicit val p: JParser.type = JParser
+
+  val rh = new AhcResponseHandler()
 
 
   it should "extract single query result from response" in {
@@ -92,7 +94,7 @@ class AhcResponseHandlerSpec extends FlatSpecWithMatchers with AhcResponseHandle
         JNum(0.64)))
     )
 
-    toQueryJsResult(singleResponse).futureValue.queryResult shouldEqual result
+    rh.toQueryJsResult(singleResponse).futureValue.queryResult shouldEqual result
   }
 
   it should "extract bulk query results from response" in {
@@ -149,7 +151,7 @@ class AhcResponseHandlerSpec extends FlatSpecWithMatchers with AhcResponseHandle
         |}
       """.stripMargin.toResponse
 
-    toBulkQueryJsResult(bulkResponse).futureValue.queryResult shouldEqual Array(
+    rh.toBulkQueryJsResult(bulkResponse).futureValue.queryResult shouldEqual Array(
       Array(
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
@@ -215,7 +217,7 @@ class AhcResponseHandlerSpec extends FlatSpecWithMatchers with AhcResponseHandle
   """
     val cqHttpResponse = Response.ok(p.parseFromString(cqStrJson).get)
 
-    val cqi = toCqQueryResult(cqHttpResponse).futureValue.queryResult.filter(_.querys.nonEmpty).head
+    val cqi = rh.toCqQueryResult(cqHttpResponse).futureValue.queryResult.filter(_.querys.nonEmpty).head
     cqi.dbName shouldEqual "mydb"
     cqi.querys.head shouldEqual ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")
   }
@@ -234,7 +236,7 @@ class AhcResponseHandlerSpec extends FlatSpecWithMatchers with AhcResponseHandle
         |}
       """.stripMargin.toResponse()
 
-    getOptResponseError(errorResponse).futureValue shouldEqual Some("user not found")
+    rh.getOptResponseError(errorResponse).futureValue shouldEqual Some("user not found")
   }
 
   it should "extract error message" in {
@@ -242,6 +244,6 @@ class AhcResponseHandlerSpec extends FlatSpecWithMatchers with AhcResponseHandle
     val errorResponse: Response[JValue] =
       """ { "error": "user not found" } """.toResponse()
 
-    getResponseError(errorResponse).futureValue shouldEqual "user not found"
+    rh.getResponseError(errorResponse).futureValue shouldEqual "user not found"
   }
 }

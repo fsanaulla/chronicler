@@ -25,7 +25,7 @@ import jawn.ast.{JArray, JValue}
 import scala.reflect.ClassTag
 import scala.util.Try
 
-private[urlhttp] trait UrlResponseHandler extends ResponseHandler[Try, Response[JValue]] with UrlJsonHandler {
+private[urlhttp] class UrlResponseHandler extends UrlJsonHandler with ResponseHandler[Try, Response[JValue]] {
 
   private[chronicler] override def toResult(response: Response[JValue]): Try[WriteResult] = {
     response.code match {

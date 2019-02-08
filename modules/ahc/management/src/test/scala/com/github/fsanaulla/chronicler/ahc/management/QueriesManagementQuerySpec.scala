@@ -17,23 +17,29 @@
 package com.github.fsanaulla.chronicler.ahc.management
 
 import com.github.fsanaulla.chronicler.ahc.shared.handlers.AhcQueryBuilder
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.QueriesManagementQuery
-import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.softwaremill.sttp.Uri
+import org.scalatest.{FlatSpec, Matchers}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
-class QueriesManagementQuerySpec extends FlatSpecWithMatchers {
+class QueriesManagementQuerySpec extends FlatSpec with Matchers with QueriesManagementQuery[Uri] {
 
-  trait Env extends AhcQueryBuilder with QueriesManagementQuery[Uri] {
+  trait Env {
     val host = "localhost"
     val port = 8086
   }
-  trait AuthEnv extends Env with NonEmptyCredentials
-  trait NonAuthEnv extends Env with EmptyCredentials
+  trait AuthEnv extends Env {
+    val credentials = Some(InfluxCredentials("admin", "admin"))
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
+  }
+  trait NonAuthEnv extends Env {
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, None)
+  }
 
   it should "show query" in new AuthEnv {
     showQuerysQuery.toString() shouldEqual queryTesterAuth("SHOW QUERIES")(credentials.get)

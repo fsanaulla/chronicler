@@ -28,20 +28,24 @@ import jawn.ast.JValue
 
 import scala.util.Try
 
-final class UrlManagementClient(val host: String,
-                                val port: Int,
-                                val credentials: Option[InfluxCredentials],
-                                customization: Option[CustomizationF])
-  extends InfluxUrlClient(customization)
-    with ManagementClient[Try, Request, Response[JValue], Uri, String]
-    with UrlRequestExecutor
-    with UrlResponseHandler
-    with UrlQueryBuilder
-    with FlatMap[Try]
-    with AutoCloseable {
 
-  private[chronicler] override def flatMap[A, B](fa: Try[A])(f: A => Try[B]): Try[B] = fa.flatMap(f)
+final class UrlManagementClient(host: String,
+                                port: Int,
+                                credentials: Option[InfluxCredentials],
+                                customization: Option[CustomizationF])
+  extends InfluxUrlClient(customization) with ManagementClient[Try, Request, Response[JValue], Uri, String] {
+
+  implicit val qb: UrlQueryBuilder = new UrlQueryBuilder(host, port, credentials)
+  implicit val re: UrlRequestExecutor = new UrlRequestExecutor
+  implicit val rh: UrlResponseHandler = new UrlResponseHandler
+  implicit val fm: FlatMap[Try] = new FlatMap[Try] {
+    def flatMap[A, B](fa: Try[A])(f: A => Try[B]): Try[B] = fa.flatMap(f)
+  }
+
+  import re.buildRequest
 
   override def ping: Try[WriteResult] =
-    execute(buildQuery("/ping", Map.empty[String, String])).flatMap(toResult)
+    re
+      .execute(qb.buildQuery("/ping", Map.empty[String, String]))
+      .flatMap(rh.toResult)
 }

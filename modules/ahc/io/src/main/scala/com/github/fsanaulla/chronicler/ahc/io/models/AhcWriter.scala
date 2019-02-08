@@ -16,32 +16,33 @@
 
 package com.github.fsanaulla.chronicler.ahc.io.models
 
+import com.github.fsanaulla.chronicler.ahc.shared.alias.Request
 import com.github.fsanaulla.chronicler.ahc.shared.formats._
-import com.github.fsanaulla.chronicler.ahc.shared.handlers.{AhcQueryBuilder, AhcRequestExecutor, AhcResponseHandler}
 import com.github.fsanaulla.chronicler.core.encoding._
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
 import com.github.fsanaulla.chronicler.core.io.WriteOperations
-import com.github.fsanaulla.chronicler.core.model.{HasCredentials, PointTransformer, WriteResult}
+import com.github.fsanaulla.chronicler.core.model.WriteResult
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import com.softwaremill.sttp.{Uri, sttp}
+import com.github.fsanaulla.chronicler.core.typeclasses.{QueryBuilder, RequestExecutor, ResponseHandler}
+import com.softwaremill.sttp.{Response, Uri, sttp}
+import jawn.ast.JValue
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.io.Source
 
-private[ahc] trait AhcWriter
-  extends DatabaseOperationQuery[Uri]
-    with AhcRequestExecutor
-    with AhcResponseHandler
-    with AhcQueryBuilder
-    with WriteOperations[Future, String]
-    with PointTransformer { self: HasCredentials =>
+private[ahc] final class AhcWriter(implicit qb: QueryBuilder[Uri],
+                                   re: RequestExecutor[Future, Request, Response[JValue], Uri],
+                                   rh: ResponseHandler[Future, Response[JValue]],
+                                   ex: ExecutionContext)
+  extends DatabaseOperationQuery[Uri] with WriteOperations[Future, String] {
 
-  private[chronicler] override def writeTo(dbName: String,
-                                           entity: String,
-                                           consistency: Option[Consistency],
-                                           precision: Option[Precision],
-                                           retentionPolicy: Option[String],
-                                           gzipped: Boolean): Future[WriteResult] = {
+  private[chronicler]
+  override def writeTo(dbName: String,
+                       entity: String,
+                       consistency: Option[Consistency],
+                       precision: Option[Precision],
+                       retentionPolicy: Option[String],
+                       gzipped: Boolean): Future[WriteResult] = {
 
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
     val req = sttp
@@ -50,15 +51,16 @@ private[ahc] trait AhcWriter
       .response(asJson)
     val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
 
-    execute(maybeEncoded).flatMap(toResult)
+    re.execute(maybeEncoded).flatMap(rh.toResult)
   }
 
-  private[chronicler] override def writeFromFile(dbName: String,
-                                                 filePath: String,
-                                                 consistency: Option[Consistency],
-                                                 precision: Option[Precision],
-                                                 retentionPolicy: Option[String],
-                                                 gzipped: Boolean): Future[WriteResult] = {
+  private[chronicler]
+  override def writeFromFile(dbName: String,
+                             filePath: String,
+                             consistency: Option[Consistency],
+                             precision: Option[Precision],
+                             retentionPolicy: Option[String],
+                             gzipped: Boolean): Future[WriteResult] = {
 
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
     val req = sttp
@@ -67,6 +69,6 @@ private[ahc] trait AhcWriter
       .response(asJson)
     val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
 
-    execute(maybeEncoded).flatMap(toResult)
+    re.execute(maybeEncoded).flatMap(rh.toResult)
   }
 }

@@ -23,11 +23,13 @@ import com.github.fsanaulla.chronicler.core.query.UserManagementQuery
 import com.github.fsanaulla.chronicler.core.typeclasses.{FlatMap, QueryBuilder, RequestExecutor, ResponseHandler}
 
 private[fsanaulla] trait UserManagement[F[_], Req, Resp, Uri, Entity] extends UserManagementQuery[Uri] {
-  self: RequestExecutor[F, Req, Resp, Uri]
-    with ResponseHandler[F, Resp]
-    with QueryBuilder[Uri]
-    with FlatMap[F]
-    with HasCredentials =>
+
+  implicit val qb: QueryBuilder[Uri]
+  implicit val re: RequestExecutor[F, Req, Resp, Uri]
+  implicit val rh: ResponseHandler[F, Resp]
+  implicit val fm: FlatMap[F]
+
+  import re.buildRequest
 
   /***
     * Create new username
@@ -36,7 +38,7 @@ private[fsanaulla] trait UserManagement[F[_], Req, Resp, Uri, Entity] extends Us
     * @return         - Result of execution
     */
   final def createUser(username: String, password: String): F[WriteResult] =
-    flatMap(execute(createUserQuery(username, password)))(toResult)
+    fm.flatMap(re.execute(createUserQuery(username, password)))(rh.toResult)
 
   /**
     * Create admin user
@@ -45,39 +47,39 @@ private[fsanaulla] trait UserManagement[F[_], Req, Resp, Uri, Entity] extends Us
     * @return         - execution response
     */
   final def createAdmin(username: String, password: String): F[WriteResult] =
-    flatMap(execute(createAdminQuery(username, password)))(toResult)
+    fm.flatMap(re.execute(createAdminQuery(username, password)))(rh.toResult)
 
   /** Drop user */
   final def dropUser(username: String): F[WriteResult] =
-    flatMap(execute(dropUserQuery(username)))(toResult)
+    fm.flatMap(re.execute(dropUserQuery(username)))(rh.toResult)
 
   /** Set password for user */
   final def setUserPassword(username: String, password: String): F[WriteResult] =
-    flatMap(execute(setUserPasswordQuery(username, password)))(toResult)
+    fm.flatMap(re.execute(setUserPasswordQuery(username, password)))(rh.toResult)
 
   /** Set user privilege on specified database */
   final def setPrivileges(username: String, dbName: String, privilege: Privilege): F[WriteResult] =
-    flatMap(execute(setPrivilegesQuery(dbName, username, privilege)))(toResult)
+    fm.flatMap(re.execute(setPrivilegesQuery(dbName, username, privilege)))(rh.toResult)
 
 
   /** Revoke user privilege on specified datasbase */
   final def revokePrivileges(username: String, dbName: String, privilege: Privilege): F[WriteResult] =
-    flatMap(execute(revokePrivilegesQuery(dbName, username, privilege)))(toResult)
+    fm.flatMap(re.execute(revokePrivilegesQuery(dbName, username, privilege)))(rh.toResult)
 
   /** Grant admin rights */
   final def makeAdmin(username: String): F[WriteResult] =
-    flatMap(execute(makeAdminQuery(username)))(toResult)
+    fm.flatMap(re.execute(makeAdminQuery(username)))(rh.toResult)
 
   /** Remove admin rights */
   final def disableAdmin(username: String): F[WriteResult] =
-    flatMap(execute(disableAdminQuery(username)))(toResult)
+    fm.flatMap(re.execute(disableAdminQuery(username)))(rh.toResult)
 
   /** Show use lists */
   final def showUsers: F[QueryResult[UserInfo]] =
-    flatMap(execute(showUsersQuery))(toQueryResult[UserInfo])
+    fm.flatMap(re.execute(showUsersQuery))(rh.toQueryResult[UserInfo])
 
   /** Show user privileges */
   final def showUserPrivileges(username: String): F[QueryResult[UserPrivilegesInfo]] =
-    flatMap(execute(showUserPrivilegesQuery(username)))(toQueryResult[UserPrivilegesInfo])
+    fm.flatMap(re.execute(showUserPrivilegesQuery(username)))(rh.toQueryResult[UserPrivilegesInfo])
 
 }

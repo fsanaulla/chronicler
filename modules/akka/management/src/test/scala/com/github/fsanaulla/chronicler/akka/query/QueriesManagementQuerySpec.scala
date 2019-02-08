@@ -19,23 +19,25 @@ package com.github.fsanaulla.chronicler.akka.query
 import _root_.akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.TestHelper._
 import com.github.fsanaulla.chronicler.akka.shared.handlers.AkkaQueryBuilder
-import com.github.fsanaulla.chronicler.core.model.HasCredentials
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.QueriesManagementQuery
-import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
+import org.scalatest.{FlatSpec, Matchers}
+
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
-class QueriesManagementQuerySpec extends FlatSpecWithMatchers {
+class QueriesManagementQuerySpec extends FlatSpec with Matchers with QueriesManagementQuery[Uri] {
 
-  trait Env extends AkkaQueryBuilder with QueriesManagementQuery[Uri] { self: HasCredentials =>
-    val host = "localhost"
-    val port = 8086
+  trait AuthEnv {
+    val credentials = Some(InfluxCredentials("admin", "admin"))
+    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(credentials)
   }
-  trait AuthEnv extends Env with NonEmptyCredentials
-  trait NonAuthEnv extends Env with EmptyCredentials
+  trait NonAuthEnv {
+    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(None)
+  }
 
   "QueryManagement" should "show query" in new AuthEnv {
     showQuerysQuery shouldEqual queryTesterAuth("SHOW QUERIES")(credentials.get)

@@ -20,24 +20,37 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.HttpsConnectionContext
 import akka.http.scaladsl.model.RequestEntity
 import com.github.fsanaulla.chronicler.akka.io.api.{Database, Measurement}
+import com.github.fsanaulla.chronicler.akka.io.models.{AkkaReader, AkkaWriter}
 import com.github.fsanaulla.chronicler.akka.shared.InfluxAkkaClient
+import com.github.fsanaulla.chronicler.akka.shared.handlers.{AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.core.IOClient
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, WriteResult}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
 final class AkkaIOClient(host: String,
                          port: Int,
-                         val credentials: Option[InfluxCredentials],
+                         credentials: Option[InfluxCredentials],
                          gzipped: Boolean,
                          httpsContext: Option[HttpsConnectionContext])
-                        (implicit val ex: ExecutionContext, val system: ActorSystem)
+                        (implicit ex: ExecutionContext, system: ActorSystem)
   extends InfluxAkkaClient(host, port, httpsContext) with IOClient[Future, RequestEntity] {
 
+  implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(credentials)
+  implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor
+  implicit val rh: AkkaResponseHandler = new AkkaResponseHandler
+  implicit val wr: AkkaWriter = new AkkaWriter
+  implicit val rd: AkkaReader = new AkkaReader
+
   override def database(dbName: String): Database =
-    new Database(dbName, credentials, gzipped)
+    new Database(dbName, gzipped)
 
   override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] =
-    new Measurement[A](dbName, measurementName, credentials, gzipped)
+    new Measurement[A](dbName, measurementName, gzipped)
+
+  override def ping: Future[WriteResult] =
+    re
+      .execute(re.buildRequest(qb.buildQuery("/ping", Map.empty[String, String])))
+      .flatMap(rh.toResult)
 }

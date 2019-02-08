@@ -17,6 +17,7 @@
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
 import _root_.akka.http.scaladsl.model.Uri
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 
 /**
@@ -24,7 +25,8 @@ import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[akka] trait AkkaQueryBuilder extends QueryBuilder[Uri] {
-  private[chronicler] override def buildQuery(uri: String, queryParams: Map[String, String]): Uri =
+private[akka] class AkkaQueryBuilder(credentials: Option[InfluxCredentials]) extends QueryBuilder[Uri](credentials) {
+  private[chronicler]
+  override def buildQuery(uri: String, queryParams: Map[String, String]): Uri =
     Uri(uri).withQuery(Uri.Query(queryParams))
 }

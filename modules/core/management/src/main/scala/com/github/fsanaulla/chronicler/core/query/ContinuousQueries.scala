@@ -16,7 +16,6 @@
 
 package com.github.fsanaulla.chronicler.core.query
 
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 
 /**
@@ -24,16 +23,16 @@ import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
   * Author: fayaz.sanaulla@gmail.com
   * Date: 08.08.17
   */
-private[chronicler] trait ContinuousQueries[U] { self: QueryBuilder[U] =>
+private[chronicler] trait ContinuousQueries[U] {
 
-  private[chronicler] final def showCQQuery(implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams("SHOW CONTINUOUS QUERIES"))
+  private[chronicler] final def showCQQuery(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams("SHOW CONTINUOUS QUERIES"))
 
   private[chronicler] final def dropCQQuery(dbName: String, cqName: String)
-                                           (implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(s"DROP CONTINUOUS QUERY $cqName ON $dbName"))
+                                           (implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(s"DROP CONTINUOUS QUERY $cqName ON $dbName"))
 
   private[chronicler] final def createCQQuery(dbName: String, cqName: String, query: String)
-                                             (implicit credentials: Option[InfluxCredentials]): U =
-    buildQuery("/query", buildQueryParams(s"CREATE CONTINUOUS QUERY $cqName ON $dbName BEGIN $query END"))
+                                             (implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.buildQueryParams(s"CREATE CONTINUOUS QUERY $cqName ON $dbName BEGIN $query END"))
 }

@@ -17,25 +17,37 @@
 package com.github.fsanaulla.chronicler.urlhttp.io
 
 import com.github.fsanaulla.chronicler.core.IOClient
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, WriteResult}
 import com.github.fsanaulla.chronicler.urlhttp.io.api.{Database, Measurement}
+import com.github.fsanaulla.chronicler.urlhttp.io.models.{UrlReader, UrlWriter}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient.CustomizationF
+import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlQueryBuilder, UrlRequestExecutor, UrlResponseHandler}
 
 import scala.reflect.ClassTag
 import scala.util.Try
 
-final class UrlIOClient(val host: String,
-                        val port: Int,
-                        val credentials: Option[InfluxCredentials],
+final class UrlIOClient(host: String,
+                        port: Int,
+                        credentials: Option[InfluxCredentials],
                         gzipped: Boolean,
                         customization: Option[CustomizationF])
   extends InfluxUrlClient(customization) with IOClient[Try, String] {
 
-  override def database(dbName: String): Database =
-    new Database(host, port, credentials, dbName, gzipped)
+  implicit val qb: UrlQueryBuilder = new UrlQueryBuilder(host, port, credentials)
+  implicit val re: UrlRequestExecutor = new UrlRequestExecutor
+  implicit val rh: UrlResponseHandler = new UrlResponseHandler
+  implicit val wr: UrlWriter = new UrlWriter
+  implicit val rd: UrlReader = new UrlReader
 
-  override def measurement[A: ClassTag](dbName: String,
-                                        measurementName: String): Measurement[A] =
-    new Measurement[A](host, port, credentials, dbName, measurementName, gzipped)
+  override def database(dbName: String): Database =
+    new Database(dbName, gzipped)
+
+  override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] =
+    new Measurement[A](dbName, measurementName, gzipped)
+
+  override def ping: Try[WriteResult] =
+    re
+      .execute(re.buildRequest(qb.buildQuery("/ping", Map.empty[String, String])))
+      .flatMap(rh.toResult)
 }

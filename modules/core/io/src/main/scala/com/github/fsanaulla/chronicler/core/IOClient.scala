@@ -17,6 +17,7 @@
 package com.github.fsanaulla.chronicler.core
 
 import com.github.fsanaulla.chronicler.core.api.{DatabaseApi, MeasurementApi}
+import com.github.fsanaulla.chronicler.core.management.SystemManagement
 
 import scala.reflect.ClassTag
 
@@ -26,7 +27,7 @@ import scala.reflect.ClassTag
   * @tparam F - Response type container
   * @tparam E - which response entity should be user
   */
-trait IOClient[F[_], E] extends AutoCloseable {
+trait IOClient[F[_], E] extends SystemManagement[F] with AutoCloseable {
 
   /**
     * Get database instant

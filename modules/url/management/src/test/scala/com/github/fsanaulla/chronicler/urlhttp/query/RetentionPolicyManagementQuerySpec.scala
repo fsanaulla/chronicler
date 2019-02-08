@@ -17,10 +17,11 @@
 package com.github.fsanaulla.chronicler.urlhttp.query
 
 import com.github.fsanaulla.chronicler.core.duration._
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.RetentionPolicyManagementQuery
-import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.UrlQueryBuilder
 import com.softwaremill.sttp.Uri
+import org.scalatest.{FlatSpec, Matchers}
 
 import scala.language.postfixOps
 
@@ -29,14 +30,19 @@ import scala.language.postfixOps
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class RetentionPolicyManagementQuerySpec extends FlatSpecWithMatchers {
+class RetentionPolicyManagementQuerySpec extends FlatSpec with Matchers with RetentionPolicyManagementQuery[Uri]{
 
-  trait Env extends RetentionPolicyManagementQuery[Uri] with UrlQueryBuilder {
+  trait Env {
     val host = "localhost"
     val port = 8086
   }
-  trait AuthEnv extends Env with NonEmptyCredentials
-  trait NonAuthEnv extends Env with EmptyCredentials
+  trait AuthEnv extends Env {
+    val credentials = Some(InfluxCredentials("admin", "admin"))
+    implicit val qb: UrlQueryBuilder = new UrlQueryBuilder(host, port, credentials)
+  }
+  trait NonAuthEnv extends Env {
+    implicit val qb: UrlQueryBuilder = new UrlQueryBuilder(host, port, None)
+  }
 
   val testRPName = "testRP"
   val testDBName = "testDB"

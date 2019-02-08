@@ -20,6 +20,7 @@ import com.github.fsanaulla.chronicler.core.model.WriteResult
 
 /**
   * Basic system related management operations
+ *
   * @tparam F - Response container type
   */
 trait SystemManagement[F[_]] {

@@ -4,7 +4,7 @@ import com.github.fsanaulla.chronicler.core.enums.Privileges
 import com.github.fsanaulla.chronicler.core.model.{UserInfo, UserPrivilegesInfo}
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.OkResult
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+import org.scalatest.{FlatSpec, Matchers}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -13,7 +13,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UserManagementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with Futures {
+class UserManagementSpec extends FlatSpec with Matchers with DockerizedInfluxDB with Futures {
 
   val userDB = "db"
   val userName = "Martin"

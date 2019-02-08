@@ -9,7 +9,7 @@ import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, In
 import com.github.fsanaulla.chronicler.akka.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity, Futures}
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+import org.scalatest.{FlatSpecLike, Matchers}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -20,7 +20,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class MeasurementApiSpec
   extends TestKit(ActorSystem())
-    with FlatSpecWithMatchers
+    with FlatSpecLike
+    with Matchers
     with Futures
     with DockerizedInfluxDB {
 

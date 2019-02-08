@@ -16,10 +16,7 @@
 
 package com.github.fsanaulla.chronicler.akka.io.api
 
-import _root_.akka.actor.ActorSystem
-import _root_.akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.io.models.{AkkaReader, AkkaWriter}
-import com.github.fsanaulla.chronicler.akka.shared.alias.Connection
 import com.github.fsanaulla.chronicler.core.api.MeasurementApi
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
@@ -35,26 +32,17 @@ import scala.reflect.ClassTag
   */
 final class Measurement[E: ClassTag](dbName: String,
                                      measurementName: String,
-                                     val credentials: Option[InfluxCredentials],
                                      gzipped: Boolean)
-                                    (private[akka] implicit val actorSystem: ActorSystem,
-                                     private[akka] implicit val mat: ActorMaterializer,
-                                     private[chronicler] implicit val ex: ExecutionContext,
-                                     private[akka] implicit val connection: Connection)
-    extends MeasurementApi[Future, E]
-      with AkkaWriter
-      with AkkaReader
-      with HasCredentials
-      with Executable
-      with PointTransformer {
+                                    (implicit ex: ExecutionContext, wr: AkkaWriter, rd: AkkaReader)
+    extends MeasurementApi[Future, E] with PointTransformer {
 
   def write(entity: E,
             consistency: Option[Consistency] = None,
             precision: Option[Precision] = None,
-            retentionPolicy: Option[String] = None)(implicit wr: InfluxWriter[E]): Future[WriteResult] =
-    writeTo(
+            retentionPolicy: Option[String] = None)(implicit writer: InfluxWriter[E]): Future[WriteResult] =
+    wr.writeTo(
       dbName,
-      toPoint(measurementName, wr.write(entity)),
+      toPoint(measurementName, writer.write(entity)),
       consistency,
       precision,
       retentionPolicy,
@@ -65,10 +53,10 @@ final class Measurement[E: ClassTag](dbName: String,
   def bulkWrite(entitys: Seq[E],
                 consistency: Option[Consistency] = None,
                 precision: Option[Precision] = None,
-                retentionPolicy: Option[String] = None)(implicit wr: InfluxWriter[E]): Future[WriteResult] =
-    writeTo(
+                retentionPolicy: Option[String] = None)(implicit writer: InfluxWriter[E]): Future[WriteResult] =
+    wr.writeTo(
       dbName,
-      toPoints(measurementName, entitys.map(wr.write)),
+      toPoints(measurementName, entitys.map(writer.write)),
       consistency,
       precision,
       retentionPolicy,
@@ -80,8 +68,8 @@ final class Measurement[E: ClassTag](dbName: String,
            epoch: Option[Epoch] = None,
            pretty: Boolean = false,
            chunked: Boolean = false)(implicit reader: InfluxReader[E]): Future[ReadResult[E]] =
-    readJs(dbName, query, epoch, pretty, chunked) map {
-      case qr: QueryResult[JArray] => qr.map(reader.read)
+    rd.readJs(dbName, query, epoch, pretty, chunked) map {
+      case qr: QueryResult[JArray]   => qr.map(reader.read)
       case gr: GroupedResult[JArray] => gr.map(reader.read)
     }
 

@@ -17,23 +17,29 @@
 package com.github.fsanaulla.chronicler.ahc.management
 
 import com.github.fsanaulla.chronicler.ahc.shared.handlers.AhcQueryBuilder
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.DataManagementQuery
-import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers, NonEmptyCredentials}
 import com.softwaremill.sttp.Uri
+import org.scalatest.{FlatSpec, Matchers}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class DataManagementQuerySpec extends FlatSpecWithMatchers {
+class DataManagementQuerySpec extends FlatSpec with Matchers with DataManagementQuery[Uri]{
 
-  trait Env extends AhcQueryBuilder with DataManagementQuery[Uri] {
+  trait Env {
     val host = "localhost"
     val port = 8086
   }
-  trait AuthEnv extends Env with NonEmptyCredentials
-  trait NonAuthEnv extends Env with EmptyCredentials
+  trait AuthEnv extends Env {
+    val credentials = Some(InfluxCredentials("admin", "admin"))
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
+  }
+  trait NonAuthEnv extends Env {
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, None)
+  }
 
   val testDb: String = "testDb"
   val testSeries: String = "testSeries"

@@ -16,12 +16,9 @@
 
 package com.github.fsanaulla.chronicler.akka.io.api
 
-import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.model.RequestEntity
-import _root_.akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.io.models.{AkkaReader, AkkaWriter}
 import com.github.fsanaulla.chronicler.akka.io.serializers._
-import com.github.fsanaulla.chronicler.akka.shared.alias.Connection
 import com.github.fsanaulla.chronicler.core.api.DatabaseApi
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
@@ -35,57 +32,61 @@ import scala.reflect.ClassTag
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-final class Database(dbName: String,
-                     private[chronicler] val credentials: Option[InfluxCredentials],
-                     gzipped: Boolean)
-                    (private[chronicler] implicit val ex: ExecutionContext,
-                     private[akka] implicit val actorSystem: ActorSystem,
-                     private[akka] implicit val mat: ActorMaterializer,
-                     private[akka] implicit val connection: Connection)
-  extends DatabaseApi[Future, RequestEntity](dbName)
-    with AkkaWriter
-    with AkkaReader
-    with Serializable[RequestEntity]
-    with Executable
-    with HasCredentials {
+final class Database(dbName: String, gzipped: Boolean)
+                    (implicit ex: ExecutionContext, wr: AkkaWriter, rd: AkkaReader)
+  extends DatabaseApi[Future, RequestEntity] with Serializable[RequestEntity] {
 
-  def writeFromFile(filePath: String,
-                    consistency: Option[Consistency] = None,
-                    precision: Option[Precision] = None,
-                    retentionPolicy: Option[String] = None): Future[WriteResult] =
-    writeFromFile(dbName, filePath, consistency, precision, retentionPolicy, gzipped)
+  override def writeFromFile(filePath: String,
+                             consistency: Option[Consistency] = None,
+                             precision: Option[Precision] = None,
+                             retentionPolicy: Option[String] = None): Future[WriteResult] =
+    wr.writeFromFile(dbName, filePath, consistency, precision, retentionPolicy, gzipped)
 
-  def writeNative(point: String,
-                  consistency: Option[Consistency] = None,
-                  precision: Option[Precision] = None,
-                  retentionPolicy: Option[String] = None): Future[WriteResult] =
-    writeTo(dbName, point, consistency, precision, retentionPolicy, gzipped)
+  override def writeNative(point: String,
+                           consistency: Option[Consistency] = None,
+                           precision: Option[Precision] = None,
+                           retentionPolicy: Option[String] = None): Future[WriteResult] =
+    wr.writeTo(dbName, point, consistency, precision, retentionPolicy, gzipped)
 
-  def bulkWriteNative(points: Seq[String],
-                      consistency: Option[Consistency] = None,
-                      precision: Option[Precision] = None,
-                      retentionPolicy: Option[String] = None): Future[WriteResult] =
-    writeTo(dbName, points, consistency, precision, retentionPolicy, gzipped)
+  override def bulkWriteNative(points: Seq[String],
+                               consistency: Option[Consistency] = None,
+                               precision: Option[Precision] = None,
+                               retentionPolicy: Option[String] = None): Future[WriteResult] =
+    wr.writeTo(dbName, points, consistency, precision, retentionPolicy, gzipped)
 
-  def writePoint(point: Point,
-                 consistency: Option[Consistency] = None,
-                 precision: Option[Precision] = None,
-                 retentionPolicy: Option[String] = None): Future[WriteResult] =
-    writeTo(dbName, point, consistency, precision, retentionPolicy, gzipped)
+  override def writePoint(point: Point,
+                          consistency: Option[Consistency] = None,
+                          precision: Option[Precision] = None,
+                          retentionPolicy: Option[String] = None): Future[WriteResult] =
+    wr.writeTo(dbName, point, consistency, precision, retentionPolicy, gzipped)
 
-  def bulkWritePoints(points: Seq[Point],
-                      consistency: Option[Consistency] = None,
-                    precision: Option[Precision] = None,
-                    retentionPolicy: Option[String] = None): Future[WriteResult] =
-    writeTo(dbName, points, consistency, precision, retentionPolicy, gzipped)
+  override def bulkWritePoints(points: Seq[Point],
+                               consistency: Option[Consistency] = None,
+                               precision: Option[Precision] = None,
+                               retentionPolicy: Option[String] = None): Future[WriteResult] =
+    wr.writeTo(dbName, points, consistency, precision, retentionPolicy, gzipped)
 
-  def read[A: ClassTag](query: String,
-                        epoch: Option[Epoch] = None,
-                        pretty: Boolean = false,
-                        chunked: Boolean = false)
-                       (implicit reader: InfluxReader[A]): Future[ReadResult[A]] =
+  override def readJs(query: String,
+                      epoch: Option[Epoch] = None,
+                      pretty: Boolean = false,
+                      chunked: Boolean = false): Future[ReadResult[JArray]] =
+    rd.readJs(dbName, query, epoch, pretty, chunked)
+
+  override def bulkReadJs(queries: Seq[String],
+                          epoch: Option[Epoch] = None,
+                          pretty: Boolean = false,
+                          chunked: Boolean = false): Future[QueryResult[Array[JArray]]] =
+    rd.bulkReadJs(dbName, queries, epoch, pretty, chunked)
+
+
+  override def read[A: ClassTag](query: String,
+                                 epoch: Option[Epoch] = None,
+                                 pretty: Boolean = false,
+                                 chunked: Boolean = false)
+                                (implicit reader: InfluxReader[A]): Future[ReadResult[A]] = {
     readJs(query, epoch, pretty, chunked) map {
       case qr: QueryResult[JArray] => qr.map(reader.read)
       case gr: GroupedResult[JArray] => gr.map(reader.read)
     }
+  }
 }
