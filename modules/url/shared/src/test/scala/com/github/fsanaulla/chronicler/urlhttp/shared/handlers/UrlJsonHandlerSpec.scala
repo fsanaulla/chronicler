@@ -16,17 +16,17 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+
 import com.softwaremill.sttp.Response
 import jawn.ast._
-import org.scalatest.{OptionValues, TryValues}
+import org.scalatest.{FlatSpec, Matchers, OptionValues, TryValues}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UrlJsonHandlerSpec extends FlatSpecWithMatchers with TryValues with OptionValues {
+class UrlJsonHandlerSpec extends FlatSpec with Matchers with TryValues with OptionValues {
 
   val jsHandler = new UrlJsonHandler
 

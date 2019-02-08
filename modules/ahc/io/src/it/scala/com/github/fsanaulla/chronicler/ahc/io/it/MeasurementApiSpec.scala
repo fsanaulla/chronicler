@@ -6,7 +6,7 @@ import com.github.fsanaulla.chronicler.ahc.management.{AhcManagementClient, Infl
 import com.github.fsanaulla.chronicler.ahc.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity, Futures}
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+import org.scalatest.{FlatSpec, Matchers}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 28.09.17
   */
-class MeasurementApiSpec extends FlatSpecWithMatchers with Futures with DockerizedInfluxDB {
+class MeasurementApiSpec extends FlatSpec with Matchers with Futures with DockerizedInfluxDB {
 
   val safeDB = "db"
   val measName = "meas"

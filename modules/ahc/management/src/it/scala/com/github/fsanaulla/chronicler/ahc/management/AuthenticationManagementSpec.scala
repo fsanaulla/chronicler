@@ -4,8 +4,7 @@ import com.github.fsanaulla.chronicler.core.enums.Privileges
 import com.github.fsanaulla.chronicler.core.model.{AuthorizationException, UserPrivilegesInfo}
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.OkResult
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
-import org.scalatest.OptionValues
+import org.scalatest.{FlatSpec, Matchers, OptionValues}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -14,7 +13,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 17.08.17
   */
-class AuthenticationManagementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with Futures with OptionValues {
+class AuthenticationManagementSpec extends FlatSpec with Matchers with DockerizedInfluxDB with Futures with OptionValues {
 
   val userDB = "db"
   val userName = "some_user"

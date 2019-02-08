@@ -16,9 +16,10 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
-import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers}
+import org.scalatest.{FlatSpec, Matchers}
 
-class UrlQueryBuilderSpec extends FlatSpecWithMatchers with EmptyCredentials {
+
+class UrlQueryBuilderSpec extends FlatSpec with Matchers {
 
   val host = "localhost"
   val port = 8080

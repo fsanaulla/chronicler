@@ -18,18 +18,17 @@ package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.github.fsanaulla.chronicler.urlhttp.shared.Extensions.RichString
 import com.softwaremill.sttp.Response
 import jawn.ast._
-import org.scalatest.TryValues
+import org.scalatest.{FlatSpec, Matchers, TryValues}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UrlResponseHandlerSpec extends FlatSpecWithMatchers with TryValues {
+class UrlResponseHandlerSpec extends FlatSpec with Matchers with TryValues {
 
   implicit val p: JParser.type = JParser
   val jsHandler = new UrlResponseHandler

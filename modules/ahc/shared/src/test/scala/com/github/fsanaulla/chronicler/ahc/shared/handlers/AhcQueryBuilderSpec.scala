@@ -16,9 +16,10 @@
 
 package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
-import com.github.fsanaulla.chronicler.testing.unit.{EmptyCredentials, FlatSpecWithMatchers}
+import org.scalatest.{FlatSpec, Matchers}
 
-class AhcQueryBuilderSpec extends FlatSpecWithMatchers with EmptyCredentials {
+
+class AhcQueryBuilderSpec extends FlatSpec with Matchers {
 
   val host = "localhost"
   val port = 8080

@@ -5,7 +5,7 @@ import _root_.akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, InfluxMng}
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.NoContentResult
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+import org.scalatest.{FlatSpecLike, Matchers}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -16,7 +16,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class SystemManagementSpec
   extends TestKit(ActorSystem())
-    with FlatSpecWithMatchers
+    with FlatSpecLike
+    with Matchers
     with Futures
     with DockerizedInfluxDB {
 

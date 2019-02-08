@@ -6,14 +6,13 @@ import com.github.fsanaulla.chronicler.core.model.Point
 import com.github.fsanaulla.chronicler.testing.it.FakeEntity.fmt
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity}
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.github.fsanaulla.chronicler.urlhttp.SampleEntitys.largeMultiJsonEntity
 import com.github.fsanaulla.chronicler.urlhttp.io.api.Database
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
 import jawn.ast.{JArray, JNum}
-import org.scalatest.{OptionValues, TryValues}
+import org.scalatest.{FlatSpec, Matchers, OptionValues, TryValues}
 
 /**
   * Created by
@@ -21,7 +20,8 @@ import org.scalatest.{OptionValues, TryValues}
   * Date: 28.09.17
   */
 class DatabaseApiSpec
-  extends FlatSpecWithMatchers
+  extends FlatSpec
+    with Matchers
     with DockerizedInfluxDB
     with TryValues
     with OptionValues {

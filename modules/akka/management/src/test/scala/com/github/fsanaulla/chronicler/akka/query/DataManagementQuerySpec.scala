@@ -21,7 +21,8 @@ import com.github.fsanaulla.chronicler.akka.TestHelper._
 import com.github.fsanaulla.chronicler.akka.shared.handlers.AkkaQueryBuilder
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.DataManagementQuery
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+import org.scalatest.{FlatSpec, Matchers}
+
 
 
 /**
@@ -29,7 +30,7 @@ import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class DataManagementQuerySpec extends FlatSpecWithMatchers with DataManagementQuery[Uri] {
+class DataManagementQuerySpec extends FlatSpec with Matchers with DataManagementQuery[Uri] {
 
   trait AuthEnv {
     val credentials = Some(InfluxCredentials("admin", "admin"))

@@ -17,9 +17,10 @@
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+import org.scalatest.{FlatSpec, Matchers}
 
-class AkkaQueryBuilderSpec extends FlatSpecWithMatchers {
+
+class AkkaQueryBuilderSpec extends FlatSpec with Matchers {
 
   implicit val credentials: Option[InfluxCredentials] = None
   val qb: AkkaQueryBuilder = new AkkaQueryBuilder(credentials)

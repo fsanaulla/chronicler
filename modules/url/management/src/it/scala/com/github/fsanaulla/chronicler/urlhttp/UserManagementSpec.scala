@@ -4,16 +4,15 @@ import com.github.fsanaulla.chronicler.core.enums.Privileges
 import com.github.fsanaulla.chronicler.core.model.{UserInfo, UserPrivilegesInfo}
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.OkResult
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
-import org.scalatest.TryValues
+import org.scalatest.{FlatSpec, Matchers, TryValues}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UserManagementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with TryValues {
+class UserManagementSpec extends FlatSpec with Matchers with DockerizedInfluxDB with TryValues {
 
   val userDB = "db"
   val userName = "Martin"

@@ -7,7 +7,7 @@ import com.github.fsanaulla.chronicler.core.enums.Privileges
 import com.github.fsanaulla.chronicler.core.model.{UserInfo, UserPrivilegesInfo}
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+import org.scalatest.{FlatSpecLike, Matchers}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -18,7 +18,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class UserManagementSpec
   extends TestKit(ActorSystem())
-    with FlatSpecWithMatchers
+    with FlatSpecLike
+    with Matchers
     with Futures
     with DockerizedInfluxDB {
 

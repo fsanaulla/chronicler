@@ -16,11 +16,11 @@
 
 package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+
 import com.softwaremill.sttp.Response
 import jawn.ast._
-import org.scalatest.OptionValues
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.{FlatSpec, Matchers, OptionValues}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -29,7 +29,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class AhcJsonHandlerSpec extends FlatSpecWithMatchers with ScalaFutures with OptionValues {
+class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with OptionValues {
 
   val jsHandler = new AhcJsonHandler()
   val singleStrJson = """{

@@ -23,9 +23,9 @@ import _root_.akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.shared.Extensions.RichStringOps
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import jawn.ast.{JArray, JNum, JString}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.{FlatSpecLike, Matchers}
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
@@ -36,7 +36,8 @@ import scala.language.postfixOps
   */
 class AkkaResponseHandlerSpec
   extends TestKit(ActorSystem())
-    with FlatSpecWithMatchers
+    with FlatSpecLike
+    with Matchers
     with ScalaFutures
     with IntegrationPatience {
 

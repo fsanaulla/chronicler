@@ -21,14 +21,15 @@ import com.github.fsanaulla.chronicler.akka.TestHelper._
 import com.github.fsanaulla.chronicler.akka.shared.handlers.AkkaQueryBuilder
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.ShardManagementQuery
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+import org.scalatest.{FlatSpec, Matchers}
+
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-class ShardManagementQuerySpec extends FlatSpecWithMatchers with ShardManagementQuery[Uri] {
+class ShardManagementQuerySpec extends FlatSpec with Matchers with ShardManagementQuery[Uri] {
 
   trait AuthEnv {
     val credentials = Some(InfluxCredentials("admin", "admin"))

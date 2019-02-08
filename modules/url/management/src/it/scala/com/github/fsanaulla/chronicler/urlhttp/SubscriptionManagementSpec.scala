@@ -5,16 +5,15 @@ import com.github.fsanaulla.chronicler.core.enums.{Destination, Destinations}
 import com.github.fsanaulla.chronicler.core.model.Subscription
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.OkResult
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
-import org.scalatest.TryValues
+import org.scalatest.{FlatSpec, Matchers, TryValues}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 21.08.17
   */
-class SubscriptionManagementSpec extends FlatSpecWithMatchers with DockerizedInfluxDB with TryValues {
+class SubscriptionManagementSpec extends FlatSpec with Matchers with DockerizedInfluxDB with TryValues {
 
   val subName = "subs"
   val dbName = "async_subs_spec_db"

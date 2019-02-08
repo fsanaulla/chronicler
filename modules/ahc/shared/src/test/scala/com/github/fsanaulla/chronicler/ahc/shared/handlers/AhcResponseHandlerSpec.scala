@@ -18,11 +18,11 @@ package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.softwaremill.sttp.Response
 import jawn.ast._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Second, Seconds, Span}
+import org.scalatest.{FlatSpec, Matchers}
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
@@ -33,7 +33,7 @@ import scala.language.postfixOps
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class AhcResponseHandlerSpec extends FlatSpecWithMatchers with ScalaFutures {
+class AhcResponseHandlerSpec extends FlatSpec with Matchers with ScalaFutures {
 
   implicit val pc: PatienceConfig = PatienceConfig(Span(20, Seconds), Span(1, Second))
 

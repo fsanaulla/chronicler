@@ -22,14 +22,15 @@ import com.github.fsanaulla.chronicler.akka.shared.handlers.AkkaQueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.Privileges
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.UserManagementQuery
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
+import org.scalatest.{FlatSpec, Matchers}
+
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 21.08.17
   */
-class UserManagementQuerySpec extends FlatSpecWithMatchers with UserManagementQuery[Uri] {
+class UserManagementQuerySpec extends FlatSpec with Matchers with UserManagementQuery[Uri] {
 
   trait AuthEnv {
     val credentials = Some(InfluxCredentials("admin", "admin"))

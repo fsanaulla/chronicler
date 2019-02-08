@@ -18,16 +18,16 @@ package com.github.fsanaulla.chronicler.urlhttp.query
 
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.QueriesManagementQuery
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.UrlQueryBuilder
 import com.softwaremill.sttp.Uri
+import org.scalatest.{FlatSpec, Matchers}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
-class QueriesManagementQuerySpec extends FlatSpecWithMatchers with QueriesManagementQuery[Uri] {
+class QueriesManagementQuerySpec extends FlatSpec with Matchers with QueriesManagementQuery[Uri] {
 
   trait Env {
     val host = "localhost"

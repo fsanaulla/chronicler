@@ -22,7 +22,6 @@ import com.github.fsanaulla.chronicler.akka.shared.handlers.AkkaQueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.{Consistencies, Epochs, Precisions}
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 
 import scala.language.implicitConversions
 
@@ -31,7 +30,7 @@ import scala.language.implicitConversions
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class DatabaseOperationQuerySpec extends FlatSpecWithMatchers with DatabaseOperationQuery[Uri] {
+class DatabaseOperationQuerySpec extends FlatSpec with Matchers with DatabaseOperationQuery[Uri] {
 
   trait AuthEnv {
     val credentials = Some(InfluxCredentials("admin", "admin"))

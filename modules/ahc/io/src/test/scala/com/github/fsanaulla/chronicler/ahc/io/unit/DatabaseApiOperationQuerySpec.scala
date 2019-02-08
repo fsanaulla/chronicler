@@ -20,8 +20,8 @@ import com.github.fsanaulla.chronicler.ahc.shared.handlers.AhcQueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.{Consistencies, Epochs, Precisions}
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.chronicler.testing.unit.FlatSpecWithMatchers
 import com.softwaremill.sttp.Uri
+import org.scalatest.{FlatSpec, Matchers}
 
 import scala.language.implicitConversions
 
@@ -30,7 +30,7 @@ import scala.language.implicitConversions
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class DatabaseApiOperationQuerySpec extends FlatSpecWithMatchers with DatabaseOperationQuery[Uri] {
+class DatabaseApiOperationQuerySpec extends FlatSpec with Matchers with DatabaseOperationQuery[Uri] {
 
   trait Env {
     val host = "localhost"
