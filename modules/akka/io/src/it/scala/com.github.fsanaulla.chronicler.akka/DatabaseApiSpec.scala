@@ -1,5 +1,7 @@
 package com.github.fsanaulla.chronicler.akka
 
+import java.io.File
+
 import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.SampleEntitys._
@@ -45,7 +47,7 @@ class DatabaseApiSpec
   "Database API" should "write data from file" in {
     mng.createDatabase(testDB).futureValue shouldEqual OkResult
 
-    db.writeFromFile(getClass.getResource("/points.txt").getPath)
+    db.writeFromFile(new File(getClass.getResource("/points.txt").getPath))
       .futureValue shouldEqual NoContentResult
 
     db.readJs("SELECT * FROM test1")
