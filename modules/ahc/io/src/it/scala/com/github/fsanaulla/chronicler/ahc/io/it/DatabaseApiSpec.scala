@@ -1,5 +1,7 @@
 package com.github.fsanaulla.chronicler.ahc.io.it
 
+import java.io.File
+
 import com.github.fsanaulla.chronicler.ahc.io.api.Database
 import com.github.fsanaulla.chronicler.ahc.io.{AhcIOClient, InfluxIO}
 import com.github.fsanaulla.chronicler.ahc.management.{AhcManagementClient, InfluxMng}
@@ -37,7 +39,7 @@ class DatabaseApiSpec extends FlatSpec with Matchers with Futures with Dockerize
   it should "write data from file" in {
     mng.createDatabase(testDB).futureValue shouldEqual OkResult
 
-    db.writeFromFile(getClass.getResource("/points.txt").getPath)
+    db.writeFromFile(new File(getClass.getResource("/points.txt").getPath))
       .futureValue shouldEqual NoContentResult
 
     db.readJs("SELECT * FROM test1")
