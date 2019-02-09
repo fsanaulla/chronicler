@@ -17,12 +17,11 @@
 package com.github.fsanaulla.chronicler.ahc.shared
 
 import com.github.fsanaulla.chronicler.core.model.WriteResult
-import com.github.fsanaulla.chronicler.core.model.WriteResult.successful
 
 import scala.concurrent.Future
 
 package object implicits {
   implicit final class WriteResultOps(private val wr: WriteResult.type) extends AnyVal {
-    def successfulFuture(code: Int): Future[WriteResult] = Future.successful(successful(code))
+    def successfulFuture(code: Int): Future[WriteResult] = Future.successful(wr.successful(code))
   }
 }
