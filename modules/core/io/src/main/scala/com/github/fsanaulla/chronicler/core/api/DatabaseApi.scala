@@ -16,6 +16,8 @@
 
 package com.github.fsanaulla.chronicler.core.api
 
+import java.io.File
+
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
 import jawn.ast.JArray
@@ -31,46 +33,46 @@ trait DatabaseApi[F[_], E] {
 
   def read[A: ClassTag](query: String,
                         epoch: Option[Epoch],
-                        pretty: Boolean = false,
-                        chunked: Boolean = false)(implicit reader: InfluxReader[A]): F[ReadResult[A]]
+                        pretty: Boolean,
+                        chunked: Boolean)(implicit reader: InfluxReader[A]): F[ReadResult[A]]
 
-  def writeFromFile(filePath: String,
+  def writeFromFile(file: File,
                     consistency: Option[Consistency],
                     precision: Option[Precision],
-                    retentionPolicy: Option[String] = None): F[WriteResult]
+                    retentionPolicy: Option[String]): F[WriteResult]
 
 
   def writeNative(point: String,
                   consistency: Option[Consistency],
                   precision: Option[Precision],
-                  retentionPolicy: Option[String] = None): F[WriteResult]
+                  retentionPolicy: Option[String]): F[WriteResult]
 
 
   def bulkWriteNative(points: Seq[String],
                       consistency: Option[Consistency],
                       precision: Option[Precision],
-                      retentionPolicy: Option[String] = None): F[WriteResult]
+                      retentionPolicy: Option[String]): F[WriteResult]
 
 
   def writePoint(point: Point,
                  consistency: Option[Consistency],
                  precision: Option[Precision],
-                 retentionPolicy: Option[String] = None): F[WriteResult]
+                 retentionPolicy: Option[String]): F[WriteResult]
 
 
   def bulkWritePoints(points: Seq[Point],
                       consistency: Option[Consistency],
                       precision: Option[Precision],
-                      retentionPolicy: Option[String] = None): F[WriteResult]
+                      retentionPolicy: Option[String]): F[WriteResult]
 
 
   def readJs(query: String,
-                   epoch: Option[Epoch] = None,
-                   pretty: Boolean = false,
-                   chunked: Boolean = false): F[ReadResult[JArray]]
+             epoch: Option[Epoch],
+             pretty: Boolean,
+             chunked: Boolean): F[ReadResult[JArray]]
 
   def bulkReadJs(queries: Seq[String],
-                 epoch: Option[Epoch] = None,
-                 pretty: Boolean = false,
-                 chunked: Boolean = false): F[QueryResult[Array[JArray]]]
+                 epoch: Option[Epoch],
+                 pretty: Boolean,
+                 chunked: Boolean): F[QueryResult[Array[JArray]]]
 }

@@ -16,6 +16,8 @@
 
 package com.github.fsanaulla.chronicler.core.io
 
+import java.io.File
+
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
 import com.github.fsanaulla.chronicler.core.model.WriteResult
 
@@ -54,7 +56,7 @@ trait WriteOperations[F[_], E] {
     * @return                - execution result
     */
   private[chronicler] def writeFromFile(dbName: String,
-                                        filePath: String,
+                                        filePath: File,
                                         consistency: Option[Consistency],
                                         precision: Option[Precision],
                                         retentionPolicy: Option[String],
