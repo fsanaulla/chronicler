@@ -32,7 +32,6 @@ private[ahc] final class AhcReader(implicit qb: QueryBuilder[Uri],
                                    rh: ResponseHandler[Future, Response[JValue]],
                                    ec: ExecutionContext)
   extends DatabaseOperationQuery[Uri] with ReadOperations[Future] {
-  import re.buildRequest
 
   private[chronicler] override def readJs(dbName: String,
                                           query: String,
@@ -40,7 +39,7 @@ private[ahc] final class AhcReader(implicit qb: QueryBuilder[Uri],
                                           pretty: Boolean,
                                           chunked: Boolean): Future[ReadResult[JArray]] = {
     val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
-    val executionResult = re.execute(uri)
+    val executionResult = re.execute(re.buildRequest(uri))
     query match {
       case q: String if q.contains("GROUP BY") =>
         executionResult.flatMap(rh.toGroupedJsResult)
@@ -55,6 +54,6 @@ private[ahc] final class AhcReader(implicit qb: QueryBuilder[Uri],
                                               pretty: Boolean,
                                               chunked: Boolean): Future[QueryResult[Array[JArray]]] = {
     val uri = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)
-    re.execute(uri).flatMap(rh.toBulkQueryJsResult)
+    re.execute(re.buildRequest(uri)).flatMap(rh.toBulkQueryJsResult)
   }
 }

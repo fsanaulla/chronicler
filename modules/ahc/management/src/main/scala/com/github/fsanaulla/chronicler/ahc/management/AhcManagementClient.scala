@@ -42,8 +42,6 @@ final class AhcManagementClient(host: String,
     def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
   }
 
-  import re.buildRequest
-
   override def ping: Future[WriteResult] =
-    re.execute(qb.buildQuery("/ping", Map.empty[String, String])).flatMap(rh.toResult)
+    re.execute(re.buildRequest(qb.buildQuery("/ping", Map.empty[String, String]))).flatMap(rh.toResult)
 }

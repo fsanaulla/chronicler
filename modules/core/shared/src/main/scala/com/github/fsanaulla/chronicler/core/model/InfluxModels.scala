@@ -31,7 +31,7 @@ final case class ShardGroup(id: Int, dbName: String, rpName: String, startTime: 
 final case class Shard(id: Int, dbName: String, rpName: String, shardGroup: Int, startTime: String, endTime: String, expiryTime: String, owners: String)
 final case class Subscription(rpName: String, subsName: String, destType: Destination, addresses: Seq[String])
 final case class QueryInfo(queryId: Int, query: String, dbName: String, duration: String)
-final case class ContinuousQueryInfo(dbName: String, querys: Array[ContinuousQuery])
+final case class ContinuousQueryInfo(dbName: String, queries: Array[ContinuousQuery])
 final case class ShardGroupsInfo(shardGroupName: String, seq: Seq[ShardGroup])
 final case class ShardInfo(dbName: String, shards: Array[Shard])
 final case class SubscriptionInfo(dbName: String, subscriptions: Array[Subscription])

@@ -30,18 +30,20 @@ private[urlhttp] class UrlReader(implicit qb: UrlQueryBuilder,
                                  re: UrlRequestExecutor,
                                  rh: UrlResponseHandler)
   extends DatabaseOperationQuery[Uri] with ReadOperations[Try] {
-  import re.buildRequest
 
   private[chronicler] override def readJs(dbName: String,
                                           query: String,
                                           epoch: Option[Epoch],
                                           pretty: Boolean,
                                           chunked: Boolean): Try[ReadResult[JArray]] = {
-    val executionResult = re.execute(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked))
+    val executionResult =
+      re.execute(re.buildRequest(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)))
 
     query match {
-      case q: String if q.contains("GROUP BY") => executionResult.flatMap(rh.toGroupedJsResult)
-      case _ => executionResult.flatMap(rh.toQueryJsResult)
+      case q: String if q.contains("GROUP BY") =>
+        executionResult.flatMap(rh.toGroupedJsResult)
+      case _ =>
+        executionResult.flatMap(rh.toQueryJsResult)
     }
   }
 
@@ -50,7 +52,8 @@ private[urlhttp] class UrlReader(implicit qb: UrlQueryBuilder,
                                               epoch: Option[Epoch],
                                               pretty: Boolean,
                                               chunked: Boolean): Try[QueryResult[Array[JArray]]] = {
-    val query = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)
+    val query =
+      re.buildRequest(readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked))
     re.execute(query).flatMap(rh.toBulkQueryJsResult)
   }
 }
