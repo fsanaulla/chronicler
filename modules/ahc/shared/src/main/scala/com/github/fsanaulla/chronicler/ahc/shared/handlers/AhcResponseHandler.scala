@@ -56,7 +56,10 @@ private[ahc] class AhcResponseHandler(implicit ex: ExecutionContext)
           .map(getOptInfluxInfo[A])
           .map {
             case Some(arr) =>
-              QueryResult.successful[B](code, arr.map(e => f(e._1, e._2)))
+              QueryResult.successful[B](
+                code,
+                arr.map { case (dbName, queries) => f(dbName, queries) }
+              )
             case _ =>
               QueryResult.empty[B](code)
           }

@@ -87,6 +87,7 @@ package object implicits {
   implicit object UserPrivilegesInfoInfluxReader extends InfluxReader[UserPrivilegesInfo] {
     override def read(js: JArray): UserPrivilegesInfo = js.vs match {
       case Array(username: JValue, admin: JValue) =>
+        // unsafe
         UserPrivilegesInfo(username, Privileges.withName(admin))
       case _ =>
         throw new DeserializationException(s"Can't deserialize $UserPrivilegesInfo object")

@@ -61,6 +61,6 @@ private[chronicler] trait ContinuousQueryManagement[F[_], Req, Resp, Uri, Entity
   final def dropCQ(dbName: String, cqName: String): F[WriteResult] =
     fm.flatMap(re.execute(dropCQQuery(dbName, cqName)))(rh.toResult)
 
-  private def validCQQuery(query: String): Boolean =
+  private[this] def validCQQuery(query: String): Boolean =
     query.contains("INTO") && query.contains("GROUP BY")
 }
