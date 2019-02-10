@@ -86,9 +86,10 @@ package object implicits {
 
   implicit object UserPrivilegesInfoInfluxReader extends InfluxReader[UserPrivilegesInfo] {
     override def read(js: JArray): UserPrivilegesInfo = js.vs match {
-      case Array(username: JValue, admin: JValue) =>
-        // unsafe
-        UserPrivilegesInfo(username, Privileges.withName(admin))
+      case Array(username: JValue, privilege: JValue) =>
+        Privileges.withNameOption(privilege).fold(
+          throw new IllegalArgumentException(s"Unsupported privilege: $privilege")
+        )(p => UserPrivilegesInfo(username, p))
       case _ =>
         throw new DeserializationException(s"Can't deserialize $UserPrivilegesInfo object")
     }
@@ -133,7 +134,9 @@ package object implicits {
   implicit object SubscriptionInfluxReader extends InfluxReader[Subscription] {
     override def read(js: JArray): Subscription = js.vs match {
       case Array(rpName: JValue, subsName: JValue, destType: JValue, JArray(elems)) =>
-        Subscription(rpName, subsName, Destinations.withName(destType), elems.map(_.asString))
+        Destinations.withNameOption(destType).fold(
+          throw new IllegalArgumentException(s"Unsupported destination type: $destType")
+        )(d => Subscription(rpName, subsName, d, elems.map(_.asString)))
       case _ =>
         throw new DeserializationException(s"Can't deserialize $Subscription object")
     }
