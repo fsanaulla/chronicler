@@ -85,10 +85,6 @@ final class Database(dbName: String, gzipped: Boolean)
                                  epoch: Option[Epoch] = None,
                                  pretty: Boolean = false,
                                  chunked: Boolean = false)
-                                (implicit reader: InfluxReader[A]): Future[ReadResult[A]] = {
-    readJs(query, epoch, pretty, chunked) map {
-      case qr: QueryResult[JArray] => qr.map(reader.read)
-      case gr: GroupedResult[JArray] => gr.map(reader.read)
-    }
-  }
+                                (implicit reader: InfluxReader[A]): Future[ReadResult[A]] =
+    readJs(query, epoch, pretty, chunked).map(_.map(reader.read))
 }
