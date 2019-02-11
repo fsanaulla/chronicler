@@ -37,6 +37,7 @@ sealed trait InfluxResult extends scala.Serializable {
 sealed trait ReadResult[A] extends InfluxResult {
   def queryResult: Array[A]
   def groupedResult: Array[(Array[String], A)]
+  def map[B: ClassTag](f: A => B): ReadResult[B]
 }
 
 /**

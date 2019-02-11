@@ -20,7 +20,6 @@ import com.github.fsanaulla.chronicler.core.api.MeasurementApi
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.urlhttp.io.models.{UrlReader, UrlWriter}
-import jawn.ast.JArray
 
 import scala.reflect.ClassTag
 import scala.util.Try
@@ -30,11 +29,11 @@ final class Measurement[E: ClassTag](dbName: String,
                                      gzipped: Boolean)(implicit wr: UrlWriter, rd: UrlReader)
   extends MeasurementApi[Try, E] with PointTransformer {
 
-  def write(entity: E,
-            consistency: Option[Consistency] = None,
-            precision: Option[Precision] = None,
-            retentionPolicy: Option[String] = None)
-           (implicit writer: InfluxWriter[E]): Try[WriteResult] =
+  override def write(entity: E,
+                     consistency: Option[Consistency] = None,
+                     precision: Option[Precision] = None,
+                     retentionPolicy: Option[String] = None)
+                    (implicit writer: InfluxWriter[E]): Try[WriteResult] =
     wr.writeTo(
       dbName,
       toPoint(measurementName, writer.write(entity)),
@@ -45,13 +44,14 @@ final class Measurement[E: ClassTag](dbName: String,
     )
 
 
-  def bulkWrite(entitys: Seq[E],
-                consistency: Option[Consistency] = None,
-                precision: Option[Precision] = None,
-                retentionPolicy: Option[String] = None)(implicit writer: InfluxWriter[E]): Try[WriteResult] =
+  override def bulkWrite(entities: Seq[E],
+                         consistency: Option[Consistency] = None,
+                         precision: Option[Precision] = None,
+                         retentionPolicy: Option[String] = None)
+                        (implicit writer: InfluxWriter[E]): Try[WriteResult] =
     wr.writeTo(
       dbName,
-      toPoints(measurementName, entitys.map(writer.write)),
+      toPoints(measurementName, entities.map(writer.write)),
       consistency,
       precision,
       retentionPolicy,
@@ -62,10 +62,6 @@ final class Measurement[E: ClassTag](dbName: String,
   def read(query: String,
            epoch: Option[Epoch] = None,
            pretty: Boolean = false,
-           chunked: Boolean = false)(implicit reader: InfluxReader[E]): Try[ReadResult[E]] = {
-    rd.readJs(dbName, query, epoch, pretty, chunked) map {
-      case qr: QueryResult[JArray] => qr.map(reader.read)
-      case gr: GroupedResult[JArray] => gr.map(reader.read)
-    }
-  }
+           chunked: Boolean = false)(implicit reader: InfluxReader[E]): Try[ReadResult[E]] =
+    rd.readJs(dbName, query, epoch, pretty, chunked).map(_.map(reader.read))
 }

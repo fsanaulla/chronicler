@@ -16,6 +16,8 @@
 
 package com.github.fsanaulla.chronicler.ahc.io.models
 
+import java.io.File
+
 import com.github.fsanaulla.chronicler.ahc.shared.alias.Request
 import com.github.fsanaulla.chronicler.ahc.shared.formats._
 import com.github.fsanaulla.chronicler.core.encoding._
@@ -56,7 +58,7 @@ private[ahc] final class AhcWriter(implicit qb: QueryBuilder[Uri],
 
   private[chronicler]
   override def writeFromFile(dbName: String,
-                             filePath: String,
+                             file: File,
                              consistency: Option[Consistency],
                              precision: Option[Precision],
                              retentionPolicy: Option[String],
@@ -65,7 +67,7 @@ private[ahc] final class AhcWriter(implicit qb: QueryBuilder[Uri],
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
     val req = sttp
       .post(uri)
-      .body(Source.fromFile(filePath).getLines().mkString("\n"))
+      .body(Source.fromFile(file).getLines().mkString("\n"))
       .response(asJson)
     val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
 

@@ -56,7 +56,7 @@ private[akka] final class AkkaResponseHandler(implicit mat: ActorMaterializer,
 
   private[chronicler]
   override def toComplexQueryResult[A: ClassTag, B: ClassTag](response: HttpResponse,
-                                                              f: (String, Array[A]) => B)
+                                                              buildF: (String, Array[A]) => B)
                                                              (implicit reader: InfluxReader[A]): Future[QueryResult[B]] = {
     response.status.intValue() match {
       case code if isSuccessful(code) =>
@@ -64,7 +64,10 @@ private[akka] final class AkkaResponseHandler(implicit mat: ActorMaterializer,
           .map(getOptInfluxInfo[A])
           .map {
             case Some(arr) =>
-              QueryResult.successful[B](code, arr.map(e => f(e._1, e._2)))
+              QueryResult.successful[B](
+                code,
+                arr.map { case (dbName, result) => buildF(dbName, result) }
+              )
             case _ =>
               QueryResult.empty[B](code)
           }

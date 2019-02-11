@@ -16,6 +16,8 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.io.api
 
+import java.io.File
+
 import com.github.fsanaulla.chronicler.core.api.DatabaseApi
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
@@ -30,34 +32,34 @@ final class Database(dbName: String, gzipped: Boolean)
                     (implicit wr: UrlWriter, rd: UrlReader)
   extends DatabaseApi[Try, String] with Serializable[String] {
 
-  def writeFromFile(filePath: String,
-                    consistency: Option[Consistency] = None,
-                    precision: Option[Precision] = None,
-                    retentionPolicy: Option[String] = None): Try[WriteResult] =
-    wr.writeFromFile(dbName, filePath, consistency, precision, retentionPolicy, gzipped)
+  override def writeFromFile(file: File,
+                             consistency: Option[Consistency] = None,
+                             precision: Option[Precision] = None,
+                             retentionPolicy: Option[String] = None): Try[WriteResult] =
+    wr.writeFromFile(dbName, file, consistency, precision, retentionPolicy, gzipped)
 
-  def writeNative(point: String,
-                  consistency: Option[Consistency] = None,
-                  precision: Option[Precision] = None,
-                  retentionPolicy: Option[String] = None): Try[WriteResult] =
+  override def writeNative(point: String,
+                           consistency: Option[Consistency] = None,
+                           precision: Option[Precision] = None,
+                           retentionPolicy: Option[String] = None): Try[WriteResult] =
     wr.writeTo(dbName, point, consistency, precision, retentionPolicy, gzipped)
 
-  def bulkWriteNative(points: Seq[String],
-                      consistency: Option[Consistency] = None,
-                      precision: Option[Precision] = None,
-                      retentionPolicy: Option[String] = None): Try[WriteResult] =
+  override def bulkWriteNative(points: Seq[String],
+                               consistency: Option[Consistency] = None,
+                               precision: Option[Precision] = None,
+                               retentionPolicy: Option[String] = None): Try[WriteResult] =
     wr.writeTo(dbName, points, consistency, precision, retentionPolicy, gzipped)
 
-  def writePoint(point: Point,
-                 consistency: Option[Consistency] = None,
-                 precision: Option[Precision] = None,
-                 retentionPolicy: Option[String] = None): Try[WriteResult] =
+  override def writePoint(point: Point,
+                          consistency: Option[Consistency] = None,
+                          precision: Option[Precision] = None,
+                          retentionPolicy: Option[String] = None): Try[WriteResult] =
     wr.writeTo(dbName, point, consistency, precision, retentionPolicy, gzipped)
 
-  def bulkWritePoints(points: Seq[Point],
-                      consistency: Option[Consistency] = None,
-                      precision: Option[Precision] = None,
-                      retentionPolicy: Option[String] = None): Try[WriteResult] =
+  override def bulkWritePoints(points: Seq[Point],
+                               consistency: Option[Consistency] = None,
+                               precision: Option[Precision] = None,
+                               retentionPolicy: Option[String] = None): Try[WriteResult] =
     wr.writeTo(dbName, points, consistency, precision, retentionPolicy, gzipped)
 
   override def readJs(query: String,
@@ -77,10 +79,6 @@ final class Database(dbName: String, gzipped: Boolean)
                                  epoch: Option[Epoch] = None,
                                  pretty: Boolean = false,
                                  chunked: Boolean = false)
-                                (implicit reader: InfluxReader[A]): Try[ReadResult[A]] = {
-    readJs(query, epoch, pretty, chunked) map {
-      case qr: QueryResult[JArray] => qr.map(reader.read)
-      case gr: GroupedResult[JArray] => gr.map(reader.read)
-    }
-  }
+                                (implicit reader: InfluxReader[A]): Try[ReadResult[A]] =
+    readJs(query, epoch, pretty, chunked).map(_.map(reader.read))
 }

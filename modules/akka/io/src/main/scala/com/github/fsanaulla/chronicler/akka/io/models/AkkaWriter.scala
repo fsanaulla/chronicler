@@ -16,7 +16,7 @@
 
 package com.github.fsanaulla.chronicler.akka.io.models
 
-import java.nio.file.Paths
+import java.io.File
 
 import akka.http.scaladsl.model._
 import akka.stream.scaladsl.FileIO
@@ -63,7 +63,7 @@ private[akka] class AkkaWriter(implicit qb: AkkaQueryBuilder,
   }
 
   private[chronicler] override def writeFromFile(dbName: String,
-                                                 filePath: String,
+                                                 file: File,
                                                  consistency: Option[Consistency],
                                                  precision: Option[Precision],
                                                  retentionPolicy: Option[String],
@@ -78,7 +78,7 @@ private[akka] class AkkaWriter(implicit qb: AkkaQueryBuilder,
       ),
       method = HttpMethods.POST,
       headers = if (gzipped) gzipEncoding :: Nil else Nil,
-      entity = HttpEntity(MediaTypes.`application/octet-stream`, FileIO.fromPath(Paths.get(filePath), 1024))
+      entity = HttpEntity(MediaTypes.`application/octet-stream`, FileIO.fromPath(file.toPath, 1024))
     )
 
     re.execute(request).flatMap(rh.toResult)

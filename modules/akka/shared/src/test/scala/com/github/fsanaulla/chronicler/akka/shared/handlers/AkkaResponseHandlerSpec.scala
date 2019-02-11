@@ -216,9 +216,9 @@ class AkkaResponseHandlerSpec
     }
   """.toResponse
 
-    val cqi = rh.toCqQueryResult(cqResponse).futureValue.queryResult.filter(_.querys.nonEmpty).head
+    val cqi = rh.toCqQueryResult(cqResponse).futureValue.queryResult.filter(_.queries.nonEmpty).head
     cqi.dbName shouldEqual "mydb"
-    cqi.querys.head shouldEqual ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")
+    cqi.queries.head shouldEqual ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")
   }
 
   it should "extract optional error message" in {

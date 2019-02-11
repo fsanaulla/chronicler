@@ -36,7 +36,7 @@ private[akka] abstract class AkkaJsonHandler(implicit mat: ActorMaterializer) ex
   implicit val ec: ExecutionContext
 
   /** Custom Unmarshaller for Jawn JSON */
-  private implicit val unm: Unmarshaller[HttpEntity, JValue] = {
+  private[this] implicit val unm: Unmarshaller[HttpEntity, JValue] = {
     Unmarshaller.withMaterializer {
       implicit ec =>
         implicit mat =>
