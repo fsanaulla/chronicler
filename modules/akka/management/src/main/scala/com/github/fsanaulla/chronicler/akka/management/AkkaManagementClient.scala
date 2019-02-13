@@ -41,8 +41,6 @@ final class AkkaManagementClient(host: String,
     def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
   }
 
-  import re.buildRequest
-
   override def ping: Future[WriteResult] =
-    fm.flatMap(re.execute(Uri("/ping")))(rh.toResult)
+    fm.flatMap(re.execute(re.buildRequest(Uri("/ping"))))(rh.toResult)
 }

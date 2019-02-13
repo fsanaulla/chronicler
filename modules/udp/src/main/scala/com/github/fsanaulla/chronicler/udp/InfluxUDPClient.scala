@@ -34,8 +34,8 @@ final class InfluxUDPClient(host: String, port: Int)
   extends PointTransformer
     with AutoCloseable {
 
-  private val socket = new DatagramSocket()
-  private def buildAndSend(msg: Array[Byte]): Try[Unit] =
+  private[this] val socket = new DatagramSocket()
+  private[this] def buildAndSend(msg: Array[Byte]): Try[Unit] =
     Try(
       socket.send(
         new DatagramPacket(

@@ -42,10 +42,8 @@ final class UrlManagementClient(host: String,
     def flatMap[A, B](fa: Try[A])(f: A => Try[B]): Try[B] = fa.flatMap(f)
   }
 
-  import re.buildRequest
-
   override def ping: Try[WriteResult] =
     re
-      .execute(qb.buildQuery("/ping", Map.empty[String, String]))
+      .execute(re.buildRequest(qb.buildQuery("/ping", Map.empty[String, String])))
       .flatMap(rh.toResult)
 }

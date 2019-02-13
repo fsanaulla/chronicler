@@ -16,6 +16,8 @@
 
 package com.github.fsanaulla.chronicler.ahc.io.api
 
+import java.io.File
+
 import com.github.fsanaulla.chronicler.ahc.io.models.{AhcReader, AhcWriter}
 import com.github.fsanaulla.chronicler.ahc.io.serializers._
 import com.github.fsanaulla.chronicler.core.api.DatabaseApi
@@ -30,17 +32,17 @@ final class Database(dbName: String, gzipped: Boolean)
                     (implicit ex: ExecutionContext, wr: AhcWriter, rd: AhcReader)
     extends DatabaseApi[Future, String] with Serializable[String] {
 
-  override def writeFromFile(filePath: String,
-                    consistency: Option[Consistency] = None,
-                    precision: Option[Precision] = None,
-                    retentionPolicy: Option[String] = None): Future[WriteResult] =
-    wr.writeFromFile(dbName, filePath, consistency, precision, retentionPolicy, gzipped)
+  override def writeFromFile(file: File,
+                             consistency: Option[Consistency] = None,
+                             precision: Option[Precision] = None,
+                             retentionPolicy: Option[String] = None): Future[WriteResult] =
+    wr.writeFromFile(dbName, file, consistency, precision, retentionPolicy, gzipped)
 
 
   override def writeNative(point: String,
-                  consistency: Option[Consistency] = None,
-                  precision: Option[Precision] = None,
-                  retentionPolicy: Option[String] = None): Future[WriteResult] =
+                           consistency: Option[Consistency] = None,
+                           precision: Option[Precision] = None,
+                           retentionPolicy: Option[String] = None): Future[WriteResult] =
     wr.writeTo(dbName, point, consistency, precision, retentionPolicy, gzipped)
 
 
@@ -52,16 +54,16 @@ final class Database(dbName: String, gzipped: Boolean)
 
 
   override def writePoint(point: Point,
-                 consistency: Option[Consistency] = None,
-                 precision: Option[Precision] = None,
-                 retentionPolicy: Option[String] = None): Future[WriteResult] =
+                          consistency: Option[Consistency] = None,
+                          precision: Option[Precision] = None,
+                          retentionPolicy: Option[String] = None): Future[WriteResult] =
     wr.writeTo(dbName, point, consistency, precision, retentionPolicy, gzipped)
 
 
   override def bulkWritePoints(points: Seq[Point],
-                      consistency: Option[Consistency] = None,
-                      precision: Option[Precision] = None,
-                      retentionPolicy: Option[String] = None): Future[WriteResult] =
+                               consistency: Option[Consistency] = None,
+                               precision: Option[Precision] = None,
+                               retentionPolicy: Option[String] = None): Future[WriteResult] =
     wr.writeTo(dbName, points, consistency, precision, retentionPolicy, gzipped)
 
 
@@ -82,10 +84,6 @@ final class Database(dbName: String, gzipped: Boolean)
                                  epoch: Option[Epoch] = None,
                                  pretty: Boolean = false,
                                  chunked: Boolean = false)
-                                (implicit reader: InfluxReader[A]): Future[ReadResult[A]] = {
-    readJs(query, epoch, pretty, chunked) map {
-      case qr: QueryResult[JArray] => qr.map(reader.read)
-      case gr: GroupedResult[JArray] => gr.map(reader.read)
-    }
-  }
+                                (implicit reader: InfluxReader[A]): Future[ReadResult[A]] =
+    readJs(query, epoch, pretty, chunked).map(_.map(reader.read))
 }

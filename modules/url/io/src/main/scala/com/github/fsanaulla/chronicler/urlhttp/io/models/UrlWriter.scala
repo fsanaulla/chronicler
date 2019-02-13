@@ -16,6 +16,8 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.io.models
 
+import java.io.File
+
 import com.github.fsanaulla.chronicler.core.encoding._
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
 import com.github.fsanaulla.chronicler.core.io.WriteOperations
@@ -33,12 +35,13 @@ private[urlhttp] class UrlWriter(implicit qb: UrlQueryBuilder,
                                  rh: UrlResponseHandler)
   extends DatabaseOperationQuery[Uri] with WriteOperations[Try, String]{
 
-  private[chronicler] override def writeTo(dbName: String,
-                                           entity: String,
-                                           consistency: Option[Consistency],
-                                           precision: Option[Precision],
-                                           retentionPolicy: Option[String],
-                                           gzipped: Boolean): Try[WriteResult] = {
+  private[chronicler]
+  override def writeTo(dbName: String,
+                       entity: String,
+                       consistency: Option[Consistency],
+                       precision: Option[Precision],
+                       retentionPolicy: Option[String],
+                       gzipped: Boolean): Try[WriteResult] = {
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
     val req = sttp.post(uri).body(entity).response(asJson)
     val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
@@ -46,14 +49,15 @@ private[urlhttp] class UrlWriter(implicit qb: UrlQueryBuilder,
     re.execute(maybeEncoded).flatMap(rh.toResult)
   }
 
-  private[chronicler] override def writeFromFile(dbName: String,
-                                              filePath: String,
-                                              consistency: Option[Consistency],
-                                              precision: Option[Precision],
-                                              retentionPolicy: Option[String],
-                                              gzipped: Boolean): Try[WriteResult] = {
+  private[chronicler]
+  override def writeFromFile(dbName: String,
+                             file: File,
+                             consistency: Option[Consistency],
+                             precision: Option[Precision],
+                             retentionPolicy: Option[String],
+                             gzipped: Boolean): Try[WriteResult] = {
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
-    val req = sttp.post(uri).body(Source.fromFile(filePath).getLines().mkString("\n")).response(asJson)
+    val req = sttp.post(uri).body(Source.fromFile(file).getLines().mkString("\n")).response(asJson)
     val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
 
     re.execute(maybeEncoded).flatMap(rh.toResult)

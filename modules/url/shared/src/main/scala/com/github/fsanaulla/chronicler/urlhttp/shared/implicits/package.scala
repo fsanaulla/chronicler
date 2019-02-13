@@ -17,12 +17,11 @@
 package com.github.fsanaulla.chronicler.urlhttp.shared
 
 import com.github.fsanaulla.chronicler.core.model.WriteResult
-import com.github.fsanaulla.chronicler.core.model.WriteResult.successful
 
 import scala.util.{Success, Try}
 
 package object implicits {
   implicit final class WriteResultOps(private val wr: WriteResult.type) extends AnyVal {
-    def successfulTry(code: Int): Try[WriteResult] = Success(successful(code))
+    def successfulTry(code: Int): Try[WriteResult] = Success(wr.successful(code))
   }
 }

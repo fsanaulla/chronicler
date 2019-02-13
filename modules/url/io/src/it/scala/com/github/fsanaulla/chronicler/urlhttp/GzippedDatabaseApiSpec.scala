@@ -1,5 +1,7 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
+import java.io.File
+
 import com.github.fsanaulla.chronicler.core.enums.Epochs
 import com.github.fsanaulla.chronicler.core.jawn._
 import com.github.fsanaulla.chronicler.core.model.Point
@@ -37,7 +39,7 @@ class GzippedDatabaseApiSpec extends FlatSpec with Matchers with DockerizedInflu
   "Database API" should "write data from file" in {
     management.createDatabase(testDB).success.value shouldEqual OkResult
 
-    db.writeFromFile(getClass.getResource("/points.txt").getPath)
+    db.writeFromFile(new File(getClass.getResource("/points.txt").getPath))
       .success
       .value shouldEqual NoContentResult
 
