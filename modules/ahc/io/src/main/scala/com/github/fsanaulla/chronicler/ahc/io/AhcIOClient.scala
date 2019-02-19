@@ -35,11 +35,11 @@ final class AhcIOClient(host: String,
                        (implicit ex: ExecutionContext)
   extends InfluxAhcClient(asyncClientConfig) with IOClient[Future, String] {
 
-  implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
-  implicit val re: AhcRequestExecutor = new AhcRequestExecutor
-  implicit val rh: AhcResponseHandler = new AhcResponseHandler
-  implicit val wr: AhcWriter = new AhcWriter
-  implicit val rd: AhcReader = new AhcReader
+  private implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
+  private implicit val re: AhcRequestExecutor = new AhcRequestExecutor
+  private implicit val rh: AhcResponseHandler = new AhcResponseHandler
+  private implicit val wr: AhcWriter = new AhcWriter
+  private implicit val rd: AhcReader = new AhcReader
 
   override def database(dbName: String): Database =
     new Database(dbName, gzipped)
