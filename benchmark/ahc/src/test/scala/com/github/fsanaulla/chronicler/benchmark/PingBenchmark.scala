@@ -3,6 +3,7 @@ package com.github.fsanaulla.chronicler.benchmark
 import java.util.concurrent.TimeUnit
 
 import com.github.fsanaulla.chronicler.ahc.io.{AhcIOClient, InfluxIO}
+import com.github.fsanaulla.chronicler.benchmark.PingBenchmark._
 import org.openjdk.jmh.annotations._
 
 import scala.concurrent.Await
@@ -11,14 +12,14 @@ import scala.concurrent.duration.Duration
 
 @BenchmarkMode(Array(Mode.AverageTime))
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-class PingJmhBenchmark {
-  import PingJmhBenchmark._
+class PingBenchmark {
+
   @Benchmark
   def averagePingTime(state: BenchmarkState): Unit =
     Await.result(state.client.ping.map(_ => {}), Duration.Inf)
 }
 
-object PingJmhBenchmark {
+object PingBenchmark {
   @State(Scope.Benchmark)
   class BenchmarkState {
     var client: AhcIOClient = _

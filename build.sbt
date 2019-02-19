@@ -205,8 +205,9 @@ lazy val udpExample =
 ///////////////////// BENCHMARKS /////////////////////
 //////////////////////////////////////////////////////
 lazy val benchmark = project
+  .in(file("benchmark/ahc"))
   .settings(Settings.common: _*)
-  .settings(name := "chronicler-benchmark")
+  .settings(name := "chronicler-benchmark-ahc")
   .settings(
     sourceDirectory in Jmh := (sourceDirectory in Test).value,
     classDirectory in Jmh := (classDirectory in Test).value,
