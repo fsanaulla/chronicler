@@ -21,22 +21,24 @@ package com.github.fsanaulla.chronicler.core.model
   * Author: fayaz.sanaulla@gmail.com
   * Date: 31.07.17
   */
-abstract sealed class InfluxException(errMsg: String) extends Throwable(errMsg)
+abstract sealed class InfluxException(msg: String) extends Throwable(msg)
 
-final class OperationException(errMsg: String) extends InfluxException(errMsg)
+final class OperationException(msg: String) extends InfluxException(msg)
 
-final class BadRequestException(errMsg: String) extends InfluxException(errMsg)
+final class BadRequestException(msg: String) extends InfluxException(msg)
 
-final class ResourceNotFoundException(errMsg: String) extends InfluxException(errMsg)
+final class ResourceNotFoundException(msg: String) extends InfluxException(msg)
 
-final class AuthorizationException(errMsg: String) extends InfluxException(errMsg)
+final class AuthorizationException(msg: String) extends InfluxException(msg)
 
-final class ConnectionException(errMsg: String) extends InfluxException(errMsg)
+final class ConnectionException(msg: String) extends InfluxException(msg)
 
-final class InternalServerError(errMsg: String) extends InfluxException(errMsg)
+final class InternalServerError(msg: String) extends InfluxException(msg)
 
-final class UnknownConnectionException(errMsg: String) extends InfluxException(errMsg)
+final class UnknownConnectionException(msg: String) extends InfluxException(msg)
 
-final class UnknownResponseException(errMsg: String) extends InfluxException(errMsg)
+final class UnknownResponseException(msg: String) extends InfluxException(msg)
 
-final class DeserializationException(errMsg: String) extends InfluxException(errMsg)
+final class DeserializationException(msg: String) extends InfluxException(msg)
+
+final class HeaderNotFoundException(msg: String) extends InfluxException(msg)

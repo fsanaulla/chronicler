@@ -30,6 +30,8 @@ import scala.reflect.ClassTag
   */
 private[chronicler] trait ResponseHandler[F[_], R] {
 
+  private[chronicler] def toPingResult(response: R): F[PingResult]
+
   /**
     * Method for handling HTTP responses with empty body
     *
@@ -164,4 +166,6 @@ private[chronicler] trait ResponseHandler[F[_], R] {
     * @return     - is it success
     */
   private[chronicler] final def isSuccessful(code: Int): Boolean = code >= 200 && code < 300
+
+  private[chronicler] final def isPingCode(code: Int): Boolean = code == 200 || code == 204
 }

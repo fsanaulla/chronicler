@@ -14,20 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.management
+package com.github.fsanaulla.chronicler.core
 
-import com.github.fsanaulla.chronicler.core.model.PingResult
-
-/**
-  * Basic system related management operations
- *
-  * @tparam F - Response container type
-  */
-trait SystemManagement[F[_]] {
-
-  /**
-    * Method for checking InfluxDB status
-    * @return - Write result with status information
-    */
-  def ping(isVerbose: Boolean): F[PingResult]
+package object headers {
+  val buildHeader   = "X-Influxdb-Build"
+  val versionHeader = "X-Influxdb-Version"
 }
