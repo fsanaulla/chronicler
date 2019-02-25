@@ -17,12 +17,12 @@
 package com.github.fsanaulla.chronicler.urlhttp.io
 
 import com.github.fsanaulla.chronicler.core.IOClient
-import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, WriteResult}
+import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, PingResult}
 import com.github.fsanaulla.chronicler.urlhttp.io.api.{Database, Measurement}
 import com.github.fsanaulla.chronicler.urlhttp.io.models.{UrlReader, UrlWriter}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient.CustomizationF
-import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlQueryBuilder, UrlRequestExecutor, UrlResponseHandler}
+import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlJsonHandler, UrlQueryBuilder, UrlRequestExecutor, UrlResponseHandler}
 
 import scala.reflect.ClassTag
 import scala.util.Try
@@ -36,7 +36,7 @@ final class UrlIOClient(host: String,
 
   implicit val qb: UrlQueryBuilder = new UrlQueryBuilder(host, port, credentials)
   implicit val re: UrlRequestExecutor = new UrlRequestExecutor
-  implicit val rh: UrlResponseHandler = new UrlResponseHandler
+  implicit val rh: UrlResponseHandler = new UrlResponseHandler(new UrlJsonHandler)
   implicit val wr: UrlWriter = new UrlWriter
   implicit val rd: UrlReader = new UrlReader
 
@@ -46,8 +46,10 @@ final class UrlIOClient(host: String,
   override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] =
     new Measurement[A](dbName, measurementName, gzipped)
 
-  override def ping: Try[WriteResult] =
+  override def ping(isVerbose: Boolean = false): Try[PingResult] = {
+    val queryParams = if (isVerbose) Map("verbose" -> "true") else Map.empty[String, String]
     re
-      .execute(re.buildRequest(qb.buildQuery("/ping", Map.empty[String, String])))
-      .flatMap(rh.toResult)
+      .execute(re.buildRequest(qb.buildQuery("/ping", queryParams)))
+      .flatMap(rh.toPingResult)
+  }
 }

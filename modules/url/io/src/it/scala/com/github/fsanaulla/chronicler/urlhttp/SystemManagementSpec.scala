@@ -1,7 +1,6 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.NoContentResult
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import org.scalatest.{FlatSpec, Matchers, TryValues}
 
@@ -15,7 +14,21 @@ class SystemManagementSpec extends FlatSpec with Matchers with DockerizedInfluxD
   lazy val influx: UrlIOClient =
     InfluxIO(host, port, Some(creds))
 
-  "System api" should "ping InfluxDB" in {
-    influx.ping.success.value shouldEqual NoContentResult
+  it should "ping InfluxDB" in {
+    val result = influx.ping().success.value
+    result.code shouldEqual 204
+    result.build.get shouldEqual "OSS"
+    result.version.get shouldEqual version
+    result.isSuccess shouldBe true
+    result.isVerbose shouldBe false
+  }
+
+  it should "ping InfluxDB verbose" in {
+    val result = influx.ping(true).success.value
+    result.code shouldEqual 200
+    result.build.get shouldEqual "OSS"
+    result.version.get shouldEqual version
+    result.isSuccess shouldBe true
+    result.isVerbose shouldBe true
   }
 }
