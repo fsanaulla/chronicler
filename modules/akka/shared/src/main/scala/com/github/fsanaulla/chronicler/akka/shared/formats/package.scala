@@ -16,19 +16,18 @@
 
 package com.github.fsanaulla.chronicler.akka.shared
 
-import akka.actor.ActorSystem
-import akka.http.scaladsl.HttpsConnectionContext
-import akka.stream.scaladsl.Source
-import akka.util.ByteString
-import com.softwaremill.sttp.SttpBackend
-import com.softwaremill.sttp.akkahttp.AkkaHttpBackend
+import com.softwaremill.sttp.{ResponseAs, asString}
+import jawn.ast.{JNull, JParser, JValue}
 
-import scala.concurrent.Future
+import scala.util.Success
 
-abstract class InfluxAkkaClient(httpsContext: Option[HttpsConnectionContext])
-                               (implicit system: ActorSystem) { self: AutoCloseable =>
-  implicit val backend: SttpBackend[Future, Source[ByteString, Any]] =
-    AkkaHttpBackend.usingActorSystem(system, customHttpsContext = httpsContext)
-
-  def close(): Unit = backend.close()
+package object formats {
+  val asJson: ResponseAs[JValue, Nothing] = {
+    asString
+      .map(JParser.parseFromString)
+      .map {
+        case Success(jv) => jv
+        case _           => JNull
+      }
+  }
 }

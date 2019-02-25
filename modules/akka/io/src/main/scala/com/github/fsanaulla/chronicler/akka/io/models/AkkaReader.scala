@@ -16,12 +16,12 @@
 
 package com.github.fsanaulla.chronicler.akka.io.models
 
-import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.shared.handlers.{AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.core.enums.Epoch
 import com.github.fsanaulla.chronicler.core.io.ReadOperations
 import com.github.fsanaulla.chronicler.core.model.{QueryResult, ReadResult}
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
+import com.softwaremill.sttp.Uri
 import jawn.ast.JArray
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,16 +42,15 @@ extends DatabaseOperationQuery[Uri] with ReadOperations[Future] {
                                           epoch: Option[Epoch],
                                           pretty: Boolean,
                                           chunked: Boolean): Future[ReadResult[JArray]] = {
-
     val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
     val executionResult = re.execute(re.buildRequest(uri))
-
     query match {
-      case q: String if q.contains("GROUP BY") => executionResult.flatMap(rh.toGroupedJsResult)
-      case _ => executionResult.flatMap(rh.toQueryJsResult)
+      case q: String if q.contains("GROUP BY") =>
+        executionResult.flatMap(rh.toGroupedJsResult)
+      case _ =>
+        executionResult.flatMap(rh.toQueryJsResult)
     }
   }
-
 
   private[chronicler] override def bulkReadJs(dbName: String,
                                               queries: Seq[String],
@@ -59,7 +58,6 @@ extends DatabaseOperationQuery[Uri] with ReadOperations[Future] {
                                               pretty: Boolean,
                                               chunked: Boolean): Future[QueryResult[Array[JArray]]] = {
     val uri = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)
-
     re.execute(re.buildRequest(uri)).flatMap(rh.toBulkQueryJsResult)
   }
 }

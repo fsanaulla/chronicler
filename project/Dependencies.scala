@@ -8,7 +8,7 @@ import sbt._
 object Dependencies {
 
   object Versions {
-    val sttp       = "1.5.7"
+    val sttp       = "1.5.11"
     val netty      = "4.1.30.Final"
 
     object Akka {
@@ -52,10 +52,9 @@ object Dependencies {
 
   // akka-http
   val akkaDep: List[ModuleID] = List(
-    "com.typesafe.akka" %% "akka-stream"  % Versions.Akka.akka exclude("com.typesafe", "config"),
-    "com.typesafe.akka" %% "akka-actor"   % Versions.Akka.akka,
-    "com.typesafe.akka" %% "akka-http"    % Versions.Akka.akkaHttp,
-    "com.typesafe"      %  "config"       % "1.3.3",
+    "com.typesafe.akka"     %% "akka-stream"       % Versions.Akka.akka exclude("com.typesafe", "config"),
+    "com.typesafe"          %  "config"            % "1.3.3",
+    "com.softwaremill.sttp" %% "akka-http-backend" % Versions.sttp,
     akkaTestKit % Scope.test
   )
 
