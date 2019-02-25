@@ -16,16 +16,14 @@
 
 package com.github.fsanaulla.chronicler.akka.shared
 
-import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
+import com.softwaremill.sttp.Response
+import jawn.ast.{JParser, JValue}
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 10.04.18
-  */
-object Extensions {
-  implicit final class RichStringOps(private val str: String) extends AnyVal {
-    def toResponse: HttpResponse =
-      HttpResponse(entity = HttpEntity(types.AppJson, str))
+package object handlers {
+  implicit class RichString(private val str: String) extends AnyVal {
+    def toResponse()(implicit p: JParser.type): Response[JValue] = {
+      Response.ok(p.parseFromString(str).get)
+    }
   }
+
 }

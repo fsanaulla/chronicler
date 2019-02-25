@@ -18,7 +18,6 @@ package com.github.fsanaulla.chronicler.akka.io
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.HttpsConnectionContext
-import akka.http.scaladsl.model.RequestEntity
 import com.github.fsanaulla.chronicler.akka.io.api.{Database, Measurement}
 import com.github.fsanaulla.chronicler.akka.io.models.{AkkaReader, AkkaWriter}
 import com.github.fsanaulla.chronicler.akka.shared.InfluxAkkaClient
@@ -35,9 +34,9 @@ final class AkkaIOClient(host: String,
                          gzipped: Boolean,
                          httpsContext: Option[HttpsConnectionContext])
                         (implicit ex: ExecutionContext, system: ActorSystem)
-  extends InfluxAkkaClient(host, port, httpsContext) with IOClient[Future, RequestEntity] {
+  extends InfluxAkkaClient(httpsContext) with IOClient[Future, String] {
 
-  implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(credentials)
+  implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(host, port, credentials)
   implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor
   implicit val rh: AkkaResponseHandler = new AkkaResponseHandler
   implicit val wr: AkkaWriter = new AkkaWriter

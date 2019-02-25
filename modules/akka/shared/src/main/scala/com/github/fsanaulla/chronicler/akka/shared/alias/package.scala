@@ -16,12 +16,9 @@
 
 package com.github.fsanaulla.chronicler.akka.shared
 
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
-import akka.stream.scaladsl.Flow
-
-import scala.concurrent.Future
+import com.softwaremill.sttp.{Id, RequestT}
+import jawn.ast.JValue
 
 package object alias {
-  type Connection = Flow[HttpRequest, HttpResponse, Future[Http.OutgoingConnection]]
+  type Request = RequestT[Id, JValue, Nothing]
 }
