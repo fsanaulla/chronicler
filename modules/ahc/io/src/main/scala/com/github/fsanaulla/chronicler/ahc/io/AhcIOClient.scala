@@ -19,9 +19,9 @@ package com.github.fsanaulla.chronicler.ahc.io
 import com.github.fsanaulla.chronicler.ahc.io.api.{Database, Measurement}
 import com.github.fsanaulla.chronicler.ahc.io.models.{AhcReader, AhcWriter}
 import com.github.fsanaulla.chronicler.ahc.shared.InfluxAhcClient
-import com.github.fsanaulla.chronicler.ahc.shared.handlers.{AhcQueryBuilder, AhcRequestExecutor, AhcResponseHandler}
+import com.github.fsanaulla.chronicler.ahc.shared.handlers.{AhcJsonHandler, AhcQueryBuilder, AhcRequestExecutor, AhcResponseHandler}
 import com.github.fsanaulla.chronicler.core.IOClient
-import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, WriteResult}
+import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, PingResult}
 import org.asynchttpclient.AsyncHttpClientConfig
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,11 +35,11 @@ final class AhcIOClient(host: String,
                        (implicit ex: ExecutionContext)
   extends InfluxAhcClient(asyncClientConfig) with IOClient[Future, String] {
 
-  private implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
-  private implicit val re: AhcRequestExecutor = new AhcRequestExecutor
-  private implicit val rh: AhcResponseHandler = new AhcResponseHandler
-  private implicit val wr: AhcWriter = new AhcWriter
-  private implicit val rd: AhcReader = new AhcReader
+  implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
+  implicit val re: AhcRequestExecutor = new AhcRequestExecutor
+  implicit val rh: AhcResponseHandler = new AhcResponseHandler(new AhcJsonHandler())
+  implicit val wr: AhcWriter = new AhcWriter
+  implicit val rd: AhcReader = new AhcReader
 
   override def database(dbName: String): Database =
     new Database(dbName, gzipped)
@@ -47,9 +47,10 @@ final class AhcIOClient(host: String,
   override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] =
     new Measurement[A](dbName, measurementName, gzipped)
 
-  override def ping: Future[WriteResult] =
+  override def ping(isVerbose: Boolean = false): Future[PingResult] = {
+    val queryParams = if (isVerbose) Map("verbose" -> "true") else Map.empty[String, String]
     re
-      .execute(re.buildRequest(qb.buildQuery("/ping", Map.empty[String, String])))
-      .flatMap(rh.toResult)
-
+      .execute(re.buildRequest(qb.buildQuery("/ping", queryParams)))
+      .flatMap(rh.toPingResult)
+  }
 }

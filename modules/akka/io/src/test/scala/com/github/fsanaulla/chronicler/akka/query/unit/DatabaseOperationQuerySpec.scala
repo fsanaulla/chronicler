@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.akka.query
+package com.github.fsanaulla.chronicler.akka.query.unit
 
-import _root_.akka.http.scaladsl.model.Uri
-import com.github.fsanaulla.chronicler.akka.TestHelper._
 import com.github.fsanaulla.chronicler.akka.shared.handlers.AkkaQueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.{Consistencies, Epochs, Precisions}
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
+import com.softwaremill.sttp.Uri
 import org.scalatest.{FlatSpec, Matchers}
 
 import scala.language.implicitConversions
@@ -35,10 +34,10 @@ class DatabaseOperationQuerySpec extends FlatSpec with Matchers with DatabaseOpe
 
   trait AuthEnv {
     val credentials = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(credentials)
+    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("localhost", 8086, credentials)
   }
   trait NonAuthEnv {
-    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(None)
+    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("localhost", 8086, None)
   }
 
   val testDB = "db"
@@ -48,7 +47,8 @@ class DatabaseOperationQuerySpec extends FlatSpec with Matchers with DatabaseOpe
 
   "DatabaseOperationQuery" should "return correct write query" in new AuthEnv {
 
-    writeToInfluxQuery(testDB, Consistencies.ONE, Precisions.NANOSECONDS, None) shouldEqual writeTester(
+    writeToInfluxQuery(testDB, Consistencies.ONE, Precisions.NANOSECONDS, None).toString() shouldEqual queryTester(
+      "/write",
       Map(
         "precision" -> "ns",
         "u" -> credentials.get.username,
@@ -58,7 +58,8 @@ class DatabaseOperationQuerySpec extends FlatSpec with Matchers with DatabaseOpe
       )
     )
 
-    writeToInfluxQuery(testDB, Consistencies.ALL, Precisions.NANOSECONDS, None) shouldEqual writeTester(
+    writeToInfluxQuery(testDB, Consistencies.ALL, Precisions.NANOSECONDS, None).toString() shouldEqual queryTester(
+      "/write",
       Map(
         "precision" -> "ns",
         "u" -> credentials.get.username,
@@ -69,11 +70,17 @@ class DatabaseOperationQuerySpec extends FlatSpec with Matchers with DatabaseOpe
   }
 
   it should "return correct write query without auth " in new NonAuthEnv {
-    writeToInfluxQuery(testDB, Consistencies.ONE, Precisions.NANOSECONDS, None) shouldEqual
-      writeTester(Map("db" -> testDB, "consistency" -> "one", "precision" -> "ns"))
+    writeToInfluxQuery(testDB, Consistencies.ONE, Precisions.NANOSECONDS, None).toString() shouldEqual
+      queryTester(
+        "/write",
+        Map("db" -> testDB, "consistency" -> "one", "precision" -> "ns")
+      )
 
-    writeToInfluxQuery(testDB, Consistencies.ONE, Precisions.MICROSECONDS, None) shouldEqual
-      writeTester(Map("db" -> testDB, "consistency" -> "one", "precision" -> "u"))
+    writeToInfluxQuery(testDB, Consistencies.ONE, Precisions.MICROSECONDS, None).toString() shouldEqual
+      queryTester(
+        "/write",
+        Map("db" -> testDB, "consistency" -> "one", "precision" -> "u")
+      )
   }
 
   it should "return correct single read query" in new AuthEnv {
@@ -84,7 +91,8 @@ class DatabaseOperationQuerySpec extends FlatSpec with Matchers with DatabaseOpe
       "epoch" -> "ns",
       "q" -> "SELECT * FROM test"
     )
-    readFromInfluxSingleQuery(testDB, testQuery, Epochs.NANOSECONDS, pretty = false, chunked = false) shouldEqual queryTesterSimple(map)
+    readFromInfluxSingleQuery(testDB, testQuery, Epochs.NANOSECONDS, pretty = false, chunked = false).toString() shouldEqual
+      queryTester("/query", map)
   }
 
   it should "return correct bulk read query" in new AuthEnv {
@@ -95,7 +103,13 @@ class DatabaseOperationQuerySpec extends FlatSpec with Matchers with DatabaseOpe
       "epoch" -> "ns",
       "q" -> "SELECT * FROM test;SELECT * FROM test1"
     )
-    readFromInfluxBulkQuery(testDB, Seq("SELECT * FROM test", "SELECT * FROM test1"), Epochs.NANOSECONDS, pretty = false, chunked = false) shouldEqual queryTesterSimple(map)
+    readFromInfluxBulkQuery(
+      testDB,
+      Seq("SELECT * FROM test", "SELECT * FROM test1"),
+      Epochs.NANOSECONDS,
+      pretty = false,
+      chunked = false
+    ).toString() shouldEqual queryTester("/query", map)
 
     val map1: Map[String, String] = Map[String, String](
       "db" -> testDB,
@@ -106,6 +120,12 @@ class DatabaseOperationQuerySpec extends FlatSpec with Matchers with DatabaseOpe
       "epoch" -> "ns",
       "q" -> "SELECT * FROM test;SELECT * FROM test1"
     )
-    readFromInfluxBulkQuery(testDB, Seq("SELECT * FROM test", "SELECT * FROM test1"), Epochs.NANOSECONDS, pretty = true, chunked = true) shouldEqual queryTesterSimple(map1)
+    readFromInfluxBulkQuery(
+      testDB,
+      Seq("SELECT * FROM test", "SELECT * FROM test1"),
+      Epochs.NANOSECONDS,
+      pretty = true,
+      chunked = true
+    ).toString() shouldEqual queryTester("/query", map1)
   }
 }

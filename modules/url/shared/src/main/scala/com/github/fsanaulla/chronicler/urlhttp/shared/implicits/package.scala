@@ -24,4 +24,9 @@ package object implicits {
   implicit final class WriteResultOps(private val wr: WriteResult.type) extends AnyVal {
     def successfulTry(code: Int): Try[WriteResult] = Success(wr.successful(code))
   }
+
+  implicit final class OptionOps[A](private val opt: Option[A]) extends AnyVal {
+    def toSuccess(failure: => Try[A]): Try[A] =
+      opt.fold(failure)(v => Success(v))
+  }
 }

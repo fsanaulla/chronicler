@@ -43,7 +43,8 @@ class AhcResponseHandlerSpec extends FlatSpec with Matchers with ScalaFutures {
 
   implicit val p: JParser.type = JParser
 
-  val rh = new AhcResponseHandler()
+  val jsHandler = new AhcJsonHandler()
+  val rh = new AhcResponseHandler(jsHandler)
 
 
   it should "extract single query result from response" in {
@@ -236,7 +237,7 @@ class AhcResponseHandlerSpec extends FlatSpec with Matchers with ScalaFutures {
         |}
       """.stripMargin.toResponse()
 
-    rh.getOptResponseError(errorResponse).futureValue shouldEqual Some("user not found")
+    jsHandler.responseErrorOpt(errorResponse).futureValue shouldEqual Some("user not found")
   }
 
   it should "extract error message" in {
@@ -244,6 +245,6 @@ class AhcResponseHandlerSpec extends FlatSpec with Matchers with ScalaFutures {
     val errorResponse: Response[JValue] =
       """ { "error": "user not found" } """.toResponse()
 
-    rh.getResponseError(errorResponse).futureValue shouldEqual "user not found"
+    jsHandler.responseError(errorResponse).futureValue shouldEqual "user not found"
   }
 }

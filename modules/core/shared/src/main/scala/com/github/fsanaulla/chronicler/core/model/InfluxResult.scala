@@ -31,6 +31,34 @@ sealed trait InfluxResult extends scala.Serializable {
   def ex: Option[Throwable]
 }
 
+final case class PingResult(code: Int,
+                            isSuccess: Boolean,
+                            isVerbose: Boolean,
+                            build: Option[String],
+                            version: Option[String],
+                            ex: Option[Throwable] = None) extends InfluxResult
+
+object PingResult {
+  def successful(code: Int, isVerbose: Boolean, build: String, version: String) =
+    PingResult(
+      code,
+      isSuccess = true,
+      isVerbose = isVerbose,
+      Some(build),
+      Some(version),
+      None
+    )
+
+  def failed(code: Int, ex: Throwable) =
+    PingResult(
+      code,
+      isSuccess = false,
+      isVerbose = false,
+      None,
+      None,
+      Some(ex)
+    )
+}
 /**
   * Root object of read result AST
   */

@@ -23,13 +23,13 @@ import org.scalatest.{FlatSpec, Matchers}
 class AkkaQueryBuilderSpec extends FlatSpec with Matchers {
 
   implicit val credentials: Option[InfluxCredentials] = None
-  val qb: AkkaQueryBuilder = new AkkaQueryBuilder(credentials)
+  val qb: AkkaQueryBuilder = new AkkaQueryBuilder("localhost", 8086, credentials)
 
   "Query handler" should "properly generate URI" in {
     val queryMap = scala.collection.mutable.Map[String, String](
       "q" -> "FirstQuery;SecondQuery"
     )
-    val res = s"/query?q=FirstQuery%3BSecondQuery"
+    val res = s"http://localhost:8086/query?q=FirstQuery%3BSecondQuery"
 
     qb.buildQuery("/query", qb.buildQueryParams(queryMap)).toString() shouldEqual res
   }

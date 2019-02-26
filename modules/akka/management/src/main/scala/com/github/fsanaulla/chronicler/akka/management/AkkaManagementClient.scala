@@ -18,12 +18,14 @@ package com.github.fsanaulla.chronicler.akka.management
 
 import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.HttpsConnectionContext
-import _root_.akka.http.scaladsl.model.{HttpRequest, HttpResponse, RequestEntity, Uri}
 import com.github.fsanaulla.chronicler.akka.shared.InfluxAkkaClient
-import com.github.fsanaulla.chronicler.akka.shared.handlers.{AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
+import com.github.fsanaulla.chronicler.akka.shared.alias.Request
+import com.github.fsanaulla.chronicler.akka.shared.handlers.{AkkaJsonHandler, AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
 import com.github.fsanaulla.chronicler.core.ManagementClient
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.typeclasses.FlatMap
+import com.softwaremill.sttp.{Response, Uri}
+import jawn.ast.JValue
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -32,15 +34,19 @@ final class AkkaManagementClient(host: String,
                                  val credentials: Option[InfluxCredentials],
                                  httpsContext: Option[HttpsConnectionContext])
                                 (implicit val ex: ExecutionContext, val system: ActorSystem)
-  extends InfluxAkkaClient(host, port, httpsContext) with ManagementClient[Future, HttpRequest, HttpResponse, Uri, RequestEntity] {
+  extends InfluxAkkaClient(httpsContext) with ManagementClient[Future, Request, Response[JValue], Uri, String] {
 
-  implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(credentials)
+  implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(host, port, credentials)
   implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor
-  implicit val rh: AkkaResponseHandler = new AkkaResponseHandler
+  implicit val rh: AkkaResponseHandler = new AkkaResponseHandler(new AkkaJsonHandler())
   implicit val fm: FlatMap[Future] = new FlatMap[Future] {
     def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
   }
 
-  override def ping: Future[WriteResult] =
-    fm.flatMap(re.execute(re.buildRequest(Uri("/ping"))))(rh.toResult)
+  override def ping(isVerbose: Boolean = false): Future[PingResult] = {
+    val queryParams = if (isVerbose) Map("verbose" -> "true") else Map.empty[String, String]
+    re
+      .execute(re.buildRequest(qb.buildQuery("/ping", queryParams)))
+      .flatMap(rh.toPingResult)
+  }
 }

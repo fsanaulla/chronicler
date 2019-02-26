@@ -18,9 +18,9 @@ package com.github.fsanaulla.chronicler.ahc.management
 
 import com.github.fsanaulla.chronicler.ahc.shared.InfluxAhcClient
 import com.github.fsanaulla.chronicler.ahc.shared.alias._
-import com.github.fsanaulla.chronicler.ahc.shared.handlers.{AhcQueryBuilder, AhcRequestExecutor, AhcResponseHandler}
+import com.github.fsanaulla.chronicler.ahc.shared.handlers.{AhcJsonHandler, AhcQueryBuilder, AhcRequestExecutor, AhcResponseHandler}
 import com.github.fsanaulla.chronicler.core.ManagementClient
-import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, WriteResult}
+import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, PingResult}
 import com.github.fsanaulla.chronicler.core.typeclasses.FlatMap
 import com.softwaremill.sttp.{Response, Uri}
 import jawn.ast.JValue
@@ -37,11 +37,15 @@ final class AhcManagementClient(host: String,
 
   implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
   implicit val re: AhcRequestExecutor = new AhcRequestExecutor
-  implicit val rh: AhcResponseHandler = new AhcResponseHandler
+  implicit val rh: AhcResponseHandler = new AhcResponseHandler(new AhcJsonHandler)
   implicit val fm: FlatMap[Future] = new FlatMap[Future] {
     def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
   }
 
-  override def ping: Future[WriteResult] =
-    re.execute(re.buildRequest(qb.buildQuery("/ping", Map.empty[String, String]))).flatMap(rh.toResult)
+  override def ping(isVerbose: Boolean = false): Future[PingResult] = {
+    val queryParams = if (isVerbose) Map("verbose" -> "true") else Map.empty[String, String]
+    re
+      .execute(re.buildRequest(qb.buildQuery("/ping", queryParams)))
+      .flatMap(rh.toPingResult)
+  }
 }
