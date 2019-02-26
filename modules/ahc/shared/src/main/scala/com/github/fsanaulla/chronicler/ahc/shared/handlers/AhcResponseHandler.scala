@@ -25,15 +25,26 @@ import jawn.ast.{JArray, JValue}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
-private[ahc] class AhcResponseHandler(implicit ex: ExecutionContext)
-  extends AhcJsonHandler
-    with ResponseHandler[Future, Response[JValue]] {
+private[ahc] class AhcResponseHandler(jsHandler: AhcJsonHandler)(implicit ex: ExecutionContext)
+  extends ResponseHandler[Future, Response[JValue]] {
+
+  private[chronicler] override def toPingResult(response: Response[JValue]): Future[PingResult] = {
+    response.code match {
+      case code if isPingCode(code) =>
+        jsHandler.pingHeaders(response).map { case (build, version) =>
+          PingResult.successful(code, code == 200, build, version)
+        }
+      case other =>
+        errorHandler(response, other)
+          .map(ex => PingResult.failed(other, ex))
+    }
+  }
 
   // Simply result's
   private[chronicler] override def toResult(response: Response[JValue]): Future[WriteResult] = {
     response.code match {
       case code if isSuccessful(code) && code != 204 =>
-        getOptResponseError(response) map {
+        jsHandler.responseErrorOpt(response) map {
           case Some(msg) =>
             WriteResult.failed(code, new OperationException(msg))
           case _ =>
@@ -52,8 +63,8 @@ private[ahc] class AhcResponseHandler(implicit ex: ExecutionContext)
                                                                                  (implicit reader: InfluxReader[A]): Future[QueryResult[B]] = {
     response.code match {
       case code if isSuccessful(code) =>
-        getResponseBody(response)
-          .map(getOptInfluxInfo[A])
+        jsHandler.responseBody(response)
+          .map(jsHandler.influxInfoOpt[A])
           .map {
             case Some(arr) =>
               QueryResult.successful[B](
@@ -71,8 +82,8 @@ private[ahc] class AhcResponseHandler(implicit ex: ExecutionContext)
   private[chronicler] override def toQueryJsResult(response: Response[JValue]): Future[QueryResult[JArray]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
-        getResponseBody(response)
-          .map(getOptQueryResult)
+        jsHandler.responseBody(response)
+          .map(jsHandler.queryResultOpt)
           .map {
             case Some(seq) =>
               QueryResult.successful[JArray](code, seq)
@@ -86,8 +97,8 @@ private[ahc] class AhcResponseHandler(implicit ex: ExecutionContext)
   private[chronicler] override def toGroupedJsResult(response: Response[JValue]): Future[GroupedResult[JArray]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
-        getResponseBody(response)
-          .map(getOptGropedResult)
+        jsHandler.responseBody(response)
+          .map(jsHandler.gropedResultOpt)
           .map {
             case Some(arr) =>
               GroupedResult.successful[JArray](code, arr)
@@ -102,8 +113,8 @@ private[ahc] class AhcResponseHandler(implicit ex: ExecutionContext)
   private[chronicler] override def toBulkQueryJsResult(response: Response[JValue]): Future[QueryResult[Array[JArray]]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
-        getResponseBody(response)
-          .map(getOptBulkInfluxPoints)
+        jsHandler.responseBody(response)
+          .map(jsHandler.bulkInfluxPointsOpt)
           .map {
             case Some(seq) =>
               QueryResult.successful[Array[JArray]](code, seq)
@@ -122,15 +133,15 @@ private[ahc] class AhcResponseHandler(implicit ex: ExecutionContext)
   private[chronicler] override def errorHandler(response: Response[JValue],
                                                 code: Int): Future[InfluxException] = code match {
     case 400 =>
-      getResponseError(response).map(errMsg => new BadRequestException(errMsg))
+      jsHandler.responseError(response).map(errMsg => new BadRequestException(errMsg))
     case 401 =>
-      getResponseError(response).map(errMsg => new AuthorizationException(errMsg))
+      jsHandler.responseError(response).map(errMsg => new AuthorizationException(errMsg))
     case 404 =>
-      getResponseError(response).map(errMsg => new ResourceNotFoundException(errMsg))
+      jsHandler.responseError(response).map(errMsg => new ResourceNotFoundException(errMsg))
     case code: Int if code < 599 && code >= 500 =>
-      getResponseError(response).map(errMsg => new InternalServerError(errMsg))
+      jsHandler.responseError(response).map(errMsg => new InternalServerError(errMsg))
     case _ =>
-      getResponseError(response).map(errMsg => new UnknownResponseException(errMsg))
+      jsHandler.responseError(response).map(errMsg => new UnknownResponseException(errMsg))
   }
 
   private[this] def queryErrorHandler[A: ClassTag](response: Response[JValue],

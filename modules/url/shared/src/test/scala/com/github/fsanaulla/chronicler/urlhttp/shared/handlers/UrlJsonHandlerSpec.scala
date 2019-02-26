@@ -66,7 +66,7 @@ class UrlJsonHandlerSpec extends FlatSpec with Matchers with TryValues with Opti
   val result: JValue = JParser.parseFromString(singleStrJson).get
 
   "UrlJsonHandler" should "extract JSON from HTTP response" in {
-    jsHandler.getResponseBody(resp).success.value shouldEqual result
+    jsHandler.responseBody(resp).success.value shouldEqual result
   }
 
   it should "extract single query result from JSON" in {
@@ -115,7 +115,7 @@ class UrlJsonHandlerSpec extends FlatSpec with Matchers with TryValues with Opti
       JArray(Array(JString("2015-06-11T20:46:02Z"), JNull, JNum(0.64)))
     )
 
-    jsHandler.getOptQueryResult(json).value shouldEqual result
+    jsHandler.queryResultOpt(json).value shouldEqual result
   }
 
   it should "extract bulk query result from JSON" in {
@@ -181,7 +181,7 @@ class UrlJsonHandlerSpec extends FlatSpec with Matchers with TryValues with Opti
       )
     )
 
-    jsHandler.getOptBulkInfluxPoints(json).value shouldEqual result
+    jsHandler.bulkInfluxPointsOpt(json).value shouldEqual result
   }
 
   it should "extract influx information from JSON" in {
@@ -227,7 +227,7 @@ class UrlJsonHandlerSpec extends FlatSpec with Matchers with TryValues with Opti
       )
     )
 
-    val res = jsHandler.getOptJsInfluxInfo(json)
+    val res = jsHandler.jsInfluxInfoOpt(json)
 
     res should not be None
     res.value.length shouldEqual 1
@@ -285,7 +285,7 @@ class UrlJsonHandlerSpec extends FlatSpec with Matchers with TryValues with Opti
         |}
       """.stripMargin).success.value
 
-    val optResult = jsHandler.getOptGropedResult(json)
+    val optResult = jsHandler.gropedResultOpt(json)
 
     optResult should not be None
 

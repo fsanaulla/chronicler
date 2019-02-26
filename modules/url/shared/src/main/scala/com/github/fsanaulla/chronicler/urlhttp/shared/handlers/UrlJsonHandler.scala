@@ -16,28 +16,39 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
+import com.github.fsanaulla.chronicler.core.headers._
 import com.github.fsanaulla.chronicler.core.jawn._
+import com.github.fsanaulla.chronicler.core.model.HeaderNotFoundException
 import com.github.fsanaulla.chronicler.core.typeclasses.JsonHandler
+import com.github.fsanaulla.chronicler.urlhttp.shared.implicits._
 import com.softwaremill.sttp.Response
 import jawn.ast.{JParser, JValue}
 
-import scala.util.{Success, Try}
+import scala.util.{Failure, Success, Try}
 
-private[urlhttp] class UrlJsonHandler extends JsonHandler[Try, Response[JValue]] {
+private[urlhttp] final class UrlJsonHandler extends JsonHandler[Try, Response[JValue]] {
 
-  private[chronicler]
-  override def getResponseBody(response: Response[JValue]): Try[JValue] = response.body match {
-    case Right(js) => Success(js)
-    case Left(str) => JParser.parseFromString(str)
+  private[chronicler] override def pingHeaders(response: Response[JValue]): Try[(String, String)] = {
+    val headers = response.headers
+    val result = for {
+      build   <- headers.find(_._1 == buildHeader).map(_._2)
+      version <- headers.find(_._1 == versionHeader).map(_._2)
+    } yield build -> version
+
+    result.toSuccess(Failure(new HeaderNotFoundException(s"Can't find $buildHeader or $versionHeader")))
   }
 
-  private[chronicler]
-  override def getResponseError(response: Response[JValue]): Try[String] =
-    getResponseBody(response).map(_.get("error").asString)
+  private[chronicler] override def responseBody(response: Response[JValue]): Try[JValue] =
+    response.body match {
+      case Right(js) => Success(js)
+      case Left(str) => JParser.parseFromString(str)
+    }
 
-  private[chronicler]
-  override def getOptResponseError(response: Response[JValue]): Try[Option[String]] =
-    getResponseBody(response)
+  private[chronicler] override def responseError(response: Response[JValue]): Try[String] =
+    responseBody(response).map(_.get("error").asString)
+
+  private[chronicler] override def responseErrorOpt(response: Response[JValue]): Try[Option[String]] =
+    responseBody(response)
       .map(_.get("results").arrayValue.flatMap(_.headOption))
       .map(_.flatMap(_.get("error").getString))
 

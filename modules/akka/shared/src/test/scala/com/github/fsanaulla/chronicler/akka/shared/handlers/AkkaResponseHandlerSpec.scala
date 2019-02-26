@@ -39,7 +39,8 @@ class AkkaResponseHandlerSpec
 
   implicit val ec: ExecutionContext = system.dispatcher
   implicit val p: JParser.type = JParser
-  val rh = new AkkaResponseHandler()
+  val jsHandler = new AkkaJsonHandler()
+  val rh = new AkkaResponseHandler(jsHandler)
 
   "AsyncHttpResponseHandler" should "extract single query queryResult from response" in {
 
@@ -230,7 +231,7 @@ class AkkaResponseHandlerSpec
         |}
       """.stripMargin.toResponse
 
-    rh.getOptResponseError(errorHttpResponse).futureValue shouldEqual Some("user not found")
+    jsHandler.responseErrorOpt(errorHttpResponse).futureValue shouldEqual Some("user not found")
   }
 
   it should "extract error message" in {
@@ -238,6 +239,6 @@ class AkkaResponseHandlerSpec
     val errorHttpResponse: Response[JValue] =
       """ { "error": "user not found" } """.toResponse
 
-    rh.getResponseError(errorHttpResponse).futureValue shouldEqual "user not found"
+    jsHandler.responseError(errorHttpResponse).futureValue shouldEqual "user not found"
   }
 }

@@ -25,23 +25,33 @@ import jawn.ast.{JArray, JValue}
 import scala.reflect.ClassTag
 import scala.util.Try
 
-private[urlhttp] class UrlResponseHandler extends UrlJsonHandler with ResponseHandler[Try, Response[JValue]] {
+private[urlhttp] final class UrlResponseHandler(jsHandler: UrlJsonHandler) extends ResponseHandler[Try, Response[JValue]] {
 
-  private[chronicler] override def toResult(response: Response[JValue]): Try[WriteResult] = {
+  private[chronicler] override def toPingResult(response: Response[JValue]): Try[PingResult] = {
     response.code match {
-      case code if isSuccessful(code) && code != 204 =>
-        getOptResponseError(response) map {
-          case Some(msg) =>
-            WriteResult.failed(code, new OperationException(msg))
-          case _ =>
-            WriteResult.successful(code)
+      case code if isPingCode(code) =>
+        jsHandler.pingHeaders(response).map { case (build, version) =>
+          PingResult.successful(code, code == 200, build, version)
         }
-      case 204 =>
-        WriteResult.successfulTry(204)
       case other =>
         errorHandler(response, other)
-          .map(ex => WriteResult.failed(other, ex))
+          .map(ex => PingResult.failed(other, ex))
     }
+  }
+
+  private[chronicler] override def toResult(response: Response[JValue]): Try[WriteResult] = response.code match {
+    case code if isSuccessful(code) && code != 204 =>
+      jsHandler.responseErrorOpt(response) map {
+        case Some(msg) =>
+          WriteResult.failed(code, new OperationException(msg))
+        case _ =>
+          WriteResult.successful(code)
+      }
+    case 204 =>
+      WriteResult.successfulTry(204)
+    case other =>
+      errorHandler(response, other)
+        .map(ex => WriteResult.failed(other, ex))
   }
 
   private[chronicler] override def toComplexQueryResult[A: ClassTag, B: ClassTag](response: Response[JValue],
@@ -49,8 +59,8 @@ private[urlhttp] class UrlResponseHandler extends UrlJsonHandler with ResponseHa
                                                                                  (implicit reader: InfluxReader[A]): Try[QueryResult[B]] = {
     response.code match {
       case code if isSuccessful(code) =>
-        getResponseBody(response)
-          .map(getOptInfluxInfo[A])
+        jsHandler.responseBody(response)
+          .map(jsHandler.influxInfoOpt[A])
           .map {
             case Some(arr) =>
               QueryResult.successful[B](
@@ -68,8 +78,8 @@ private[urlhttp] class UrlResponseHandler extends UrlJsonHandler with ResponseHa
   private[chronicler] override def toQueryJsResult(response: Response[JValue]): Try[QueryResult[JArray]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
-        getResponseBody(response)
-          .map(getOptQueryResult)
+        jsHandler.responseBody(response)
+          .map(jsHandler.queryResultOpt)
           .map {
             case Some(seq) =>
               QueryResult.successful[JArray](code, seq)
@@ -83,8 +93,8 @@ private[urlhttp] class UrlResponseHandler extends UrlJsonHandler with ResponseHa
   private[chronicler] override def toGroupedJsResult(response: Response[JValue]): Try[GroupedResult[JArray]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
-        getResponseBody(response)
-          .map(getOptGropedResult)
+        jsHandler.responseBody(response)
+          .map(jsHandler.gropedResultOpt)
           .map {
             case Some(arr) =>
               GroupedResult.successful[JArray](code, arr)
@@ -99,8 +109,8 @@ private[urlhttp] class UrlResponseHandler extends UrlJsonHandler with ResponseHa
   private[chronicler] override def toBulkQueryJsResult(response: Response[JValue]): Try[QueryResult[Array[JArray]]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
-        getResponseBody(response)
-          .map(getOptBulkInfluxPoints)
+        jsHandler.responseBody(response)
+          .map(jsHandler.bulkInfluxPointsOpt)
           .map {
             case Some(seq) =>
               QueryResult.successful[Array[JArray]](code, seq)
@@ -120,15 +130,15 @@ private[urlhttp] class UrlResponseHandler extends UrlJsonHandler with ResponseHa
   private[chronicler] override def errorHandler(response: Response[JValue],
                                                 code: Int): Try[InfluxException] = code match {
     case 400 =>
-      getResponseError(response).map(errMsg => new BadRequestException(errMsg))
+      jsHandler.responseError(response).map(errMsg => new BadRequestException(errMsg))
     case 401 =>
-      getResponseError(response).map(errMsg => new AuthorizationException(errMsg))
+      jsHandler.responseError(response).map(errMsg => new AuthorizationException(errMsg))
     case 404 =>
-      getResponseError(response).map(errMsg => new ResourceNotFoundException(errMsg))
+      jsHandler.responseError(response).map(errMsg => new ResourceNotFoundException(errMsg))
     case code: Int if code < 599 && code >= 500 =>
-      getResponseError(response).map(errMsg => new InternalServerError(errMsg))
+      jsHandler.responseError(response).map(errMsg => new InternalServerError(errMsg))
     case _ =>
-      getResponseError(response).map(errMsg => new UnknownResponseException(errMsg))
+      jsHandler.responseError(response).map(errMsg => new UnknownResponseException(errMsg))
   }
 
   private[this] def queryErrorHandler[A: ClassTag](response: Response[JValue],
