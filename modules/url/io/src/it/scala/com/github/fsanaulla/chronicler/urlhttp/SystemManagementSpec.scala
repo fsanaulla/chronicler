@@ -24,7 +24,7 @@ class SystemManagementSpec extends FlatSpec with Matchers with DockerizedInfluxD
   }
 
   it should "ping InfluxDB verbose" in {
-    val result = influx.ping(true).success.value
+    val result = influx.ping(version == "1.7.3").success.value
     result.code shouldEqual 200
     result.build.get shouldEqual "OSS"
     result.version.get shouldEqual version

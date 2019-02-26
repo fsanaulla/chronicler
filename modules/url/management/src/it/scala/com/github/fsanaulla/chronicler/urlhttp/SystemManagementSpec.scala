@@ -16,6 +16,6 @@ class SystemManagementSpec extends FlatSpec with Matchers with DockerizedInfluxD
     InfluxMng.apply(host, port, Some(creds))
 
   "System api" should "ping InfluxDB" in {
-    influx.ping.success.value shouldEqual NoContentResult
+    influx.ping().success.value shouldEqual NoContentResult
   }
 }

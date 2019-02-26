@@ -33,7 +33,7 @@ class SystemManagementSpec
   }
 
   it should "ping InfluxDB verbose" in {
-    val result = influx.ping(true).futureValue
+    val result = influx.ping(version == "1.7.3").futureValue
     result.code shouldEqual 200
     result.build.get shouldEqual "OSS"
     result.version.get shouldEqual version
