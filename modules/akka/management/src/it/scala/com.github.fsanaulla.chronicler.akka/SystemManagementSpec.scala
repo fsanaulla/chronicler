@@ -39,6 +39,6 @@ class SystemManagementSpec
     result.build.get shouldEqual "OSS"
     result.version.get shouldEqual version
     result.isSuccess shouldBe true
-    result.isVerbose shouldBe true
+    result.isVerbose shouldBe supported
   }
 }
