@@ -16,7 +16,7 @@ class PingBenchmark {
 
   @Benchmark
   def averagePingTime(state: BenchmarkState): Unit =
-    Await.result(state.client.ping.map(_ => {}), Duration.Inf)
+    Await.result(state.client.ping().map(_ => {}), Duration.Inf)
 }
 
 object PingBenchmark {

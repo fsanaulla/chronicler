@@ -205,9 +205,9 @@ lazy val udpExample =
 ///////////////////// BENCHMARKS /////////////////////
 //////////////////////////////////////////////////////
 lazy val benchmark = project
-  .in(file("benchmark/ahc"))
+  .in(file("benchmark"))
   .settings(Settings.common: _*)
-  .settings(name := "chronicler-benchmark-ahc")
+  .settings(name := "chronicler-benchmark")
   .settings(
     sourceDirectory in Jmh := (sourceDirectory in Test).value,
     classDirectory in Jmh := (classDirectory in Test).value,
@@ -217,7 +217,7 @@ lazy val benchmark = project
     run in Jmh := (run in Jmh).dependsOn(Keys.compile in Jmh).evaluated,
     libraryDependencies += "org.openjdk.jmh" % "jmh-generator-annprocess" % "1.21" % Test
   )
-  .dependsOn(itTesting, ahcIO % "test->test")
+  .dependsOn(itTesting, ahcIO, macros % "test->test")
   .enablePlugins(JmhPlugin)
 
 //////////////////////////////////////////////////////

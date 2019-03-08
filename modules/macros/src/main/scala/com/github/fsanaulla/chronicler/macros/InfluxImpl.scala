@@ -284,12 +284,11 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
           }"""
     }
 
-    timeField
+    val optTime = timeField
       .headOption
-      .map(m => q"obj.${m.name}") match {
-        case None => write(tpe, fields, nonOptTags, optTags, None)
-        case some => write(tpe, fields, nonOptTags, optTags, some)
-      }
+      .map[Tree](m => q"obj.${m.name}")
+
+    write(tpe, fields, nonOptTags, optTags, optTime)
   }
 
   /***
