@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.management
+package com.github.fsanaulla.chronicler.akka.shared
 
-import com.github.fsanaulla.chronicler.core.model.PingResult
+import com.softwaremill.sttp.{ResponseAs, asString}
+import jawn.ast.{JNull, JParser, JValue}
 
-/**
-  * Basic system related management operations
- *
-  * @tparam F - Response container type
-  */
-trait SystemManagement[F[_]] {
+import scala.util.Success
 
-  /**
-    * Method for checking InfluxDB status
-    * @return - Write result with status information
-    */
-  def ping(isVerbose: Boolean): F[PingResult]
+package object formats {
+  val asJson: ResponseAs[JValue, Nothing] = {
+    asString
+      .map(JParser.parseFromString)
+      .map {
+        case Success(jv) => jv
+        case _           => JNull
+      }
+  }
 }

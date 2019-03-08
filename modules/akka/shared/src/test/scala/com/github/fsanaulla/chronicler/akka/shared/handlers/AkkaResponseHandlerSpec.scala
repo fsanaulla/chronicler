@@ -17,19 +17,15 @@
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
 import _root_.akka.actor.ActorSystem
-import _root_.akka.http.scaladsl.model.HttpResponse
-import _root_.akka.stream.ActorMaterializer
 import _root_.akka.testkit.TestKit
-import com.github.fsanaulla.chronicler.akka.shared.Extensions.RichStringOps
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
-import jawn.ast.{JArray, JNum, JString}
+import com.softwaremill.sttp.Response
+import jawn.ast._
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.{FlatSpecLike, Matchers}
 
 import scala.concurrent.ExecutionContext
-import scala.concurrent.duration._
-import scala.language.postfixOps
 
 /**
   * Created by fayaz on 12.07.17.
@@ -41,14 +37,14 @@ class AkkaResponseHandlerSpec
     with ScalaFutures
     with IntegrationPatience {
 
-  implicit val mat: ActorMaterializer = ActorMaterializer()
   implicit val ec: ExecutionContext = system.dispatcher
-  implicit val timeout: FiniteDuration = 1 second
-  val rh = new AkkaResponseHandler()
+  implicit val p: JParser.type = JParser
+  val jsHandler = new AkkaJsonHandler()
+  val rh = new AkkaResponseHandler(jsHandler)
 
   "AsyncHttpResponseHandler" should "extract single query queryResult from response" in {
 
-    val singleHttpResponse: HttpResponse =
+    val singleHttpResponse: Response[JValue] =
       """
         |{
         |    "results": [
@@ -99,7 +95,7 @@ class AkkaResponseHandlerSpec
 
   it should "extract bulk query results from response" in {
 
-    val bulkHttpResponse: HttpResponse =
+    val bulkHttpResponse: Response[JValue] =
       """
         |{
         |    "results": [
@@ -223,7 +219,7 @@ class AkkaResponseHandlerSpec
 
   it should "extract optional error message" in {
 
-    val errorHttpResponse: HttpResponse =
+    val errorHttpResponse: Response[JValue] =
       """
         |{
         |        "results": [
@@ -235,14 +231,14 @@ class AkkaResponseHandlerSpec
         |}
       """.stripMargin.toResponse
 
-    rh.getOptResponseError(errorHttpResponse).futureValue shouldEqual Some("user not found")
+    jsHandler.responseErrorOpt(errorHttpResponse).futureValue shouldEqual Some("user not found")
   }
 
   it should "extract error message" in {
 
-    val errorHttpResponse: HttpResponse =
+    val errorHttpResponse: Response[JValue] =
       """ { "error": "user not found" } """.toResponse
 
-    rh.getResponseError(errorHttpResponse).futureValue shouldEqual "user not found"
+    jsHandler.responseError(errorHttpResponse).futureValue shouldEqual "user not found"
   }
 }

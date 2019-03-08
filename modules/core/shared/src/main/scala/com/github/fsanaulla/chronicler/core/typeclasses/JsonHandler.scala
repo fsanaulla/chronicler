@@ -29,13 +29,14 @@ import scala.reflect.ClassTag
   */
 private[chronicler] trait JsonHandler[F[_], A] {
 
+  private[chronicler] def pingHeaders(response: A): F[(String, String)]
   /***
     * Extracting JSON from Response
     *
     * @param response - Response
     * @return         - Extracted JSON
     */
-  private[chronicler] def getResponseBody(response: A): F[JValue]
+  private[chronicler] def responseBody(response: A): F[JValue]
 
   /**
     * Extract error message from response
@@ -43,7 +44,7 @@ private[chronicler] trait JsonHandler[F[_], A] {
     * @param response - Response
     * @return         - Error Message
     */
-  private[chronicler] def getResponseError(response: A): F[String]
+  private[chronicler] def responseError(response: A): F[String]
 
   /**
     * Extract optional error message from response
@@ -51,7 +52,7 @@ private[chronicler] trait JsonHandler[F[_], A] {
     * @param response - Response JSON body
     * @return         - optional error message
     */
-  private[chronicler] def getOptResponseError(response: A): F[Option[String]]
+  private[chronicler] def responseErrorOpt(response: A): F[Option[String]]
 
   /**
     * Extract influx points from JSON, representede as Arrays
@@ -59,14 +60,14 @@ private[chronicler] trait JsonHandler[F[_], A] {
     * @param js - JSON value
     * @return - optional array of points
     */
-  private[chronicler] final def getOptQueryResult(js: JValue): Option[Array[JArray]] = {
+  private[chronicler] final def queryResultOpt(js: JValue): Option[Array[JArray]] = {
     js.get("results").arrayValue.flatMap(_.headOption) // get head of 'results' field
       .flatMap(_.get("series").arrayValue.flatMap(_.headOption)) // get head of 'series' field
       .flatMap(_.get("values").arrayValue) // get array of jValue
       .map(_.flatMap(_.array)) // map to array of JArray
   }
 
-  private[chronicler] final def getOptGropedResult(js: JValue): Option[Array[(Array[String], JArray)]] = {
+  private[chronicler] final def gropedResultOpt(js: JValue): Option[Array[(Array[String], JArray)]] = {
     js.get("results").arrayValue.flatMap(_.headOption)
       .flatMap(_.get("series").arrayValue)
       .map(_.flatMap(_.obj))
@@ -87,7 +88,7 @@ private[chronicler] trait JsonHandler[F[_], A] {
     * @param js - JSON value
     * @return - Array of points
     */
-  private[chronicler] final def getOptBulkInfluxPoints(js: JValue): Option[Array[Array[JArray]]] = {
+  private[chronicler] final def bulkInfluxPointsOpt(js: JValue): Option[Array[Array[JArray]]] = {
     js.get("results").arrayValue // get array from 'results' field
       .map(_.flatMap(_.get("series").arrayValue.flatMap(_.headOption))) // get head of 'series' field
       .map(_.flatMap(_.get("values").arrayValue.map(_.flatMap(_.array)))) // get 'values' array
@@ -98,7 +99,7 @@ private[chronicler] trait JsonHandler[F[_], A] {
     * @param js - JSON value
     * @return = array of meas name -> meas points
     */
-  private[chronicler] final def getOptJsInfluxInfo(js: JValue): Option[Array[(String, Array[JArray])]] = {
+  private[chronicler] final def jsInfluxInfoOpt(js: JValue): Option[Array[(String, Array[JArray])]] = {
     js.get("results").arrayValue.flatMap(_.headOption)
       .flatMap(_.get("series").arrayValue)
       .map(_.flatMap(_.obj))
@@ -121,6 +122,6 @@ private[chronicler] trait JsonHandler[F[_], A] {
     * @tparam T - type of scala case class
     * @return - Array of pairs
     */
-  private[chronicler] final def getOptInfluxInfo[T: ClassTag](js: JValue)(implicit rd: InfluxReader[T]): Option[Array[(String, Array[T])]] =
-    getOptJsInfluxInfo(js).map(_.map { case (k, v) => k -> v.map(rd.read)})
+  private[chronicler] final def influxInfoOpt[T: ClassTag](js: JValue)(implicit rd: InfluxReader[T]): Option[Array[(String, Array[T])]] =
+    jsInfluxInfoOpt(js).map(_.map { case (k, v) => k -> v.map(rd.read)})
 }

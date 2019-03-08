@@ -1,6 +1,5 @@
 package com.github.fsanaulla.chronicler.ahc.management
 
-import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.NoContentResult
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -17,6 +16,21 @@ class SystemManagementSpec extends FlatSpec with Matchers with DockerizedInfluxD
     InfluxMng(host, port, Some(creds))
 
   it should "ping InfluxDB" in {
-    influx.ping.futureValue shouldEqual NoContentResult
+    val result = influx.ping().futureValue
+    result.code shouldEqual 204
+    result.build.get shouldEqual "OSS"
+    result.version.get shouldEqual version
+    result.isSuccess shouldBe true
+    result.isVerbose shouldBe false
+  }
+
+  it should "ping InfluxDB verbose" in {
+    val supported = version == "1.7.3"
+    val result = influx.ping(supported).futureValue
+    result.code shouldEqual (if (supported) 200 else 204)
+    result.build.get shouldEqual "OSS"
+    result.version.get shouldEqual version
+    result.isSuccess shouldBe true
+    result.isVerbose shouldBe supported
   }
 }

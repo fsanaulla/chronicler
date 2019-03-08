@@ -17,12 +17,12 @@
 package com.github.fsanaulla.chronicler.urlhttp.management
 
 import com.github.fsanaulla.chronicler.core.ManagementClient
-import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, WriteResult}
+import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, PingResult}
 import com.github.fsanaulla.chronicler.core.typeclasses.FlatMap
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient.CustomizationF
 import com.github.fsanaulla.chronicler.urlhttp.shared.alias.Request
-import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlQueryBuilder, UrlRequestExecutor, UrlResponseHandler}
+import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlJsonHandler, UrlQueryBuilder, UrlRequestExecutor, UrlResponseHandler}
 import com.softwaremill.sttp.{Response, Uri}
 import jawn.ast.JValue
 
@@ -37,13 +37,15 @@ final class UrlManagementClient(host: String,
 
   implicit val qb: UrlQueryBuilder = new UrlQueryBuilder(host, port, credentials)
   implicit val re: UrlRequestExecutor = new UrlRequestExecutor
-  implicit val rh: UrlResponseHandler = new UrlResponseHandler
+  implicit val rh: UrlResponseHandler = new UrlResponseHandler(new UrlJsonHandler)
   implicit val fm: FlatMap[Try] = new FlatMap[Try] {
     def flatMap[A, B](fa: Try[A])(f: A => Try[B]): Try[B] = fa.flatMap(f)
   }
 
-  override def ping: Try[WriteResult] =
+  override def ping(isVerbose: Boolean = false): Try[PingResult] = {
+    val queryParams = if (isVerbose) Map("verbose" -> "true") else Map.empty[String, String]
     re
-      .execute(re.buildRequest(qb.buildQuery("/ping", Map.empty[String, String])))
-      .flatMap(rh.toResult)
+      .execute(re.buildRequest(qb.buildQuery("/ping", queryParams)))
+      .flatMap(rh.toPingResult)
+  }
 }

@@ -68,7 +68,7 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
   val result: JValue = JParser.parseFromString(singleStrJson).get
 
   it should "extract JSON from HTTP response" in {
-    jsHandler.getResponseBody(resp).futureValue shouldEqual result
+    jsHandler.responseBody(resp).futureValue shouldEqual result
   }
 
   it should "extract single query result from JSON" in {
@@ -117,7 +117,7 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
       JArray(Array(JString("2015-06-11T20:46:02Z"), JNull, JNum(0.64)))
     )
 
-    jsHandler.getOptQueryResult(json).value shouldEqual result
+    jsHandler.queryResultOpt(json).value shouldEqual result
   }
 
   it should "extract bulk query result from JSON" in {
@@ -183,7 +183,7 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
       )
     )
 
-    jsHandler.getOptBulkInfluxPoints(json).value shouldEqual result
+    jsHandler.bulkInfluxPointsOpt(json).value shouldEqual result
   }
 
   it should "extract influx information from JSON" in {
@@ -229,7 +229,7 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
       )
     )
 
-    val res = jsHandler.getOptJsInfluxInfo(json)
+    val res = jsHandler.jsInfluxInfoOpt(json)
 
     res should not be None
     res.value.length shouldEqual 1
@@ -287,7 +287,7 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
         |}
       """.stripMargin).toOption.value
 
-    val optResult = jsHandler.getOptGropedResult(json)
+    val optResult = jsHandler.gropedResultOpt(json)
 
     optResult should not be None
 

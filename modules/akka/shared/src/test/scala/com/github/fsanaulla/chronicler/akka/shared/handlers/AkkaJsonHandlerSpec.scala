@@ -17,10 +17,8 @@
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
 import _root_.akka.actor.ActorSystem
-import _root_.akka.http.scaladsl.model.{HttpEntity, HttpResponse}
-import _root_.akka.stream.ActorMaterializer
 import _root_.akka.testkit.TestKit
-import com.github.fsanaulla.chronicler.akka.shared.types._
+import com.softwaremill.sttp.Response
 import jawn.ast._
 import org.scalatest._
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -37,12 +35,9 @@ class AkkaJsonHandlerSpec
     with BeforeAndAfterAll
     with TryValues {
 
-  implicit val mat: ActorMaterializer = ActorMaterializer()
   implicit val ec: ExecutionContext = system.dispatcher
 
-  val jsHandler: AkkaJsonHandler = new AkkaJsonHandler() {
-    implicit val ec: ExecutionContext = system.dispatcher
-  }
+  val jsHandler: AkkaJsonHandler = new AkkaJsonHandler()
 
   override def afterAll: Unit = {
     super.afterAll()
@@ -81,13 +76,11 @@ class AkkaJsonHandlerSpec
                       ]
                   }"""
 
-  val singleHttpResponse: HttpResponse =
-    HttpResponse(entity = HttpEntity(AppJson, singleStrJson))
+    val resp: Response[JValue] = Response.ok(JParser.parseFromString(singleStrJson).get)
 
-  val jsResult: JValue =
-    JParser.parseFromString(singleStrJson).toOption.value
+    val result: JValue = JParser.parseFromString(singleStrJson).get
 
-    jsHandler.getResponseBody(singleHttpResponse).futureValue shouldEqual jsResult
+    jsHandler.responseBody(resp).futureValue shouldEqual result
   }
 
   it should "extract single query result from JSON" in {
@@ -136,7 +129,7 @@ class AkkaJsonHandlerSpec
       JArray(Array(JString("2015-06-11T20:46:02Z"), JNull, JNum(0.64)))
     )
 
-    jsHandler.getOptQueryResult(json).value shouldEqual result
+    jsHandler.queryResultOpt(json).value shouldEqual result
   }
 
   it should "extract bulk query result from JSON" in {
@@ -202,7 +195,7 @@ class AkkaJsonHandlerSpec
       )
     )
 
-    jsHandler.getOptBulkInfluxPoints(json).value shouldEqual result
+    jsHandler.bulkInfluxPointsOpt(json).value shouldEqual result
   }
 
   it should "extract influx information from JSON" in {
@@ -248,7 +241,7 @@ class AkkaJsonHandlerSpec
       )
     )
 
-    val res = jsHandler.getOptJsInfluxInfo(json)
+    val res = jsHandler.jsInfluxInfoOpt(json)
 
     res should not be None
     res.value.length shouldEqual 1
@@ -306,7 +299,7 @@ class AkkaJsonHandlerSpec
         |}
       """.stripMargin).success.value
 
-    val optResult = jsHandler.getOptGropedResult(json)
+    val optResult = jsHandler.gropedResultOpt(json)
 
     optResult should not be None
 

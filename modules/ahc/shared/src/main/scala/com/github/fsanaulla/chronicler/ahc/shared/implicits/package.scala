@@ -24,4 +24,9 @@ package object implicits {
   implicit final class WriteResultOps(private val wr: WriteResult.type) extends AnyVal {
     def successfulFuture(code: Int): Future[WriteResult] = Future.successful(wr.successful(code))
   }
+
+  implicit final class FutureOps(private val fut: Future.type) extends AnyVal {
+    def fromOption[A](opt: Option[A])(ifNone: => Future[A]): Future[A] =
+      opt.fold(ifNone)(fut.successful)
+  }
 }

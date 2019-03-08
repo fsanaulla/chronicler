@@ -16,17 +16,40 @@
 
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
-import _root_.akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
+import com.softwaremill.sttp.Uri
+import com.softwaremill.sttp.Uri.QueryFragment
+import com.softwaremill.sttp.Uri.QueryFragment.KeyValue
+
+import scala.annotation.tailrec
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[akka] class AkkaQueryBuilder(credentials: Option[InfluxCredentials]) extends QueryBuilder[Uri](credentials) {
-  private[chronicler]
-  override def buildQuery(uri: String, queryParams: Map[String, String]): Uri =
-    Uri(uri).withQuery(Uri.Query(queryParams))
+private[akka] class AkkaQueryBuilder(host: String,
+                                     port: Int,
+                                     credentials: Option[InfluxCredentials])
+  extends QueryBuilder[Uri](credentials) {
+
+  private[chronicler] override def buildQuery(uri: String,
+                                              queryParams: Map[String, String]): Uri = {
+    val u = Uri(host = host, port).path(uri)
+    val encoding = Uri.QueryFragmentEncoding.All
+    val kvLst = queryParams.map {
+      case (k, v) => KeyValue(k, v, valueEncoding = encoding)
+    }
+
+    @tailrec
+    def addQueryParam(u: Uri, lst: Seq[QueryFragment]): Uri = {
+      lst match {
+        case Nil       => u
+        case h :: tail => addQueryParam(u.queryFragment(h), tail)
+      }
+    }
+
+    addQueryParam(u, kvLst.toList)
+  }
 }

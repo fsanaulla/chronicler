@@ -16,21 +16,18 @@
 
 package com.github.fsanaulla.chronicler.akka.io
 
-import akka.http.scaladsl.model.{HttpEntity, RequestEntity}
-import akka.util.ByteString
-import com.github.fsanaulla.chronicler.akka.shared.types.OctetStream
 import com.github.fsanaulla.chronicler.core.model.{Point, Serializer}
 
 package object serializers {
-  implicit val seq2Http: Serializer[Seq[String], RequestEntity] = new Serializer[Seq[String], RequestEntity] {
-    def serialize(obj: Seq[String]) = HttpEntity(ByteString(obj.mkString("\n")))
+  implicit val point2str: Serializer[Point, String] = new Serializer[Point, String] {
+    def serialize(obj: Point): String = obj.serialize
   }
 
-  implicit val point2Http: Serializer[Point, RequestEntity] = new Serializer[Point, RequestEntity] {
-    def serialize(obj: Point) = HttpEntity(OctetStream, ByteString(obj.serialize))
+  implicit val points2str: Serializer[Seq[Point], String] = new Serializer[Seq[Point], String] {
+    def serialize(obj: Seq[Point]): String = obj.map(_.serialize).mkString("\n")
   }
 
-  implicit val seqPoint2Http: Serializer[Seq[Point], RequestEntity] = new Serializer[Seq[Point], RequestEntity] {
-    def serialize(obj: Seq[Point]) = HttpEntity(OctetStream, ByteString(obj.map(_.serialize).mkString("\n")))
+  implicit val seqString2Influx: Serializer[Seq[String], String] = new Serializer[Seq[String], String] {
+    def serialize(obj: Seq[String]): String = obj.mkString("\n")
   }
 }

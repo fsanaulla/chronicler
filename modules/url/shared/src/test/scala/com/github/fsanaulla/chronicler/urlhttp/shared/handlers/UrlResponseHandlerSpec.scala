@@ -31,7 +31,8 @@ import org.scalatest.{FlatSpec, Matchers, TryValues}
 class UrlResponseHandlerSpec extends FlatSpec with Matchers with TryValues {
 
   implicit val p: JParser.type = JParser
-  val jsHandler = new UrlResponseHandler
+  val jsHandler = new UrlJsonHandler
+  val respHandler = new UrlResponseHandler(new UrlJsonHandler)
 
   "UrlResponseHandler" should "extract single query result from response" in {
 
@@ -81,7 +82,7 @@ class UrlResponseHandlerSpec extends FlatSpec with Matchers with TryValues {
         JNum(0.64)))
     )
 
-    jsHandler.toQueryJsResult(singleResponse).success.value.queryResult shouldEqual result
+    respHandler.toQueryJsResult(singleResponse).success.value.queryResult shouldEqual result
   }
 
   it should "extract bulk query results from response" in {
@@ -138,7 +139,7 @@ class UrlResponseHandlerSpec extends FlatSpec with Matchers with TryValues {
         |}
       """.stripMargin.toResponse()
 
-    jsHandler.toBulkQueryJsResult(bulkResponse).success.value.queryResult shouldEqual Array(
+    respHandler.toBulkQueryJsResult(bulkResponse).success.value.queryResult shouldEqual Array(
       Array(
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
@@ -204,7 +205,7 @@ class UrlResponseHandlerSpec extends FlatSpec with Matchers with TryValues {
   """
     val cqHttpResponse = Response.ok(p.parseFromString(cqStrJson).get)
 
-    val cqi = jsHandler.toCqQueryResult(cqHttpResponse).success.value.queryResult.filter(_.queries.nonEmpty).head
+    val cqi = respHandler.toCqQueryResult(cqHttpResponse).success.value.queryResult.filter(_.queries.nonEmpty).head
     cqi.dbName shouldEqual "mydb"
     cqi.queries.head shouldEqual ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")
   }
@@ -223,7 +224,7 @@ class UrlResponseHandlerSpec extends FlatSpec with Matchers with TryValues {
         |}
       """.stripMargin.toResponse()
 
-    jsHandler.getOptResponseError(errorResponse).success.value shouldEqual Some("user not found")
+    jsHandler.responseErrorOpt(errorResponse).success.value shouldEqual Some("user not found")
   }
 
   it should "extract error message" in {
@@ -231,6 +232,6 @@ class UrlResponseHandlerSpec extends FlatSpec with Matchers with TryValues {
     val errorResponse: Response[JValue] =
       """ { "error": "user not found" } """.toResponse()
 
-    jsHandler.getResponseError(errorResponse).success.value shouldEqual "user not found"
+    jsHandler.responseError(errorResponse).success.value shouldEqual "user not found"
   }
 }

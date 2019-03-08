@@ -16,11 +16,11 @@
 
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
-import _root_.akka.http.scaladsl.model._
-import _root_.akka.stream.ActorMaterializer
-import _root_.akka.stream.scaladsl.{Sink, Source}
-import com.github.fsanaulla.chronicler.akka.shared.alias.Connection
+import com.github.fsanaulla.chronicler.akka.shared.alias.Request
+import com.github.fsanaulla.chronicler.akka.shared.formats._
 import com.github.fsanaulla.chronicler.core.typeclasses.RequestExecutor
+import com.softwaremill.sttp.{Response, SttpBackend, Uri, sttp}
+import jawn.ast.JValue
 
 import scala.concurrent.Future
 import scala.language.implicitConversions
@@ -30,12 +30,12 @@ import scala.language.implicitConversions
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[akka] class AkkaRequestExecutor(implicit mat: ActorMaterializer, connection: Connection)
-  extends RequestExecutor[Future, HttpRequest, HttpResponse, Uri] {
+private[akka] class AkkaRequestExecutor(implicit backend: SttpBackend[Future, Nothing])
+  extends RequestExecutor[Future, Request, Response[JValue], Uri] {
 
-  private[chronicler] override implicit def buildRequest(uri: Uri): HttpRequest =
-    HttpRequest(uri = uri)
+  private[chronicler] override implicit def buildRequest(uri: Uri): Request =
+    sttp.get(uri).response(asJson)
 
-  private[chronicler] override def execute(request: HttpRequest): Future[HttpResponse] =
-    Source.single(request).via(connection).runWith(Sink.head)
+  private[chronicler] override def execute(request: Request): Future[Response[JValue]] =
+    request.send()
 }

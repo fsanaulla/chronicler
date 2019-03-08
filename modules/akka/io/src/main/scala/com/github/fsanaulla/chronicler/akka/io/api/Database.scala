@@ -18,7 +18,6 @@ package com.github.fsanaulla.chronicler.akka.io.api
 
 import java.io.File
 
-import _root_.akka.http.scaladsl.model.RequestEntity
 import com.github.fsanaulla.chronicler.akka.io.models.{AkkaReader, AkkaWriter}
 import com.github.fsanaulla.chronicler.akka.io.serializers._
 import com.github.fsanaulla.chronicler.core.api.DatabaseApi
@@ -36,7 +35,7 @@ import scala.reflect.ClassTag
   */
 final class Database(dbName: String, gzipped: Boolean)
                     (implicit ex: ExecutionContext, wr: AkkaWriter, rd: AkkaReader)
-  extends DatabaseApi[Future, RequestEntity] with Serializable[RequestEntity] {
+  extends DatabaseApi[Future, String] with Serializable[String] {
 
   override def writeFromFile(file: File,
                              consistency: Option[Consistency] = None,

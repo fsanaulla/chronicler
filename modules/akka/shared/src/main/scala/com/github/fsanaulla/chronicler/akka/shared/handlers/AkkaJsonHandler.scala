@@ -16,12 +16,12 @@
 
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
-import _root_.akka.http.scaladsl.model.{HttpEntity, HttpResponse}
-import _root_.akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
-import _root_.akka.stream.ActorMaterializer
-import _root_.akka.util.ByteString
+import com.github.fsanaulla.chronicler.akka.shared.implicits._
+import com.github.fsanaulla.chronicler.core.headers.{buildHeader, versionHeader}
 import com.github.fsanaulla.chronicler.core.jawn._
+import com.github.fsanaulla.chronicler.core.model.HeaderNotFoundException
 import com.github.fsanaulla.chronicler.core.typeclasses.JsonHandler
+import com.softwaremill.sttp.Response
 import jawn.ast.{JParser, JValue}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,33 +31,30 @@ import scala.concurrent.{ExecutionContext, Future}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[akka] abstract class AkkaJsonHandler(implicit mat: ActorMaterializer) extends JsonHandler[Future, HttpResponse] {
+private[akka] class AkkaJsonHandler(implicit ec: ExecutionContext) extends JsonHandler[Future, Response[JValue]] {
 
-  implicit val ec: ExecutionContext
+  private[chronicler] override def pingHeaders(response: Response[JValue]): Future[(String, String)] = {
+    val headers = response.headers
+    val result = for {
+      build   <- headers.collectFirst { case (k, v) if k == buildHeader   => v }
+      version <- headers.collectFirst { case (k, v) if k == versionHeader => v }
+    } yield build -> version
 
-  /** Custom Unmarshaller for Jawn JSON */
-  private[this] implicit val unm: Unmarshaller[HttpEntity, JValue] = {
-    Unmarshaller.withMaterializer {
-      implicit ec =>
-        implicit mat =>
-          entity: HttpEntity =>
-            entity.dataBytes
-              .runFold(ByteString.empty)(_ ++ _)
-              .flatMap(db => Future.fromTry(JParser.parseFromString(db.utf8String)))
+    Future.fromOption(result)(Future.failed(new HeaderNotFoundException(s"Can't find $buildHeader or $versionHeader")))
+  }
+
+  private[chronicler] override def responseBody(response: Response[JValue]): Future[JValue] = {
+    response.body match {
+      case Right(js) => Future.successful(js)
+      case Left(str) => Future.fromTry(JParser.parseFromString(str))
     }
   }
 
-  private[chronicler]
-  override def getResponseBody(response: HttpResponse): Future[JValue] =
-    Unmarshal(response.entity).to[JValue]
+  private[chronicler] override def responseError(response: Response[JValue]): Future[String] =
+    responseBody(response).map(_.get("error").asString)
 
-  private[chronicler]
-  override def getResponseError(response: HttpResponse): Future[String] =
-    getResponseBody(response).map(_.get("error").asString)
-
-  private[chronicler]
-  override def getOptResponseError(response: HttpResponse): Future[Option[String]] =
-    getResponseBody(response)
+  private[chronicler] override def responseErrorOpt(response: Response[JValue]): Future[Option[String]] =
+    responseBody(response)
       .map(_.get("results").arrayValue.flatMap(_.headOption))
       .map(_.flatMap(_.get("error").getString))
 }

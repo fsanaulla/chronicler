@@ -17,31 +17,18 @@
 package com.github.fsanaulla.chronicler.akka.shared
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl.{Http, HttpsConnectionContext}
-import akka.stream.{ActorMaterializer, StreamTcpException}
-import com.github.fsanaulla.chronicler.akka.shared.alias.Connection
-import com.github.fsanaulla.chronicler.core.model.{ConnectionException, UnknownConnectionException}
+import akka.http.scaladsl.HttpsConnectionContext
+import akka.stream.scaladsl.Source
+import akka.util.ByteString
+import com.softwaremill.sttp.SttpBackend
+import com.softwaremill.sttp.akkahttp.AkkaHttpBackend
 
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
-abstract class InfluxAkkaClient(host: String,
-                                port: Int,
-                                httpsContext: Option[HttpsConnectionContext])
+abstract class InfluxAkkaClient(httpsContext: Option[HttpsConnectionContext])
                                (implicit system: ActorSystem) { self: AutoCloseable =>
+  implicit val backend: SttpBackend[Future, Source[ByteString, Any]] =
+    AkkaHttpBackend.usingActorSystem(system, customHttpsContext = httpsContext)
 
-  private[akka] implicit val mat: ActorMaterializer = ActorMaterializer()
-  private[akka] implicit val connection: Connection =
-    httpsContext.fold(Http().outgoingConnection(host, port)) { ctx =>
-        Http().outgoingConnectionHttps(host, port, ctx)
-      } recover {
-        case ex: StreamTcpException => throw new ConnectionException(ex.getMessage)
-        case unknown => throw new UnknownConnectionException(unknown.getMessage)
-      }
-
-  override def close(): Unit =
-    Await.ready(closeAsync, Duration.Inf)
-
-  def closeAsync: Future[Unit] =
-    Http().shutdownAllConnectionPools()
+  def close(): Unit = backend.close()
 }

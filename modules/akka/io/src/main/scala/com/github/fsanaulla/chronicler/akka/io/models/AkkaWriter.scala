@@ -18,16 +18,17 @@ package com.github.fsanaulla.chronicler.akka.io.models
 
 import java.io.File
 
-import akka.http.scaladsl.model._
-import akka.stream.scaladsl.FileIO
-import com.github.fsanaulla.chronicler.akka.io.headers._
+import com.github.fsanaulla.chronicler.akka.shared.formats._
 import com.github.fsanaulla.chronicler.akka.shared.handlers.{AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
+import com.github.fsanaulla.chronicler.core.encoding.gzipEncoding
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
 import com.github.fsanaulla.chronicler.core.io.WriteOperations
 import com.github.fsanaulla.chronicler.core.model.WriteResult
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
+import com.softwaremill.sttp.{Uri, sttp}
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.io.Source
 
 /**
   * Created by
@@ -38,49 +39,41 @@ private[akka] class AkkaWriter(implicit qb: AkkaQueryBuilder,
                                re: AkkaRequestExecutor,
                                rh: AkkaResponseHandler,
                                ec: ExecutionContext)
-  extends DatabaseOperationQuery[Uri] with WriteOperations[Future, RequestEntity]{
+  extends DatabaseOperationQuery[Uri] with WriteOperations[Future, String]{
 
-  private[chronicler] override def writeTo(dbName: String,
-                                           entity: RequestEntity,
-                                           consistency: Option[Consistency],
-                                           precision: Option[Precision],
-                                           retentionPolicy: Option[String],
-                                           gzipped: Boolean): Future[WriteResult] = {
+  private[chronicler]
+  override def writeTo(dbName: String,
+                       entity: String,
+                       consistency: Option[Consistency],
+                       precision: Option[Precision],
+                       retentionPolicy: Option[String],
+                       gzipped: Boolean): Future[WriteResult] = {
 
-    val request = HttpRequest(
-      uri = writeToInfluxQuery(
-        dbName,
-        consistency,
-        precision,
-        retentionPolicy
-      ),
-      method = HttpMethods.POST,
-      headers = if (gzipped) gzipEncoding :: Nil else Nil,
-      entity = entity
-    )
+    val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
+    val req = sttp
+      .post(uri)
+      .body(entity)
+      .response(asJson)
+    val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
 
-    re.execute(request).flatMap(rh.toResult)
+    re.execute(maybeEncoded).flatMap(rh.toResult)
   }
 
-  private[chronicler] override def writeFromFile(dbName: String,
-                                                 file: File,
-                                                 consistency: Option[Consistency],
-                                                 precision: Option[Precision],
-                                                 retentionPolicy: Option[String],
-                                                 gzipped: Boolean): Future[WriteResult] = {
+  private[chronicler]
+  override def writeFromFile(dbName: String,
+                             file: File,
+                             consistency: Option[Consistency],
+                             precision: Option[Precision],
+                             retentionPolicy: Option[String],
+                             gzipped: Boolean): Future[WriteResult] = {
 
-    val request = HttpRequest(
-      uri = writeToInfluxQuery(
-        dbName,
-        consistency,
-        precision,
-        retentionPolicy
-      ),
-      method = HttpMethods.POST,
-      headers = if (gzipped) gzipEncoding :: Nil else Nil,
-      entity = HttpEntity(MediaTypes.`application/octet-stream`, FileIO.fromPath(file.toPath, 1024))
-    )
+    val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
+    val req = sttp
+      .post(uri)
+      .body(Source.fromFile(file).getLines().mkString("\n"))
+      .response(asJson)
+    val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
 
-    re.execute(request).flatMap(rh.toResult)
+    re.execute(maybeEncoded).flatMap(rh.toResult)
   }
 }
