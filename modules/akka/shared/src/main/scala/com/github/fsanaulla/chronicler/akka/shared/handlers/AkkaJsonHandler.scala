@@ -36,8 +36,8 @@ private[akka] class AkkaJsonHandler(implicit ec: ExecutionContext) extends JsonH
   private[chronicler] override def pingHeaders(response: Response[JValue]): Future[(String, String)] = {
     val headers = response.headers
     val result = for {
-      build   <- headers.find(_._1 == buildHeader).map(_._2)
-      version <- headers.find(_._1 == versionHeader).map(_._2)
+      build   <- headers.collectFirst { case (k, v) if k == buildHeader   => v }
+      version <- headers.collectFirst { case (k, v) if k == versionHeader => v }
     } yield build -> version
 
     Future.fromOption(result)(Future.failed(new HeaderNotFoundException(s"Can't find $buildHeader or $versionHeader")))

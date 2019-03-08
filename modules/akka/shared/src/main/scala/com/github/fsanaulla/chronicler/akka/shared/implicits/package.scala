@@ -27,6 +27,6 @@ package object implicits {
 
   implicit final class FutureOps(private val fut: Future.type) extends AnyVal {
     def fromOption[A](opt: Option[A])(ifNone: => Future[A]): Future[A] =
-      opt.fold(ifNone)(Future.successful)
+      opt.fold(ifNone)(fut.successful)
   }
 }
