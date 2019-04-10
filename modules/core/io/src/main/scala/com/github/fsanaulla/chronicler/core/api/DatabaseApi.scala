@@ -66,13 +66,18 @@ trait DatabaseApi[F[_], E] {
                       retentionPolicy: Option[String]): F[WriteResult]
 
 
-  def readJs(query: String,
-             epoch: Option[Epoch],
-             pretty: Boolean,
-             chunked: Boolean): F[ReadResult[JArray]]
+  def readJson(query: String,
+               epoch: Option[Epoch],
+               pretty: Boolean,
+               chunked: Boolean): F[ReadResult[JArray]]
 
-  def bulkReadJs(queries: Seq[String],
-                 epoch: Option[Epoch],
-                 pretty: Boolean,
-                 chunked: Boolean): F[QueryResult[Array[JArray]]]
+  def bulkReadJson(queries: Seq[String],
+                   epoch: Option[Epoch],
+                   pretty: Boolean,
+                   chunked: Boolean): F[QueryResult[Array[JArray]]]
+
+  def readGroupedJson(query: String,
+                      epoch: Option[Epoch],
+                      pretty: Boolean,
+                      chunked: Boolean): F[ReadResult[JArray]]
 }

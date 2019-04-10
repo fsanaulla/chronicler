@@ -43,7 +43,7 @@ class GzippedDatabaseApiSpec extends FlatSpec with Matchers with DockerizedInflu
       .success
       .value shouldEqual NoContentResult
 
-    db.readJs("SELECT * FROM test1")
+    db.readJson("SELECT * FROM test1")
       .success
       .value
       .queryResult
@@ -81,7 +81,7 @@ class GzippedDatabaseApiSpec extends FlatSpec with Matchers with DockerizedInflu
 
   it should "retrieve multiple request" in {
 
-    val multiQuery = db.bulkReadJs(
+    val multiQuery = db.bulkReadJson(
       Array(
         "SELECT * FROM test2",
         "SELECT * FROM test2 WHERE age < 40"
@@ -126,7 +126,7 @@ class GzippedDatabaseApiSpec extends FlatSpec with Matchers with DockerizedInflu
       .success.value shouldEqual NoContentResult
 
     db
-      .readJs("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"", epoch = Some(Epochs.NANOSECONDS))
+      .readGroupedJson("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"", epoch = Some(Epochs.NANOSECONDS))
       .success.value
       .groupedResult
       .map { case (k, v) => k.toSeq -> v } shouldEqual Array(Seq("Male") -> JArray(Array(JNum(0), JNum(49))))

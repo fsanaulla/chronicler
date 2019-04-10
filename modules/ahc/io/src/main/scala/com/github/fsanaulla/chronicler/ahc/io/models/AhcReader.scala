@@ -33,27 +33,30 @@ private[ahc] final class AhcReader(implicit qb: QueryBuilder[Uri],
                                    ec: ExecutionContext)
   extends DatabaseOperationQuery[Uri] with ReadOperations[Future] {
 
-  private[chronicler] override def readJs(dbName: String,
-                                          query: String,
-                                          epoch: Option[Epoch],
-                                          pretty: Boolean,
-                                          chunked: Boolean): Future[ReadResult[JArray]] = {
+  override def readJson(dbName: String,
+                        query: String,
+                        epoch: Option[Epoch],
+                        pretty: Boolean,
+                        chunked: Boolean): Future[ReadResult[JArray]] = {
     val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
-    val executionResult = re.execute(re.buildRequest(uri))
-    query match {
-      case q: String if q.contains("GROUP BY") =>
-        executionResult.flatMap(rh.toGroupedJsResult)
-      case _ =>
-        executionResult.flatMap(rh.toQueryJsResult)
-    }
+    re.execute(re.buildRequest(uri)).flatMap(rh.toQueryJsResult)
   }
 
-  private[chronicler] override def bulkReadJs(dbName: String,
-                                              queries: Seq[String],
-                                              epoch: Option[Epoch],
-                                              pretty: Boolean,
-                                              chunked: Boolean): Future[QueryResult[Array[JArray]]] = {
+  override def bulkReadJson(dbName: String,
+                            queries: Seq[String],
+                            epoch: Option[Epoch],
+                            pretty: Boolean,
+                            chunked: Boolean): Future[QueryResult[Array[JArray]]] = {
     val uri = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)
     re.execute(re.buildRequest(uri)).flatMap(rh.toBulkQueryJsResult)
+  }
+
+  override def readGroupedJson(dbName: String,
+                               query: String,
+                               epoch: Option[Epoch],
+                               pretty: Boolean,
+                               chunked: Boolean): Future[ReadResult[JArray]] = {
+    val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
+    re.execute(re.buildRequest(uri)).flatMap(rh.toGroupedJsResult)
   }
 }
