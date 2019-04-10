@@ -63,5 +63,5 @@ final class Measurement[E: ClassTag](dbName: String,
            epoch: Option[Epoch] = None,
            pretty: Boolean = false,
            chunked: Boolean = false)(implicit reader: InfluxReader[E]): Try[ReadResult[E]] =
-    rd.readJs(dbName, query, epoch, pretty, chunked).map(_.map(reader.read))
+    rd.readJson(dbName, query, epoch, pretty, chunked).map(_.map(reader.read))
 }

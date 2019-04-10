@@ -157,7 +157,7 @@ class UdpClientSpec
 
     eventually {
       db
-        .readJs("SELECT * FROM test1")
+        .readJson("SELECT * FROM test1")
         .success
         .value
         .queryResult

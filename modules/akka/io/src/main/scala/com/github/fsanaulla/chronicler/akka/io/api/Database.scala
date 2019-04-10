@@ -67,17 +67,17 @@ final class Database(dbName: String, gzipped: Boolean)
                                retentionPolicy: Option[String] = None): Future[WriteResult] =
     wr.writeTo(dbName, points, consistency, precision, retentionPolicy, gzipped)
 
-  override def readJs(query: String,
-                      epoch: Option[Epoch] = None,
-                      pretty: Boolean = false,
-                      chunked: Boolean = false): Future[ReadResult[JArray]] =
-    rd.readJs(dbName, query, epoch, pretty, chunked)
+  override def readJson(query: String,
+                        epoch: Option[Epoch] = None,
+                        pretty: Boolean = false,
+                        chunked: Boolean = false): Future[ReadResult[JArray]] =
+    rd.readJson(dbName, query, epoch, pretty, chunked)
 
-  override def bulkReadJs(queries: Seq[String],
-                          epoch: Option[Epoch] = None,
-                          pretty: Boolean = false,
-                          chunked: Boolean = false): Future[QueryResult[Array[JArray]]] =
-    rd.bulkReadJs(dbName, queries, epoch, pretty, chunked)
+  override def bulkReadJson(queries: Seq[String],
+                            epoch: Option[Epoch] = None,
+                            pretty: Boolean = false,
+                            chunked: Boolean = false): Future[QueryResult[Array[JArray]]] =
+    rd.bulkReadJson(dbName, queries, epoch, pretty, chunked)
 
 
   override def read[A: ClassTag](query: String,
@@ -85,5 +85,11 @@ final class Database(dbName: String, gzipped: Boolean)
                                  pretty: Boolean = false,
                                  chunked: Boolean = false)
                                 (implicit reader: InfluxReader[A]): Future[ReadResult[A]] =
-    readJs(query, epoch, pretty, chunked).map(_.map(reader.read))
+    readJson(query, epoch, pretty, chunked).map(_.map(reader.read))
+
+  override def readGroupedJson(query: String,
+                               epoch: Option[Epoch] = None,
+                               pretty: Boolean = false,
+                               chunked: Boolean = false): Future[ReadResult[JArray]] =
+    rd.readGroupedJson(dbName, query, epoch, pretty, chunked)
 }
