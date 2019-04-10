@@ -17,6 +17,7 @@
 package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
 import com.github.fsanaulla.chronicler.ahc.shared.implicits._
+import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.typeclasses.ResponseHandler
 import com.softwaremill.sttp.Response
@@ -28,7 +29,7 @@ import scala.reflect.ClassTag
 private[ahc] class AhcResponseHandler(jsHandler: AhcJsonHandler)(implicit ex: ExecutionContext)
   extends ResponseHandler[Future, Response[JValue]] {
 
-  private[chronicler] override def toPingResult(response: Response[JValue]): Future[PingResult] = {
+  override def toPingResult(response: Response[JValue]): Future[PingResult] = {
     response.code match {
       case code if isPingCode(code) =>
         jsHandler.pingHeaders(response).map { case (build, version) =>
@@ -41,7 +42,7 @@ private[ahc] class AhcResponseHandler(jsHandler: AhcJsonHandler)(implicit ex: Ex
   }
 
   // Simply result's
-  private[chronicler] override def toResult(response: Response[JValue]): Future[WriteResult] = {
+  override def toResult(response: Response[JValue]): Future[Either[Throwable, Int]] = {
     response.code match {
       case code if isSuccessful(code) && code != 204 =>
         jsHandler.responseErrorOpt(response) map {
@@ -58,13 +59,12 @@ private[ahc] class AhcResponseHandler(jsHandler: AhcJsonHandler)(implicit ex: Ex
     }
   }
 
-  private[chronicler] override def toComplexQueryResult[A: ClassTag, B: ClassTag](response: Response[JValue],
-                                                                                  f: (String, Array[A]) => B)
-                                                                                 (implicit reader: InfluxReader[A]): Future[QueryResult[B]] = {
+  override def toComplexQueryResult[A: ClassTag: InfluxReader, B: ClassTag](response: Response[JValue],
+                                                                            f: (String, Array[A]) => B): Future[QueryResult[B]] = {
     response.code match {
       case code if isSuccessful(code) =>
         jsHandler.responseBody(response)
-          .map(jsHandler.influxInfoOpt[A])
+          .map(jsHandler.groupedSystemInfo[A])
           .map {
             case Some(arr) =>
               QueryResult.successful[B](
@@ -79,26 +79,27 @@ private[ahc] class AhcResponseHandler(jsHandler: AhcJsonHandler)(implicit ex: Ex
     }
   }
 
-  private[chronicler] override def toQueryJsResult(response: Response[JValue]): Future[QueryResult[JArray]] = {
+  override def toQueryJsResult(response: Response[JValue]): Future[QueryResult[JArray]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
         jsHandler.responseBody(response)
-          .map(jsHandler.queryResultOpt)
+          .map(jsHandler.queryResult)
           .map {
-            case Some(seq) =>
-              QueryResult.successful[JArray](code, seq)
+            case Some(arr) =>
+              QueryResult.successful[JArray](code, arr)
             case _ =>
-              QueryResult.empty[JArray](code)}
+              QueryResult.empty[JArray](code)
+          }
       case other =>
         queryErrorHandler[JArray](response, other)
     }
   }
 
-  private[chronicler] override def toGroupedJsResult(response: Response[JValue]): Future[GroupedResult[JArray]] = {
+  override def toGroupedJsResult(response: Response[JValue]): Future[GroupedResult[JArray]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
         jsHandler.responseBody(response)
-          .map(jsHandler.gropedResultOpt)
+          .map(jsHandler.gropedResult)
           .map {
             case Some(arr) =>
               GroupedResult.successful[JArray](code, arr)
@@ -110,11 +111,11 @@ private[ahc] class AhcResponseHandler(jsHandler: AhcJsonHandler)(implicit ex: Ex
     }
   }
 
-  private[chronicler] override def toBulkQueryJsResult(response: Response[JValue]): Future[QueryResult[Array[JArray]]] = {
+  override def toBulkQueryJsResult(response: Response[JValue]): Future[QueryResult[Array[JArray]]] = {
     response.code.intValue() match {
       case code if isSuccessful(code) =>
         jsHandler.responseBody(response)
-          .map(jsHandler.bulkInfluxPointsOpt)
+          .map(jsHandler.bulkResult)
           .map {
             case Some(seq) =>
               QueryResult.successful[Array[JArray]](code, seq)
@@ -126,12 +127,14 @@ private[ahc] class AhcResponseHandler(jsHandler: AhcJsonHandler)(implicit ex: Ex
     }
   }
 
-  private[chronicler] override def toQueryResult[A: ClassTag](response: Response[JValue])(implicit reader: InfluxReader[A]): Future[QueryResult[A]] =
-    toQueryJsResult(response).map(_.map(reader.read))
+  override def toQueryResult[A: ClassTag: InfluxReader](response: Response[JValue]): Future[Either[Throwable, QueryResult[A]]] =
+    toQueryJsResult(response)
+      .map(_.map(InfluxReader[A].read))
+      .map(either.array(_))
 
 
-  private[chronicler] override def errorHandler(response: Response[JValue],
-                                                code: Int): Future[InfluxException] = code match {
+  override def errorHandler(response: Response[JValue],
+                            code: Int): Future[InfluxException] = code match {
     case 400 =>
       jsHandler.responseError(response).map(errMsg => new BadRequestException(errMsg))
     case 401 =>

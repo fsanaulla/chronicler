@@ -33,8 +33,6 @@ private[chronicler] trait SubscriptionManagement[F[_], Req, Resp, Uri, Entity] e
   implicit val rh: ResponseHandler[F, Resp]
   implicit val fm: FlatMap[F]
 
-  import re.buildRequest
-
   /**
     * Create subscription
     * @param subsName        - subscription name
@@ -49,13 +47,13 @@ private[chronicler] trait SubscriptionManagement[F[_], Req, Resp, Uri, Entity] e
                                rpName: String = "autogen",
                                destinationType: Destination,
                                addresses: Seq[String]): F[WriteResult] =
-    fm.flatMap(re.execute(createSubscriptionQuery(subsName, dbName, rpName, destinationType, addresses)))(rh.toResult)
+    fm.flatMap(re.executeRequest(createSubscriptionQuery(subsName, dbName, rpName, destinationType, addresses)))(rh.toWriteResult)
 
   /** Drop subscription */
   final def dropSubscription(subName: String, dbName: String, rpName: String): F[WriteResult] =
-    fm.flatMap(re.execute(dropSubscriptionQuery(subName, dbName, rpName)))(rh.toResult)
+    fm.flatMap(re.executeRequest(dropSubscriptionQuery(subName, dbName, rpName)))(rh.toWriteResult)
 
   /** Show list of subscription info */
   final def showSubscriptionsInfo: F[QueryResult[SubscriptionInfo]] =
-    fm.flatMap(re.execute(showSubscriptionsQuery))(rh.toSubscriptionQueryResult)
+    fm.flatMap(re.executeRequest(showSubscriptionsQuery))(rh.toSubscriptionQueryResult)
 }

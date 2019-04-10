@@ -16,10 +16,10 @@
 
 package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
-import com.github.fsanaulla.chronicler.ahc.shared.implicits._
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.headers.{buildHeader, versionHeader}
 import com.github.fsanaulla.chronicler.core.jawn._
-import com.github.fsanaulla.chronicler.core.model.HeaderNotFoundException
+import com.github.fsanaulla.chronicler.core.model.{HeaderNotFoundException, InfluxDBInfo}
 import com.github.fsanaulla.chronicler.core.typeclasses.JsonHandler
 import com.softwaremill.sttp.Response
 import jawn.ast.{JParser, JValue}
@@ -28,27 +28,28 @@ import scala.concurrent.{ExecutionContext, Future}
 
 private[ahc] class AhcJsonHandler(implicit ex: ExecutionContext) extends JsonHandler[Future, Response[JValue]] {
 
-  private[chronicler] override def pingHeaders(response: Response[JValue]): Future[(String, String)] = {
+  override def pingHeaders(response: Response[JValue]): ErrorOr[InfluxDBInfo] = {
     val headers = response.headers
     val result = for {
       build   <- headers.collectFirst { case (k, v) if k == buildHeader   => v }
       version <- headers.collectFirst { case (k, v) if k == versionHeader => v }
-    } yield build -> version
+    } yield InfluxDBInfo(build, version)
 
-    Future.fromOption(result)(Future.failed(new HeaderNotFoundException(s"Can't find $buildHeader or $versionHeader")))
+    result.toRight(new HeaderNotFoundException(s"Can't find $buildHeader or $versionHeader"))
   }
 
-  private[chronicler] override def responseBody(response: Response[JValue]): Future[JValue] = {
+  override def responseBody(response: Response[JValue]): Future[JValue] = {
     response.body match {
       case Right(js) => Future.successful(js)
-      case Left(str) => Future.fromTry(JParser.parseFromString(str))
+      case Left(str) =>
+        Future.fromTry(JParser.parseFromString(str))
     }
   }
 
-  private[chronicler] override def responseError(response: Response[JValue]): Future[String] =
+  override def responseError(response: Response[JValue]): Future[String] =
     responseBody(response).map(_.get("error").asString)
 
-  private[chronicler] override def responseErrorOpt(response: Response[JValue]): Future[Option[String]] =
+  override def responseErrorOpt(response: Response[JValue]): Future[Option[String]] =
     responseBody(response)
       .map(_.get("results").arrayValue.flatMap(_.headOption))
       .map(_.flatMap(_.get("error").getString))

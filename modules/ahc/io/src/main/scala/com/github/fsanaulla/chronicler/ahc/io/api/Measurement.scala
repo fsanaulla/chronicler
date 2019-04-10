@@ -16,7 +16,7 @@
 
 package com.github.fsanaulla.chronicler.ahc.io.api
 
-import com.github.fsanaulla.chronicler.ahc.io.models.{AhcReader, AhcWriter}
+import com.github.fsanaulla.chronicler.ahc.io.models.AhcWriter
 import com.github.fsanaulla.chronicler.core.api.MeasurementApi
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
@@ -27,7 +27,7 @@ import scala.reflect.ClassTag
 final class Measurement[E: ClassTag](dbName: String,
                                      measurementName: String,
                                      gzipped: Boolean)
-                                    (implicit ex: ExecutionContext, wr: AhcWriter, rd: AhcReader)
+                                    (implicit ex: ExecutionContext, wr: AhcWriter)
     extends MeasurementApi[Future, E] with PointTransformer {
 
   override def write(entity: E,
@@ -62,6 +62,6 @@ final class Measurement[E: ClassTag](dbName: String,
            epoch: Option[Epoch] = None,
            pretty: Boolean = false,
            chunked: Boolean = false)
-          (implicit reader: InfluxReader[E]): Future[ReadResult[E]] =
+          (implicit reader: InfluxReader[E]): Future[Either[Throwable, ReadResult[E]]] =
     rd.readJs(dbName, query, epoch, pretty, chunked).map(_.map(reader.read))
 }

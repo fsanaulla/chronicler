@@ -39,12 +39,12 @@ trait WriteOperations[F[_], E] {
     * @param retentionPolicy - Optional retention policy name
     * @return                - Result of execution
     */
-  private[chronicler] def writeTo(dbName: String,
-                                  entity: E,
-                                  consistency: Option[Consistency],
-                                  precision: Option[Precision],
-                                  retentionPolicy: Option[String],
-                                  gzipped: Boolean): F[WriteResult]
+  def writeTo(dbName: String,
+              entity: E,
+              consistency: Option[Consistency],
+              precision: Option[Precision],
+              retentionPolicy: Option[String],
+              gzipped: Boolean): F[WriteResult]
 
   /**
     * Write points from specified file
@@ -55,11 +55,11 @@ trait WriteOperations[F[_], E] {
     * @param retentionPolicy - optional retention policy name
     * @return                - execution result
     */
-  private[chronicler] def writeFromFile(dbName: String,
-                                        filePath: File,
-                                        consistency: Option[Consistency],
-                                        precision: Option[Precision],
-                                        retentionPolicy: Option[String],
-                                        gzipped: Boolean): F[WriteResult]
+  def writeFromFile(dbName: String,
+                    filePath: File,
+                    consistency: Option[Consistency],
+                    precision: Option[Precision],
+                    retentionPolicy: Option[String],
+                    gzipped: Boolean): F[WriteResult]
 
 }

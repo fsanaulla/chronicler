@@ -30,12 +30,12 @@ import scala.language.implicitConversions
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[akka] class AkkaRequestExecutor(implicit backend: SttpBackend[Future, Nothing])
+class AkkaRequestExecutor(implicit backend: SttpBackend[Future, Nothing])
   extends RequestExecutor[Future, Request, Response[JValue], Uri] {
 
-  private[chronicler] override implicit def buildRequest(uri: Uri): Request =
+  override def makeRequest(uri: Uri): Request =
     sttp.get(uri).response(asJson)
 
-  private[chronicler] override def execute(request: Request): Future[Response[JValue]] =
+  override def executeRequest(request: Request): Future[Response[JValue]] =
     request.send()
 }

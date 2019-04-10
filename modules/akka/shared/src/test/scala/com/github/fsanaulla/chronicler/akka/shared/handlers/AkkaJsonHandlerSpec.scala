@@ -16,35 +16,14 @@
 
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
-import _root_.akka.actor.ActorSystem
-import _root_.akka.testkit.TestKit
+import com.github.fsanaulla.chronicler.akka.shared.implicits.jsonHandler
 import com.softwaremill.sttp.Response
 import jawn.ast._
 import org.scalatest._
-import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 
-import scala.concurrent.ExecutionContext
+class AkkaJsonHandlerSpec extends FlatSpec with Matchers {
 
-class AkkaJsonHandlerSpec
-  extends TestKit(ActorSystem())
-    with FlatSpecLike
-    with Matchers
-    with ScalaFutures
-    with IntegrationPatience
-    with OptionValues
-    with BeforeAndAfterAll
-    with TryValues {
-
-  implicit val ec: ExecutionContext = system.dispatcher
-
-  val jsHandler: AkkaJsonHandler = new AkkaJsonHandler()
-
-  override def afterAll: Unit = {
-    super.afterAll()
-    TestKit.shutdownActorSystem(system)
-  }
-
-  "AkkaJsonHandler" should "extract js object from HTTP response" in {
+  it should "extract js object from HTTP response" in {
     val singleStrJson = """{
                       "results": [
                           {
@@ -80,7 +59,7 @@ class AkkaJsonHandlerSpec
 
     val result: JValue = JParser.parseFromString(singleStrJson).get
 
-    jsHandler.responseBody(resp).futureValue shouldEqual result
+    jsonHandler.responseBody(resp).right.get shouldEqual result
   }
 
   it should "extract single query result from JSON" in {
@@ -121,7 +100,7 @@ class AkkaJsonHandlerSpec
         |        }
         |    ]
         |}
-      """.stripMargin).toOption.value
+      """.stripMargin).toEither.right.get
 
     val result = Array(
       JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JString("Fz"), JNum(2))),
@@ -129,7 +108,7 @@ class AkkaJsonHandlerSpec
       JArray(Array(JString("2015-06-11T20:46:02Z"), JNull, JNum(0.64)))
     )
 
-    jsHandler.queryResultOpt(json).value shouldEqual result
+    jsonHandler.queryResult(json).right.get shouldEqual result
   }
 
   it should "extract bulk query result from JSON" in {
@@ -183,7 +162,7 @@ class AkkaJsonHandlerSpec
         |        }
         |    ]
         |}
-      """.stripMargin).toOption.value
+      """.stripMargin).toEither.right.get
 
     val result = Array(
       Array(
@@ -195,7 +174,7 @@ class AkkaJsonHandlerSpec
       )
     )
 
-    jsHandler.bulkInfluxPointsOpt(json).value shouldEqual result
+    jsonHandler.bulkResult(json).right.get shouldEqual result
   }
 
   it should "extract influx information from JSON" in {
@@ -231,7 +210,7 @@ class AkkaJsonHandlerSpec
         |        }
         |    ]
         |}
-      """.stripMargin).toOption.value
+      """.stripMargin).toEither.right.get
 
     val result = Array(
       "cpu_load_short" -> Array(
@@ -241,11 +220,10 @@ class AkkaJsonHandlerSpec
       )
     )
 
-    val res = jsHandler.jsInfluxInfoOpt(json)
+    val res = jsonHandler.groupedSystemInfoJs(json).right.get
 
-    res should not be None
-    res.value.length shouldEqual 1
-    val (measurament, points) = res.value.head
+    res.length shouldEqual 1
+    val (measurament, points) = res.head
 
     measurament shouldEqual "cpu_load_short"
     points shouldEqual result.head._2
@@ -297,13 +275,13 @@ class AkkaJsonHandlerSpec
         |     }
         |   ]
         |}
-      """.stripMargin).success.value
+      """.stripMargin).toEither.right.get
 
-    val optResult = jsHandler.gropedResultOpt(json)
+    val eitherResult = jsonHandler.gropedResult(json)
 
-    optResult should not be None
+    eitherResult should not be None
 
-    val result = optResult.value
+    val result = eitherResult.right.get
     result.length shouldEqual 2
 
     result.map { case (k, v) => k.toList -> v}.toList shouldEqual List(

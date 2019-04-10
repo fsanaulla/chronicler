@@ -32,8 +32,6 @@ private[chronicler] trait RetentionPolicyManagement[F[_], Req, Resp, Uri, Entity
   implicit val rh: ResponseHandler[F, Resp]
   implicit val fm: FlatMap[F]
 
-  import re.buildRequest
-
   /**
     * Create retention policy for specified database
     * @param rpName        - retention policy name
@@ -51,7 +49,7 @@ private[chronicler] trait RetentionPolicyManagement[F[_], Req, Resp, Uri, Entity
                                   shardDuration: Option[String] = None,
                                   default: Boolean = false): F[WriteResult] = {
     require(replication > 0, "Replication must greater that 0")
-    fm.flatMap(re.execute(createRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)))(rh.toResult)
+    fm.flatMap(re.executeRequest(createRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)))(rh.toWriteResult)
   }
 
   /** Update retention policy */
@@ -61,15 +59,15 @@ private[chronicler] trait RetentionPolicyManagement[F[_], Req, Resp, Uri, Entity
                                   replication: Option[Int] = None,
                                   shardDuration: Option[String] = None,
                                   default: Boolean = false): F[WriteResult] =
-    fm.flatMap(re.execute(updateRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)))(rh.toResult)
+    fm.flatMap(re.executeRequest(updateRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)))(rh.toWriteResult)
 
 
   /** Drop retention policy */
   final def dropRetentionPolicy(rpName: String, dbName: String): F[WriteResult] =
-    fm.flatMap(re.execute(dropRetentionPolicyQuery(rpName, dbName)))(rh.toResult)
+    fm.flatMap(re.executeRequest(dropRetentionPolicyQuery(rpName, dbName)))(rh.toWriteResult)
 
   /** Show list of retention polices */
   final def showRetentionPolicies(dbName: String): F[QueryResult[RetentionPolicyInfo]] =
-    fm.flatMap(re.execute(showRetentionPoliciesQuery(dbName)))(rh.toQueryResult[RetentionPolicyInfo])
+    fm.flatMap(re.executeRequest(showRetentionPoliciesQuery(dbName)))(rh.toQueryResult[RetentionPolicyInfo])
 
 }

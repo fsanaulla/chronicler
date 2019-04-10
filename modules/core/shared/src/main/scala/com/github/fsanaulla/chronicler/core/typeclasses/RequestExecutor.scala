@@ -19,11 +19,11 @@ package com.github.fsanaulla.chronicler.core.typeclasses
 /**
   * This trait define functionality for build and executing HTTP requests
   *
-  * @tparam F - Container
-  * @tparam Req - Request type
+  * @tparam F    - Container
+  * @tparam Req  - Request type
   * @tparam Resp - Response type
   */
-private[chronicler] trait RequestExecutor[F[_], Req, Resp, Uri] {
+trait RequestExecutor[F[_], Req, Resp, Uri] {
 
   /**
     * Implicit conversion from Uri to Request, provided to reduce boilerplate
@@ -31,7 +31,7 @@ private[chronicler] trait RequestExecutor[F[_], Req, Resp, Uri] {
     * @param uri - Uri parameter
     * @return    - request entity
     */
-  private[chronicler] implicit def buildRequest(uri: Uri): Req
+  def makeRequest(uri: Uri): Req
 
   /**
     * Execute request
@@ -39,5 +39,5 @@ private[chronicler] trait RequestExecutor[F[_], Req, Resp, Uri] {
     * @param request - request entity
     * @return        - Return wrapper response
     */
-  private[chronicler] def execute(request: Req): F[Resp]
+  def executeRequest(request: Req): F[Resp]
 }

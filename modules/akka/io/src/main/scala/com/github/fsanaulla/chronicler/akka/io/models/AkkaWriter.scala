@@ -41,7 +41,6 @@ private[akka] class AkkaWriter(implicit qb: AkkaQueryBuilder,
                                ec: ExecutionContext)
   extends DatabaseOperationQuery[Uri] with WriteOperations[Future, String]{
 
-  private[chronicler]
   override def writeTo(dbName: String,
                        entity: String,
                        consistency: Option[Consistency],
@@ -56,10 +55,9 @@ private[akka] class AkkaWriter(implicit qb: AkkaQueryBuilder,
       .response(asJson)
     val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
 
-    re.execute(maybeEncoded).flatMap(rh.toResult)
+    re.executeRequest(maybeEncoded).flatMap(rh.toWriteResult)
   }
 
-  private[chronicler]
   override def writeFromFile(dbName: String,
                              file: File,
                              consistency: Option[Consistency],
@@ -74,6 +72,6 @@ private[akka] class AkkaWriter(implicit qb: AkkaQueryBuilder,
       .response(asJson)
     val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
 
-    re.execute(maybeEncoded).flatMap(rh.toResult)
+    re.executeRequest(maybeEncoded).flatMap(rh.toWriteResult)
   }
 }

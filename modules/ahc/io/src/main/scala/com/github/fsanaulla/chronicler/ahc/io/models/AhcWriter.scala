@@ -38,7 +38,6 @@ private[ahc] final class AhcWriter(implicit qb: QueryBuilder[Uri],
                                    ex: ExecutionContext)
   extends DatabaseOperationQuery[Uri] with WriteOperations[Future, String] {
 
-  private[chronicler]
   override def writeTo(dbName: String,
                        entity: String,
                        consistency: Option[Consistency],
@@ -53,10 +52,9 @@ private[ahc] final class AhcWriter(implicit qb: QueryBuilder[Uri],
       .response(asJson)
     val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
 
-    re.execute(maybeEncoded).flatMap(rh.toResult)
+    re.executeRequest(maybeEncoded).flatMap(rh.toWriteResult)
   }
 
-  private[chronicler]
   override def writeFromFile(dbName: String,
                              file: File,
                              consistency: Option[Consistency],
@@ -71,6 +69,6 @@ private[ahc] final class AhcWriter(implicit qb: QueryBuilder[Uri],
       .response(asJson)
     val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
 
-    re.execute(maybeEncoded).flatMap(rh.toResult)
+    re.executeRequest(maybeEncoded).flatMap(rh.toWriteResult)
   }
 }

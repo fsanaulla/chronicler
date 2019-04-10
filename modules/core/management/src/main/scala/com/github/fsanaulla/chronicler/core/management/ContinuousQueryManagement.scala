@@ -32,8 +32,6 @@ private[chronicler] trait ContinuousQueryManagement[F[_], Req, Resp, Uri, Entity
   implicit val rh: ResponseHandler[F, Resp]
   implicit val fm: FlatMap[F]
 
-  import re.buildRequest
-
   /**
     * Create new one continuous query
     *
@@ -44,12 +42,12 @@ private[chronicler] trait ContinuousQueryManagement[F[_], Req, Resp, Uri, Entity
     */
   final def createCQ(dbName: String, cqName: String, query: String): F[WriteResult] = {
     require(validCQQuery(query), "Query required INTO and GROUP BY clause")
-    fm.flatMap(re.execute(createCQQuery(dbName, cqName, query)))(rh.toResult)
+    fm.flatMap(re.executeRequest(createCQQuery(dbName, cqName, query)))(rh.toWriteResult)
   }
 
   /** Show continuous query information */
   final def showCQs: F[QueryResult[ContinuousQueryInfo]] =
-    fm.flatMap(re.execute(showCQQuery))(rh.toCqQueryResult)
+    fm.flatMap(re.executeRequest(showCQQuery))(rh.toCqQueryResult)
 
   /**
     * Drop continuous query
@@ -59,7 +57,7 @@ private[chronicler] trait ContinuousQueryManagement[F[_], Req, Resp, Uri, Entity
     * @return       - execution result
     */
   final def dropCQ(dbName: String, cqName: String): F[WriteResult] =
-    fm.flatMap(re.execute(dropCQQuery(dbName, cqName)))(rh.toResult)
+    fm.flatMap(re.executeRequest(dropCQQuery(dbName, cqName)))(rh.toWriteResult)
 
   private[this] def validCQQuery(query: String): Boolean =
     query.contains("INTO") && query.contains("GROUP BY")

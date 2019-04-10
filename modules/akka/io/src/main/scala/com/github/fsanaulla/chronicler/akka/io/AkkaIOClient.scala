@@ -21,9 +21,11 @@ import akka.http.scaladsl.HttpsConnectionContext
 import com.github.fsanaulla.chronicler.akka.io.api.{Database, Measurement}
 import com.github.fsanaulla.chronicler.akka.io.models.{AkkaReader, AkkaWriter}
 import com.github.fsanaulla.chronicler.akka.shared.InfluxAkkaClient
-import com.github.fsanaulla.chronicler.akka.shared.handlers.{AkkaJsonHandler, AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
+import com.github.fsanaulla.chronicler.akka.shared.handlers.{AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
+import com.github.fsanaulla.chronicler.akka.shared.implicits._
 import com.github.fsanaulla.chronicler.core.IOClient
-import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, PingResult}
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
@@ -38,7 +40,7 @@ final class AkkaIOClient(host: String,
 
   implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(host, port, credentials)
   implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor
-  implicit val rh: AkkaResponseHandler = new AkkaResponseHandler(new AkkaJsonHandler())
+  implicit val rh: AkkaResponseHandler = new AkkaResponseHandler
   implicit val wr: AkkaWriter = new AkkaWriter
   implicit val rd: AkkaReader = new AkkaReader
 
@@ -48,10 +50,10 @@ final class AkkaIOClient(host: String,
   override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] =
     new Measurement[A](dbName, measurementName, gzipped)
 
-  override def ping(isVerbose: Boolean = false): Future[PingResult] = {
+  override def ping(isVerbose: Boolean = false): Future[ErrorOr[InfluxDBInfo]] = {
     val queryParams = if (isVerbose) Map("verbose" -> "true") else Map.empty[String, String]
     re
-      .execute(re.buildRequest(qb.buildQuery("/ping", queryParams)))
-      .flatMap(rh.toPingResult)
+      .executeRequest(re.makeRequest(qb.buildQuery("/ping", queryParams)))
+      .map(rh.toPingResult)
   }
 }

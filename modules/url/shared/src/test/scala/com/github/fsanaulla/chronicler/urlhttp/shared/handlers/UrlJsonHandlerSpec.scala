@@ -115,7 +115,7 @@ class UrlJsonHandlerSpec extends FlatSpec with Matchers with TryValues with Opti
       JArray(Array(JString("2015-06-11T20:46:02Z"), JNull, JNum(0.64)))
     )
 
-    jsHandler.queryResultOpt(json).value shouldEqual result
+    jsHandler.queryResult(json).value shouldEqual result
   }
 
   it should "extract bulk query result from JSON" in {
@@ -181,7 +181,7 @@ class UrlJsonHandlerSpec extends FlatSpec with Matchers with TryValues with Opti
       )
     )
 
-    jsHandler.bulkInfluxPointsOpt(json).value shouldEqual result
+    jsHandler.bulkResult(json).value shouldEqual result
   }
 
   it should "extract influx information from JSON" in {
@@ -227,7 +227,7 @@ class UrlJsonHandlerSpec extends FlatSpec with Matchers with TryValues with Opti
       )
     )
 
-    val res = jsHandler.jsInfluxInfoOpt(json)
+    val res = jsHandler.groupedSystemInfoJs(json)
 
     res should not be None
     res.value.length shouldEqual 1
@@ -285,7 +285,7 @@ class UrlJsonHandlerSpec extends FlatSpec with Matchers with TryValues with Opti
         |}
       """.stripMargin).success.value
 
-    val optResult = jsHandler.gropedResultOpt(json)
+    val optResult = jsHandler.gropedResult(json)
 
     optResult should not be None
 

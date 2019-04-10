@@ -50,7 +50,7 @@ final class AhcIOClient(host: String,
   override def ping(isVerbose: Boolean = false): Future[PingResult] = {
     val queryParams = if (isVerbose) Map("verbose" -> "true") else Map.empty[String, String]
     re
-      .execute(re.buildRequest(qb.buildQuery("/ping", queryParams)))
+      .executeRequest(re.makeRequest(qb.buildQuery("/ping", queryParams)))
       .flatMap(rh.toPingResult)
   }
 }

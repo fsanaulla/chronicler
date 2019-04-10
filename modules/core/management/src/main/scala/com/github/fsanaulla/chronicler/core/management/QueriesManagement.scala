@@ -32,13 +32,11 @@ private[chronicler] trait QueriesManagement[F[_], Req, Resp, Uri, Entity] extend
   implicit val rh: ResponseHandler[F, Resp]
   implicit val fm: FlatMap[F]
 
-  import re.buildRequest
-
   /** Show list of queries */
   final def showQueries: F[QueryResult[QueryInfo]] =
-    fm.flatMap(re.execute(showQuerysQuery))(rh.toQueryResult[QueryInfo])
+    fm.flatMap(re.executeRequest(showQuerysQuery))(rh.toQueryResult[QueryInfo])
 
   /** Kill query */
   final def killQuery(queryId: Int): F[WriteResult] =
-    fm.flatMap(re.execute(killQueryQuery(queryId)))(rh.toResult)
+    fm.flatMap(re.executeRequest(killQueryQuery(queryId)))(rh.toWriteResult)
 }

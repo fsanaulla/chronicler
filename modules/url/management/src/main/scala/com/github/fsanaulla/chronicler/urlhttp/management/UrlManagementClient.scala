@@ -17,6 +17,7 @@
 package com.github.fsanaulla.chronicler.urlhttp.management
 
 import com.github.fsanaulla.chronicler.core.ManagementClient
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Self}
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, PingResult}
 import com.github.fsanaulla.chronicler.core.typeclasses.FlatMap
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient
@@ -33,7 +34,7 @@ final class UrlManagementClient(host: String,
                                 port: Int,
                                 credentials: Option[InfluxCredentials],
                                 customization: Option[CustomizationF])
-  extends InfluxUrlClient(customization) with ManagementClient[Try, Request, Response[JValue], Uri, String] {
+  extends InfluxUrlClient(customization) with ManagementClient[Self, Request, Response[JValue], Uri, String] {
 
   implicit val qb: UrlQueryBuilder = new UrlQueryBuilder(host, port, credentials)
   implicit val re: UrlRequestExecutor = new UrlRequestExecutor
@@ -42,10 +43,10 @@ final class UrlManagementClient(host: String,
     def flatMap[A, B](fa: Try[A])(f: A => Try[B]): Try[B] = fa.flatMap(f)
   }
 
-  override def ping(isVerbose: Boolean = false): Try[PingResult] = {
+  override def ping(isVerbose: Boolean = false): ErrorOr[PingResult] = {
     val queryParams = if (isVerbose) Map("verbose" -> "true") else Map.empty[String, String]
     re
-      .execute(re.buildRequest(qb.buildQuery("/ping", queryParams)))
-      .flatMap(rh.toPingResult)
+      .executeRequest(re.makeRequest(qb.buildQuery("/ping", queryParams)))
+      .map(rh.toPingResult)
   }
 }

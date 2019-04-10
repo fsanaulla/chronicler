@@ -117,7 +117,7 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
       JArray(Array(JString("2015-06-11T20:46:02Z"), JNull, JNum(0.64)))
     )
 
-    jsHandler.queryResultOpt(json).value shouldEqual result
+    jsHandler.queryResult(json).value shouldEqual result
   }
 
   it should "extract bulk query result from JSON" in {
@@ -183,7 +183,7 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
       )
     )
 
-    jsHandler.bulkInfluxPointsOpt(json).value shouldEqual result
+    jsHandler.bulkResult(json).value shouldEqual result
   }
 
   it should "extract influx information from JSON" in {
@@ -229,7 +229,7 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
       )
     )
 
-    val res = jsHandler.jsInfluxInfoOpt(json)
+    val res = jsHandler.groupedSystemInfoJs(json)
 
     res should not be None
     res.value.length shouldEqual 1
@@ -287,7 +287,7 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
         |}
       """.stripMargin).toOption.value
 
-    val optResult = jsHandler.gropedResultOpt(json)
+    val optResult = jsHandler.gropedResult(json)
 
     optResult should not be None
 

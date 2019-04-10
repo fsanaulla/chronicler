@@ -16,7 +16,7 @@
 
 package com.github.fsanaulla.chronicler.core.typeclasses
 
-private[chronicler] trait FlatMap[F[_]] {
+trait FlatMap[F[_]] {
 
   /**
     * Flatmap execution result
@@ -26,5 +26,5 @@ private[chronicler] trait FlatMap[F[_]] {
     * @tparam B - result type
     * @return   - result wrapped in input container
     */
-  private[chronicler] def flatMap[A, B](fa: F[A])(f: A => F[B]): F[B]
+  def flatMap[A, B](fa: F[A])(f: A => F[B]): F[B]
 }

@@ -37,7 +37,7 @@ private[urlhttp] class UrlReader(implicit qb: UrlQueryBuilder,
                                           pretty: Boolean,
                                           chunked: Boolean): Try[ReadResult[JArray]] = {
     val executionResult =
-      re.execute(re.buildRequest(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)))
+      re.executeRequest(re.makeRequest(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)))
 
     query match {
       case q: String if q.contains("GROUP BY") =>
@@ -53,7 +53,7 @@ private[urlhttp] class UrlReader(implicit qb: UrlQueryBuilder,
                                               pretty: Boolean,
                                               chunked: Boolean): Try[QueryResult[Array[JArray]]] = {
     val query =
-      re.buildRequest(readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked))
-    re.execute(query).flatMap(rh.toBulkQueryJsResult)
+      re.makeRequest(readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked))
+    re.executeRequest(query).flatMap(rh.toBulkQueryJsResult)
   }
 }

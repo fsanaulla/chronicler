@@ -26,13 +26,13 @@ import scala.collection.mutable
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-private[chronicler] trait DatabaseOperationQuery[U] {
+trait DatabaseOperationQuery[U] {
 
-  private[chronicler] final def writeToInfluxQuery(dbName: String,
-                                                   consistency: Option[Consistency],
-                                                   precision: Option[Precision],
-                                                   retentionPolicy: Option[String])
-                                                  (implicit qb: QueryBuilder[U]): U = {
+  final def writeToInfluxQuery(dbName: String,
+                               consistency: Option[Consistency],
+                               precision: Option[Precision],
+                               retentionPolicy: Option[String])
+                              (implicit qb: QueryBuilder[U]): U = {
 
     val queryParams = scala.collection.mutable.Map[String, String]("db" -> dbName)
     for (rp <- retentionPolicy) queryParams += ("rp" -> rp)
@@ -42,12 +42,12 @@ private[chronicler] trait DatabaseOperationQuery[U] {
     qb.buildQuery("/write", qb.buildQueryParams(queryParams))
   }
 
-  private[chronicler] final def readFromInfluxSingleQuery(dbName: String,
-                                                          query: String,
-                                                          epoch: Option[Epoch],
-                                                          pretty: Boolean,
-                                                          chunked: Boolean)
-                                                         (implicit qb: QueryBuilder[U]): U = {
+  final def readFromInfluxSingleQuery(dbName: String,
+                                      query: String,
+                                      epoch: Option[Epoch],
+                                      pretty: Boolean,
+                                      chunked: Boolean)
+                                     (implicit qb: QueryBuilder[U]): U = {
 
     val queryParams = scala.collection.mutable.Map[String, String](
       "db" -> dbName,
@@ -61,12 +61,12 @@ private[chronicler] trait DatabaseOperationQuery[U] {
     qb.buildQuery("/query", qb.buildQueryParams(queryParams))
   }
 
-  private[chronicler] final def readFromInfluxBulkQuery(dbName: String,
-                                                        queries: Seq[String],
-                                                        epoch: Option[Epoch],
-                                                        pretty: Boolean,
-                                                        chunked: Boolean)
-                                                       (implicit qb: QueryBuilder[U]): U = {
+  final def readFromInfluxBulkQuery(dbName: String,
+                                    queries: Seq[String],
+                                    epoch: Option[Epoch],
+                                    pretty: Boolean,
+                                    chunked: Boolean)
+                                   (implicit qb: QueryBuilder[U]): U = {
     val queryParams = mutable.Map[String, String](
       "db" -> dbName,
       "q" -> queries.mkString(";")

@@ -28,7 +28,7 @@ import scala.language.implicitConversions
 private[ahc] class AhcRequestExecutor(implicit backend: SttpBackend[Future, Nothing])
   extends RequestExecutor[Future, Request, Response[JValue], Uri] {
 
-  private[chronicler] override implicit def buildRequest(uri: Uri): Request = sttp.get(uri).response(asJson)
+  override implicit def makeRequest(uri: Uri): Request = sttp.get(uri).response(asJson)
 
-  private[chronicler] override def execute(request: Request): Future[Response[JValue]] = request.send()
+  override def executeRequest(request: Request): Future[Response[JValue]] = request.send()
 }

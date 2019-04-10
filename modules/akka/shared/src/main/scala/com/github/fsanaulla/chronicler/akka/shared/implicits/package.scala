@@ -16,17 +16,16 @@
 
 package com.github.fsanaulla.chronicler.akka.shared
 
-import com.github.fsanaulla.chronicler.core.model.WriteResult
-
-import scala.concurrent.Future
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.typeclasses.JsonHandler
+import com.softwaremill.sttp.Response
+import jawn.ast.{JParser, JValue}
 
 package object implicits {
-  implicit final class WriteResultOps(private val wr: WriteResult.type) extends AnyVal {
-    def successfulFuture(code: Int): Future[WriteResult] = Future.successful(wr.successful(code))
-  }
-
-  implicit final class FutureOps(private val fut: Future.type) extends AnyVal {
-    def fromOption[A](opt: Option[A])(ifNone: => Future[A]): Future[A] =
-      opt.fold(ifNone)(fut.successful)
+  implicit val jsonHandler: JsonHandler[Response[JValue]] = new JsonHandler[Response[JValue]] {
+    override def responseBody(response: Response[JValue]): ErrorOr[JValue] =
+      response.body.left.flatMap(JParser.parseFromString(_).toEither)
+    override def responseHeader(response: Response[JValue]): Seq[(String, String)] =
+      response.headers
   }
 }

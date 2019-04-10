@@ -46,7 +46,7 @@ private[urlhttp] class UrlWriter(implicit qb: UrlQueryBuilder,
     val req = sttp.post(uri).body(entity).response(asJson)
     val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
 
-    re.execute(maybeEncoded).flatMap(rh.toResult)
+    re.executeRequest(maybeEncoded).flatMap(rh.toResult)
   }
 
   private[chronicler]
@@ -60,7 +60,7 @@ private[urlhttp] class UrlWriter(implicit qb: UrlQueryBuilder,
     val req = sttp.post(uri).body(Source.fromFile(file).getLines().mkString("\n")).response(asJson)
     val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
 
-    re.execute(maybeEncoded).flatMap(rh.toResult)
+    re.executeRequest(maybeEncoded).flatMap(rh.toResult)
   }
 
 }

@@ -16,18 +16,19 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.typeclasses.RequestExecutor
 import com.github.fsanaulla.chronicler.urlhttp.shared.alias.Request
 import com.github.fsanaulla.chronicler.urlhttp.shared.formats.asJson
-import com.softwaremill.sttp.{Response, SttpBackend, Uri, sttp}
+import com.softwaremill.sttp.{EitherBackend, Id, Response, SttpBackend, Uri, sttp}
 import jawn.ast.JValue
 
 import scala.language.implicitConversions
-import scala.util.Try
 
-private[urlhttp] class UrlRequestExecutor(implicit backend: SttpBackend[Try, Nothing])
-  extends RequestExecutor[Try, Request, Response[JValue], Uri] {
+private[urlhttp] class UrlRequestExecutor(implicit backend: EitherBackend[SttpBackend[Id, Nothing]])
+  extends RequestExecutor[ErrorOr, Request, Response[JValue], Uri] {
 
-  private[chronicler] override implicit def buildRequest(uri: Uri): Request = sttp.get(uri).response(asJson)
-  private[chronicler] override def execute(request: Request): Try[Response[JValue]] = request.send()
+
+  override implicit def makeRequest(uri: Uri): Request = sttp.get(uri).response(asJson)
+  override def executeRequest(request: Request): ErrorOr[Response[JValue]] = request.send()
 }

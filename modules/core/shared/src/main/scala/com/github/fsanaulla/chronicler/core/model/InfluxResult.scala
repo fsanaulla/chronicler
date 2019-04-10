@@ -75,7 +75,9 @@ sealed trait ReadResult[A] extends InfluxResult {
   * @param isSuccess - is it complete successfully
   * @param ex        - optional exception
   */
-final case class WriteResult(code: Int, isSuccess: Boolean, ex: Option[Throwable] = None) extends InfluxResult
+final case class WriteResult(code: Int,
+                             isSuccess: Boolean,
+                             ex: Option[Throwable] = None) extends InfluxResult
 
 object WriteResult {
   /** Create successful result entity */
