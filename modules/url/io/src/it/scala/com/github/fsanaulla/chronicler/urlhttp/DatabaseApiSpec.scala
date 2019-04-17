@@ -48,7 +48,7 @@ class DatabaseApiSpec
       .success
       .value shouldEqual NoContentResult
 
-    db.readJs("SELECT * FROM test1")
+    db.readJson("SELECT * FROM test1")
       .success
       .value
       .queryResult
@@ -86,7 +86,7 @@ class DatabaseApiSpec
 
   it should "retrieve multiple request" in {
 
-    val multiQuery = db.bulkReadJs(
+    val multiQuery = db.bulkReadJson(
       Array(
         "SELECT * FROM test2",
         "SELECT * FROM test2 WHERE age < 40"
@@ -131,7 +131,7 @@ class DatabaseApiSpec
       .success.value shouldEqual NoContentResult
 
     db
-      .readJs("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"", epoch = Some(Epochs.NANOSECONDS))
+      .readGroupedJson("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"", epoch = Some(Epochs.NANOSECONDS))
       .success.value
       .groupedResult
       .map { case (k, v) => k.toSeq -> v } shouldEqual Array(Seq("Male") -> JArray(Array(JNum(0), JNum(49))))
@@ -145,7 +145,7 @@ class DatabaseApiSpec
 
     db.writePoint(p).success.value shouldEqual NoContentResult
 
-    db.readJs("SELECT * FROM test6").success.value.queryResult.length shouldEqual 1
+    db.readJson("SELECT * FROM test6").success.value.queryResult.length shouldEqual 1
 
     mng.close() shouldEqual {}
     io.close() shouldEqual {}

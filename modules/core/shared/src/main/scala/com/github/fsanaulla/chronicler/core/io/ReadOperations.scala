@@ -17,7 +17,7 @@
 package com.github.fsanaulla.chronicler.core.io
 
 import com.github.fsanaulla.chronicler.core.enums.Epoch
-import com.github.fsanaulla.chronicler.core.model.{GroupedResult, QueryResult}
+import com.github.fsanaulla.chronicler.core.model.{QueryResult, ReadResult}
 import jawn.ast.JArray
 
 /***
@@ -35,17 +35,7 @@ trait ReadOperations[F[_]] {
     * @param chunked - Chunked response
     * @return        - Query result, array of JArray
     */
-  def readJs(dbName: String,
-             query: String,
-             epoch: Option[Epoch],
-             pretty: Boolean,
-             chunked: Boolean): F[QueryResult[JArray]]
-
-  def readJsGrouped(dbName: String,
-                    query: String,
-                    epoch: Option[Epoch],
-                    pretty: Boolean,
-                    chunked: Boolean): F[GroupedResult[JArray]]
+  def readJson(dbName: String, query: String, epoch: Option[Epoch], pretty: Boolean, chunked: Boolean): F[ReadResult[JArray]]
 
   /**
     * Execute several queries in one time
@@ -57,9 +47,7 @@ trait ReadOperations[F[_]] {
     * @param chunked - Chunked response
     * @return        - Multiple query results, array of JArray
     */
-  def bulkReadJs(dbName: String,
-                 queries: Seq[String],
-                 epoch: Option[Epoch],
-                 pretty: Boolean,
-                 chunked: Boolean): F[QueryResult[Array[JArray]]]
+  def bulkReadJson(dbName: String, queries: Seq[String], epoch: Option[Epoch], pretty: Boolean, chunked: Boolean): F[QueryResult[Array[JArray]]]
+
+  def readGroupedJson(dbName: String, query: String, epoch: Option[Epoch], pretty: Boolean, chunked: Boolean): F[ReadResult[JArray]]
 }

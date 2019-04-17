@@ -26,34 +26,36 @@ import jawn.ast.JArray
 
 import scala.util.Try
 
-private[urlhttp] class UrlReader(implicit qb: UrlQueryBuilder,
-                                 re: UrlRequestExecutor,
-                                 rh: UrlResponseHandler)
+private[urlhttp] final class UrlReader(implicit qb: UrlQueryBuilder,
+                                       re: UrlRequestExecutor,
+                                       rh: UrlResponseHandler)
   extends DatabaseOperationQuery[Uri] with ReadOperations[Try] {
 
-  private[chronicler] override def readJs(dbName: String,
-                                          query: String,
-                                          epoch: Option[Epoch],
-                                          pretty: Boolean,
-                                          chunked: Boolean): Try[ReadResult[JArray]] = {
-    val executionResult =
-      re.executeRequest(re.makeRequest(readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)))
-
-    query match {
-      case q: String if q.contains("GROUP BY") =>
-        executionResult.flatMap(rh.toGroupedJsResult)
-      case _ =>
-        executionResult.flatMap(rh.toQueryJsResult)
-    }
+  override def readJson(dbName: String,
+                        query: String,
+                        epoch: Option[Epoch],
+                        pretty: Boolean,
+                        chunked: Boolean): Try[ReadResult[JArray]] = {
+    val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
+    re.execute(re.buildRequest(uri)).flatMap(rh.toQueryJsResult)
   }
 
-  private[chronicler] override def bulkReadJs(dbName: String,
-                                              queries: Seq[String],
-                                              epoch: Option[Epoch],
-                                              pretty: Boolean,
-                                              chunked: Boolean): Try[QueryResult[Array[JArray]]] = {
+  override def bulkReadJson(dbName: String,
+                            queries: Seq[String],
+                            epoch: Option[Epoch],
+                            pretty: Boolean,
+                            chunked: Boolean): Try[QueryResult[Array[JArray]]] = {
     val query =
-      re.makeRequest(readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked))
-    re.executeRequest(query).flatMap(rh.toBulkQueryJsResult)
+      re.buildRequest(readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked))
+    re.execute(query).flatMap(rh.toBulkQueryJsResult)
+  }
+
+  override def readGroupedJson(dbName: String,
+                               query: String,
+                               epoch: Option[Epoch],
+                               pretty: Boolean,
+                               chunked: Boolean): Try[ReadResult[JArray]] = {
+    val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
+    re.execute(re.buildRequest(uri)).flatMap(rh.toGroupedJsResult)
   }
 }
