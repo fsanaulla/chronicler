@@ -16,21 +16,22 @@
 
 package com.github.fsanaulla.chronicler.core.management
 
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.RetentionPolicyManagementQuery
-import com.github.fsanaulla.chronicler.core.typeclasses.{FlatMap, QueryBuilder, RequestExecutor, ResponseHandler}
+import com.github.fsanaulla.chronicler.core.typeclasses._
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 08.08.17
   */
-private[chronicler] trait RetentionPolicyManagement[F[_], Req, Resp, Uri, Entity] extends RetentionPolicyManagementQuery[Uri] {
+trait RetentionPolicyManagement[F[_], Req, Resp, Uri, Entity] extends RetentionPolicyManagementQuery[Uri] {
   implicit val qb: QueryBuilder[Uri]
-  implicit val re: RequestExecutor[F, Req, Resp, Uri]
-  implicit val rh: ResponseHandler[F, Resp]
-  implicit val fm: FlatMap[F]
+  implicit val re: RequestExecutor[F, Req, Resp, Uri, Entity]
+  implicit val rh: ResponseHandler[Resp]
+  implicit val F: Functor[F]
 
   /**
     * Create retention policy for specified database
@@ -47,9 +48,9 @@ private[chronicler] trait RetentionPolicyManagement[F[_], Req, Resp, Uri, Entity
                                   duration: String,
                                   replication: Int = 1,
                                   shardDuration: Option[String] = None,
-                                  default: Boolean = false): F[WriteResult] = {
+                                  default: Boolean = false): F[ErrorOr[ResponseCode]] = {
     require(replication > 0, "Replication must greater that 0")
-    fm.flatMap(re.executeRequest(createRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)))(rh.toWriteResult)
+    F.map(re.executeUri(createRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)))(rh.toWriteResult)
   }
 
   /** Update retention policy */
@@ -58,16 +59,16 @@ private[chronicler] trait RetentionPolicyManagement[F[_], Req, Resp, Uri, Entity
                                   duration: Option[String] = None,
                                   replication: Option[Int] = None,
                                   shardDuration: Option[String] = None,
-                                  default: Boolean = false): F[WriteResult] =
-    fm.flatMap(re.executeRequest(updateRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)))(rh.toWriteResult)
+                                  default: Boolean = false): F[ErrorOr[ResponseCode]] =
+    F.map(re.executeUri(updateRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)))(rh.toWriteResult)
 
 
   /** Drop retention policy */
-  final def dropRetentionPolicy(rpName: String, dbName: String): F[WriteResult] =
-    fm.flatMap(re.executeRequest(dropRetentionPolicyQuery(rpName, dbName)))(rh.toWriteResult)
+  final def dropRetentionPolicy(rpName: String, dbName: String): F[ErrorOr[ResponseCode]] =
+    F.map(re.executeUri(dropRetentionPolicyQuery(rpName, dbName)))(rh.toWriteResult)
 
   /** Show list of retention polices */
-  final def showRetentionPolicies(dbName: String): F[QueryResult[RetentionPolicyInfo]] =
-    fm.flatMap(re.executeRequest(showRetentionPoliciesQuery(dbName)))(rh.toQueryResult[RetentionPolicyInfo])
+  final def showRetentionPolicies(dbName: String): F[ErrorOr[Array[RetentionPolicyInfo]]] =
+    F.map(re.executeUri(showRetentionPoliciesQuery(dbName)))(rh.toQueryResult[RetentionPolicyInfo])
 
 }
