@@ -34,7 +34,7 @@ private[akka] final class AkkaResponseHandler(implicit jsHandler: JsonHandler[Re
   extends ResponseHandler[Response[JValue]]  {
 
   override def toPingResult(response: Response[JValue]): ErrorOr[InfluxDBInfo] = {
-    if (isPingCode(response.code)) jsHandler.pingHeaders(response)
+    if (isPingCode(response.code)) jsHandler.databaseInfo(response)
     else Left(errorHandler(response, response.code))
   }
 
