@@ -43,7 +43,7 @@ trait JsonHandler[A] {
     */
   def responseBody(response: A): ErrorOr[JValue]
 
-  final def pingHeaders(response: A): ErrorOr[InfluxDBInfo] = {
+  final def databaseInfo(response: A): ErrorOr[InfluxDBInfo] = {
     val headers = responseHeader(response)
     val result = for {
       build   <- headers.collectFirst { case (k, v) if k == buildHeader   => v }
@@ -121,7 +121,6 @@ trait JsonHandler[A] {
       .map(_.map(either.array))
       .map(either.array)
       .joinRight
-//      .map(_.map(_.get("values").arrayValue.map(_.map(_.array)))) // get 'values' array
   }
 
   /**
@@ -139,12 +138,10 @@ trait JsonHandler[A] {
         val measurement = obj.get("name").asString
         val cqInfo = obj
           .get("values")
-          .arrayValue
-          .map(_.map(_.array))
-          .map(either.array)
-          .joinRight
+          .arrayValueOr(Array.empty)
+          .map(_.array)
 
-        cqInfo.map(measurement -> _)
+        either.array(cqInfo).map(measurement -> _)
       })
       .map(either.array)
       .joinRight

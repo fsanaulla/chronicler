@@ -18,8 +18,8 @@ package com.github.fsanaulla.chronicler.core.io
 
 import java.io.File
 
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
-import com.github.fsanaulla.chronicler.core.model.WriteResult
 
 /***
   * Define basic write operation for communicating with InfluxDB
@@ -44,7 +44,7 @@ trait WriteOperations[F[_], E] {
               consistency: Option[Consistency],
               precision: Option[Precision],
               retentionPolicy: Option[String],
-              gzipped: Boolean): F[WriteResult]
+              gzipped: Boolean): F[ErrorOr[ResponseCode]]
 
   /**
     * Write points from specified file
@@ -60,6 +60,6 @@ trait WriteOperations[F[_], E] {
                     consistency: Option[Consistency],
                     precision: Option[Precision],
                     retentionPolicy: Option[String],
-                    gzipped: Boolean): F[WriteResult]
+                    gzipped: Boolean): F[ErrorOr[ResponseCode]]
 
 }

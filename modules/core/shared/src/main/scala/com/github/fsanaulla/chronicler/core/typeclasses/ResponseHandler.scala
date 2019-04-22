@@ -30,7 +30,7 @@ import scala.reflect.ClassTag
   */
 trait ResponseHandler[R] {
 
-  def toPingResult(response: R): Either[Throwable, InfluxDBInfo]
+  def toPingResult(response: R): ErrorOr[InfluxDBInfo]
 
   /**
     * Method for handling HTTP responses with empty body
@@ -38,7 +38,7 @@ trait ResponseHandler[R] {
     * @param response - backend response value
     * @return         - Result in future container
     */
-  def toWriteResult(response: R): Either[Throwable, ResponseCode]
+  def toWriteResult(response: R): ErrorOr[ResponseCode]
 
   /**
     * Method for handling HTTP responses with body, with on fly deserialization into JArray value
@@ -46,7 +46,7 @@ trait ResponseHandler[R] {
     * @param response - backend response value
     * @return         - Query result of JArray in future container
     */
-  def toQueryJsResult(response: R): Either[Throwable, Array[JArray]]
+  def toQueryJsResult(response: R): ErrorOr[Array[JArray]]
 
   /**
     * Handling HTTP response with GROUP BY clause in the query
@@ -54,7 +54,7 @@ trait ResponseHandler[R] {
     * @param response - backend response
     * @return         - grouped result
     */
-  def toGroupedJsResult(response: R): Either[Throwable, Array[(Array[String], JArray)]]
+  def toGroupedJsResult(response: R): ErrorOr[Array[(Array[String], JArray)]]
 
   /**
     * Method for handling HTtp responses with non empty body, that contains multiple response.
@@ -63,7 +63,7 @@ trait ResponseHandler[R] {
     * @param response - backend response value
     * @return         - Query result with multiple response values
     */
-  def toBulkQueryJsResult(response: R): Either[Throwable, Array[Array[JArray]]]
+  def toBulkQueryJsResult(response: R): ErrorOr[Array[Array[JArray]]]
 
   /**
     * Method for handling Info based HTTP responses, with possibility for future deserialization.

@@ -19,7 +19,7 @@ package com.github.fsanaulla.chronicler.core
 package object alias {
   // http response code
   type ResponseCode = Int
-  type |[A, B] = Either[A, B]
-  type Self[X] = X
   type ErrorOr[A] = Either[Throwable, A]
+  type BulkQueryResult[A] = Array[Array[A]]
+  type GroupByResult[A] = Array[(Array[String], A)]
 }

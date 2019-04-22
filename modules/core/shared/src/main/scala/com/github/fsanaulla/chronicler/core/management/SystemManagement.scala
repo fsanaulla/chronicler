@@ -30,5 +30,5 @@ trait SystemManagement[F[_]] {
     * Method for checking InfluxDB status
     * @return - Write result with status information
     */
-  def ping(isVerbose: Boolean): F[ErrorOr[InfluxDBInfo]]
+  def ping: F[ErrorOr[InfluxDBInfo]]
 }

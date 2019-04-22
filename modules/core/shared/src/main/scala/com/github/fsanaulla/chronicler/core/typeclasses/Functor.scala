@@ -16,6 +16,14 @@
 
 package com.github.fsanaulla.chronicler.core.typeclasses
 
+import scala.concurrent.{ExecutionContext, Future}
+
 trait Functor[F[_]] {
   def map[A, B](fa: F[A])(f: A => B): F[B]
+}
+
+object Functor {
+  implicit def futureFunctor(implicit ec: ExecutionContext): Functor[Future] = new Functor[Future] {
+    override def map[A, B](fa: Future[A])(f: A => B): Future[B] = fa.map(f)
+  }
 }

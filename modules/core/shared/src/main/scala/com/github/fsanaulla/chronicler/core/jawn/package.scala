@@ -31,17 +31,21 @@ package object jawn {
   implicit final class RichJValue(private val jv: JValue) extends AnyVal {
     def arrayValue: ErrorOr[Array[JValue]] = jv match {
       case JArray(arr) => Right(arr)
-      case other       => Left(new WrongValueException(other, "array"))
+      case other       =>
+        Left(new WrongValueException("array", other.toString()))
     }
+
+    def arrayValueOr(default: => Array[JValue]): Array[JValue] =
+      arrayValue.getOrElse(default)
 
     def array: ErrorOr[JArray] = jv match {
       case ja: JArray => Right(ja)
-      case other      => Left(new WrongValueException(other, "array"))
+      case other      => Left(new WrongValueException("array", other.toString()))
     }
 
     def obj: ErrorOr[JObject] = jv match {
       case jo: JObject => Right(jo)
-      case other       => Left(new WrongValueException(other, "object"))
+      case other       => Left(new WrongValueException("object", other.toString()))
     }
   }
 }
