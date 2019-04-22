@@ -50,7 +50,7 @@ trait RetentionPolicyManagement[F[_], Req, Resp, Uri, Entity] extends RetentionP
                                   shardDuration: Option[String] = None,
                                   default: Boolean = false): F[ErrorOr[ResponseCode]] = {
     require(replication > 0, "Replication must greater that 0")
-    F.map(re.executeUri(createRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)))(rh.toWriteResult)
+    F.map(re.executeUri(createRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)))(rh.writeResult)
   }
 
   /** Update retention policy */
@@ -60,12 +60,12 @@ trait RetentionPolicyManagement[F[_], Req, Resp, Uri, Entity] extends RetentionP
                                   replication: Option[Int] = None,
                                   shardDuration: Option[String] = None,
                                   default: Boolean = false): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(updateRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)))(rh.toWriteResult)
+    F.map(re.executeUri(updateRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)))(rh.writeResult)
 
 
   /** Drop retention policy */
   final def dropRetentionPolicy(rpName: String, dbName: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(dropRetentionPolicyQuery(rpName, dbName)))(rh.toWriteResult)
+    F.map(re.executeUri(dropRetentionPolicyQuery(rpName, dbName)))(rh.writeResult)
 
   /** Show list of retention polices */
   final def showRetentionPolicies(dbName: String): F[ErrorOr[Array[RetentionPolicyInfo]]] =

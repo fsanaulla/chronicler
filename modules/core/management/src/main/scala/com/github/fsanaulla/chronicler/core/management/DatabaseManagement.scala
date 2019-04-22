@@ -47,16 +47,16 @@ trait DatabaseManagement[F[_], Req, Resp, Uri, Body] extends DataManagementQuery
                            replication: Option[Int] = None,
                            shardDuration: Option[String] = None,
                            rpName: Option[String] = None): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(createDatabaseQuery(dbName, duration, replication, shardDuration, rpName)))(rh.toWriteResult)
+    F.map(re.executeUri(createDatabaseQuery(dbName, duration, replication, shardDuration, rpName)))(rh.writeResult)
 
 
   /** Drop database */
   final def dropDatabase(dbName: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(dropDatabaseQuery(dbName)))(rh.toWriteResult)
+    F.map(re.executeUri(dropDatabaseQuery(dbName)))(rh.writeResult)
 
   /** Drop measurement */
   final def dropMeasurement(dbName: String, measurementName: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(dropMeasurementQuery(dbName, measurementName)))(rh.toWriteResult)
+    F.map(re.executeUri(dropMeasurementQuery(dbName, measurementName)))(rh.writeResult)
 
   /** Show measurements */
   final def showMeasurement(dbName: String): F[ErrorOr[Array[String]]] =

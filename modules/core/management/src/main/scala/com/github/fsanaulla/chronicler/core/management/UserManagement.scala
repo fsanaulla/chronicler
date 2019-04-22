@@ -37,7 +37,7 @@ trait UserManagement[F[_], Req, Resp, Uri, Body] extends UserManagementQuery[Uri
     * @return         - Result of execution
     */
   final def createUser(username: String, password: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(createUserQuery(username, password)))(rh.toWriteResult)
+    F.map(re.executeUri(createUserQuery(username, password)))(rh.writeResult)
 
   /**
     * Create admin user
@@ -46,32 +46,32 @@ trait UserManagement[F[_], Req, Resp, Uri, Body] extends UserManagementQuery[Uri
     * @return         - execution response
     */
   final def createAdmin(username: String, password: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(createAdminQuery(username, password)))(rh.toWriteResult)
+    F.map(re.executeUri(createAdminQuery(username, password)))(rh.writeResult)
 
   /** Drop user */
   final def dropUser(username: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(dropUserQuery(username)))(rh.toWriteResult)
+    F.map(re.executeUri(dropUserQuery(username)))(rh.writeResult)
 
   /** Set password for user */
   final def setUserPassword(username: String, password: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(setUserPasswordQuery(username, password)))(rh.toWriteResult)
+    F.map(re.executeUri(setUserPasswordQuery(username, password)))(rh.writeResult)
 
   /** Set user privilege on specified database */
   final def setPrivileges(username: String, dbName: String, privilege: Privilege): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(setPrivilegesQuery(dbName, username, privilege)))(rh.toWriteResult)
+    F.map(re.executeUri(setPrivilegesQuery(dbName, username, privilege)))(rh.writeResult)
 
 
   /** Revoke user privilege on specified datasbase */
   final def revokePrivileges(username: String, dbName: String, privilege: Privilege): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(revokePrivilegesQuery(dbName, username, privilege)))(rh.toWriteResult)
+    F.map(re.executeUri(revokePrivilegesQuery(dbName, username, privilege)))(rh.writeResult)
 
   /** Grant admin rights */
   final def makeAdmin(username: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(makeAdminQuery(username)))(rh.toWriteResult)
+    F.map(re.executeUri(makeAdminQuery(username)))(rh.writeResult)
 
   /** Remove admin rights */
   final def disableAdmin(username: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(disableAdminQuery(username)))(rh.toWriteResult)
+    F.map(re.executeUri(disableAdminQuery(username)))(rh.writeResult)
 
   /** Show user lists */
   final def showUsers: F[ErrorOr[Array[UserInfo]]] =

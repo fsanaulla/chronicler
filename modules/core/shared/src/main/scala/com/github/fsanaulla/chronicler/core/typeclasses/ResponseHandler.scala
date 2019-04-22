@@ -17,20 +17,24 @@
 package com.github.fsanaulla.chronicler.core.typeclasses
 
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
+import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.model._
 import jawn.ast.JArray
 
 import scala.reflect.ClassTag
 
 /**
-  * This trait define response handling functionality, it's provide method's that generalize
+  * Response handling functionality, it's provide method's that generalize
   * response handle flow, for every backend implementation
   *
   * @tparam R - Backend HTTP response type, for example for Akka HTTP backend - HttpResponse
   */
-trait ResponseHandler[R] {
+final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
 
-  def toPingResult(response: R): ErrorOr[InfluxDBInfo]
+  def pingResult(response: R): ErrorOr[InfluxDBInfo] = {
+    if (isPingCode(jsonHandler.responseCode(response))) jsonHandler.databaseInfo(response)
+    else Left(errorHandler(response))
+  }
 
   /**
     * Method for handling HTTP responses with empty body
@@ -38,7 +42,18 @@ trait ResponseHandler[R] {
     * @param response - backend response value
     * @return         - Result in future container
     */
-  def toWriteResult(response: R): ErrorOr[ResponseCode]
+  def writeResult(response: R): ErrorOr[ResponseCode] = {
+    jsonHandler.responseCode(response) match {
+      case code if isSuccessful(code) && code != 204 =>
+        jsonHandler
+          .responseErrorMsgOpt(response)
+          .flatMap(_.fold[ErrorOr[ResponseCode]](Right(code))(str => Left(new InfluxException(code, str))))
+      case 204 =>
+        Right(204)
+      case _ =>
+        Left(errorHandler(response))
+    }
+  }
 
   /**
     * Method for handling HTTP responses with body, with on fly deserialization into JArray value
@@ -46,7 +61,16 @@ trait ResponseHandler[R] {
     * @param response - backend response value
     * @return         - Query result of JArray in future container
     */
-  def toQueryJsResult(response: R): ErrorOr[Array[JArray]]
+  def toQueryJsResult(response: R): ErrorOr[Array[JArray]] = {
+    jsonHandler.responseCode(response).intValue() match {
+      case code if isSuccessful(code) =>
+        jsonHandler
+          .responseBody(response)
+          .flatMap(jsonHandler.queryResult)
+      case _ =>
+        Left(errorHandler(response))
+    }
+  }
 
   /**
     * Handling HTTP response with GROUP BY clause in the query
@@ -54,7 +78,13 @@ trait ResponseHandler[R] {
     * @param response - backend response
     * @return         - grouped result
     */
-  def toGroupedJsResult(response: R): ErrorOr[Array[(Array[String], JArray)]]
+  def toGroupedJsResult(response: R): ErrorOr[Array[(Array[String], JArray)]] =
+    jsonHandler.responseCode(response) match {
+      case code if isSuccessful(code) =>
+        jsonHandler.responseBody(response).flatMap(jsonHandler.gropedResult)
+      case _ =>
+        Left(errorHandler(response))
+    }
 
   /**
     * Method for handling HTtp responses with non empty body, that contains multiple response.
@@ -63,20 +93,36 @@ trait ResponseHandler[R] {
     * @param response - backend response value
     * @return         - Query result with multiple response values
     */
-  def toBulkQueryJsResult(response: R): ErrorOr[Array[Array[JArray]]]
+  def toBulkQueryJsResult(response: R): ErrorOr[Array[Array[JArray]]] =
+    jsonHandler.responseCode(response) match {
+      case code if isSuccessful(code) =>
+        jsonHandler
+          .responseBody(response)
+          .flatMap(jsonHandler.bulkResult)
+      case _ =>
+        Left(errorHandler(response))
+    }
 
   /**
     * Method for handling Info based HTTP responses, with possibility for future deserialization.
     *
     * @param response - backend response value
     * @param f        - function that transform into value of type [B]
-    * @param reader   - influx reader
     * @tparam A       - entity for creating full Info object
     * @tparam B       - info object
     * @return         - Query result of [B] in future container
     */
   def toComplexQueryResult[A: ClassTag: InfluxReader, B: ClassTag](response: R,
-                                                                   f: (String, Array[A]) => B): ErrorOr[Array[B]]
+                                                                   f: (String, Array[A]) => B): ErrorOr[Array[B]] = {
+      jsonHandler.responseCode(response) match {
+        case code if isSuccessful(code) =>
+          jsonHandler.responseBody(response)
+            .flatMap(jsonHandler.groupedSystemInfo[A])
+            .map(_.map { case (dbName, queries) => f(dbName, queries) })
+        case _ =>
+          Left(errorHandler(response))
+      }
+  }
 
   /**
     * Extract HTTP response body, and transform it to A
@@ -85,16 +131,24 @@ trait ResponseHandler[R] {
     * @tparam A - Deserializer entity type
     * @return - Query result in future container
     */
-  def toQueryResult[A: ClassTag: InfluxReader](response: R): ErrorOr[Array[A]]
+  def toQueryResult[A: ClassTag: InfluxReader](response: R): ErrorOr[Array[A]] =
+    toQueryJsResult(response)
+      .map(_.map(InfluxReader[A].read))
+      .map(either.array)
+      .joinRight
+
 
   /***
     * Handler error codes by it's value
     *
-    * @param code     - error code
     * @param response - response for extracting error message
     * @return         - InfluxException wrraped in container type
     */
-  def errorHandler(response: R, code: Int): Throwable
+  def errorHandler(response: R): Throwable =
+    jsonHandler
+      .responseErrorMsg(response).map(new InfluxException(jsonHandler.responseCode(response), _))
+      // merging parsing level issues with request level issues
+      .merge
 
   /***
     * Get CQ information from Response
@@ -103,7 +157,7 @@ trait ResponseHandler[R] {
     * @param reader - implicit influx reader, predefined
     * @return - CQ results
     */
-  final def toCqQueryResult(response: R)
+  def toCqQueryResult(response: R)
                            (implicit reader: InfluxReader[ContinuousQuery]): ErrorOr[Array[ContinuousQueryInfo]] = {
     toComplexQueryResult[ContinuousQuery, ContinuousQueryInfo](
       response,
@@ -118,7 +172,7 @@ trait ResponseHandler[R] {
     * @param reader - implicit influx reader, predefined
     * @return - Shard info  results
     */
-  final def toShardQueryResult(response: R)
+  def toShardQueryResult(response: R)
                               (implicit reader: InfluxReader[Shard]): ErrorOr[Array[ShardInfo]] = {
     toComplexQueryResult[Shard, ShardInfo](
       response,
@@ -133,7 +187,7 @@ trait ResponseHandler[R] {
     * @param reader - implicit influx reader, predefined
     * @return - Subscription info  results
     */
-  final def toSubscriptionQueryResult(response: R)
+  def toSubscriptionQueryResult(response: R)
                                      (implicit reader: InfluxReader[Subscription]): ErrorOr[Array[SubscriptionInfo]] = {
     toComplexQueryResult[Subscription, SubscriptionInfo](
       response,
@@ -148,7 +202,7 @@ trait ResponseHandler[R] {
     * @param reader - implicit influx reader, predefined
     * @return - Shard group info  results
     */
-  final def toShardGroupQueryResult(response: R)
+  def toShardGroupQueryResult(response: R)
                                    (implicit reader: InfluxReader[ShardGroup]): ErrorOr[Array[ShardGroupsInfo]] = {
     toComplexQueryResult[ShardGroup, ShardGroupsInfo](
       response,
@@ -162,7 +216,7 @@ trait ResponseHandler[R] {
     * @param code - response code
     * @return     - is it success
     */
-  final def isSuccessful(code: Int): Boolean = code >= 200 && code < 300
+  def isSuccessful(code: Int): Boolean = code >= 200 && code < 300
 
-  final def isPingCode(code: Int): Boolean = code == 200 || code == 204
+  def isPingCode(code: Int): Boolean = code == 200 || code == 204
 }

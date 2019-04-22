@@ -21,24 +21,5 @@ package com.github.fsanaulla.chronicler.core.model
   * Author: fayaz.sanaulla@gmail.com
   * Date: 31.07.17
   */
-abstract sealed class InfluxException(msg: String) extends Throwable(msg)
-
-final class OperationException(msg: String) extends InfluxException(msg)
-
-final class BadRequestException(msg: String) extends InfluxException(msg)
-
-final class ResourceNotFoundException(msg: String) extends InfluxException(msg)
-
-final class AuthorizationException(msg: String) extends InfluxException(msg)
-
-final class ConnectionException(msg: String) extends InfluxException(msg)
-
-final class InternalServerError(msg: String) extends InfluxException(msg)
-
-final class UnknownConnectionException(msg: String) extends InfluxException(msg)
-
-final class UnknownResponseException(msg: String) extends InfluxException(msg)
-
-final class DeserializationException(msg: String) extends InfluxException(msg)
-
-final class HeaderNotFoundException(msg: String) extends InfluxException(msg)
+final class InfluxException(httpCode: Int, msg: String) extends Throwable(msg)
+final class ParsingException(msg: String) extends Throwable(msg)

@@ -20,7 +20,7 @@ import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.headers.{buildHeader, versionHeader}
 import com.github.fsanaulla.chronicler.core.jawn._
-import com.github.fsanaulla.chronicler.core.model.{HeaderNotFoundException, InfluxDBInfo, InfluxReader}
+import com.github.fsanaulla.chronicler.core.model.{InfluxDBInfo, InfluxReader, ParsingException}
 import com.github.fsanaulla.chronicler.core.typeclasses.JsonHandler._
 import jawn.ast.{JArray, JValue}
 
@@ -32,6 +32,9 @@ import scala.reflect.ClassTag
   * @tparam A - Response type
   */
 trait JsonHandler[A] {
+
+  // extract reponse http code
+  def responseCode(response: A): Int
 
   /***
     * Extract response headers
@@ -50,7 +53,7 @@ trait JsonHandler[A] {
       version <- headers.collectFirst { case (k, v) if k == versionHeader => v }
     } yield InfluxDBInfo(build, version)
 
-    result.toRight(new HeaderNotFoundException(s"Can't find $buildHeader or $versionHeader"))
+    result.toRight(new ParsingException(s"Can't find $buildHeader or $versionHeader"))
   }
 
   /**

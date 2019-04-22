@@ -53,7 +53,7 @@ final class MeasurementApi[F[_], Req, Resp, Uri, Body, A](dbName: String,
             precision: Option[Precision] = None,
             retentionPolicy: Option[String] = None)(implicit writer: InfluxWriter[A]): F[ErrorOr[ResponseCode]] = {
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
-    F.map(re.execute(uri, bd.fromT(measurementName, entity), gzipped))(rh.toWriteResult)
+    F.map(re.execute(uri, bd.fromT(measurementName, entity), gzipped))(rh.writeResult)
   }
 
   /**
@@ -70,7 +70,7 @@ final class MeasurementApi[F[_], Req, Resp, Uri, Body, A](dbName: String,
                 precision: Option[Precision] = None,
                 retentionPolicy: Option[String] = None)(implicit writer: InfluxWriter[A]): F[ErrorOr[ResponseCode]] = {
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
-    F.map(re.execute(uri, bd.fromSeqT(measurementName, entities), gzipped))(rh.toWriteResult)
+    F.map(re.execute(uri, bd.fromSeqT(measurementName, entities), gzipped))(rh.writeResult)
   }
 
   def read(query: String,

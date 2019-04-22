@@ -43,7 +43,7 @@ trait ContinuousQueryManagement[F[_], Req, Resp, Uri, Entity] extends Continuous
     */
   final def createCQ(dbName: String, cqName: String, query: String): F[ErrorOr[ResponseCode]] = {
     require(validCQQuery(query), "Query required INTO and GROUP BY clause")
-    F.map(re.executeUri(createCQQuery(dbName, cqName, query)))(rh.toWriteResult)
+    F.map(re.executeUri(createCQQuery(dbName, cqName, query)))(rh.writeResult)
   }
 
   /** Show continuous query information */
@@ -58,7 +58,7 @@ trait ContinuousQueryManagement[F[_], Req, Resp, Uri, Entity] extends Continuous
     * @return       - execution result
     */
   final def dropCQ(dbName: String, cqName: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(dropCQQuery(dbName, cqName)))(rh.toWriteResult)
+    F.map(re.executeUri(dropCQQuery(dbName, cqName)))(rh.writeResult)
 
   private[this] def validCQQuery(query: String): Boolean =
     query.contains("INTO") && query.contains("GROUP BY")

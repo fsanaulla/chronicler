@@ -27,10 +27,4 @@ package object either {
             x  <- e.right
           } yield x +: xs
       }
-
-//  def fromQueryResult[R: InfluxReader](result: QueryResult[JArray]): Either[Throwable, QueryResult[R]] = {
-//    either
-//      .array[Throwable, R](result.queryResult.map(implicitly[InfluxReader[R]].read))
-//      .map(r => QueryResult.successful(result.code, r))
-//  }
 }

@@ -39,5 +39,5 @@ trait QueriesManagement[F[_], Req, Resp, Uri, Entity] extends QueriesManagementQ
 
   /** Kill query */
   final def killQuery(queryId: Int): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(killQueryQuery(queryId)))(rh.toWriteResult)
+    F.map(re.executeUri(killQueryQuery(queryId)))(rh.writeResult)
 }

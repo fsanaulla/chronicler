@@ -48,11 +48,11 @@ trait SubscriptionManagement[F[_], Req, Resp, Uri, Entity] extends Subscriptions
                                rpName: String = "autogen",
                                destinationType: Destination,
                                addresses: Seq[String]): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(createSubscriptionQuery(subsName, dbName, rpName, destinationType, addresses)))(rh.toWriteResult)
+    F.map(re.executeUri(createSubscriptionQuery(subsName, dbName, rpName, destinationType, addresses)))(rh.writeResult)
 
   /** Drop subscription */
   final def dropSubscription(subName: String, dbName: String, rpName: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(dropSubscriptionQuery(subName, dbName, rpName)))(rh.toWriteResult)
+    F.map(re.executeUri(dropSubscriptionQuery(subName, dbName, rpName)))(rh.writeResult)
 
   /** Show list of subscription info */
   final def showSubscriptionsInfo: F[ErrorOr[Array[SubscriptionInfo]]] =

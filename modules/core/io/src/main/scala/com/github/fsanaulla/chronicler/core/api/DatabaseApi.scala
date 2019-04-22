@@ -43,7 +43,7 @@ final class DatabaseApi[F[_], Req, Resp, Uri, Body](dbName: String,
                      precision: Option[Precision] = None,
                      retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
-    F.map(re.execute(uri, bd.fromFile(file), gzipped))(rh.toWriteResult)
+    F.map(re.execute(uri, bd.fromFile(file), gzipped))(rh.writeResult)
   }
 
 
@@ -52,7 +52,7 @@ final class DatabaseApi[F[_], Req, Resp, Uri, Body](dbName: String,
                    precision: Option[Precision] = None,
                    retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
-    F.map(re.execute(uri, bd.fromString(point), gzipped))(rh.toWriteResult)
+    F.map(re.execute(uri, bd.fromString(point), gzipped))(rh.writeResult)
   }
 
 
@@ -61,7 +61,7 @@ final class DatabaseApi[F[_], Req, Resp, Uri, Body](dbName: String,
                        precision: Option[Precision] = None,
                        retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
-    F.map(re.execute(uri, bd.fromStrings(points), gzipped))(rh.toWriteResult)
+    F.map(re.execute(uri, bd.fromStrings(points), gzipped))(rh.writeResult)
   }
 
 
@@ -70,7 +70,7 @@ final class DatabaseApi[F[_], Req, Resp, Uri, Body](dbName: String,
                   precision: Option[Precision] = None,
                   retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
-    F.map(re.execute(uri, bd.fromPoint(point), gzipped))(rh.toWriteResult)
+    F.map(re.execute(uri, bd.fromPoint(point), gzipped))(rh.writeResult)
   }
 
 
@@ -79,7 +79,7 @@ final class DatabaseApi[F[_], Req, Resp, Uri, Body](dbName: String,
                        precision: Option[Precision] = None,
                        retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
-    F.map(re.execute(uri, bd.fromPoints(points), gzipped))(rh.toWriteResult)
+    F.map(re.execute(uri, bd.fromPoints(points), gzipped))(rh.writeResult)
   }
 
 
