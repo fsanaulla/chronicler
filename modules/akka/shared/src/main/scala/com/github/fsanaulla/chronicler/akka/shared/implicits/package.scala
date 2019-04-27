@@ -25,7 +25,11 @@ package object implicits {
   implicit val jsonHandler: JsonHandler[Response[JValue]] = new JsonHandler[Response[JValue]] {
     override def responseBody(response: Response[JValue]): ErrorOr[JValue] =
       response.body.left.flatMap(JParser.parseFromString(_).toEither)
+
     override def responseHeader(response: Response[JValue]): Seq[(String, String)] =
       response.headers
+
+    override def responseCode(response: Response[JValue]): Int =
+      response.code
   }
 }

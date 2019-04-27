@@ -3,11 +3,9 @@ package com.github.fsanaulla.chronicler.akka
 import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.SampleEntitys._
-import com.github.fsanaulla.chronicler.akka.io.api.Measurement
 import com.github.fsanaulla.chronicler.akka.io.{AkkaIOClient, InfluxIO}
 import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, InfluxMng}
 import com.github.fsanaulla.chronicler.akka.shared.InfluxConfig
-import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity, Futures}
 import org.scalatest.{FlatSpecLike, Matchers}
 
@@ -25,7 +23,7 @@ class MeasurementApiSpec
     with Futures
     with DockerizedInfluxDB {
 
-  val safeDB = "db"
+  val db = "db"
   val measName = "meas"
 
   lazy val influxConf =
@@ -35,25 +33,27 @@ class MeasurementApiSpec
     InfluxMng(host, port, credentials = Some(creds))
 
   lazy val io: AkkaIOClient = InfluxIO(influxConf)
-  lazy val meas: Measurement[FakeEntity] =
-    io.measurement[FakeEntity](safeDB, measName)
+  lazy val meas: io.Measurement[FakeEntity] =
+    io.measurement[FakeEntity](db, measName)
 
-  "Measurement[FakeEntity]" should "write" in {
-    mng.createDatabase(safeDB).futureValue shouldEqual OkResult
+  it should "write single point" in {
+    mng.createDatabase(db).futureValue.right.get shouldEqual 200
 
-    meas.write(singleEntity).futureValue shouldEqual NoContentResult
+    meas.write(singleEntity).futureValue.right.get shouldEqual 204
 
     meas.read(s"SELECT * FROM $measName")
       .futureValue
-      .queryResult shouldEqual Seq(singleEntity)
+      .right
+      .get shouldEqual Seq(singleEntity)
   }
 
   it should "bulk write" in {
-    meas.bulkWrite(multiEntitys).futureValue shouldEqual NoContentResult
+    meas.bulkWrite(multiEntitys).futureValue.right.get shouldEqual 204
 
     meas.read(s"SELECT * FROM $measName")
       .futureValue
-      .queryResult
+      .right
+      .get
       .length shouldEqual 3
 
     mng.close() shouldEqual {}

@@ -16,9 +16,10 @@
 
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
-import com.github.fsanaulla.chronicler.akka.shared.implicits._
+import com.github.fsanaulla.chronicler.akka.shared.implicits.jsonHandler
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
+import com.github.fsanaulla.chronicler.core.typeclasses.ResponseHandler
 import com.softwaremill.sttp.Response
 import jawn.ast._
 import org.scalatest.{FlatSpec, Matchers}
@@ -29,7 +30,7 @@ import org.scalatest.{FlatSpec, Matchers}
 class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
 
   implicit val p: JParser.type = JParser
-  val rh = new AkkaResponseHandler
+  val rh = new ResponseHandler(jsonHandler)
 
   it should "extract single query queryResult from response" in {
 
@@ -79,7 +80,7 @@ class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
         JNum(0.64)))
     )
 
-    rh.toQueryJsResult(singleHttpResponse).right.get shouldEqual result
+    rh.queryResultJson(singleHttpResponse).right.get shouldEqual result
   }
 
   it should "extract bulk query results from response" in {
@@ -136,7 +137,7 @@ class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
         |}
       """.stripMargin.toResponse
 
-    rh.toBulkQueryJsResult(bulkHttpResponse).right.get shouldEqual Array(
+    rh.bulkQueryResultJson(bulkHttpResponse).right.get shouldEqual Array(
       Array(
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),

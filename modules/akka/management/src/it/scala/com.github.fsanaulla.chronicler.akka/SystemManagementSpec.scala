@@ -24,21 +24,8 @@ class SystemManagementSpec
     InfluxMng(host, port, Some(creds))
 
   it should "ping InfluxDB" in {
-    val result = influx.ping().futureValue
-    result.code shouldEqual 204
-    result.build.get shouldEqual "OSS"
-    result.version.get shouldEqual version
-    result.isSuccess shouldBe true
-    result.isVerbose shouldBe false
-  }
-
-  it should "ping InfluxDB verbose" in {
-    val supported = version == "1.7.3"
-    val result = influx.ping(supported).futureValue
-    result.code shouldEqual (if (supported) 200 else 204)
-    result.build.get shouldEqual "OSS"
-    result.version.get shouldEqual version
-    result.isSuccess shouldBe true
-    result.isVerbose shouldBe supported
+    val result = influx.ping.futureValue.right.get
+    result.build shouldEqual "OSS"
+    result.version shouldEqual version
   }
 }
