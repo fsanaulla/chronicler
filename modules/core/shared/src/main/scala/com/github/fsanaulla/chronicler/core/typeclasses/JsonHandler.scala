@@ -36,12 +36,12 @@ trait JsonHandler[A] {
   // extract reponse http code
   def responseCode(response: A): Int
 
-  /***
+  /** *
     * Extract response headers
     */
   def responseHeader(response: A): Seq[(String, String)]
 
-  /***
+  /** *
     * Extracting JSON from Response
     */
   def responseBody(response: A): ErrorOr[JValue]
@@ -49,7 +49,7 @@ trait JsonHandler[A] {
   final def databaseInfo(response: A): ErrorOr[InfluxDBInfo] = {
     val headers = responseHeader(response)
     val result = for {
-      build   <- headers.collectFirst { case (k, v) if k == buildHeader   => v }
+      build <- headers.collectFirst { case (k, v) if k == buildHeader => v }
       version <- headers.collectFirst { case (k, v) if k == versionHeader => v }
     } yield InfluxDBInfo(build, version)
 
@@ -60,7 +60,7 @@ trait JsonHandler[A] {
     * Extract error message from response
     *
     * @param response - Response
-    * @return         - Error Message
+    * @return - Error Message
     */
   final def responseErrorMsg(response: A): ErrorOr[String] =
     responseBody(response).map(_.get("error").asString)
@@ -69,7 +69,7 @@ trait JsonHandler[A] {
     * Extract optional error message from response
     *
     * @param response - Response JSON body
-    * @return         - optional error message
+    * @return - optional error message
     */
   final def responseErrorMsgOpt(response: A): ErrorOr[Option[String]] =
     responseBody(response)
@@ -80,14 +80,13 @@ trait JsonHandler[A] {
     * Extract influx points from JSON, representede as Arrays
     *
     * @param js - JSON value
-    * @return   - optional array of points
+    * @return - optional array of points
     */
-  final def queryResult(js: JValue): ErrorOr[Array[JArray]] = {
+  final def queryResult(js: JValue): ErrorOr[Array[JArray]] =
     js.get("results").arrayValue.flatMap(_.headRight(new NoSuchElementException("results[0]"))) // get head of 'results' field
       .flatMap(_.get("series").arrayValue.flatMap(_.headRight(new NoSuchElementException("series[0]")))) // get head of 'series' field
-      .flatMap(_.get("values").arrayValue) // get array of jValue
+      .map(_.get("values").arrayValueOr(Array.empty)) // get array of jValue
       .flatMap(arr => either.array[Throwable, JArray](arr.map(_.array))) // map to array of JArray
-  }
 
   final def gropedResult(js: JValue): ErrorOr[Array[(Array[String], JArray)]] = {
     js.get("results").arrayValue.flatMap(_.headRight(new NoSuchElementException("results[0]")))
@@ -109,8 +108,9 @@ trait JsonHandler[A] {
 
   /**
     * Extract bulk result from JSON
+    *
     * @param js - JSON value
-    * @return   - Array of points
+    * @return - Array of points
     */
   final def bulkResult(js: JValue): ErrorOr[Array[Array[JArray]]] = {
     js.get("results").arrayValue // get array from 'results' field
@@ -128,12 +128,13 @@ trait JsonHandler[A] {
 
   /**
     * Extract Measurement name -> Measurement points array
+    *
     * @param js - JSON value
-    * @return   - array of meas name -> meas points
+    * @return - array of meas name -> meas points
     */
   final def groupedSystemInfoJs(js: JValue): ErrorOr[Array[(String, Array[JArray])]] = {
     js.get("results").arrayValue.flatMap(_.headRight(new NoSuchElementException("results[0]")))
-      .flatMap(_.get("series").arrayValue)
+      .map(_.get("series").arrayValueOr(Array.empty))
       .map(_.map(_.obj))
       .map(either.array)
       .joinRight
@@ -152,18 +153,21 @@ trait JsonHandler[A] {
 
   /**
     * Extract Measurement name and values from it from JSON
+    *
     * @param js - JSON value
-    * @return   - Array of pairs
+    * @return - Array of pairs
     */
-  final def groupedSystemInfo[T: ClassTag: InfluxReader](js: JValue): ErrorOr[Array[(String, Array[T])]] =
+  final def groupedSystemInfo[T: ClassTag](js: JValue)(implicit rd: InfluxReader[T]): ErrorOr[Array[(String, Array[T])]] = {
     groupedSystemInfoJs(js)
-      .map(arr =>
+      .map { arr =>
         arr.map {
           case (k, v) =>
-            either.array[Throwable, T](v.map(InfluxReader[T].read)).map(k -> _)
-        })
+            either.array[Throwable, T](v.map(rd.read)).map(k -> _)
+        }
+      }
       .map(either.array)
       .joinRight
+  }
 }
 
 object JsonHandler {

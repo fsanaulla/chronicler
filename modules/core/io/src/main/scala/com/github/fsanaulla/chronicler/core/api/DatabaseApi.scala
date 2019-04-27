@@ -88,7 +88,7 @@ final class DatabaseApi[F[_], Req, Resp, Uri, Body](dbName: String,
                 pretty: Boolean = false,
                 chunked: Boolean = false): F[ErrorOr[Array[JArray]]] = {
     val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
-    F.map(re.executeUri(uri))(rh.toQueryJsResult)
+    F.map(re.executeUri(uri))(rh.queryResultJson)
   }
 
    def bulkReadJson(queries: Seq[String],
@@ -96,7 +96,7 @@ final class DatabaseApi[F[_], Req, Resp, Uri, Body](dbName: String,
                     pretty: Boolean = false,
                     chunked: Boolean = false): F[ErrorOr[Array[Array[JArray]]]] = {
     val uri = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)
-    F.map(re.executeUri(uri))(rh.toBulkQueryJsResult)
+    F.map(re.executeUri(uri))(rh.bulkQueryResultJson)
   }
 
    def readGroupedJson(query: String,
@@ -104,6 +104,6 @@ final class DatabaseApi[F[_], Req, Resp, Uri, Body](dbName: String,
                        pretty: Boolean = false,
                        chunked: Boolean = false): F[ErrorOr[Array[(Array[String], JArray)]]] = {
     val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
-    F.map(re.executeUri(uri))(rh.toGroupedJsResult)
+    F.map(re.executeUri(uri))(rh.groupedResultJson)
   }
 }

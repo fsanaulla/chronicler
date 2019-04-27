@@ -81,7 +81,7 @@ final class MeasurementApi[F[_], Req, Resp, Uri, Body, A](dbName: String,
     val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
     F.map(
       F.map(
-        re.executeUri(uri))(rh.toQueryJsResult)
+        re.executeUri(uri))(rh.queryResultJson)
     ) { e =>
           e.flatMap { arr =>
             either.array[Throwable, A](arr.map(rd.read))

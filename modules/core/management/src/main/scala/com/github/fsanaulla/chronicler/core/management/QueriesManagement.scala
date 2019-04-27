@@ -35,7 +35,7 @@ trait QueriesManagement[F[_], Req, Resp, Uri, Entity] extends QueriesManagementQ
 
   /** Show list of queries */
   final def showQueries: F[ErrorOr[Array[QueryInfo]]] =
-    F.map(re.executeUri(showQuerysQuery))(rh.toQueryResult[QueryInfo])
+    F.map(re.executeUri(showQuerysQuery))(rh.queryResust[QueryInfo])
 
   /** Kill query */
   final def killQuery(queryId: Int): F[ErrorOr[ResponseCode]] =

@@ -61,7 +61,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @param response - backend response value
     * @return         - Query result of JArray in future container
     */
-  def toQueryJsResult(response: R): ErrorOr[Array[JArray]] = {
+  def queryResultJson(response: R): ErrorOr[Array[JArray]] = {
     jsonHandler.responseCode(response).intValue() match {
       case code if isSuccessful(code) =>
         jsonHandler
@@ -78,7 +78,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @param response - backend response
     * @return         - grouped result
     */
-  def toGroupedJsResult(response: R): ErrorOr[Array[(Array[String], JArray)]] =
+  def groupedResultJson(response: R): ErrorOr[Array[(Array[String], JArray)]] =
     jsonHandler.responseCode(response) match {
       case code if isSuccessful(code) =>
         jsonHandler.responseBody(response).flatMap(jsonHandler.gropedResult)
@@ -93,7 +93,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @param response - backend response value
     * @return         - Query result with multiple response values
     */
-  def toBulkQueryJsResult(response: R): ErrorOr[Array[Array[JArray]]] =
+  def bulkQueryResultJson(response: R): ErrorOr[Array[Array[JArray]]] =
     jsonHandler.responseCode(response) match {
       case code if isSuccessful(code) =>
         jsonHandler
@@ -131,9 +131,9 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @tparam A - Deserializer entity type
     * @return - Query result in future container
     */
-  def toQueryResult[A: ClassTag: InfluxReader](response: R): ErrorOr[Array[A]] =
-    toQueryJsResult(response)
-      .map(_.map(InfluxReader[A].read))
+  def queryResust[A: ClassTag](response: R)(implicit rd: InfluxReader[A]): ErrorOr[Array[A]] =
+    queryResultJson(response)
+      .map(_.map(rd.read))
       .map(either.array)
       .joinRight
 

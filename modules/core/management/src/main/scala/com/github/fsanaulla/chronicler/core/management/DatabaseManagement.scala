@@ -60,15 +60,15 @@ trait DatabaseManagement[F[_], Req, Resp, Uri, Body] extends DataManagementQuery
 
   /** Show measurements */
   final def showMeasurement(dbName: String): F[ErrorOr[Array[String]]] =
-    F.map(re.executeUri(showMeasurementQuery(dbName)))(rh.toQueryResult[String])
+    F.map(re.executeUri(showMeasurementQuery(dbName)))(rh.queryResust[String])
 
   /** Show database list */
   final def showDatabases(): F[ErrorOr[Array[String]]] =
-    F.map(re.executeUri(showDatabasesQuery))(rh.toQueryResult[String])
+    F.map(re.executeUri(showDatabasesQuery))(rh.queryResust[String])
 
   /** Show field tags list */
   final def showFieldKeys(dbName: String, measurementName: String): F[ErrorOr[Array[FieldInfo]]] =
-    F.map(re.executeUri(showFieldKeysQuery(dbName, measurementName)))(rh.toQueryResult[FieldInfo])
+    F.map(re.executeUri(showFieldKeysQuery(dbName, measurementName)))(rh.queryResust[FieldInfo])
 
   /** Show tags keys list */
   final def showTagKeys(dbName: String,
@@ -76,7 +76,7 @@ trait DatabaseManagement[F[_], Req, Resp, Uri, Body] extends DataManagementQuery
                         whereClause: Option[String] = None,
                         limit: Option[Int] = None,
                         offset: Option[Int] = None): F[ErrorOr[Array[String]]] =
-    F.map(re.executeUri(showTagKeysQuery(dbName, measurementName, whereClause, limit, offset)))(rh.toQueryResult[String])
+    F.map(re.executeUri(showTagKeysQuery(dbName, measurementName, whereClause, limit, offset)))(rh.queryResust[String])
 
   /** Show tag values list */
   final def showTagValues(dbName: String,
@@ -85,5 +85,5 @@ trait DatabaseManagement[F[_], Req, Resp, Uri, Body] extends DataManagementQuery
                           whereClause: Option[String] = None,
                           limit: Option[Int] = None,
                           offset: Option[Int] = None): F[ErrorOr[Array[TagValue]]] =
-    F.map(re.executeUri(showTagValuesQuery(dbName, measurementName, withKey, whereClause, limit, offset)))(rh.toQueryResult[TagValue])
+    F.map(re.executeUri(showTagValuesQuery(dbName, measurementName, withKey, whereClause, limit, offset)))(rh.queryResust[TagValue])
 }
