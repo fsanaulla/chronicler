@@ -162,7 +162,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @return - CQ results
     */
   def toCqQueryResult(response: R)
-                           (implicit reader: InfluxReader[ContinuousQuery]): ErrorOr[Array[ContinuousQueryInfo]] = {
+                     (implicit reader: InfluxReader[ContinuousQuery]): ErrorOr[Array[ContinuousQueryInfo]] = {
     toComplexQueryResult[ContinuousQuery, ContinuousQueryInfo](
       response,
       (dbName: String, queries: Array[ContinuousQuery]) => ContinuousQueryInfo(dbName, queries)
