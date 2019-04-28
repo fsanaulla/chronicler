@@ -36,7 +36,7 @@ package object jawn {
     }
 
     def arrayValueOr(default: => Array[JValue]): Array[JValue] =
-      arrayValue.getOrElse(default)
+      arrayValue.right.getOrElse(default)
 
     def array: ErrorOr[JArray] = jv match {
       case ja: JArray => Right(ja)

@@ -18,6 +18,7 @@ package com.github.fsanaulla.chronicler.core.typeclasses
 
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
 import com.github.fsanaulla.chronicler.core.either
+import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.model._
 import jawn.ast.JArray
 
@@ -47,7 +48,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
       case code if isSuccessful(code) && code != 204 =>
         jsonHandler
           .responseErrorMsgOpt(response)
-          .flatMap(_.fold[ErrorOr[ResponseCode]](Right(code))(str => Left(new InfluxException(code, str))))
+          .flatMapRight(_.fold[ErrorOr[ResponseCode]](Right(code))(str => Left(InfluxException(code, str))))
       case 204 =>
         Right(204)
       case _ =>
@@ -66,7 +67,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
       case code if isSuccessful(code) =>
         jsonHandler
           .responseBody(response)
-          .flatMap(jsonHandler.queryResult)
+          .flatMapRight(jsonHandler.queryResult)
       case _ =>
         Left(errorHandler(response))
     }
@@ -81,7 +82,9 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
   def groupedResultJson(response: R): ErrorOr[Array[(Array[String], JArray)]] =
     jsonHandler.responseCode(response) match {
       case code if isSuccessful(code) =>
-        jsonHandler.responseBody(response).flatMap(jsonHandler.gropedResult)
+        jsonHandler
+          .responseBody(response)
+          .flatMapRight(jsonHandler.gropedResult)
       case _ =>
         Left(errorHandler(response))
     }
@@ -98,7 +101,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
       case code if isSuccessful(code) =>
         jsonHandler
           .responseBody(response)
-          .flatMap(jsonHandler.bulkResult)
+          .flatMapRight(jsonHandler.bulkResult)
       case _ =>
         Left(errorHandler(response))
     }
@@ -117,8 +120,8 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
       jsonHandler.responseCode(response) match {
         case code if isSuccessful(code) =>
           jsonHandler.responseBody(response)
-            .flatMap(jsonHandler.groupedSystemInfo[A])
-            .map(_.map { case (dbName, queries) => f(dbName, queries) })
+            .flatMapRight(jsonHandler.groupedSystemInfo[A])
+            .mapRight(_.map { case (dbName, queries) => f(dbName, queries) })
         case _ =>
           Left(errorHandler(response))
       }
@@ -133,8 +136,8 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     */
   def queryResust[A: ClassTag](response: R)(implicit rd: InfluxReader[A]): ErrorOr[Array[A]] =
     queryResultJson(response)
-      .map(_.map(rd.read))
-      .map(either.array)
+      .mapRight(_.map(rd.read))
+      .mapRight(either.array)
       .joinRight
 
 
@@ -146,7 +149,8 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     */
   def errorHandler(response: R): Throwable =
     jsonHandler
-      .responseErrorMsg(response).map(new InfluxException(jsonHandler.responseCode(response), _))
+      .responseErrorMsg(response)
+      .mapRight(InfluxException(jsonHandler.responseCode(response), _))
       // merging parsing level issues with request level issues
       .merge
 
