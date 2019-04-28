@@ -17,12 +17,17 @@
 package com.github.fsanaulla.chronicler.urlhttp.io
 
 import com.github.fsanaulla.chronicler.core.IOClient
-import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, PingResult}
-import com.github.fsanaulla.chronicler.urlhttp.io.api.{Database, Measurement}
-import com.github.fsanaulla.chronicler.urlhttp.io.models.{UrlReader, UrlWriter}
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.api.{DatabaseApi, MeasurementApi}
+import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
+import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, ResponseHandler}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient.CustomizationF
-import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlJsonHandler, UrlQueryBuilder, UrlRequestExecutor, UrlResponseHandler}
+import com.github.fsanaulla.chronicler.urlhttp.shared.alias.Request
+import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlQueryBuilder, UrlRequestExecutor}
+import com.github.fsanaulla.chronicler.urlhttp.shared.implicits.jsonHandler
+import com.softwaremill.sttp.{Response, Uri}
+import jawn.ast.JValue
 
 import scala.reflect.ClassTag
 import scala.util.Try
@@ -32,24 +37,23 @@ final class UrlIOClient(host: String,
                         credentials: Option[InfluxCredentials],
                         gzipped: Boolean,
                         customization: Option[CustomizationF])
-  extends InfluxUrlClient(customization) with IOClient[Try, String] {
+                       (implicit val F: Functor[Try])
+  extends InfluxUrlClient(customization) with IOClient[Try, Request, Response[JValue], Uri, String] {
 
   implicit val qb: UrlQueryBuilder = new UrlQueryBuilder(host, port, credentials)
   implicit val re: UrlRequestExecutor = new UrlRequestExecutor
-  implicit val rh: UrlResponseHandler = new UrlResponseHandler(new UrlJsonHandler)
-  implicit val wr: UrlWriter = new UrlWriter
-  implicit val rd: UrlReader = new UrlReader
+  implicit val rh: ResponseHandler[Response[JValue]] = new ResponseHandler(jsonHandler)
 
   override def database(dbName: String): Database =
-    new Database(dbName, gzipped)
+    new DatabaseApi(dbName, gzipped)
 
-  override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] =
-    new Measurement[A](dbName, measurementName, gzipped)
+  override def measurement[A: ClassTag](dbName: String,
+                                        measurementName: String): Measurement[A] =
+    new MeasurementApi(dbName, measurementName, gzipped)
 
-  override def ping(isVerbose: Boolean = false): Try[PingResult] = {
-    val queryParams = if (isVerbose) Map("verbose" -> "true") else Map.empty[String, String]
+  override def ping: Try[ErrorOr[InfluxDBInfo]] = {
     re
-      .executeRequest(re.makeRequest(qb.buildQuery("/ping", queryParams)))
-      .flatMap(rh.toPingResult)
+      .executeUri(qb.buildQuery("/ping", Map.empty[String, String]))
+      .map(rh.pingResult)
   }
 }
