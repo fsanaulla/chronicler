@@ -16,13 +16,11 @@
 
 package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
-
+import com.github.fsanaulla.chronicler.ahc.shared.implicits.jsonHandler
 import com.softwaremill.sttp.Response
 import jawn.ast._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpec, Matchers, OptionValues}
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * Created by
@@ -31,7 +29,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with OptionValues {
 
-  val jsHandler = new AhcJsonHandler()
   val singleStrJson = """{
                       "results": [
                           {
@@ -68,7 +65,7 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
   val result: JValue = JParser.parseFromString(singleStrJson).get
 
   it should "extract JSON from HTTP response" in {
-    jsHandler.responseBody(resp).futureValue shouldEqual result
+    jsonHandler.responseBody(resp).right.get shouldEqual result
   }
 
   it should "extract single query result from JSON" in {
@@ -117,7 +114,7 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
       JArray(Array(JString("2015-06-11T20:46:02Z"), JNull, JNum(0.64)))
     )
 
-    jsHandler.queryResult(json).value shouldEqual result
+    jsonHandler.queryResult(json).right.get shouldEqual result
   }
 
   it should "extract bulk query result from JSON" in {
@@ -183,7 +180,7 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
       )
     )
 
-    jsHandler.bulkResult(json).value shouldEqual result
+    jsonHandler.bulkResult(json).right.get shouldEqual result
   }
 
   it should "extract influx information from JSON" in {
@@ -229,11 +226,10 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
       )
     )
 
-    val res = jsHandler.groupedSystemInfoJs(json)
+    val res = jsonHandler.groupedSystemInfoJs(json).right.get
 
-    res should not be None
-    res.value.length shouldEqual 1
-    val (measurament, points) = res.value.head
+    res.length shouldEqual 1
+    val (measurament, points) = res.head
 
     measurament shouldEqual "cpu_load_short"
     points shouldEqual result.head._2
@@ -287,11 +283,8 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
         |}
       """.stripMargin).toOption.value
 
-    val optResult = jsHandler.gropedResult(json)
+    val result = jsonHandler.gropedResult(json).right.get
 
-    optResult should not be None
-
-    val result = optResult.value
     result.length shouldEqual 2
 
     result.map { case (k, v) => k.toList -> v}.toList shouldEqual List(
