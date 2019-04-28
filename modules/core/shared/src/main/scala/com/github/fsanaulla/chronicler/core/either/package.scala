@@ -27,4 +27,14 @@ package object either {
             x  <- e.right
           } yield x +: xs
       }
+
+  implicit final class EitherOps[A, B](private val either: Either[A, B]) extends AnyVal {
+    // to be back compatible with scala 2.11
+    def mapRight[C](f: B => C): Either[A, C] =
+      either.right.map(f)
+    def flatMapRight[C](f: B => Either[A, C]): Either[A, C] =
+      either.right.flatMap(f)
+    def getOrElseRight[B1 >: B](or: => B1): B1 =
+      either.right.getOrElse(or)
+  }
 }

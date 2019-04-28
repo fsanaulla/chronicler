@@ -18,6 +18,7 @@ package com.github.fsanaulla.chronicler.core.typeclasses
 
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.either
+import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.headers.{buildHeader, versionHeader}
 import com.github.fsanaulla.chronicler.core.jawn._
 import com.github.fsanaulla.chronicler.core.model.{InfluxDBInfo, InfluxReader, ParsingException}
@@ -32,16 +33,18 @@ import scala.reflect.ClassTag
   * @tparam A - Response type
   */
 trait JsonHandler[A] {
-
-  // extract reponse http code
+  
+  /***
+    * Extract response http code
+    */
   def responseCode(response: A): Int
 
-  /** *
+  /***
     * Extract response headers
     */
   def responseHeader(response: A): Seq[(String, String)]
 
-  /** *
+  /***
     * Extracting JSON from Response
     */
   def responseBody(response: A): ErrorOr[JValue]
@@ -63,7 +66,7 @@ trait JsonHandler[A] {
     * @return - Error Message
     */
   final def responseErrorMsg(response: A): ErrorOr[String] =
-    responseBody(response).map(_.get("error").asString)
+    responseBody(response).mapRight(_.get("error").asString)
 
   /**
     * Extract optional error message from response
@@ -73,8 +76,8 @@ trait JsonHandler[A] {
     */
   final def responseErrorMsgOpt(response: A): ErrorOr[Option[String]] =
     responseBody(response)
-      .flatMap(_.get("results").arrayValue.flatMap(_.headRight(new NoSuchElementException("results[0]"))))
-      .map(_.get("error").getString)
+      .flatMapRight(_.get("results").arrayValue.flatMapRight(_.headRight(new NoSuchElementException("results[0]"))))
+      .mapRight(_.get("error").getString)
 
   /**
     * Extract influx points from JSON, representede as Arrays
@@ -83,26 +86,26 @@ trait JsonHandler[A] {
     * @return - optional array of points
     */
   final def queryResult(js: JValue): ErrorOr[Array[JArray]] =
-    js.get("results").arrayValue.flatMap(_.headRight(new NoSuchElementException("results[0]"))) // get head of 'results' field
-      .flatMap(_.get("series").arrayValue.flatMap(_.headRight(new NoSuchElementException("series[0]")))) // get head of 'series' field
-      .map(_.get("values").arrayValueOr(Array.empty)) // get array of jValue
-      .flatMap(arr => either.array[Throwable, JArray](arr.map(_.array))) // map to array of JArray
+    js.get("results").arrayValue.flatMapRight(_.headRight(new NoSuchElementException("results[0]"))) // get head of 'results' field
+      .flatMapRight(_.get("series").arrayValue.flatMapRight(_.headRight(new NoSuchElementException("series[0]")))) // get head of 'series' field
+      .mapRight(_.get("values").arrayValueOr(Array.empty)) // get array of jValue
+      .flatMapRight(arr => either.array[Throwable, JArray](arr.map(_.array))) // map to array of JArray
 
   final def gropedResult(js: JValue): ErrorOr[Array[(Array[String], JArray)]] = {
-    js.get("results").arrayValue.flatMap(_.headRight(new NoSuchElementException("results[0]")))
-      .flatMap(_.get("series").arrayValue)
-      .map(_.map(_.obj))
-      .map(either.array)
+    js.get("results").arrayValue.flatMapRight(_.headRight(new NoSuchElementException("results[0]")))
+      .flatMapRight(_.get("series").arrayValue)
+      .mapRight(_.map(_.obj))
+      .mapRight(either.array)
       .joinRight
-      .map(_.map { obj =>
-        val tags = obj.get("tags").obj.map(_.vs.values.map(_.asString).toArray.sorted)
+      .mapRight(_.map { obj =>
+        val tags = obj.get("tags").obj.mapRight(_.vs.values.map(_.asString).toArray.sorted)
         val values = obj
           .get("values")
           .arrayValue
-          .flatMap(_.headRight(new NoSuchElementException("values[0]")))
-          .flatMap(_.array)
+          .flatMapRight(_.headRight(new NoSuchElementException("values[0]")))
+          .flatMapRight(_.array)
 
-        tags.getOrElse(Array.empty[String]) -> values.getOrElse(JArray.empty)
+        tags.getOrElseRight(Array.empty[String]) -> values.getOrElseRight(JArray.empty)
       })
   }
 
@@ -114,15 +117,15 @@ trait JsonHandler[A] {
     */
   final def bulkResult(js: JValue): ErrorOr[Array[Array[JArray]]] = {
     js.get("results").arrayValue // get array from 'results' field
-      .map(_.map(_.get("series").arrayValue.flatMap(_.headRight(new NoSuchElementException("series[0]"))))) // get head of 'series' field
-      .map(either.array)
+      .mapRight(_.map(_.get("series").arrayValue.flatMapRight(_.headRight(new NoSuchElementException("series[0]"))))) // get head of 'series' field
+      .mapRight(either.array)
       .joinRight
-      .map(_.map(_.get("values").arrayValue))
-      .map(either.array)
+      .mapRight(_.map(_.get("values").arrayValue))
+      .mapRight(either.array)
       .joinRight
-      .map(_.map(_.map(_.array)))
-      .map(_.map(either.array))
-      .map(either.array)
+      .mapRight(_.map(_.map(_.array)))
+      .mapRight(_.map(either.array))
+      .mapRight(either.array)
       .joinRight
   }
 
@@ -133,21 +136,21 @@ trait JsonHandler[A] {
     * @return - array of meas name -> meas points
     */
   final def groupedSystemInfoJs(js: JValue): ErrorOr[Array[(String, Array[JArray])]] = {
-    js.get("results").arrayValue.flatMap(_.headRight(new NoSuchElementException("results[0]")))
-      .map(_.get("series").arrayValueOr(Array.empty))
-      .map(_.map(_.obj))
-      .map(either.array)
+    js.get("results").arrayValue.flatMapRight(_.headRight(new NoSuchElementException("results[0]")))
+      .mapRight(_.get("series").arrayValueOr(Array.empty))
+      .mapRight(_.map(_.obj))
+      .mapRight(either.array)
       .joinRight
-      .map(_.map { obj =>
+      .mapRight(_.map { obj =>
         val measurement = obj.get("name").asString
         val cqInfo = obj
           .get("values")
           .arrayValueOr(Array.empty)
           .map(_.array)
 
-        either.array(cqInfo).map(measurement -> _)
+        either.array(cqInfo).mapRight(measurement -> _)
       })
-      .map(either.array)
+      .mapRight(either.array)
       .joinRight
   }
 
@@ -159,13 +162,13 @@ trait JsonHandler[A] {
     */
   final def groupedSystemInfo[T: ClassTag](js: JValue)(implicit rd: InfluxReader[T]): ErrorOr[Array[(String, Array[T])]] = {
     groupedSystemInfoJs(js)
-      .map { arr =>
+      .mapRight { arr =>
         arr.map {
           case (k, v) =>
-            either.array[Throwable, T](v.map(rd.read)).map(k -> _)
+            either.array[Throwable, T](v.map(rd.read)).mapRight(k -> _)
         }
       }
-      .map(either.array)
+      .mapRight(either.array)
       .joinRight
   }
 }
