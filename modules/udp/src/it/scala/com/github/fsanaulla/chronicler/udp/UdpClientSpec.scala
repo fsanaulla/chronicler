@@ -2,8 +2,8 @@ package com.github.fsanaulla.chronicler.udp
 
 import java.io.File
 
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.model.{InfluxFormatter, Point}
-import com.github.fsanaulla.chronicler.urlhttp.io.api.Database
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import jawn.ast.{JArray, JNum, JString}
@@ -57,7 +57,7 @@ class UdpClientSpec
   lazy val influxUdp: InfluxUDPClient = InfluxUdp(host, udpPort)
   lazy val influxHttpIO: UrlIOClient = InfluxIO(host, httpPort/*, Some(creds)*/)
   lazy val influxHttpMng: UrlManagementClient = InfluxMng(host, httpPort/*, Some(creds)*/)
-  lazy val db: Database = influxHttpIO.database("udp")
+  lazy val meas: influxHttpIO.Measurement[Test] = influxHttpIO.measurement[Test]("udp", "cpu")
 
   it should "write" in {
     val t = Test("f", 1)
@@ -65,11 +65,11 @@ class UdpClientSpec
     influxUdp.write[Test]("cpu", t).success.value shouldEqual {}
 
     eventually {
-      db
+      meas
         .read("SELECT * FROM cpu")
-        .success
-        .value
-        .queryResult shouldEqual Array(t)
+        .get
+        .right
+        .get shouldEqual Array(t)
     }
   }
 
@@ -80,11 +80,11 @@ class UdpClientSpec
     influxUdp.bulkWrite[Test]("cpu1", t :: t1 :: Nil).success.value shouldEqual {}
 
     eventually {
-      db
-        .read[Test]("SELECT * FROM cpu1")
-        .success
-        .value
-        .queryResult shouldEqual Array(t, t1)
+      meas
+        .read("SELECT * FROM cpu1")
+        .get
+        .right
+        .get shouldEqual Array(t, t1)
     }
   }
 
@@ -97,11 +97,11 @@ class UdpClientSpec
     influxUdp.writePoint(p).success.value shouldEqual {}
 
     eventually{
-      db
-        .read[Test]("SELECT * FROM cpu2")
-        .success
-        .value
-        .queryResult shouldEqual Array(Test("d", 2))
+      meas
+        .read("SELECT * FROM cpu2")
+        .get
+        .right
+        .get shouldEqual Array(Test("d", 2))
     }
   }
 
@@ -117,11 +117,11 @@ class UdpClientSpec
     influxUdp.bulkWritePoints(p :: p1 :: Nil).success.value shouldEqual {}
 
     eventually{
-      db
-        .read[Test]("SELECT * FROM cpu3")
-        .success
-        .value
-        .queryResult shouldEqual Array(Test("d", 2), Test("e", 3))
+      meas
+        .read("SELECT * FROM cpu3")
+        .get
+        .right
+        .get shouldEqual Array(Test("d", 2), Test("e", 3))
     }
   }
 
@@ -129,11 +129,11 @@ class UdpClientSpec
     influxUdp.writeNative("cpu4,name=v age=3").success.value shouldEqual {}
 
     eventually {
-      db
-        .read[Test]("SELECT * FROM cpu4")
-        .success
-        .value
-        .queryResult shouldEqual Array(Test("v", 3))
+      meas
+        .read("SELECT * FROM cpu4")
+        .get
+        .right
+        .get shouldEqual Array(Test("v", 3))
     }
   }
 
@@ -141,27 +141,27 @@ class UdpClientSpec
     influxUdp.bulkWriteNative("cpu5,name=v age=3" :: "cpu5,name=b age=5" :: Nil).success.value shouldEqual {}
 
     eventually {
-      db
-        .read[Test]("SELECT * FROM cpu5")
-        .success
-        .value
-        .queryResult shouldEqual Array(Test("b", 5), Test("v", 3))
+      meas
+        .read("SELECT * FROM cpu5")
+        .get
+        .right
+        .get shouldEqual Array(Test("b", 5), Test("v", 3))
     }
   }
 
   it should "write from file" in {
+    val db = influxHttpIO.database("udp")
     influxUdp
       .writeFromFile(new File(getClass.getResource("/points.txt").getPath))
       .success
       .value shouldEqual {}
 
     eventually {
-      db
-        .readJson("SELECT * FROM test1")
-        .success
-        .value
-        .queryResult
-        .length shouldEqual 3
+        db
+          .readJson("SELECT * FROM test1")
+          .get
+          .right
+          .get.length shouldEqual 3
     }
   }
 }
@@ -172,8 +172,9 @@ object UdpClientSpec {
   case class Test(name: String, age: Int)
 
   implicit val fmt: InfluxFormatter[Test] = new InfluxFormatter[Test] {
-    override def read(js: JArray): Test = js.vs.tail match {
-      case Array(age: JNum, name: JString) => Test(name, age)
+    override def read(js: JArray): ErrorOr[Test] = js.vs.tail match {
+      case Array(age: JNum, name: JString) => Right(Test(name, age))
+      case _ => Left(new Error(""))
     }
 
     override def write(obj: Test): String =
