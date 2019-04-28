@@ -16,10 +16,10 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
-
 import com.softwaremill.sttp.Response
 import jawn.ast._
 import org.scalatest.{FlatSpec, Matchers, OptionValues, TryValues}
+import com.github.fsanaulla.chronicler.urlhttp.shared.implicits.jsonHandler
 
 /**
   * Created by
@@ -28,9 +28,8 @@ import org.scalatest.{FlatSpec, Matchers, OptionValues, TryValues}
   */
 class UrlJsonHandlerSpec extends FlatSpec with Matchers with TryValues with OptionValues {
 
-  val jsHandler = new UrlJsonHandler
-
-  val singleStrJson = """{
+  "UrlJsonHandler" should "extract JSON from HTTP response" in {
+    val singleStrJson = """{
                       "results": [
                           {
                               "statement_id": 0,
@@ -61,12 +60,11 @@ class UrlJsonHandlerSpec extends FlatSpec with Matchers with TryValues with Opti
                       ]
                   }"""
 
-  val resp: Response[JValue] = Response.ok(JParser.parseFromString(singleStrJson).get)
+    val resp: Response[JValue] = Response.ok(JParser.parseFromString(singleStrJson).get)
 
-  val result: JValue = JParser.parseFromString(singleStrJson).get
+    val result: JValue = JParser.parseFromString(singleStrJson).get
 
-  "UrlJsonHandler" should "extract JSON from HTTP response" in {
-    jsHandler.responseBody(resp).success.value shouldEqual result
+    jsonHandler.responseBody(resp).right.get shouldEqual result
   }
 
   it should "extract single query result from JSON" in {
@@ -115,7 +113,7 @@ class UrlJsonHandlerSpec extends FlatSpec with Matchers with TryValues with Opti
       JArray(Array(JString("2015-06-11T20:46:02Z"), JNull, JNum(0.64)))
     )
 
-    jsHandler.queryResult(json).value shouldEqual result
+    jsonHandler.queryResult(json).right.get shouldEqual result
   }
 
   it should "extract bulk query result from JSON" in {
@@ -181,7 +179,7 @@ class UrlJsonHandlerSpec extends FlatSpec with Matchers with TryValues with Opti
       )
     )
 
-    jsHandler.bulkResult(json).value shouldEqual result
+    jsonHandler.bulkResult(json).right.get shouldEqual result
   }
 
   it should "extract influx information from JSON" in {
@@ -227,11 +225,10 @@ class UrlJsonHandlerSpec extends FlatSpec with Matchers with TryValues with Opti
       )
     )
 
-    val res = jsHandler.groupedSystemInfoJs(json)
+    val res = jsonHandler.groupedSystemInfoJs(json).right.get
 
-    res should not be None
-    res.value.length shouldEqual 1
-    val (measurament, points) = res.value.head
+    res.length shouldEqual 1
+    val (measurament, points) = res.head
 
     measurament shouldEqual "cpu_load_short"
     points shouldEqual result.head._2
@@ -285,11 +282,7 @@ class UrlJsonHandlerSpec extends FlatSpec with Matchers with TryValues with Opti
         |}
       """.stripMargin).success.value
 
-    val optResult = jsHandler.gropedResult(json)
-
-    optResult should not be None
-
-    val result = optResult.value
+    val result =  jsonHandler.gropedResult(json).right.get
     result.length shouldEqual 2
 
     result.map { case (k, v) => k.toList -> v}.toList shouldEqual List(
