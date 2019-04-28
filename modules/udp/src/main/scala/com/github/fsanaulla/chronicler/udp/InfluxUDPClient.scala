@@ -20,7 +20,7 @@ import java.io.File
 import java.net._
 import java.nio.charset.{Charset, StandardCharsets}
 
-import com.github.fsanaulla.chronicler.core.model.{InfluxWriter, Point, PointTransformer}
+import com.github.fsanaulla.chronicler.core.model.{Appender, InfluxWriter, Point}
 
 import scala.io.Source
 import scala.util.Try
@@ -30,10 +30,7 @@ import scala.util.Try
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-final class InfluxUDPClient(host: String, port: Int)
-  extends PointTransformer
-    with AutoCloseable {
-
+final class InfluxUDPClient(host: String, port: Int) extends Appender with AutoCloseable {
   private[this] val socket = new DatagramSocket()
   private[this] def buildAndSend(msg: Array[Byte]): Try[Unit] =
     Try(
@@ -58,7 +55,7 @@ final class InfluxUDPClient(host: String, port: Int)
                entity: T,
                charset: Charset = StandardCharsets.UTF_8)
               (implicit writer: InfluxWriter[T]): Try[Unit] = {
-    val sendEntity = toPoint(measurement, writer.write(entity))
+    val sendEntity = append(measurement, writer.write(entity))
 
     buildAndSend(sendEntity.getBytes(charset))
   }
@@ -68,7 +65,7 @@ final class InfluxUDPClient(host: String, port: Int)
                    charset: Charset = StandardCharsets.UTF_8)
                   (implicit writer: InfluxWriter[T]): Try[Unit] = {
     val sendEntity =
-      toPoints(measurement, entities.map(writer.write)).getBytes(charset)
+      append(measurement, entities.map(writer.write)).getBytes(charset)
 
     buildAndSend(sendEntity)
   }
