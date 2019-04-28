@@ -49,7 +49,3 @@ trait InfluxWriter[T] extends JSerializable {
 trait InfluxReader[T] extends JSerializable {
   def read(js: JArray): ErrorOr[T]
 }
-
-object InfluxReader {
-  def apply[A](implicit rd: InfluxReader[A]): InfluxReader[A] = rd
-}
