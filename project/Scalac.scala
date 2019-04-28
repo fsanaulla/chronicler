@@ -24,7 +24,6 @@ object Scalac {
     "-Ycache-plugin-class-loader:last-modified", // cache plugin classloader
     "-Ycache-macro-class-loader:last-modified",
     "-Ybackend-parallelism", "1",
-    "-Ywarn-dead-code",
     "-Ywarn-inaccessible"
   ) ++ options11
 }
