@@ -16,16 +16,4 @@
 
 package com.github.fsanaulla.chronicler.core.model
 
-/**
-  * Entity transformer
-  */
-trait Serializer[From, To] {
-
-  /**
-    * Transform entity to request entity
-    *
-    * @param obj - entity which should be transformed
-    * @return    - request entity
-    */
-  def serialize(obj: From): To
-}
+final class ParsingException(msg: String) extends Throwable(msg)

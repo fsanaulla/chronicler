@@ -21,5 +21,4 @@ package com.github.fsanaulla.chronicler.core.model
   * Author: fayaz.sanaulla@gmail.com
   * Date: 31.07.17
   */
-final class InfluxException(httpCode: Int, msg: String) extends Throwable(msg)
-final class ParsingException(msg: String) extends Throwable(msg)
+final case class InfluxException(httpCode: Int, msg: String) extends Throwable(msg)

@@ -24,7 +24,6 @@ import com.softwaremill.sttp.{Response, SttpBackend, Uri, sttp}
 import jawn.ast.JValue
 
 import scala.concurrent.Future
-import scala.language.implicitConversions
 
 private[ahc] final class AhcRequestExecutor(implicit backend: SttpBackend[Future, Nothing])
   extends RequestExecutor[Future, Request, Response[JValue], Uri, String] {
