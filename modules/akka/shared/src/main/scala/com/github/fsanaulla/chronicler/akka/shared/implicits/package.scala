@@ -17,9 +17,11 @@
 package com.github.fsanaulla.chronicler.akka.shared
 
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
-import com.github.fsanaulla.chronicler.core.typeclasses.JsonHandler
+import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, JsonHandler}
 import com.softwaremill.sttp.Response
 import jawn.ast.{JParser, JValue}
+
+import scala.concurrent.{ExecutionContext, Future}
 
 package object implicits {
   implicit val jsonHandler: JsonHandler[Response[JValue]] = new JsonHandler[Response[JValue]] {
@@ -31,5 +33,9 @@ package object implicits {
 
     override def responseCode(response: Response[JValue]): Int =
       response.code
+  }
+
+  implicit def futureFunctor(implicit ec: ExecutionContext): Functor[Future] = new Functor[Future] {
+    override def map[A, B](fa: Future[A])(f: A => B): Future[B] = fa.map(f)
   }
 }
