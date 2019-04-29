@@ -17,12 +17,14 @@
 package com.github.fsanaulla.chronicler.urlhttp.management
 
 import com.github.fsanaulla.chronicler.core.ManagementClient
-import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, PingResult}
-import com.github.fsanaulla.chronicler.core.typeclasses.FlatMap
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
+import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, ResponseHandler}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient.CustomizationF
 import com.github.fsanaulla.chronicler.urlhttp.shared.alias.Request
-import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlJsonHandler, UrlQueryBuilder, UrlRequestExecutor, UrlResponseHandler}
+import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlQueryBuilder, UrlRequestExecutor}
+import com.github.fsanaulla.chronicler.urlhttp.shared.implicits.jsonHandler
 import com.softwaremill.sttp.{Response, Uri}
 import jawn.ast.JValue
 
@@ -33,19 +35,16 @@ final class UrlManagementClient(host: String,
                                 port: Int,
                                 credentials: Option[InfluxCredentials],
                                 customization: Option[CustomizationF])
+                               (implicit val F: Functor[Try])
   extends InfluxUrlClient(customization) with ManagementClient[Try, Request, Response[JValue], Uri, String] {
 
   implicit val qb: UrlQueryBuilder = new UrlQueryBuilder(host, port, credentials)
   implicit val re: UrlRequestExecutor = new UrlRequestExecutor
-  implicit val rh: UrlResponseHandler = new UrlResponseHandler(new UrlJsonHandler)
-  implicit val fm: FlatMap[Try] = new FlatMap[Try] {
-    def flatMap[A, B](fa: Try[A])(f: A => Try[B]): Try[B] = fa.flatMap(f)
-  }
+  implicit val rh: ResponseHandler[Response[JValue]] = new ResponseHandler(jsonHandler)
 
-  override def ping(isVerbose: Boolean = false): Try[PingResult] = {
-    val queryParams = if (isVerbose) Map("verbose" -> "true") else Map.empty[String, String]
+  override def ping: Try[ErrorOr[InfluxDBInfo]] = {
     re
-      .execute(re.buildRequest(qb.buildQuery("/ping", queryParams)))
-      .flatMap(rh.toPingResult)
+      .executeUri(qb.buildQuery("/ping", Map.empty[String, String]))
+      .map(rh.pingResult)
   }
 }

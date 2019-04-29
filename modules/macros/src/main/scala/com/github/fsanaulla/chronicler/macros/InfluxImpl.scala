@@ -85,7 +85,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
                     patterns: List[Tree],
                     constructors: List[Tree]): c.universe.Tree = {
       val successPat  = pq"Array(..$patterns)"
-      val successBody = q"new $tp(..$constructors)"
+      val successBody = q"scala.util.Right(new $tp(..$constructors))"
       cq"$successPat => $successBody"
     }
     
@@ -93,7 +93,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
       // failure case clause component
       val failurePat  = pq"_"
       val failureMsg  = s"Can't deserialize $tp object."
-      val failureBody = q"throw new com.github.fsanaulla.chronicler.core.model.DeserializationException($failureMsg)"
+      val failureBody = q"scala.util.Left(new com.github.fsanaulla.chronicler.core.model.ParsingException($failureMsg))"
       cq"$failurePat => $failureBody"
     }
 
@@ -121,7 +121,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
       val fCase = failureCase(tpe)
       val cases = sCase :: fCase :: Nil
 
-      q"""def read(js: jawn.ast.JArray): $tpe = js.vs match { case ..$cases }"""
+      q"""def read(js: jawn.ast.JArray): com.github.fsanaulla.chronicler.core.alias.ErrorOr[$tpe] = js.vs match { case ..$cases }"""
     }
 
     val (timeField, othFields) = getMethods(tpe).partition(isTimestamp)
@@ -166,7 +166,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
         val fCase = failureCase(tpe)
         val cases = sCase :: fCase :: Nil
           q"""
-           def read(js: jawn.ast.JArray): $tpe = {
+           def read(js: jawn.ast.JArray): com.github.fsanaulla.chronicler.core.alias.ErrorOr[$tpe] = {
              @inline def toEpoch(jv: jawn.ast.JValue): Long = {
                 jv.getString.fold(jv.asLong) { str =>
                    val i = java.time.Instant.parse(str)
@@ -185,7 +185,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
         val sCase = successCase(tpe, patternParams, constructorParams)
         val fCase = failureCase(tpe)
         val cases = sCase :: fCase :: Nil
-        q"def read(js: jawn.ast.JArray): $tpe = js.vs.tail match { case ..$cases }"
+        q"def read(js: jawn.ast.JArray): com.github.fsanaulla.chronicler.core.alias.ErrorOr[$tpe] = js.vs.tail match { case ..$cases }"
     }
   }
 

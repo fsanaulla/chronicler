@@ -19,7 +19,7 @@ class InfluxWriterProperties extends FlatSpec with Checkers with InfluxFormat {
 
   it should "generate InfluxReader" in {
     check { jarr: JArray =>
-      fmt.read(jarr) == influxRead(jarr)
+      fmt.read(jarr).right.get == influxRead(jarr)
     }
   }
 }

@@ -1,49 +1,57 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
-import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity}
+import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity, Futures}
 import com.github.fsanaulla.chronicler.urlhttp.SampleEntitys._
-import com.github.fsanaulla.chronicler.urlhttp.io.api.Measurement
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
-import org.scalatest.{FlatSpec, Matchers, TryValues}
+import org.scalatest.{FlatSpec, Matchers}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 28.09.17
   */
-class MeasurementApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB with TryValues {
+class MeasurementApiSpec
+  extends FlatSpec
+    with Matchers
+    with Futures
+    with DockerizedInfluxDB {
 
-  val safeDB = "db"
+  val db = "db"
   val measName = "meas"
 
-  lazy val influxConf = InfluxConfig(host, port, credentials = Some(creds), gzipped = false, None)
-  lazy val management: UrlManagementClient = InfluxMng(influxConf)
+  lazy val influxConf =
+    InfluxConfig(host, port, credentials = Some(creds), gzipped = false, None)
+
+  lazy val mng: UrlManagementClient =
+    InfluxMng(host, port, credentials = Some(creds))
+
   lazy val io: UrlIOClient = InfluxIO(influxConf)
+  lazy val meas: io.Measurement[FakeEntity] =
+    io.measurement[FakeEntity](db, measName)
 
-  lazy val meas: Measurement[FakeEntity] = io.measurement[FakeEntity](safeDB, measName)
+  it should "write single point" in {
+    mng.createDatabase(db).get.right.get shouldEqual 200
 
-  "Measurement[FakeEntity]" should "make single write" in {
-    management.createDatabase(safeDB).success.value shouldEqual OkResult
-
-    meas.write(singleEntity).success.value shouldEqual NoContentResult
+    meas.write(singleEntity).get.right.get shouldEqual 204
 
     meas.read(s"SELECT * FROM $measName")
-      .success.value
-      .queryResult shouldEqual Array(singleEntity)
+      .get
+      .right
+      .get shouldEqual Seq(singleEntity)
   }
 
-  it should "make safe bulk write" in {
-    meas.bulkWrite(multiEntitys).success.value shouldEqual NoContentResult
+  it should "bulk write" in {
+    meas.bulkWrite(multiEntitys).get.right.get shouldEqual 204
 
     meas.read(s"SELECT * FROM $measName")
-      .success.value
-      .queryResult
+      .get
+      .right
+      .get
       .length shouldEqual 3
 
-    management.close() shouldEqual {}
+    mng.close() shouldEqual {}
     io.close() shouldEqual {}
   }
 }

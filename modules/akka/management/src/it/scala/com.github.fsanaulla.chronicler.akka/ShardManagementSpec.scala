@@ -4,7 +4,6 @@ import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, InfluxMng}
 import com.github.fsanaulla.chronicler.core.model.ShardGroupsInfo
-import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
 import org.scalatest.{FlatSpecLike, Matchers}
 
@@ -29,9 +28,9 @@ class ShardManagementSpec
 
   "shard operations" should "show shards" in {
 
-    influx.createDatabase(testDb, shardDuration = Some("1s")).futureValue shouldEqual OkResult
+    influx.createDatabase(testDb, shardDuration = Some("1s")).futureValue.right.get shouldEqual 200
 
-    val shards = influx.showShards.futureValue.queryResult
+    val shards = influx.showShards.futureValue.right.get
 
     shards should not be Nil
 
@@ -40,7 +39,7 @@ class ShardManagementSpec
 
   it should "show shards groupe" in {
 
-    val shardGroups = influx.showShardGroups.futureValue.queryResult
+    val shardGroups = influx.showShardGroups.futureValue.right.get
 
     shardGroups should not equal Nil
 

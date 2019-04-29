@@ -16,29 +16,28 @@
 
 package com.github.fsanaulla.chronicler.core.management
 
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.QueriesManagementQuery
-import com.github.fsanaulla.chronicler.core.typeclasses.{FlatMap, QueryBuilder, RequestExecutor, ResponseHandler}
+import com.github.fsanaulla.chronicler.core.typeclasses._
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-private[chronicler] trait QueriesManagement[F[_], Req, Resp, Uri, Entity] extends QueriesManagementQuery[Uri] {
+trait QueriesManagement[F[_], Req, Resp, Uri, Entity] extends QueriesManagementQuery[Uri] {
   implicit val qb: QueryBuilder[Uri]
-  implicit val re: RequestExecutor[F, Req, Resp, Uri]
-  implicit val rh: ResponseHandler[F, Resp]
-  implicit val fm: FlatMap[F]
-
-  import re.buildRequest
+  implicit val re: RequestExecutor[F, Req, Resp, Uri, Entity]
+  implicit val rh: ResponseHandler[Resp]
+  implicit val F: Functor[F]
 
   /** Show list of queries */
-  final def showQueries: F[QueryResult[QueryInfo]] =
-    fm.flatMap(re.execute(showQuerysQuery))(rh.toQueryResult[QueryInfo])
+  final def showQueries: F[ErrorOr[Array[QueryInfo]]] =
+    F.map(re.executeUri(showQuerysQuery))(rh.queryResust[QueryInfo])
 
   /** Kill query */
-  final def killQuery(queryId: Int): F[WriteResult] =
-    fm.flatMap(re.execute(killQueryQuery(queryId)))(rh.toResult)
+  final def killQuery(queryId: Int): F[ErrorOr[ResponseCode]] =
+    F.map(re.executeUri(killQueryQuery(queryId)))(rh.writeResult)
 }

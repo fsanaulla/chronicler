@@ -169,10 +169,10 @@ lazy val macros = project
 /////////////////// TESTING MODULES //////////////////
 //////////////////////////////////////////////////////
 lazy val itTesting = project
-  .in(file("modules/testing/it"))
+  .in(file("modules/testing"))
   .settings(Settings.common: _*)
   .settings(
-    name := s"$projectName-it-testing",
+    name := s"$projectName-testing",
     libraryDependencies ++= Dependencies.testingDeps
   )
   .dependsOn(coreShared)

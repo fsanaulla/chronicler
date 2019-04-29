@@ -17,6 +17,7 @@
 package com.github.fsanaulla.chronicler.ahc.management
 
 import com.github.fsanaulla.chronicler.ahc.shared.InfluxConfig
+import com.github.fsanaulla.chronicler.ahc.shared.implicits._
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import org.asynchttpclient.AsyncHttpClientConfig
 

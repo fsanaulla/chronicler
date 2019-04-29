@@ -18,14 +18,12 @@ package com.github.fsanaulla.chronicler.ahc.io
 
 import java.net.URLEncoder
 
-import com.github.fsanaulla.chronicler.core.model.{AuthorizationException, InfluxCredentials, WriteResult}
+import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 
 package object unit {
   implicit class StringRich(val str: String) extends AnyVal {
     def encode: String = URLEncoder.encode(str, "UTF-8")
   }
-
-  final val AuthErrorResult = WriteResult(401, isSuccess = false, Some(new AuthorizationException("unable to parse authentication credentials")))
 
   def queryTesterAuth(query: String)(credentials: InfluxCredentials): String =
     s"http://localhost:8086/query?q=${query.encode}&p=${credentials.password.encode}&u=${credentials.username.encode}"
