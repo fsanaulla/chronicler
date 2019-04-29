@@ -24,7 +24,7 @@ import com.github.fsanaulla.chronicler.core.model._
 
 package object implicits {
 
-  private def exception(msg: String) = new ParsingException(msg)
+  private[this] def exception(msg: String) = new ParsingException(msg)
 
   implicit final class RichString(private val str: String) extends AnyVal {
     def escapeFull: String = str.replaceAll("([ ,=])", "\\\\$1")
