@@ -16,10 +16,13 @@
 
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
+import com.github.fsanaulla.chronicler.akka.shared.handlers.AkkaJsonHandlerSpec._
 import com.github.fsanaulla.chronicler.akka.shared.implicits.jsonHandler
 import com.softwaremill.sttp.Response
 import jawn.ast._
 import org.scalatest._
+
+import scala.util.{Failure, Success, Try}
 
 class AkkaJsonHandlerSpec extends FlatSpec with Matchers {
 
@@ -100,7 +103,7 @@ class AkkaJsonHandlerSpec extends FlatSpec with Matchers {
         |        }
         |    ]
         |}
-      """.stripMargin).toEither.right.get
+      """.stripMargin).either.right.get
 
     val result = Array(
       JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JString("Fz"), JNum(2))),
@@ -162,7 +165,7 @@ class AkkaJsonHandlerSpec extends FlatSpec with Matchers {
         |        }
         |    ]
         |}
-      """.stripMargin).toEither.right.get
+      """.stripMargin).either.right.get
 
     val result = Array(
       Array(
@@ -210,7 +213,7 @@ class AkkaJsonHandlerSpec extends FlatSpec with Matchers {
         |        }
         |    ]
         |}
-      """.stripMargin).toEither.right.get
+      """.stripMargin).either.right.get
 
     val result = Array(
       "cpu_load_short" -> Array(
@@ -275,7 +278,7 @@ class AkkaJsonHandlerSpec extends FlatSpec with Matchers {
         |     }
         |   ]
         |}
-      """.stripMargin).toEither.right.get
+      """.stripMargin).either.right.get
 
     val eitherResult = jsonHandler.gropedResult(json)
 
@@ -288,5 +291,14 @@ class AkkaJsonHandlerSpec extends FlatSpec with Matchers {
      List("server01", "us-west") -> JArray(Array(JString("1970-01-01T00:00:00Z"), JNum(0.69))),
      List("server02", "us-west") -> JArray(Array(JString("1970-01-01T00:00:00Z"), JNum(0.73)))
     )
+  }
+}
+
+object AkkaJsonHandlerSpec {
+  implicit final class TryOps[A](private val `try`: Try[A]) extends AnyVal {
+    def either: Either[Throwable, A] = `try` match {
+      case Success(value)     => Right(value)
+      case Failure(exception) => Left(exception)
+    }
   }
 }
