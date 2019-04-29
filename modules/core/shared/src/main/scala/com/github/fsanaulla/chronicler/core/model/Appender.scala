@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.typeclasses
+package com.github.fsanaulla.chronicler.core.model
 
-private[chronicler] trait FlatMap[F[_]] {
+/**
+  * Created by
+  * Author: fayaz.sanaulla@gmail.com
+  * Date: 27.08.17
+  */
+trait Appender {
+  final def append(measurement: String, serializedEntity: String): String =
+    measurement + "," + serializedEntity
 
-  /**
-    * Flatmap execution result
-    *
-    * @param fa - execution response, for ex: Future[HttpResponse]
-    * @param f  - function that map response to specified result type
-    * @tparam B - result type
-    * @return   - result wrapped in input container
-    */
-  private[chronicler] def flatMap[A, B](fa: F[A])(f: A => F[B]): F[B]
+  final def append(measurement: String, serializedEntitys: Seq[String]): String =
+    serializedEntitys.map(s => measurement + "," + s).mkString("\n")
+
 }

@@ -16,8 +16,13 @@
 
 package com.github.fsanaulla.chronicler.core.typeclasses
 
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.either
+import com.github.fsanaulla.chronicler.core.either._
+import com.github.fsanaulla.chronicler.core.headers.{buildHeader, versionHeader}
 import com.github.fsanaulla.chronicler.core.jawn._
-import com.github.fsanaulla.chronicler.core.model.InfluxReader
+import com.github.fsanaulla.chronicler.core.model.{InfluxDBInfo, InfluxReader, ParsingException}
+import com.github.fsanaulla.chronicler.core.typeclasses.JsonHandler._
 import jawn.ast.{JArray, JValue}
 
 import scala.reflect.ClassTag
@@ -27,32 +32,52 @@ import scala.reflect.ClassTag
   *
   * @tparam A - Response type
   */
-private[chronicler] trait JsonHandler[F[_], A] {
+trait JsonHandler[A] {
+  
+  /***
+    * Extract response http code
+    */
+  def responseCode(response: A): Int
 
-  private[chronicler] def pingHeaders(response: A): F[(String, String)]
+  /***
+    * Extract response headers
+    */
+  def responseHeader(response: A): Seq[(String, String)]
+
   /***
     * Extracting JSON from Response
-    *
-    * @param response - Response
-    * @return         - Extracted JSON
     */
-  private[chronicler] def responseBody(response: A): F[JValue]
+  def responseBody(response: A): ErrorOr[JValue]
+
+  final def databaseInfo(response: A): ErrorOr[InfluxDBInfo] = {
+    val headers = responseHeader(response)
+    val result = for {
+      build <- headers.collectFirst { case (k, v) if k == buildHeader => v }
+      version <- headers.collectFirst { case (k, v) if k == versionHeader => v }
+    } yield InfluxDBInfo(build, version)
+
+    result.toRight(new ParsingException(s"Can't find $buildHeader or $versionHeader"))
+  }
 
   /**
     * Extract error message from response
     *
     * @param response - Response
-    * @return         - Error Message
+    * @return - Error Message
     */
-  private[chronicler] def responseError(response: A): F[String]
+  final def responseErrorMsg(response: A): ErrorOr[String] =
+    responseBody(response).mapRight(_.get("error").asString)
 
   /**
     * Extract optional error message from response
     *
     * @param response - Response JSON body
-    * @return         - optional error message
+    * @return - optional error message
     */
-  private[chronicler] def responseErrorOpt(response: A): F[Option[String]]
+  final def responseErrorMsgOpt(response: A): ErrorOr[Option[String]] =
+    responseBody(response)
+      .flatMapRight(_.get("results").arrayValue.flatMapRight(_.headRight(new NoSuchElementException("results[0]"))))
+      .mapRight(_.get("error").getString)
 
   /**
     * Extract influx points from JSON, representede as Arrays
@@ -60,68 +85,96 @@ private[chronicler] trait JsonHandler[F[_], A] {
     * @param js - JSON value
     * @return - optional array of points
     */
-  private[chronicler] final def queryResultOpt(js: JValue): Option[Array[JArray]] = {
-    js.get("results").arrayValue.flatMap(_.headOption) // get head of 'results' field
-      .flatMap(_.get("series").arrayValue.flatMap(_.headOption)) // get head of 'series' field
-      .flatMap(_.get("values").arrayValue) // get array of jValue
-      .map(_.flatMap(_.array)) // map to array of JArray
-  }
+  final def queryResult(js: JValue): ErrorOr[Array[JArray]] =
+    js.get("results").arrayValue.flatMapRight(_.headRight(new NoSuchElementException("results[0]"))) // get head of 'results' field
+      .flatMapRight(_.get("series").arrayValue.flatMapRight(_.headRight(new NoSuchElementException("series[0]")))) // get head of 'series' field
+      .mapRight(_.get("values").arrayValueOr(Array.empty)) // get array of jValue
+      .flatMapRight(arr => either.array[Throwable, JArray](arr.map(_.array))) // map to array of JArray
 
-  private[chronicler] final def gropedResultOpt(js: JValue): Option[Array[(Array[String], JArray)]] = {
-    js.get("results").arrayValue.flatMap(_.headOption)
-      .flatMap(_.get("series").arrayValue)
-      .map(_.flatMap(_.obj))
-      .map(_.map { obj =>
-        val tags = obj.get("tags").obj.map(_.vs.values.map(_.asString).toArray.sorted)
+  final def gropedResult(js: JValue): ErrorOr[Array[(Array[String], JArray)]] = {
+    js.get("results").arrayValue.flatMapRight(_.headRight(new NoSuchElementException("results[0]")))
+      .flatMapRight(_.get("series").arrayValue)
+      .mapRight(_.map(_.obj))
+      .mapRight(either.array)
+      .joinRight
+      .mapRight(_.map { obj =>
+        val tags = obj.get("tags").obj.mapRight(_.vs.values.map(_.asString).toArray.sorted)
         val values = obj
           .get("values")
           .arrayValue
-          .flatMap(_.headOption)
-          .flatMap(_.array)
+          .flatMapRight(_.headRight(new NoSuchElementException("values[0]")))
+          .flatMapRight(_.array)
 
-        tags.getOrElse(Array.empty[String]) -> values.getOrElse(JArray.empty)
+        tags.getOrElseRight(Array.empty[String]) -> values.getOrElseRight(JArray.empty)
       })
   }
 
   /**
     * Extract bulk result from JSON
+    *
     * @param js - JSON value
     * @return - Array of points
     */
-  private[chronicler] final def bulkInfluxPointsOpt(js: JValue): Option[Array[Array[JArray]]] = {
+  final def bulkResult(js: JValue): ErrorOr[Array[Array[JArray]]] = {
     js.get("results").arrayValue // get array from 'results' field
-      .map(_.flatMap(_.get("series").arrayValue.flatMap(_.headOption))) // get head of 'series' field
-      .map(_.flatMap(_.get("values").arrayValue.map(_.flatMap(_.array)))) // get 'values' array
+      .mapRight(_.map(_.get("series").arrayValue.flatMapRight(_.headRight(new NoSuchElementException("series[0]"))))) // get head of 'series' field
+      .mapRight(either.array)
+      .joinRight
+      .mapRight(_.map(_.get("values").arrayValue))
+      .mapRight(either.array)
+      .joinRight
+      .mapRight(_.map(_.map(_.array)))
+      .mapRight(_.map(either.array))
+      .mapRight(either.array)
+      .joinRight
   }
 
   /**
     * Extract Measurement name -> Measurement points array
+    *
     * @param js - JSON value
-    * @return = array of meas name -> meas points
+    * @return - array of meas name -> meas points
     */
-  private[chronicler] final def jsInfluxInfoOpt(js: JValue): Option[Array[(String, Array[JArray])]] = {
-    js.get("results").arrayValue.flatMap(_.headOption)
-      .flatMap(_.get("series").arrayValue)
-      .map(_.flatMap(_.obj))
-      .map(_.map { obj =>
+  final def groupedSystemInfoJs(js: JValue): ErrorOr[Array[(String, Array[JArray])]] = {
+    js.get("results").arrayValue.flatMapRight(_.headRight(new NoSuchElementException("results[0]")))
+      .mapRight(_.get("series").arrayValueOr(Array.empty))
+      .mapRight(_.map(_.obj))
+      .mapRight(either.array)
+      .joinRight
+      .mapRight(_.map { obj =>
         val measurement = obj.get("name").asString
         val cqInfo = obj
           .get("values")
-          .arrayValue
-          .map(_.flatMap(_.array))
-          .getOrElse(Array.empty[JArray])
+          .arrayValueOr(Array.empty)
+          .map(_.array)
 
-        measurement -> cqInfo
+        either.array(cqInfo).mapRight(measurement -> _)
       })
+      .mapRight(either.array)
+      .joinRight
   }
 
   /**
     * Extract Measurement name and values from it from JSON
+    *
     * @param js - JSON value
-    * @param rd - implicit reader for deserializing influx point to scala case classes
-    * @tparam T - type of scala case class
     * @return - Array of pairs
     */
-  private[chronicler] final def influxInfoOpt[T: ClassTag](js: JValue)(implicit rd: InfluxReader[T]): Option[Array[(String, Array[T])]] =
-    jsInfluxInfoOpt(js).map(_.map { case (k, v) => k -> v.map(rd.read)})
+  final def groupedSystemInfo[T: ClassTag](js: JValue)(implicit rd: InfluxReader[T]): ErrorOr[Array[(String, Array[T])]] = {
+    groupedSystemInfoJs(js)
+      .mapRight { arr =>
+        arr.map {
+          case (k, v) =>
+            either.array[Throwable, T](v.map(rd.read)).mapRight(k -> _)
+        }
+      }
+      .mapRight(either.array)
+      .joinRight
+  }
+}
+
+object JsonHandler {
+  implicit final class ArrayOps[A](private val arr: Array[A]) extends AnyVal {
+    def headRight(left: => Throwable): ErrorOr[A] = arr.headOption.toRight(left)
+  }
 }

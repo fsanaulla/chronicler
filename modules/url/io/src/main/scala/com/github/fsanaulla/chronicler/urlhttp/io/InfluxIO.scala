@@ -19,6 +19,7 @@ package com.github.fsanaulla.chronicler.urlhttp.io
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient.CustomizationF
+import com.github.fsanaulla.chronicler.urlhttp.shared.implicits.tryFunctor
 
 object InfluxIO {
 

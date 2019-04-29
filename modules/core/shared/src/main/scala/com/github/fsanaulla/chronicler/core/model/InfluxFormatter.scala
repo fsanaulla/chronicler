@@ -18,6 +18,7 @@ package com.github.fsanaulla.chronicler.core.model
 
 import java.io.{Serializable => JSerializable}
 
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import jawn.ast.JArray
 
 import scala.annotation.implicitNotFound
@@ -46,5 +47,5 @@ trait InfluxWriter[T] extends JSerializable {
   "No InfluxReader found for type ${T}. Try to implement an implicit Readable for this type."
 )
 trait InfluxReader[T] extends JSerializable {
-  def read(js: JArray): T
+  def read(js: JArray): ErrorOr[T]
 }

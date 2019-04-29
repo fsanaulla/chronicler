@@ -5,28 +5,23 @@ import java.io.File
 import com.github.fsanaulla.chronicler.core.enums.Epochs
 import com.github.fsanaulla.chronicler.core.jawn._
 import com.github.fsanaulla.chronicler.core.model.Point
-import com.github.fsanaulla.chronicler.testing.it.FakeEntity.fmt
-import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
-import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity}
-import com.github.fsanaulla.chronicler.urlhttp.SampleEntitys.largeMultiJsonEntity
-import com.github.fsanaulla.chronicler.urlhttp.io.api.Database
+import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
+import com.github.fsanaulla.chronicler.urlhttp.SampleEntitys._
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
-import jawn.ast.{JArray, JNum}
-import org.scalatest.{FlatSpec, Matchers, OptionValues, TryValues}
+import jawn.ast.{JArray, JNum, JString}
+import org.scalatest.{FlatSpec, Matchers}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
-  * Date: 28.09.17
+  * Date: 02.03.18
   */
 class DatabaseApiSpec
   extends FlatSpec
     with Matchers
-    with DockerizedInfluxDB
-    with TryValues
-    with OptionValues {
+    with DockerizedInfluxDB {
 
   val testDB = "db"
 
@@ -34,29 +29,29 @@ class DatabaseApiSpec
     InfluxConfig(host, port, credentials = Some(creds), gzipped = false, None)
 
   lazy val mng: UrlManagementClient =
-    InfluxMng(influxConf)
+    InfluxMng(host, port, credentials = Some(creds))
 
   lazy val io: UrlIOClient =
     InfluxIO(influxConf)
 
-  lazy val db: Database = io.database(testDB)
+  lazy val db: io.Database = io.database(testDB)
 
-  "Database API" should "write data from file" in {
-    mng.createDatabase(testDB).success.value shouldEqual OkResult
+  it should "write data from file" in {
+    mng.createDatabase(testDB).get.right.get shouldEqual 200
 
     db.writeFromFile(new File(getClass.getResource("/points.txt").getPath))
-      .success
-      .value shouldEqual NoContentResult
+      .get
+      .right
+      .get shouldEqual 204
 
-    db.readJs("SELECT * FROM test1")
-      .success
-      .value
-      .queryResult
+    db.readJson("SELECT * FROM test1")
+      .get
+      .right
+      .get
       .length shouldEqual 3
   }
 
   it should "write 2 points represented entities" in {
-
     val point1 = Point("test2")
       .addTag("sex", "Male")
       .addTag("firstName", "Martin")
@@ -69,73 +64,98 @@ class DatabaseApiSpec
       .addTag("lastName", "Franko")
       .addField("age", 36)
 
-    db.writePoint(point1).success.value shouldEqual NoContentResult
+    db.writePoint(point1).get.right.get shouldEqual 204
 
-    db.read[FakeEntity]("SELECT * FROM test2")
-      .success
-      .value
-      .queryResult shouldEqual Array(FakeEntity("Martin", "Odersky", 54))
+    db.readJson("SELECT * FROM test2", epoch = Some(Epochs.NANOSECONDS))
+      .get
+      .right
+      .get
+      // skip timestamp
+      .map(jarr => jarr.copy(vs = jarr.vs.tail)) shouldEqual Array(
+        JArray(Array(JNum(54), JString("Martin"), JString("Odersky"), JString("Male")))
+    )
 
-    db.bulkWritePoints(Array(point1, point2)).success.value shouldEqual NoContentResult
+    db.bulkWritePoints(Array(point1, point2)).get.right.get shouldEqual 204
 
-    db.read[FakeEntity]("SELECT * FROM test2")
-      .success
-      .value
-      .queryResult shouldEqual Array(FakeEntity("Martin", "Odersky", 54), FakeEntity("Jame", "Franko", 36), FakeEntity("Martin", "Odersky", 54))
+    db.readJson("SELECT * FROM test2", epoch = Some(Epochs.NANOSECONDS))
+      .get
+      .right
+      .get
+      // skip timestamp
+      .map(jarr => jarr.copy(vs = jarr.vs.tail)) shouldEqual Array(
+        JArray(Array(JNum(54), JString("Martin"), JString("Odersky"), JString("Male"))),
+        JArray(Array(JNum(36), JString("Jame"), JString("Franko"), JString("Male"))),
+        JArray(Array(JNum(54), JString("Martin"), JString("Odersky"), JString("Male")))
+    )
   }
 
   it should "retrieve multiple request" in {
-
-    val multiQuery = db.bulkReadJs(
+    val multiQuery = db.bulkReadJson(
       Array(
         "SELECT * FROM test2",
         "SELECT * FROM test2 WHERE age < 40"
       )
-    ).success.value
+    ).get
 
-    multiQuery.queryResult.length shouldEqual 2
-    multiQuery.queryResult shouldBe a[Array[_]]
+    multiQuery.right.get.length shouldEqual 2
+    multiQuery.right.get shouldBe a[Array[_]]
 
-    multiQuery.queryResult.head.length shouldEqual 3
-    multiQuery.queryResult.head shouldBe a[Array[_]]
-    multiQuery.queryResult.head.head shouldBe a[JArray]
+    multiQuery.right.get.head.length shouldEqual 3
+    multiQuery.right.get.head shouldBe a[Array[_]]
+    multiQuery.right.get.head.head shouldBe a[JArray]
 
-    multiQuery.queryResult.last.length shouldEqual 1
-    multiQuery.queryResult.last shouldBe a[Array[_]]
-    multiQuery.queryResult.last.head shouldBe a[JArray]
+    multiQuery.right.get.last.length shouldEqual 1
+    multiQuery.right.get.last shouldBe a[Array[_]]
+    multiQuery.right.get.last.head shouldBe a[JArray]
 
     multiQuery
-      .queryResult
-      .map(_.map(_.arrayValue.get.tail)) shouldEqual largeMultiJsonEntity.map(_.map(_.arrayValue.get.tail))
+      .right.get
+      .map(_.map(_.arrayValue.right.get.tail)) shouldEqual largeMultiJsonEntity.map(_.map(_.arrayValue.right.get.tail))
   }
 
   it should "write native" in {
+    db
+      .writeNative("test3,sex=Male,firstName=Jame,lastName=Lannister age=48")
+      .get
+      .right
+      .get shouldEqual 204
 
-    db.writeNative("test3,sex=Male,firstName=Jame,lastName=Lannister age=48").success.value shouldEqual NoContentResult
+    db.readJson("SELECT * FROM test3")
+      .get
+      .right
+      .get
+      .map(jarr => jarr.copy(vs = jarr.vs.tail)) shouldEqual Array(
+        JArray(Array(JNum(48), JString("Jame"), JString("Lannister"), JString("Male")))
+    )
 
-    db.read[FakeEntity]("SELECT * FROM test3")
-      .success.value
-      .queryResult shouldEqual Array(FakeEntity("Jame", "Lannister", 48))
+    db
+      .bulkWriteNative(Seq("test4,sex=Male,firstName=Jon,lastName=Snow age=24", "test4,sex=Female,firstName=Deny,lastName=Targaryen age=25"))
+      .get
+      .right.get shouldEqual 204
 
-    db.bulkWriteNative(Seq("test4,sex=Male,firstName=Jon,lastName=Snow age=24", "test4,sex=Female,firstName=Deny,lastName=Targaryen age=25")).success.value shouldEqual NoContentResult
-
-    db.read[FakeEntity]("SELECT * FROM test4")
-      .success.value
-      .queryResult shouldEqual Array(FakeEntity("Female", "Deny", "Targaryen", 25), FakeEntity("Jon", "Snow", 24))
+    db.readJson("SELECT * FROM test4")
+      .get
+      .right
+      .get
+      .map(jarr => jarr.copy(vs = jarr.vs.tail)) shouldEqual Array(
+        JArray(Array(JNum(25), JString("Deny"), JString("Targaryen"), JString("Female"))),
+        JArray(Array(JNum(24), JString("Jon"), JString("Snow"), JString("Male")))
+    )
   }
 
   it should "return grouped result by sex and sum of ages" in {
-
     db
       .bulkWriteNative(Array("test5,sex=Male,firstName=Jon,lastName=Snow age=24", "test5,sex=Male,firstName=Rainer,lastName=Targaryen age=25"))
-      .success.value shouldEqual NoContentResult
+      .get
+      .right
+      .get shouldEqual 204
 
     db
-      .readJs("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"", epoch = Some(Epochs.NANOSECONDS))
-      .success.value
-      .groupedResult
+      .readGroupedJson("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"", epoch = Some(Epochs.NANOSECONDS))
+      .get
+      .right
+      .get
       .map { case (k, v) => k.toSeq -> v } shouldEqual Array(Seq("Male") -> JArray(Array(JNum(0), JNum(49))))
-
   }
 
   it should "write escaped value" in {
@@ -143,9 +163,9 @@ class DatabaseApiSpec
       .addTag("key,", "value,")
       .addField("field=key", 1)
 
-    db.writePoint(p).success.value shouldEqual NoContentResult
+    db.writePoint(p).get.right.get shouldEqual 204
 
-    db.readJs("SELECT * FROM test6").success.value.queryResult.length shouldEqual 1
+    db.readJson("SELECT * FROM test6").get.right.get.length shouldEqual 1
 
     mng.close() shouldEqual {}
     io.close() shouldEqual {}

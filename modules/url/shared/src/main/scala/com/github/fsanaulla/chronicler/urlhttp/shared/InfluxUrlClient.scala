@@ -24,9 +24,8 @@ import com.softwaremill.sttp.{SttpBackend, TryHttpURLConnectionBackend}
 import scala.util.Try
 
 class InfluxUrlClient(customization: Option[CustomizationF]) { self: AutoCloseable =>
-
-  private[urlhttp] implicit val backend: SttpBackend[Try, Nothing] =
-    customization.fold(TryHttpURLConnectionBackend())(cust => TryHttpURLConnectionBackend(customizeConnection = cust))
+  implicit val backend: SttpBackend[Try, Nothing] =
+    customization.fold(TryHttpURLConnectionBackend())(c => TryHttpURLConnectionBackend(customizeConnection = c))
 
   def close(): Unit = backend.close()
 }

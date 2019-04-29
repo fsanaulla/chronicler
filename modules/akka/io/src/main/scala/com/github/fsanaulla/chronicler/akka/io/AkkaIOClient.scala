@@ -18,12 +18,17 @@ package com.github.fsanaulla.chronicler.akka.io
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.HttpsConnectionContext
-import com.github.fsanaulla.chronicler.akka.io.api.{Database, Measurement}
-import com.github.fsanaulla.chronicler.akka.io.models.{AkkaReader, AkkaWriter}
 import com.github.fsanaulla.chronicler.akka.shared.InfluxAkkaClient
-import com.github.fsanaulla.chronicler.akka.shared.handlers.{AkkaJsonHandler, AkkaQueryBuilder, AkkaRequestExecutor, AkkaResponseHandler}
+import com.github.fsanaulla.chronicler.akka.shared.alias.Request
+import com.github.fsanaulla.chronicler.akka.shared.handlers.{AkkaQueryBuilder, AkkaRequestExecutor}
+import com.github.fsanaulla.chronicler.akka.shared.implicits._
 import com.github.fsanaulla.chronicler.core.IOClient
-import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, PingResult}
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.api.{DatabaseApi, MeasurementApi}
+import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
+import com.github.fsanaulla.chronicler.core.typeclasses.ResponseHandler
+import com.softwaremill.sttp.{Response, Uri}
+import jawn.ast.JValue
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
@@ -34,24 +39,21 @@ final class AkkaIOClient(host: String,
                          gzipped: Boolean,
                          httpsContext: Option[HttpsConnectionContext])
                         (implicit ex: ExecutionContext, system: ActorSystem)
-  extends InfluxAkkaClient(httpsContext) with IOClient[Future, String] {
+  extends InfluxAkkaClient(httpsContext) with IOClient[Future, Request, Response[JValue], Uri, String] {
 
   implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(host, port, credentials)
   implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor
-  implicit val rh: AkkaResponseHandler = new AkkaResponseHandler(new AkkaJsonHandler())
-  implicit val wr: AkkaWriter = new AkkaWriter
-  implicit val rd: AkkaReader = new AkkaReader
+  implicit val rh: ResponseHandler[Response[JValue]] = new ResponseHandler(jsonHandler)
 
   override def database(dbName: String): Database =
-    new Database(dbName, gzipped)
+    new DatabaseApi(dbName, gzipped)
 
   override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] =
-    new Measurement[A](dbName, measurementName, gzipped)
+    new MeasurementApi(dbName, measurementName, gzipped)
 
-  override def ping(isVerbose: Boolean = false): Future[PingResult] = {
-    val queryParams = if (isVerbose) Map("verbose" -> "true") else Map.empty[String, String]
+  override def ping: Future[ErrorOr[InfluxDBInfo]] = {
     re
-      .execute(re.buildRequest(qb.buildQuery("/ping", queryParams)))
-      .flatMap(rh.toPingResult)
+      .executeUri(qb.buildQuery("/ping", Map.empty[String, String]))
+      .map(rh.pingResult)
   }
 }

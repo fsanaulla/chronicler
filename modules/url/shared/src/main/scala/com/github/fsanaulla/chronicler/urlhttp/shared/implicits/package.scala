@@ -16,17 +16,34 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared
 
-import com.github.fsanaulla.chronicler.core.model.WriteResult
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, JsonHandler}
+import com.softwaremill.sttp.Response
+import jawn.ast.{JParser, JValue}
 
-import scala.util.{Success, Try}
+import scala.util.{Failure, Success, Try}
 
 package object implicits {
-  implicit final class WriteResultOps(private val wr: WriteResult.type) extends AnyVal {
-    def successfulTry(code: Int): Try[WriteResult] = Success(wr.successful(code))
+  implicit val jsonHandler: JsonHandler[Response[JValue]] = new JsonHandler[Response[JValue]] {
+    override def responseBody(response: Response[JValue]): ErrorOr[JValue] =
+      response
+        .body
+        .left
+        .flatMap { str =>
+          JParser.parseFromString(str) match {
+            case Success(value)     => Right(value)
+            case Failure(exception) => Left(exception)
+          }
+        }
+
+    override def responseHeader(response: Response[JValue]): Seq[(String, String)] =
+      response.headers
+
+    override def responseCode(response: Response[JValue]): Int =
+      response.code
   }
 
-  implicit final class OptionOps[A](private val opt: Option[A]) extends AnyVal {
-    def toSuccess(failure: => Try[A]): Try[A] =
-      opt.fold(failure)(v => Success(v))
+  implicit val tryFunctor: Functor[Try] = new Functor[Try] {
+    override def map[A, B](fa: Try[A])(f: A => B): Try[B] = fa.map(f)
   }
 }

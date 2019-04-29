@@ -16,7 +16,8 @@
 
 package com.github.fsanaulla.chronicler.core.management
 
-import com.github.fsanaulla.chronicler.core.model.PingResult
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.model.InfluxDBInfo
 
 /**
   * Basic system related management operations
@@ -29,5 +30,5 @@ trait SystemManagement[F[_]] {
     * Method for checking InfluxDB status
     * @return - Write result with status information
     */
-  def ping(isVerbose: Boolean): F[PingResult]
+  def ping: F[ErrorOr[InfluxDBInfo]]
 }

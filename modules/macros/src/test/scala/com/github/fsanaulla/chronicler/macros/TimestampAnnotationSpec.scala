@@ -37,17 +37,25 @@ class TimestampAnnotationSpec extends FlatSpec with Matchers {
     val utcFmt = Influx.formatter[GeneralUTCTimestamp]
     val epochFmt = Influx.formatter[GeneralEpochTimestamp]
 
-    epochFmt.read(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull))) shouldEqual
-      GeneralEpochTimestamp("Fz", None, 4, 1438715114318570484L)
+    epochFmt
+      .read(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull)))
+      .right
+      .get shouldEqual GeneralEpochTimestamp("Fz", None, 4, 1438715114318570484L)
 
-    epochFmt.read(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull))) shouldEqual
-      GeneralEpochTimestamp("Fz", None, 4, 1438715114318570484L)
+    epochFmt
+      .read(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
+      .right
+      .get shouldEqual GeneralEpochTimestamp("Fz", None, 4, 1438715114318570484L)
 
-    utcFmt.read(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull))) shouldEqual
-      GeneralUTCTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z")
+    utcFmt
+      .read(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
+      .right
+      .get shouldEqual GeneralUTCTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z")
 
-    utcFmt.read(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull))) shouldEqual
-      GeneralUTCTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z")
+    utcFmt
+      .read(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull)))
+      .right
+      .get shouldEqual GeneralUTCTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z")
   }
 
   "@timestampEpoch annotation" should "serialize Epoch long" in {
@@ -57,8 +65,10 @@ class TimestampAnnotationSpec extends FlatSpec with Matchers {
                               @timestampEpoch time: Long)
     val fmt = Influx.formatter[EpochTimestamp]
 
-    fmt.read(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull))) shouldEqual
-      EpochTimestamp("Fz", None, 4, 1438715114318570484L)
+    fmt
+      .read(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
+      .right
+      .get shouldEqual EpochTimestamp("Fz", None, 4, 1438715114318570484L)
   }
 
   "@timestampUTC annotation" should "serialize UTC string" in {
@@ -68,7 +78,9 @@ class TimestampAnnotationSpec extends FlatSpec with Matchers {
                             @timestampUTC time: String)
     val fmt: InfluxFormatter[UTCTimestamp] = Influx.formatter[UTCTimestamp]
 
-    fmt.read(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull))) shouldEqual
-      UTCTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z")
+    fmt
+      .read(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull)))
+      .right
+      .get shouldEqual UTCTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z")
   }
 }

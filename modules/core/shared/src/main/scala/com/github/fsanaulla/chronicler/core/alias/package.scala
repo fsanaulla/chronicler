@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.akka.io
+package com.github.fsanaulla.chronicler.core
 
-import akka.http.scaladsl.model.headers.{HttpEncodings, `Accept-Encoding`}
-
-package object headers {
-  /** Header for GZIP content encoding */
-  val gzipEncoding = `Accept-Encoding`(HttpEncodings.gzip)
+package object alias {
+  // http response code
+  type ResponseCode = Int
+  type ErrorOr[A] = Either[Throwable, A]
+  type BulkQueryResult[A] = Array[Array[A]]
+  type GroupByResult[A] = Array[(Array[String], A)]
 }

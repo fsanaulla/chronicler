@@ -16,15 +16,29 @@
 
 package com.github.fsanaulla.chronicler.core.api
 
-import com.github.fsanaulla.chronicler.core.enums.{Consistency, Precision}
-import com.github.fsanaulla.chronicler.core.model.{InfluxWriter, WriteResult}
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
+import com.github.fsanaulla.chronicler.core.either
+import com.github.fsanaulla.chronicler.core.either._
+import com.github.fsanaulla.chronicler.core.enums.{Consistency, Epoch, Precision}
+import com.github.fsanaulla.chronicler.core.model._
+import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
+import com.github.fsanaulla.chronicler.core.typeclasses._
+
+import scala.reflect.ClassTag
 
 /**
   * Main functionality for measurement api
   * @tparam E - Entity type
   * @tparam R - Request entity type
   */
-trait MeasurementApi[F[_], E] {
+final class MeasurementApi[F[_], Req, Resp, Uri, Body, A](dbName: String,
+                                                       measurementName: String,
+                                                       gzipped: Boolean)
+                                                      (implicit qb: QueryBuilder[Uri],
+                                                       bd: BodyBuilder[Body],
+                                                       re: RequestExecutor[F, Req, Resp, Uri, Body],
+                                                       rh: ResponseHandler[Resp],
+                                                       F: Functor[F]) extends DatabaseOperationQuery[Uri] with Appender {
 
   /**
     * Make single write
@@ -35,10 +49,13 @@ trait MeasurementApi[F[_], E] {
     * @param writer          - implicit serializer to InfluxLine format
     * @return                - Write result on backend container
     */
-  def write(entity: E,
-            consistency: Option[Consistency],
-            precision: Option[Precision],
-            retentionPolicy: Option[String])(implicit writer: InfluxWriter[E]): F[WriteResult]
+  def write(entity: A,
+            consistency: Option[Consistency] = None,
+            precision: Option[Precision] = None,
+            retentionPolicy: Option[String] = None)(implicit writer: InfluxWriter[A]): F[ErrorOr[ResponseCode]] = {
+    val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
+    F.map(re.execute(uri, bd.fromT(measurementName, entity), gzipped))(rh.writeResult)
+  }
 
   /**
     * Make bulk write
@@ -49,8 +66,27 @@ trait MeasurementApi[F[_], E] {
     * @param writer          - implicit serializer to InfluxLine format
     * @return                - Write result on backend container
     */
-  def bulkWrite(entities: Seq[E],
-                consistency: Option[Consistency],
-                precision: Option[Precision],
-                retentionPolicy: Option[String])(implicit writer: InfluxWriter[E]): F[WriteResult]
+  def bulkWrite(entities: Seq[A],
+                consistency: Option[Consistency] = None,
+                precision: Option[Precision] = None,
+                retentionPolicy: Option[String] = None)(implicit writer: InfluxWriter[A]): F[ErrorOr[ResponseCode]] = {
+    val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
+    F.map(re.execute(uri, bd.fromSeqT(measurementName, entities), gzipped))(rh.writeResult)
+  }
+
+  def read(query: String,
+           epoch: Option[Epoch] = None,
+           pretty: Boolean = false,
+           chunked: Boolean = false)
+          (implicit rd: InfluxReader[A], clsTag: ClassTag[A]): F[ErrorOr[Array[A]]] = {
+    val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
+    F.map(
+      F.map(
+        re.executeUri(uri))(rh.queryResultJson)
+    ) { e =>
+          e.flatMapRight { arr =>
+            either.array[Throwable, A](arr.map(rd.read))
+      }
+    }
+  }
 }

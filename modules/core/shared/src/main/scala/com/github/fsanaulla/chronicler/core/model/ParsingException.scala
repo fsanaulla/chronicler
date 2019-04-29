@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.akka.shared
+package com.github.fsanaulla.chronicler.core.model
 
-import akka.http.scaladsl.model.{MediaType, MediaTypes}
-
-package object types {
-  val AppJson: MediaType.WithFixedCharset = MediaTypes.`application/json`
-  val OctetStream: MediaType.Binary = MediaTypes.`application/octet-stream`
-}
+final class ParsingException(msg: String) extends Throwable(msg)

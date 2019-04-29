@@ -16,8 +16,8 @@
 
 package com.github.fsanaulla.chronicler.core.io
 
+import com.github.fsanaulla.chronicler.core.alias.{BulkQueryResult, ErrorOr, GroupByResult}
 import com.github.fsanaulla.chronicler.core.enums.Epoch
-import com.github.fsanaulla.chronicler.core.model.{QueryResult, ReadResult}
 import jawn.ast.JArray
 
 /***
@@ -35,7 +35,7 @@ trait ReadOperations[F[_]] {
     * @param chunked - Chunked response
     * @return        - Query result, array of JArray
     */
-  private[chronicler] def readJs(dbName: String, query: String, epoch: Option[Epoch], pretty: Boolean, chunked: Boolean): F[ReadResult[JArray]]
+  def readJson(dbName: String, query: String, epoch: Option[Epoch], pretty: Boolean, chunked: Boolean): F[ErrorOr[Array[JArray]]]
 
   /**
     * Execute several queries in one time
@@ -47,6 +47,7 @@ trait ReadOperations[F[_]] {
     * @param chunked - Chunked response
     * @return        - Multiple query results, array of JArray
     */
-  private[chronicler] def bulkReadJs(dbName: String, queries: Seq[String], epoch: Option[Epoch], pretty: Boolean, chunked: Boolean): F[QueryResult[Array[JArray]]]
+  def bulkReadJson(dbName: String, queries: Seq[String], epoch: Option[Epoch], pretty: Boolean, chunked: Boolean): F[ErrorOr[BulkQueryResult[JArray]]]
 
+  def readGroupedJson(dbName: String, query: String, epoch: Option[Epoch], pretty: Boolean, chunked: Boolean): F[ErrorOr[GroupByResult[JArray]]]
 }
