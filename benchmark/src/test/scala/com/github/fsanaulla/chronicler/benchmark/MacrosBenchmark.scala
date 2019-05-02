@@ -2,7 +2,7 @@ package com.github.fsanaulla.chronicler.benchmark
 
 import java.util.concurrent.TimeUnit
 
-import com.github.fsanaulla.chronicler.benchmark.MacrosBenchmark.{CustomWriter, MacroWriter, Test}
+import com.github.fsanaulla.chronicler.benchmark.MacrosBenchmark.{CustomWriter, MacroWriter, NewWriter, Test}
 import com.github.fsanaulla.chronicler.core.model.InfluxWriter
 import com.github.fsanaulla.chronicler.macros.Influx
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestampEpoch}
@@ -19,6 +19,10 @@ class MacrosBenchmark {
   @Benchmark
   def averageWriteTime(state: CustomWriter): Unit =
     state.writer.write(Test("a", Some("b"), 5, 150L))
+
+  @Benchmark
+  def averageNewWriteTime(state: NewWriter): Unit =
+    state.writer.write(Test("a", Some("b"), 5, 150L))
 }
 
 object MacrosBenchmark {
@@ -30,11 +34,8 @@ object MacrosBenchmark {
   @State(Scope.Benchmark)
   class MacroWriter {
     var writer: InfluxWriter[Test] = _
-
     @Setup
-    def up(): Unit =
-      writer = Influx.writer[Test]
-
+    def up(): Unit = writer = Influx.writer[Test]
     @TearDown
     def close(): Unit = {}
   }
@@ -48,15 +49,18 @@ object MacrosBenchmark {
       writer = (obj: Test) => {
         val sb = new StringBuilder
         sb
+          .append("name=")
           .append(obj.name)
 
         if (obj.surname.isDefined) {
           sb
             .append(",")
+            .append("surname=")
             .append(obj.surname.get)
         } else sb.append(" ")
 
         sb
+          .append("age=")
           .append(obj.age)
           .append(" ")
           .append(obj.time)
@@ -64,6 +68,15 @@ object MacrosBenchmark {
         sb.toString()
       }
 
+    @TearDown
+    def close(): Unit = {}
+  }
+
+  @State(Scope.Benchmark)
+  class NewWriter {
+    var writer: InfluxWriter[Test] = _
+    @Setup
+    def up(): Unit = writer = Influx.writerNew[Test]
     @TearDown
     def close(): Unit = {}
   }
