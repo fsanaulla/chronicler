@@ -242,17 +242,17 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
 
     val optTags: Seq[Tree] = tagsMethods collect {
       case m: MethodSymbol if isOption(m.returnType) =>
-        q"${m.name.decodedName.toString.escapeFull} -> obj.${m.name}"
+        q"${m.name.decodedName.toString.escapeKey} -> obj.${m.name}"
     }
 
     val nonOptTags: Seq[Tree] = tagsMethods collect {
       case m: MethodSymbol if !isOption(m.returnType) =>
-        q"${m.name.decodedName.toString.escapeFull} -> obj.${m.name}"
+        q"${m.name.decodedName.toString.escapeKey} -> obj.${m.name}"
     }
 
     val fields: Seq[Tree] = fieldsMethods map {
       m: MethodSymbol =>
-        q"${m.name.decodedName.toString.escapeFull} -> obj.${m.name}"
+        q"${m.name.decodedName.toString.escapeKey} -> obj.${m.name}"
     }
 
     def write(tpe: Type,
@@ -270,12 +270,12 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
                 } mkString(",")
 
                 val nonOptTags: String = Seq[(String, String)](..$nonOptTags) map {
-                  case (k, v) if v.nonEmpty => k + "=" + v.escapeFull
+                  case (k, v) if v.nonEmpty => k + "=" + v.escapeKey
                   case (k, _) => throw new IllegalArgumentException("Tag " + k + " can't be an empty string")
                 } mkString(",")
 
                 val optTags: String = Seq[(String, Option[String])](..$optTags) collect {
-                  case (k, Some(v)) => k + "=" + v.escapeFull
+                  case (k, Some(v)) => k + "=" + v.escapeKey
                 } mkString(",")
 
                 val combTags: String = if (optTags.isEmpty) nonOptTags else nonOptTags + "," + optTags
@@ -291,11 +291,166 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     write(tpe, fields, nonOptTags, optTags, optTime)
   }
 
+  def createWriteMethodNew(tpe: c.Type): Tree = {
+
+    /** Is it Option container */
+    def isOption(tpe: c.universe.Type): Boolean =
+      tpe.typeConstructor =:= typeOf[Option[_]].typeConstructor
+
+    def isString(tpe: c.universe.Type): Boolean =
+      tpe =:= string
+
+    def isInt(tpe: c.universe.Type): Boolean =
+      tpe =:= int
+
+    /** Is it valid tag type */
+    def isSupportedTagType(tpe: c.universe.Type): Boolean =
+      tagsTypes.exists(t => t =:= tpe)
+
+    /** Is it valid field type */
+    def isSupportedFieldType(tpe: c.universe.Type): Boolean =
+      fieldTypes.exists(t => t =:= tpe)
+
+//    def isEscapable(tpe: c.universe.Type, optional: Boolean): Boolean = {
+//      if (optional) {
+//        tpe.baseType(typeOf[Option[_]].typeSymbol) match {
+//          case TypeRef(_, _, arg :: Nil) => isString(arg)
+//          case _ => false
+//        }
+//      }
+//      else isString(tpe)
+//    }
+
+    /** Predicate for finding fields of instance marked with '@tag' annotation */
+    def isTag(m: MethodSymbol): Boolean = {
+      if (m.annotations.exists(_.tree.tpe =:= typeOf[tag])) {
+        if (isSupportedTagType(m.returnType)) true
+        else error(s"@tag ${m.name} has unsupported type ${m.returnType}. Tag must have String or Optional[String]")
+      } else false
+    }
+
+    /** Predicate for finding fields of instance marked with '@field' annotation */
+    def isField(m: MethodSymbol): Boolean = {
+      if (m.annotations.exists(_.tree.tpe =:= typeOf[field])) {
+        if (isSupportedFieldType(m.returnType)) true
+        else error(s"Unsupported type for @field ${m.name}: ${m.returnType}")
+      } else false
+    }
+
+//    def isEscaped(m: MethodSymbol, optional: Boolean): Boolean = {
+//      if (m.annotations.exists(_.tree.tpe =:= typeOf[escape])) {
+//        if (isSupportedFieldType(m.returnType)) true
+//        else error(s"Unsupported type for @escape ${m.name}: ${m.returnType}, Can be only ")
+//      } else false
+//    }
+
+    /** Check method for one of @tag, @field annotations */
+    def isMarked(m: MethodSymbol): Boolean = isTag(m) || isField(m)
+
+    def unquote(lst: List[Unquotable]): Tree = {
+      lst.tail.foldLeft(
+        q"""
+         sb.append(${lst.head.unquoted}.substring(1))
+       """
+      ) { (acc, e) =>
+        q"""
+         $acc
+          .append(${e.unquoted})
+       """
+      }
+    }
+
+    val (timeField, othField) = getMethods(tpe).partition(isTimestamp)
+
+    if (othField.lengthCompare(1) < 0)
+      error("Type parameter must be a case class with more then 1 fields")
+
+    val (tagMethods, fieldMethods) = othField
+      .filter(isMarked)
+      .span {
+        case m: MethodSymbol if isTag(m) => true
+        case _ => false
+      }
+
+    sealed trait Unquotable {
+      def key: Name
+      def value: Tree
+      /** Unquote class into Tree */
+      def unquoted: Tree
+      final def name: String = key.decodedName.toString.escapeKey
+    }
+
+    sealed trait Field extends Unquotable
+
+    final class Tag(val key: Name, val value: Tree, optional: Boolean/*, escapable: Boolean*/) extends Unquotable {
+      def unquoted: Tree = {
+        if (!optional) {
+          q"""
+            new String("," + $name + "=" + $value)
+          """
+        } else {
+          q"""
+             new String(if ($value.isEmpty) "" else "," + $name + "=" + $value.get)
+           """
+        }
+      }
+    }
+
+    final class IntField(val key: Name, val value: Tree) extends Field {
+      override def unquoted: c.universe.Tree =
+        q"""new String("," + $name + "=" + $value + "i")"""
+    }
+
+    final class StringField(val key: Name, val value: Tree) extends Field {
+      override def unquoted: c.universe.Tree =
+        q"""new String("," + $name + "=" + "\"" + $value + "\"")"""
+    }
+
+    final class OtherField(val key: Name, val value: Tree) extends Field {
+      override def unquoted: c.universe.Tree =
+        q"""new String("," + $name + "=" + $value)"""
+    }
+
+    val tags: List[Tag] = tagMethods map {
+      case m: MethodSymbol if !isOption(m.returnType) =>
+        new Tag(m.name.decodedName, q"obj.${m.name}", optional = false/*, isEscaped(m, optional = false)*/)
+      case m: MethodSymbol =>
+        new Tag(m.name.decodedName, q"obj.${m.name}", optional = true/*, isEscaped(m, optional = true)*/)
+    }
+
+    val fields: List[Field] = fieldMethods map {
+      case m: MethodSymbol if isString(m.returnType) =>
+        new StringField(m.name, q"obj.${m.name}")
+      case m: MethodSymbol if isInt(m.returnType) =>
+        new IntField(m.name, q"obj.${m.name}")
+      case m: MethodSymbol =>
+        new OtherField(m.name, q"obj.${m.name}")
+    }
+
+    val tagString = unquote(tags)
+    val fieldString = unquote(fields)
+    val timestampString = timeField.headOption.fold(q"") { m =>
+      q"""
+         sb.append(" " + obj.${m.name})
+       """
+    }
+
+    q"""def write(obj: $tpe): String = {
+          val sb = StringBuilder.newBuilder
+          $tagString
+          sb.append(" ")
+          $fieldString
+          $timestampString
+
+          sb.toString
+      }"""
+  }
+
   /***
     * Generate AST for current type at compile time.
     * @tparam T - Type parameter for whom will be generated AST
     */
-  def writer_impl[T: c.WeakTypeTag]: Tree = {
+  def writer[T: c.WeakTypeTag]: Tree = {
     val tpe = c.weakTypeOf[T]
     q"new com.github.fsanaulla.chronicler.core.model.InfluxWriter[$tpe] { ${createWriteMethod(tpe)} }"
   }
@@ -304,7 +459,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     * Generate AST for current type at compile time.
     * @tparam T - Type parameter for whom will be generated AST
     */
-  def reader_impl[T: c.WeakTypeTag]: Tree = {
+  def reader[T: c.WeakTypeTag]: Tree = {
     val tpe = c.weakTypeOf[T]
     q"new com.github.fsanaulla.chronicler.core.model.InfluxReader[$tpe] { ${createReadMethod(tpe)} }"
   }
@@ -313,12 +468,18 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     * Generate AST for current type at compile time.
     * @tparam T - Type parameter for whom will be generated AST
     */
-  def format_impl[T: c.WeakTypeTag]: Tree = {
+  def formatter[T: c.WeakTypeTag]: Tree = {
     val tpe = c.weakTypeOf[T]
 
     q"""new com.github.fsanaulla.chronicler.core.model.InfluxFormatter[$tpe] {
           ${createWriteMethod(tpe)}
           ${createReadMethod(tpe)}
      }"""
+  }
+
+  // 10x faster that `writer`
+  def writerNew[T: c.WeakTypeTag]: Tree = {
+    val tpe = c.weakTypeOf[T]
+    q"new com.github.fsanaulla.chronicler.core.model.InfluxWriter[$tpe] { ${createWriteMethodNew(tpe)} }"
   }
 }

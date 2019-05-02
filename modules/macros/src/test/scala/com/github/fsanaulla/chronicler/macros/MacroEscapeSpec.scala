@@ -23,7 +23,7 @@ import org.scalatest.{FlatSpec, Matchers}
 class MacroEscapeSpec extends FlatSpec with Matchers {
   "Macros" should "escape spaces" in {
     case class Test(@tag `name `: String, @field `age `: Int)
-    implicit val wr: InfluxWriter[Test] = Influx.writer[Test]
+    implicit val wr: InfluxWriter[Test] = Influx.writerNew[Test]
     val t = Test("My Name", 5)
     wr.write(t) shouldEqual "name\\ =My\\ Name age\\ =5i"
   }
