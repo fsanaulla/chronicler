@@ -1,5 +1,5 @@
 # Macros
-This module it's optional extension to automatically generation of `InfluxReader[T]`, `InfluxWriter[T]`, `InfluxFormatter[T]`.
+This module it's optional extension to automatically generation of `InfluxReader[T]`, `InfluxWriter[T]`.
 
 ## Quick start
 Add to your `build.sbt`:
@@ -8,13 +8,16 @@ libraryDependencies += "com.github.fsanaulla" %% "chronicler-macros" % <version>
 ```
 Annotate your case class:
 ```
-case class Test(@escape @tag name: String, @field age: Int, @timestamp time: Long)
+final case class Test(@escape @tag name: String, @field age: Int, @timestamp time: Long)
 ```
-Generate your writer/reader/formatter:
+Generate your writer/reader manually:
 ```
 implicit val wr: InfluxWriter[Test] = Influx.writer[Test]
 implicit val rd: InfluxWriter[Test] = Influx.reader[Test]
-implicit val fmt: InfluxWriter[Test] = Influx.formatter[Test]
+```
+or 
+```
+import com.github.fsanaulla.chronicler.macros.auto._
 ```
 # Glossary of terms
 ## Tag
@@ -23,6 +26,8 @@ All [tag](https://docs.influxdata.com/influxdb/v1.7/concepts/glossary/#tag)'s fi
 Supported types: 
 - **`String`** 
 - **`Option[String]`**
+
+Can be combined with additional `@escape` annotation for escaping [special character](https://docs.influxdata.com/influxdb/v1.7/write_protocols/line_protocol_tutorial/#special-characters-and-keywords).
 
 ## Field
 All [field](https://docs.influxdata.com/influxdb/v1.7/concepts/glossary/#field)'s must be market with `@field` annotation. It can't be optional.
@@ -35,28 +40,28 @@ Supported types:
 - **`String`**
 
 ## Timestamp
-You can specify which field will be used as a influx [timestamp](https://docs.influxdata.com/influxdb/v1.5/concepts/glossary/#timestamp) in process serialization/deserialization by marking with `@timestamp`.
-It's optional field. 
-If it's not specified, time will be generated on database level. Otherwise will be set up from entity.
-There are three options, depending on `timestamp` field representation:
+It has different behavior for `InfluxReader[_]` and `InfluxWriter[_]`.
 
-- `@timestamp` works with UTC/Epoch time representation. 
-Supported type:
-    - **`String`**
-    - **`Long`**
+For `InfluxReader[_]` there are four options:
 
-- `@timestampUTC` works with UTC [RFC3339](https://www.ietf.org/rfc/rfc3339.txt). 
-Supported type: 
-    - **`String`**
-- `@timestampEpoch` works with [Epoch](https://en.wikipedia.org/wiki/Unix_time) time. 
-If you specify in your query `epoch` param. Supported type:
-    - **`Long`**
-    
-    **Remember**: InfluxDB use nano precision by default.
-    
+- you expect to receive timestamp in [epoch](https://en.wikipedia.org/wiki/Unix_time) format, then use `@epoch` + `@timestamp`. 
+Then the field type should be **`Long`**. For example when you specify precision in query. 
+  
+  **Remember**: InfluxDB use nano precision by default.
+- you expect to receive timestamo in [utc](https://www.ietf.org/rfc/rfc3339.txt) formar, then use `@utc` + `@timestamp`.
+Then field type  should be **`String`**.
+- if you expect to receive time to time epoch time to time utc timestamp, then use only `@timestamp`. 
+Supported field type: **`String`**, **`Long`**
+- if you won't receive timestamp, then not use any annotations at all.
+
+Additional annotations will speed up your `InfluxReader[_]`.
+
+For `InfluxWriter[_]` there are two options:
+- if you want to pass custom timestamp mark related field with `@timestamp`, supported type: **`Long`**.
+- if you don't care about timestamp, not use annotation then. 
+
 ## Escape
 Special character should be [escaped](https://docs.influxdata.com/influxdb/v1.7/write_protocols/line_protocol_tutorial/#special-characters).
 If you want to enable escaping on the field mark it with `@escape` annotation.
 Rules: 
 - if applied on `@tag` field, it will automatically escape tag key and tag value.
-- if applied on `@field` field, it will automatically escape field key.
