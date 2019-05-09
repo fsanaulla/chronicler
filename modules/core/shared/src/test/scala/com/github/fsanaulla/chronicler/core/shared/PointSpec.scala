@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.gtihub.fsanaulla.chronicler.core.shared
+package com.github.fsanaulla.chronicler.core.shared
 
 import com.github.fsanaulla.chronicler.core.model._
 import org.scalatest.{FlatSpec, Matchers}

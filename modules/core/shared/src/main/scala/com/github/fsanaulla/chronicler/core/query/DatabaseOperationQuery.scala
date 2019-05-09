@@ -16,8 +16,8 @@
 
 package com.github.fsanaulla.chronicler.core.query
 
+import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Epoch, Precision}
-import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 
 import scala.collection.mutable
 

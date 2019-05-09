@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.typeclasses
+package com.github.fsanaulla.chronicler.core.components
 
 import java.io.File
 

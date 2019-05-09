@@ -1,4 +1,4 @@
-package com.gtihub.fsanaulla.chronicler.core.shared
+package com.github.fsanaulla.chronicler.core.shared
 
 import com.github.fsanaulla.chronicler.core.duration._
 import org.scalatest.FlatSpec

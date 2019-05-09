@@ -14,8 +14,21 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.typeclasses
+package com.github.fsanaulla.chronicler.core.model
 
-trait Functor[F[_]] {
-  def map[A, B](fa: F[A])(f: A => B): F[B]
+import java.io.{Serializable => JSerializable}
+
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import jawn.ast.JArray
+
+import scala.annotation.implicitNotFound
+
+/**
+  * When trying deserialize JSON from influx, don't forget that influx sort field in db alphabetically.
+  */
+@implicitNotFound(
+  "No InfluxReader found for type ${T}. Try to implement an implicit InfluxReader for this type."
+)
+trait InfluxReader[T] extends JSerializable {
+  def read(js: JArray): ErrorOr[T]
 }
