@@ -24,8 +24,8 @@ import com.github.fsanaulla.chronicler.akka.shared.handlers.{AkkaQueryBuilder, A
 import com.github.fsanaulla.chronicler.akka.shared.implicits._
 import com.github.fsanaulla.chronicler.core.ManagementClient
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.model._
-import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, ResponseHandler}
 import com.softwaremill.sttp.{Response, Uri}
 import jawn.ast.JValue
 

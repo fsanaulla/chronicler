@@ -16,8 +16,8 @@
 
 package com.github.fsanaulla.chronicler.core.query
 
+import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.Privilege
-import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 
 private[fsanaulla] trait UserManagementQuery[U] {
 

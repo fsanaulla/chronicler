@@ -17,12 +17,12 @@
 package com.github.fsanaulla.chronicler.core.api
 
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
+import com.github.fsanaulla.chronicler.core.components._
 import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Epoch, Precision}
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.chronicler.core.typeclasses._
 
 import scala.reflect.ClassTag
 

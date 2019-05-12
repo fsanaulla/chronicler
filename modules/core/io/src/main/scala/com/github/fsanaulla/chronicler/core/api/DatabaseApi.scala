@@ -19,10 +19,10 @@ package com.github.fsanaulla.chronicler.core.api
 import java.io.File
 
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
+import com.github.fsanaulla.chronicler.core.components._
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import com.github.fsanaulla.chronicler.core.typeclasses._
 import jawn.ast.JArray
 
 /**

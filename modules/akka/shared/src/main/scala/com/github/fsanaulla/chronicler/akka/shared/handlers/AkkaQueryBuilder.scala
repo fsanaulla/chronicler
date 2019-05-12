@@ -16,8 +16,8 @@
 
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
+import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
-import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 import com.softwaremill.sttp.Uri
 import com.softwaremill.sttp.Uri.QueryFragment
 import com.softwaremill.sttp.Uri.QueryFragment.KeyValue

@@ -16,9 +16,9 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
+import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
-import com.github.fsanaulla.chronicler.core.typeclasses.ResponseHandler
 import com.github.fsanaulla.chronicler.urlhttp.shared.Extensions.RichString
 import com.github.fsanaulla.chronicler.urlhttp.shared.implicits.jsonHandler
 import com.softwaremill.sttp.Response

@@ -17,9 +17,9 @@
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
 import com.github.fsanaulla.chronicler.akka.shared.implicits.jsonHandler
+import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
-import com.github.fsanaulla.chronicler.core.typeclasses.ResponseHandler
 import com.softwaremill.sttp.Response
 import jawn.ast._
 import org.scalatest.{FlatSpec, Matchers}

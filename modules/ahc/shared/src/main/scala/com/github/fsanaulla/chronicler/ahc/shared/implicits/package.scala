@@ -17,7 +17,8 @@
 package com.github.fsanaulla.chronicler.ahc.shared
 
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
-import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, JsonHandler}
+import com.github.fsanaulla.chronicler.core.components.JsonHandler
+import com.github.fsanaulla.chronicler.core.model.Functor
 import com.softwaremill.sttp.Response
 import jawn.ast.{JParser, JValue}
 
