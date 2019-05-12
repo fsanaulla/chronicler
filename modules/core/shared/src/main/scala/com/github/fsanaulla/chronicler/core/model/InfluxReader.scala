@@ -32,3 +32,7 @@ import scala.annotation.implicitNotFound
 trait InfluxReader[T] extends JSerializable {
   def read(js: JArray): ErrorOr[T]
 }
+
+object InfluxReader {
+  def apply[T](implicit rd: InfluxReader[T]): InfluxReader[T] = rd
+}
