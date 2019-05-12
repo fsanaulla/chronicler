@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.macros.annotations
+package com.github.fsanaulla.chronicler.macros.annotations.reader
 
+/***
+  * Used with @timestamp annotation to indicate from which time type should be readed
+  */
 @scala.annotation.meta.getter
-final class timestampEpoch extends scala.annotation.StaticAnnotation
+final class utc extends scala.annotation.StaticAnnotation

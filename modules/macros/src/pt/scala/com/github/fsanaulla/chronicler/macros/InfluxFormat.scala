@@ -2,8 +2,10 @@ package com.github.fsanaulla.chronicler.macros
 
 import java.time.Instant
 
-import com.github.fsanaulla.chronicler.core.model.InfluxFormatter
+import com.github.fsanaulla.chronicler.core.model.{InfluxReader, InfluxWriter}
+import com.github.fsanaulla.chronicler.macros.annotations.reader.epoch
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
+import com.github.fsanaulla.chronicler.macros.auto._
 import com.github.fsanaulla.scalacheck.Arb
 import jawn.ast._
 import org.scalacheck.{Arbitrary, Gen}
@@ -15,9 +17,11 @@ trait InfluxFormat {
                   @field age: Int,
                   @field schooler: Boolean,
                   @field city: String,
-                  @timestamp time: Long)
+                  @epoch @timestamp time: Long)
 
-  val fmt: InfluxFormatter[Test] = Influx.formatter[Test]
+  val rd: InfluxReader[Test] = InfluxReader[Test]
+  val wr: InfluxWriter[Test] = InfluxWriter[Test]
+
   implicit val gen: Arbitrary[Test] = Arb.dummy[Test]
 
   val validStr: Gen[String] = for (s <- Gen.alphaStr if s.nonEmpty && s != null) yield s

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.macros.annotations
+package com.github.fsanaulla.chronicler.macros.annotations.writer
 
-// https://issues.scala-lang.org/browse/SI-7561
 @scala.annotation.meta.getter
 final class escape extends scala.annotation.StaticAnnotation
