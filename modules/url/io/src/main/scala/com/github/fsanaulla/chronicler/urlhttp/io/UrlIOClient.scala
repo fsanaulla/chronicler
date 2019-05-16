@@ -20,12 +20,12 @@ import com.github.fsanaulla.chronicler.core.IOClient
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.api.{DatabaseApi, MeasurementApi}
 import com.github.fsanaulla.chronicler.core.components.ResponseHandler
-import com.github.fsanaulla.chronicler.core.model.{Functor, InfluxCredentials, InfluxDBInfo}
+import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient.CustomizationF
 import com.github.fsanaulla.chronicler.urlhttp.shared.alias.Request
 import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlQueryBuilder, UrlRequestExecutor}
-import com.github.fsanaulla.chronicler.urlhttp.shared.implicits.jsonHandler
+import com.github.fsanaulla.chronicler.urlhttp.shared.implicits._
 import com.softwaremill.sttp.{Response, Uri}
 import jawn.ast.JValue
 
@@ -37,7 +37,6 @@ final class UrlIOClient(host: String,
                         credentials: Option[InfluxCredentials],
                         gzipped: Boolean,
                         customization: Option[CustomizationF])
-                       (implicit val F: Functor[Try])
   extends InfluxUrlClient(customization) with IOClient[Try, Request, Response[JValue], Uri, String] {
 
   implicit val qb: UrlQueryBuilder = new UrlQueryBuilder(host, port, credentials)
