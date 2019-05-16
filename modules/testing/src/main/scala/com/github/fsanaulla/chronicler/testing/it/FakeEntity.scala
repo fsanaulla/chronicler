@@ -19,6 +19,7 @@ object FakeEntity {
       case _ => Left(new ParsingException("Can't deserialize FakeEntity"))
     }
 
-  implicit val wr: InfluxWriter[FakeEntity] = (obj: FakeEntity) =>
-    s"sex=${obj.sex},firstName=${obj.firstName},lastName=${obj.lastName} age=${obj.age}"
+  implicit val wr: InfluxWriter[FakeEntity] = (obj: FakeEntity) => {
+    Right(s"sex=${obj.sex},firstName=${obj.firstName},lastName=${obj.lastName} age=${obj.age}")
+  }
 }
