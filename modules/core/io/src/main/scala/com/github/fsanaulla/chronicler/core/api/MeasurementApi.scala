@@ -28,17 +28,16 @@ import scala.reflect.ClassTag
 
 /**
   * Main functionality for measurement api
-  * @tparam E - Entity type
-  * @tparam R - Request entity type
   */
 final class MeasurementApi[F[_], Req, Resp, Uri, Body, A](dbName: String,
-                                                       measurementName: String,
-                                                       gzipped: Boolean)
-                                                      (implicit qb: QueryBuilder[Uri],
-                                                       bd: BodyBuilder[Body],
-                                                       re: RequestExecutor[F, Req, Resp, Uri, Body],
-                                                       rh: ResponseHandler[Resp],
-                                                       F: Functor[F]) extends DatabaseOperationQuery[Uri] with Appender {
+                                                          measurementName: String,
+                                                          gzipped: Boolean)
+                                                         (implicit qb: QueryBuilder[Uri],
+                                                          bd: BodyBuilder[Body],
+                                                          re: RequestExecutor[F, Req, Resp, Uri, Body],
+                                                          rh: ResponseHandler[Resp],
+                                                          F: Functor[F],
+                                                          FA: Failable[F]) extends DatabaseOperationQuery[Uri] {
 
   /**
     * Make single write
@@ -46,15 +45,22 @@ final class MeasurementApi[F[_], Req, Resp, Uri, Body, A](dbName: String,
     * @param consistency     - consistence level
     * @param precision       - time precision
     * @param retentionPolicy - retention policy type
-    * @param writer          - implicit serializer to InfluxLine format
+    * @param wr          - implicit serializer to InfluxLine format
     * @return                - Write result on backend container
     */
   def write(entity: A,
             consistency: Option[Consistency] = None,
             precision: Option[Precision] = None,
-            retentionPolicy: Option[String] = None)(implicit writer: InfluxWriter[A]): F[ErrorOr[ResponseCode]] = {
+            retentionPolicy: Option[String] = None)(implicit wr: InfluxWriter[A]): F[ErrorOr[ResponseCode]] = {
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
-    F.map(re.execute(uri, bd.fromT(measurementName, entity), gzipped))(rh.writeResult)
+
+    bd.fromT(measurementName, entity) match {
+      // fail if entity not properly serialized
+      case Left(ex) =>
+        FA.fail(ex)
+      case Right(body) =>
+        F.map(re.execute(uri, body, gzipped))(rh.writeResult)
+    }
   }
 
   /**
@@ -71,7 +77,14 @@ final class MeasurementApi[F[_], Req, Resp, Uri, Body, A](dbName: String,
                 precision: Option[Precision] = None,
                 retentionPolicy: Option[String] = None)(implicit writer: InfluxWriter[A]): F[ErrorOr[ResponseCode]] = {
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
-    F.map(re.execute(uri, bd.fromSeqT(measurementName, entities), gzipped))(rh.writeResult)
+
+    bd.fromSeqT(measurementName, entities) match {
+      // fail if entity not properly serialized
+      case Left(ex) =>
+        FA.fail(ex)
+      case Right(body) =>
+        F.map(re.execute(uri, body, gzipped))(rh.writeResult)
+    }
   }
 
   def read(query: String,
