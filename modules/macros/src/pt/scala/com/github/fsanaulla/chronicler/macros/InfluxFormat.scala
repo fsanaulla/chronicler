@@ -26,20 +26,19 @@ trait InfluxFormat {
 
   val validStr: Gen[String] = for (s <- Gen.alphaStr if s.nonEmpty && s != null) yield s
 
-  implicit val arbInstant: Arbitrary[String] = Arbitrary {
-    for {
-      millis <- Gen.chooseNum(0L, Instant.MAX.getEpochSecond)
-      nanos <- Gen.chooseNum(0, Instant.MAX.getNano)
-    } yield {
-      Instant.ofEpochMilli(millis).plusNanos(nanos).toString
-    }
-  }
+//  implicit val arbInstant: Arbitrary[Long] = Arbitrary {
+//    for {
+//      millis <- Gen.chooseNum(0L, Instant.MAX.getEpochSecond)
+//    } yield {
+//      Instant.ofEpochMilli(millis).plusNanos(nanos).toEpochMilli
+//    }
+//  }
 
   implicit val genArr: Arbitrary[JArray] = Arbitrary {
     gen.arbitrary.map { t =>
       JArray(
         Array(
-          JString(Instant.ofEpochMilli(t.time).toString),
+          JNum(t.time),
           JNum(t.age),
           JString(t.city),
           JString(t.name),

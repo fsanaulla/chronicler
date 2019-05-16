@@ -51,6 +51,11 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
   private[this] val fieldTypes =
     Seq(getType[Boolean], getType[Int], getType[Double], getType[String], getType[Float])
 
+  private def illegalArgExc(name: String): c.universe.Tree = {
+    val msg = s"Tag value can 't be empty string for tag: $name"
+    q"new IllegalArgumentException($msg)"
+  }
+
   /** Check if this method valid timestamp */
   private def isTimestamp(m: MethodSymbol, isReader: Boolean): Boolean = {
     // check if it has @timestamp annotation
@@ -214,7 +219,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
       def key: Name
       def value: Tree
       /** Unquote class into Tree */
-      def unquoted: Tree
+      def unquoted(head: Boolean): Tree
       final def name: String = key.decodedName.toString.escapeKey
     }
     sealed trait Field extends Unquotable
@@ -223,35 +228,66 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
                     val value: Tree,
                     optional: Boolean,
                     escapable: Boolean) extends Unquotable {
-      def escapedTagValue: Tree =
-        if (optional) {
-          q"""com.github.fsanaulla.chronicler.core.regex.tagPattern.matcher($value.get).replaceAll(com.github.fsanaulla.chronicler.core.regex.replace)"""
-        } else {
-          q"""com.github.fsanaulla.chronicler.core.regex.tagPattern.matcher($value).replaceAll(com.github.fsanaulla.chronicler.core.regex.replace)"""
-        }
+      def escaped(value: Tree): c.universe.Tree =
+        q"com.github.fsanaulla.chronicler.core.regex.tagPattern.matcher($value).replaceAll(com.github.fsanaulla.chronicler.core.regex.replace)"
 
-      def unquoted: Tree = optional -> escapable match {
+      def unquoted(head: Boolean): Tree = optional -> escapable match {
         case (true, true) =>
-          q"""new String(if ($value.isEmpty) "" else "," + $name + "=" + $escapedTagValue)"""
+          q"""
+              for (v <- $value) {
+                if (v.isEmpty) return Left(${illegalArgExc(name)})
+                else sb.append(${if (head) q"""$name + "=" + v""" else q""""," + $name + "=" + com.github.fsanaulla.chronicler.core.regex.tagPattern.matcher(v).replaceAll(com.github.fsanaulla.chronicler.core.regex.replace)"""})
+              }
+            """
         case (true, false) =>
-          q"""new String(if ($value.isEmpty) "" else "," + $name + "=" + $value.get)"""
+          q"""
+              for (v <- $value) {
+                if (v.isEmpty) return Left(${illegalArgExc(name)})
+                else sb.append(${if (head) q"""$name + "=" + v""" else q""""," + $name + "=" + v"""})
+              }
+            """
         case (false, true) =>
-          q"""new String("," + $name + "=" + $escapedTagValue)"""
+          q"""if ($value.isEmpty) return Left(${illegalArgExc(name)})
+              else sb.append(${if (head) q"""$name + "=" + ${escaped(value)}""" else q""""," + $name + "=" + ${escaped(value)}"""})
+            """
         case _ =>
-          q"""new String("," + $name + "=" + $value)"""
+          q"""if ($value.isEmpty) return Left(${illegalArgExc(name)})
+              else sb.append(${if (head) q"""$name + "=" + $value""" else q""""," + $name + "=" + $value"""})
+            """
       }
     }
 
     final class IntField(val key: Name, val value: Tree) extends Field {
-      override def unquoted: c.universe.Tree = q"""new String("," + $name + "=" + $value + "i")"""
+      override def unquoted(head: Boolean): c.universe.Tree = {
+        val str = if (head)
+          q"""new String($name + "=" + $value + "i")"""
+        else
+          q"""new String("," + $name + "=" + $value + "i")"""
+
+        q"sb.append($str)"
+      }
     }
 
     final class StringField(val key: Name, val value: Tree) extends Field {
-      override def unquoted: c.universe.Tree = q"""new String("," + $name + "=" + "\"" + $value + "\"")"""
+      override def unquoted(head: Boolean): c.universe.Tree = {
+        val str = if (head)
+          q"""new String($name + "=" + "\"" + $value + "\"")"""
+        else
+          q"""new String("," + $name + "=" + "\"" + $value + "\"")"""
+
+        q"sb.append($str)"
+      }
     }
 
     final class OtherField(val key: Name, val value: Tree) extends Field {
-      override def unquoted: c.universe.Tree = q"""new String("," + $name + "=" + $value)"""
+      override def unquoted(head: Boolean): c.universe.Tree = {
+        val str = if (head)
+          q"""new String("," + $name + "=" + $value)"""
+        else
+          q"""new String("," + $name + "=" + $value)"""
+
+        q"sb.append($str)"
+      }
     }
 
     def isOption(tpe: c.universe.Type): Boolean =
@@ -290,25 +326,37 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     def isAnnotated(m: MethodSymbol): Boolean = isTag(m) || isField(m)
 
     def unquote(lst: List[Unquotable]): Tree = {
-      lst.tail.foldLeft(
-        q"""
-         sb.append(${lst.head.unquoted}.substring(1))
-       """
-      ) { (acc, e) =>
+      lst.tail.foldLeft(q"${lst.head.unquoted(true)}") { (acc, e) =>
         q"""
          $acc
-          .append(${e.unquoted})
-       """
+         ${e.unquoted(false)}
+        """
       }
     }
 
     val (timeField, othField) = getMethods(tpe).partition(isTimestamp(_, isReader = false))
 
     if (othField.lengthCompare(1) < 0)
-      compileError("Type parameter must be a case class with more then 1 fields")
+      compileError(
+        s"""
+           |Error: annotated fields were not found
+           |
+           |While generating InfluxWriter[$tpe] error was found.
+           |Class: '$tpe' -  must be a case class with at least 2 annotated fields.
+           |For more info: https://github.com/fsanaulla/chronicler/blob/master/docs/macros.md.
+           |
+           |""".stripMargin)
 
     if (timeField.size > 1)
-      compileError("Only 1 @timestamp can be used")
+      compileError(
+        s"""
+           |Error: too much '@timestamp' annotations were found
+           |
+           |While generating InfluxWriter[$tpe] error was found.
+           |Class: '$tpe' -  must be a case class with only one '@timestamp' field.
+           |For more info: https://github.com/fsanaulla/chronicler/blob/master/docs/macros.md.
+           |
+           |""".stripMargin)
 
     val (tagMethods, fieldMethods) = othField
       .filter(isAnnotated)
@@ -341,14 +389,15 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
        """
     }
 
-    q"""def write(obj: $tpe): String = {
+    q"""def write(obj: $tpe): com.github.fsanaulla.chronicler.core.alias.ErrorOr[String] = {
           val sb = StringBuilder.newBuilder
           $tagString
           sb.append(" ")
           $fieldString
+
           $timestampString
 
-          sb.toString
+          scala.util.Right(sb.toString)
       }"""
   }
 
