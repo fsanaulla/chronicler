@@ -18,18 +18,21 @@ package com.github.fsanaulla.chronicler.core.components
 
 import java.io.File
 
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.either
+import com.github.fsanaulla.chronicler.core.either.EitherOps
 import com.github.fsanaulla.chronicler.core.model.{Appender, InfluxWriter, Point}
 
 import scala.io.Source
 
-trait BodyBuilder[Body] {
-  def fromFile(file: File): Body
-  def fromString(string: String): Body
-  def fromStrings(strings: Seq[String]): Body
-  def fromPoint(point: Point): Body
-  def fromPoints(points: Seq[Point]): Body
-  def fromT[T](meas: String, t: T)(implicit wr: InfluxWriter[T]): Body
-  def fromSeqT[T](meas: String, ts: Seq[T])(implicit wr: InfluxWriter[T]): Body
+trait BodyBuilder[A] {
+  def fromFile(file: File): A
+  def fromString(string: String): A
+  def fromStrings(strings: Seq[String]): A
+  def fromPoint(point: Point): A
+  def fromPoints(points: Seq[Point]): A
+  def fromT[T](meas: String, t: T)(implicit wr: InfluxWriter[T]): ErrorOr[A]
+  def fromSeqT[T](meas: String, ts: Seq[T])(implicit wr: InfluxWriter[T]): ErrorOr[A]
 }
 
 object BodyBuilder {
@@ -49,10 +52,11 @@ object BodyBuilder {
     override def fromString(string: String): String =
       string
 
-    override def fromT[T](meas: String, t: T)(implicit wr: InfluxWriter[T]): String =
-      append(meas, wr.write(t))
+    override def fromT[T](meas: String, t: T)(implicit wr: InfluxWriter[T]): ErrorOr[String] =
+      wr.write(t).mapRight(append(meas, _))
 
-    override def fromSeqT[T](meas: String, ts: Seq[T])(implicit wr: InfluxWriter[T]): String =
-      append(meas, ts.map(wr.write))
+    override def fromSeqT[T](meas: String, ts: Seq[T])(implicit wr: InfluxWriter[T]): ErrorOr[String] = {
+      either.seq(ts.map(wr.write)).mapRight(append(meas, _))
+    }
   }
 }

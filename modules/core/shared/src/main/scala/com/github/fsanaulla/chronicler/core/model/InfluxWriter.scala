@@ -18,6 +18,8 @@ package com.github.fsanaulla.chronicler.core.model
 
 import java.io.{Serializable => JSerializable}
 
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+
 import scala.annotation.implicitNotFound
 
 
@@ -30,7 +32,7 @@ import scala.annotation.implicitNotFound
   "No InfluxWriter found for type ${T}. Try to implement an implicit InfluxWriter for this type."
 )
 trait InfluxWriter[T] extends JSerializable {
-  def write(obj: T): String
+  def write(obj: T): ErrorOr[String]
 }
 
 object InfluxWriter {
