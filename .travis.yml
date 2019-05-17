@@ -54,6 +54,7 @@ stages:
   - name: deploy_2.12
     if: branch = master AND type != pull_request
   - name: release
+    if: branch = master AND type != pull_request
 
 env:
   matrix:
