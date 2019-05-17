@@ -8,10 +8,13 @@ class InfluxWriterProperties extends FlatSpec with Checkers with InfluxFormat {
 
   it should "generate InfluxWriter" in {
     check { t: Test =>
-      if (t.name.isEmpty) {
-        val f = wr.write(t).isLeft
-        f && f == influxWrite(t).isLeft
-      } else wr.write(t).right.get == influxWrite(t).right.get
+      t.surname match {
+        case Some(v) if v.isEmpty =>
+          wr.write(t).isLeft == influxWrite(t).isLeft
+        case _ =>
+          if (t.name.isEmpty) wr.write(t).isLeft == influxWrite(t).isLeft
+          else wr.write(t).right.get == influxWrite(t).right.get
+      }
     }
   }
 

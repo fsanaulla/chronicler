@@ -51,9 +51,13 @@ trait InfluxFormat {
         .append(t.name)
 
       for (surname <- t.surname) {
-        sb.append(",")
-          .append("surname=")
-          .append(surname)
+
+        if (surname.isEmpty) return Left(new IllegalArgumentException("Can't be empty string"))
+        else {
+          sb.append(",")
+            .append("surname=")
+            .append(surname)
+        }
       }
 
       sb.append(" ")
