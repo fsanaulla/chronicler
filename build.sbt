@@ -3,6 +3,7 @@ import sbt.Keys.{libraryDependencies, name}
 val projectName = "chronicler"
 lazy val chronicler = project
   .in(file("."))
+  .settings(Settings.common: _*)
   .settings(parallelExecution in Compile := false)
   .aggregate(
     coreShared, coreIO, coreManagement,
