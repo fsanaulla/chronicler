@@ -22,8 +22,8 @@ import com.github.fsanaulla.chronicler.ahc.shared.handlers.{AhcQueryBuilder, Ahc
 import com.github.fsanaulla.chronicler.ahc.shared.implicits._
 import com.github.fsanaulla.chronicler.core.ManagementClient
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
-import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
-import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, ResponseHandler}
+import com.github.fsanaulla.chronicler.core.components.ResponseHandler
+import com.github.fsanaulla.chronicler.core.model.{Functor, InfluxCredentials, InfluxDBInfo}
 import com.softwaremill.sttp.{Response, Uri}
 import jawn.ast.JValue
 import org.asynchttpclient.AsyncHttpClientConfig

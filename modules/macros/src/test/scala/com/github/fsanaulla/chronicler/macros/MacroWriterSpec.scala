@@ -17,34 +17,63 @@
 package com.github.fsanaulla.chronicler.macros
 
 import com.github.fsanaulla.chronicler.core.model.InfluxWriter
+import com.github.fsanaulla.chronicler.macros.annotations.writer.escape
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
-import org.scalatest.{FlatSpec, Matchers}
+import com.github.fsanaulla.chronicler.macros.auto._
+import org.scalatest.{Matchers, WordSpec}
 
-class MacroWriterSpec extends FlatSpec with Matchers {
+class MacroWriterSpec extends WordSpec with Matchers {
+  "InfluxWriter" should {
+    "write optional" should {
+      case class WithOptional(@tag name: String,
+                              @tag surname: Option[String],
+                              @field school: String,
+                              @field age: Int)
+      val wr: InfluxWriter[WithOptional] = InfluxWriter[WithOptional]
 
-  case class Test(@tag name: String,
-                  @tag surname: Option[String],
-                  @field school: String,
-                  @field age: Int)
+      "with None" in {
+        wr.write(WithOptional("nm", None, "Berkly", 65)).right.get shouldEqual "name=nm school=\"Berkly\",age=65i"
+      }
 
-  case class Test1(@tag name: String,
-                   @tag surname: Option[String],
-                   @field age: Int,
-                   @field school: String,
-                   @timestamp time: Long)
+      "with Some" in {
+        wr.write(WithOptional("nm", Some("sn"), "Berkly", 65)).right.get shouldEqual "name=nm,surname=sn school=\"Berkly\",age=65i"
+      }
+    }
 
-  val wr: InfluxWriter[Test] = Influx.writer[Test]
-  val wr1: InfluxWriter[Test1] = Influx.writer[Test1]
+    "write with timestamp" in {
+      case class WithTimestamp(@tag name: String,
+                               @tag surname: Option[String],
+                               @field age: Int,
+                               @field school: String,
+                               @timestamp time: Long)
 
-  "Macros.writer" should "write with None" in {
-    wr.write(Test("nm", None, "Berkly", 65)) shouldEqual "name=nm school=\"Berkly\",age=65i"
-  }
+      val wr1: InfluxWriter[WithTimestamp] = InfluxWriter[WithTimestamp]
+      wr1.write(WithTimestamp("nm", Some("sn"), 65, "Berkly", 1438715114318570484L)).right.get shouldEqual "name=nm,surname=sn age=65i,school=\"Berkly\" 1438715114318570484"
+    }
 
-  it should "write with Some" in {
-    wr.write(Test("nm", Some("sn"), "Berkly", 65)) shouldEqual "name=nm,surname=sn school=\"Berkly\",age=65i"
-  }
+    "write and escape " should {
+      case class Test(@escape @tag name: String, @field age: Int)
+      val wr: InfluxWriter[Test] = InfluxWriter[Test]
 
-  it should "write with timestamp" in {
-    wr1.write(Test1("nm", Some("sn"), 65, "Berkly", 1438715114318570484L)) shouldEqual "name=nm,surname=sn age=65i,school=\"Berkly\" 1438715114318570484"
+      "from ','" in {
+        val t = Test("My,Name", 5)
+        wr.write(t).right.get shouldEqual "name=My\\,Name age=5i"
+      }
+
+      "from '='" in {
+        val t = Test("My=Name", 5)
+        wr.write(t).right.get shouldEqual "name=My\\=Name age=5i"
+      }
+
+      "from ' '" in {
+        val t = Test("My Name", 5)
+        wr.write(t).right.get shouldEqual "name=My\\ Name age=5i"
+      }
+
+      "from all special characters" in {
+        val t = Test("My ,=Name", 5)
+        wr.write(t).right.get shouldEqual "name=My\\ \\,\\=Name age=5i"
+      }
+    }
   }
 }

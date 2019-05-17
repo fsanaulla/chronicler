@@ -19,12 +19,12 @@ package com.github.fsanaulla.chronicler.ahc.io
 import com.github.fsanaulla.chronicler.ahc.shared.InfluxAhcClient
 import com.github.fsanaulla.chronicler.ahc.shared.alias.Request
 import com.github.fsanaulla.chronicler.ahc.shared.handlers.{AhcQueryBuilder, AhcRequestExecutor}
-import com.github.fsanaulla.chronicler.ahc.shared.implicits.jsonHandler
+import com.github.fsanaulla.chronicler.ahc.shared.implicits._
 import com.github.fsanaulla.chronicler.core.IOClient
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.api.{DatabaseApi, MeasurementApi}
+import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
-import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, ResponseHandler}
 import com.softwaremill.sttp.{Response, Uri}
 import jawn.ast.JValue
 import org.asynchttpclient.AsyncHttpClientConfig
@@ -37,7 +37,7 @@ final class AhcIOClient(host: String,
                         gzipped: Boolean,
                         credentials: Option[InfluxCredentials],
                         asyncClientConfig: Option[AsyncHttpClientConfig])
-                       (implicit ex: ExecutionContext, F: Functor[Future])
+                       (implicit ex: ExecutionContext)
   extends InfluxAhcClient(asyncClientConfig) with IOClient[Future, Request, Response[JValue], Uri, String] {
 
   implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)

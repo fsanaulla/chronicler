@@ -20,7 +20,6 @@ import _root_.jawn.ast.{JArray, JObject, JValue, WrongValueException}
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 
 package object jawn {
-
   implicit def jv2Int(jv: JValue): Int         = jv.asInt
   implicit def jv2Long(jv: JValue): Long       = jv.asLong
   implicit def jv2Double(jv: JValue): Double   = jv.asDouble

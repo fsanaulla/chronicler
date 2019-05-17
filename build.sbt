@@ -202,6 +202,25 @@ lazy val udpExample =
   exampleModule("udp-example", "udp", udp, macros)
 
 //////////////////////////////////////////////////////
+///////////////////// BENCHMARKS /////////////////////
+//////////////////////////////////////////////////////
+lazy val benchmark = project
+  .in(file("benchmark"))
+  .settings(Settings.common: _*)
+  .settings(name := "chronicler-benchmark")
+  .settings(
+    sourceDirectory in Jmh := (sourceDirectory in Test).value,
+    classDirectory in Jmh := (classDirectory in Test).value,
+    dependencyClasspath in Jmh := (dependencyClasspath in Test).value,
+      // rewire tasks, so that 'jmh:run' automatically invokes 'jmh:compile' (otherwise a clean 'jmh:run' would fail)
+    compile in Jmh := (compile in Jmh).dependsOn(compile in Test).value,
+    run in Jmh := (run in Jmh).dependsOn(Keys.compile in Jmh).evaluated,
+    libraryDependencies += "org.openjdk.jmh" % "jmh-generator-annprocess" % "1.21" % Test
+  )
+  .dependsOn(itTesting, ahcIO, macros % "test->test")
+  .enablePlugins(JmhPlugin)
+
+//////////////////////////////////////////////////////
 ////////////////////// UTILS /////////////////////////
 //////////////////////////////////////////////////////
 def defaultSettings: Project => Project = _

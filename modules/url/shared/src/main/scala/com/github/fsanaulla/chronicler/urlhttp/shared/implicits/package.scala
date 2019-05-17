@@ -17,7 +17,8 @@
 package com.github.fsanaulla.chronicler.urlhttp.shared
 
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
-import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, JsonHandler}
+import com.github.fsanaulla.chronicler.core.components.JsonHandler
+import com.github.fsanaulla.chronicler.core.model.{Failable, Functor}
 import com.softwaremill.sttp.Response
 import jawn.ast.{JParser, JValue}
 
@@ -45,5 +46,9 @@ package object implicits {
 
   implicit val tryFunctor: Functor[Try] = new Functor[Try] {
     override def map[A, B](fa: Try[A])(f: A => B): Try[B] = fa.map(f)
+  }
+
+  implicit def tryFailable: Failable[Try] = new Failable[Try] {
+    override def fail[A](ex: Throwable): Try[A] = Failure(ex)
   }
 }

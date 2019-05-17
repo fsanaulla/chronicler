@@ -17,10 +17,10 @@
 package com.github.fsanaulla.chronicler.core.management
 
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
+import com.github.fsanaulla.chronicler.core.components._
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.RetentionPolicyManagementQuery
-import com.github.fsanaulla.chronicler.core.typeclasses._
 
 /**
   * Created by

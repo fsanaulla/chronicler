@@ -18,8 +18,8 @@ package com.github.fsanaulla.chronicler.urlhttp.management
 
 import com.github.fsanaulla.chronicler.core.ManagementClient
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
-import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
-import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, ResponseHandler}
+import com.github.fsanaulla.chronicler.core.components.ResponseHandler
+import com.github.fsanaulla.chronicler.core.model.{Functor, InfluxCredentials, InfluxDBInfo}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient.CustomizationF
 import com.github.fsanaulla.chronicler.urlhttp.shared.alias.Request

@@ -18,8 +18,8 @@ package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
 import com.github.fsanaulla.chronicler.ahc.shared.alias._
 import com.github.fsanaulla.chronicler.ahc.shared.formats._
+import com.github.fsanaulla.chronicler.core.components.RequestExecutor
 import com.github.fsanaulla.chronicler.core.encoding.gzipEncoding
-import com.github.fsanaulla.chronicler.core.typeclasses.RequestExecutor
 import com.softwaremill.sttp.{Response, SttpBackend, Uri, sttp}
 import jawn.ast.JValue
 

@@ -1,12 +1,14 @@
 package com.github.fsanaulla.chronicler.macros
 
-import java.time.Instant
-
-import com.github.fsanaulla.chronicler.core.model.InfluxFormatter
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.model.{InfluxReader, InfluxWriter}
+import com.github.fsanaulla.chronicler.macros.annotations.reader.epoch
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
+import com.github.fsanaulla.chronicler.macros.auto._
 import com.github.fsanaulla.scalacheck.Arb
 import jawn.ast._
 import org.scalacheck.{Arbitrary, Gen}
+import sun.security.provider.PolicyParser.ParsingException
 
 trait InfluxFormat {
 
@@ -15,76 +17,79 @@ trait InfluxFormat {
                   @field age: Int,
                   @field schooler: Boolean,
                   @field city: String,
-                  @timestamp time: Long)
+                  @epoch @timestamp time: Long)
 
-  val fmt: InfluxFormatter[Test] = Influx.formatter[Test]
+  val rd: InfluxReader[Test] = InfluxReader[Test]
+  val wr: InfluxWriter[Test] = InfluxWriter[Test]
+
   implicit val gen: Arbitrary[Test] = Arb.dummy[Test]
 
   val validStr: Gen[String] = for (s <- Gen.alphaStr if s.nonEmpty && s != null) yield s
-
-  implicit val arbInstant: Arbitrary[String] = Arbitrary {
-    for {
-      millis <- Gen.chooseNum(0L, Instant.MAX.getEpochSecond)
-      nanos <- Gen.chooseNum(0, Instant.MAX.getNano)
-    } yield {
-      Instant.ofEpochMilli(millis).plusNanos(nanos).toString
-    }
-  }
 
   implicit val genArr: Arbitrary[JArray] = Arbitrary {
     gen.arbitrary.map { t =>
       JArray(
         Array(
-          JString(Instant.ofEpochMilli(t.time).toString),
+          JNum(t.time),
           JNum(t.age),
           JString(t.city),
           JString(t.name),
           JBool(t.schooler),
-          t.surname.map(s => JString(s)).getOrElse(JNull)
+          t.surname.fold[JValue](JNull)(JString(_))
         )
       )
     }
   }
 
 
-  final def influxWrite(t: Test): String = {
-    require(t.name.nonEmpty, "Tag can't be an empty string")
-    val sb = StringBuilder.newBuilder
+  final def influxWrite(t: Test): ErrorOr[String] = {
+    if (t.name.isEmpty) Left(new IllegalArgumentException("Can't be empty string"))
+    else {
+      val sb = StringBuilder.newBuilder
 
-    sb.append(s"name=")
-      .append(t.name)
+      sb.append(s"name=")
+        .append(t.name)
 
-    for (surname <- t.surname) {
-      sb.append(",")
-        .append("surname=")
-        .append(surname)
+      for (surname <- t.surname) {
+
+        if (surname.isEmpty) return Left(new IllegalArgumentException("Can't be empty string"))
+        else {
+          sb.append(",")
+            .append("surname=")
+            .append(surname)
+        }
+      }
+
+      sb.append(" ")
+        .append(s"age=${t.age}i")
+        .append(",")
+        .append(s"schooler=${t.schooler}")
+        .append(",")
+        .append("city=")
+        .append("\"")
+        .append(t.city)
+        .append("\"")
+
+      sb.append(" ")
+        .append(t.time)
+
+      Right(sb.toString())
     }
-
-    sb.append(" ")
-      .append(s"age=${t.age}i")
-      .append(",")
-      .append(s"schooler=${t.schooler}")
-      .append(",")
-      .append("city=")
-      .append("\"")
-      .append(t.city)
-      .append("\"")
-
-    sb.append(" ")
-      .append(t.time)
-      .toString()
   }
 
-  final def influxRead(jarr: JArray): Test = (jarr.vs: @unchecked) match {
+  final def influxRead(jArr: JArray): ErrorOr[Test] = jArr.vs match {
     case Array(time, age, city, name, schooler, surname) =>
-      val i = Instant.parse(time.asString)
-      Test(
-        name.asString,
-        surname.getString,
-        age.asInt,
-        schooler.asBoolean,
-        city.asString,
-        i.getEpochSecond * 1000000000 + i.getNano
+      Right(
+        Test(
+          name.asString,
+          surname.getString,
+          age.asInt,
+          schooler.asBoolean,
+          city.asString,
+          time.asLong
+        )
       )
+    case _ =>
+      Left(new ParsingException("Can't deserialize Test"))
   }
 }

@@ -20,17 +20,19 @@ import java.io.File
 import java.net._
 import java.nio.charset.{Charset, StandardCharsets}
 
-import com.github.fsanaulla.chronicler.core.model.{Appender, InfluxWriter, Point}
+import com.github.fsanaulla.chronicler.core.components.BodyBuilder
+import com.github.fsanaulla.chronicler.core.model.{InfluxWriter, Point}
 
 import scala.io.Source
-import scala.util.Try
+import scala.util.{Failure, Try}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-final class InfluxUDPClient(host: String, port: Int) extends Appender with AutoCloseable {
+final class InfluxUDPClient(host: String,
+                            port: Int) extends AutoCloseable {
   private[this] val socket = new DatagramSocket()
   private[this] def buildAndSend(msg: Array[Byte]): Try[Unit] =
     Try(
@@ -55,19 +57,22 @@ final class InfluxUDPClient(host: String, port: Int) extends Appender with AutoC
                entity: T,
                charset: Charset = StandardCharsets.UTF_8)
               (implicit writer: InfluxWriter[T]): Try[Unit] = {
-    val sendEntity = append(measurement, writer.write(entity))
-
-    buildAndSend(sendEntity.getBytes(charset))
+    BodyBuilder.stringBodyBuilder.fromT(measurement, entity) match {
+      case Left(ex) => scala.util.Failure(ex)
+      case Right(r) =>
+        buildAndSend(r.getBytes(charset))
+    }
   }
 
   def bulkWrite[T](measurement: String,
                    entities: Seq[T],
                    charset: Charset = StandardCharsets.UTF_8)
                   (implicit writer: InfluxWriter[T]): Try[Unit] = {
-    val sendEntity =
-      append(measurement, entities.map(writer.write)).getBytes(charset)
-
-    buildAndSend(sendEntity)
+    BodyBuilder.stringBodyBuilder.fromSeqT(measurement, entities) match {
+      case Left(ex) => Failure(ex)
+      case Right(r) =>
+        buildAndSend(r.getBytes(charset))
+    }
   }
 
   def writeFromFile(file: File,

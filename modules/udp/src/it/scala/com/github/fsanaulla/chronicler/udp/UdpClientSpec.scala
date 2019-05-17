@@ -3,7 +3,7 @@ package com.github.fsanaulla.chronicler.udp
 import java.io.File
 
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
-import com.github.fsanaulla.chronicler.core.model.{InfluxFormatter, Point}
+import com.github.fsanaulla.chronicler.core.model.{InfluxReader, InfluxWriter, Point}
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import jawn.ast.{JArray, JNum, JString}
@@ -171,13 +171,15 @@ object UdpClientSpec {
 
   case class Test(name: String, age: Int)
 
-  implicit val fmt: InfluxFormatter[Test] = new InfluxFormatter[Test] {
+  implicit val rd: InfluxReader[Test] = new InfluxReader[Test] {
     override def read(js: JArray): ErrorOr[Test] = js.vs.tail match {
       case Array(age: JNum, name: JString) => Right(Test(name, age))
       case _ => Left(new Error(""))
     }
+  }
 
-    override def write(obj: Test): String =
-      s"name=${obj.name} age=${obj.age}"
+  implicit val wr: InfluxWriter[Test] = new InfluxWriter[Test] {
+    override def write(obj: Test): ErrorOr[String] =
+      Right(s"name=${obj.name} age=${obj.age}")
   }
 }

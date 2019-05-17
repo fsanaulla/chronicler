@@ -16,8 +16,8 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
+import com.github.fsanaulla.chronicler.core.components.RequestExecutor
 import com.github.fsanaulla.chronicler.core.encoding.gzipEncoding
-import com.github.fsanaulla.chronicler.core.typeclasses.RequestExecutor
 import com.github.fsanaulla.chronicler.urlhttp.shared.alias.Request
 import com.github.fsanaulla.chronicler.urlhttp.shared.formats.asJson
 import com.softwaremill.sttp.{Response, SttpBackend, Uri, sttp}

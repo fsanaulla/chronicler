@@ -27,8 +27,10 @@ package object implicits {
   private[this] def exception(msg: String) = new ParsingException(msg)
 
   implicit final class RichString(private val str: String) extends AnyVal {
-    def escapeFull: String = str.replaceAll("([ ,=])", "\\\\$1")
-    def escape: String = str.replaceAll("([ ,])", "\\\\$1")
+    def escapeKey: String =
+      regex.tagPattern.matcher(str).replaceAll("\\\\$1")
+    def escapeMeas: String =
+      regex.measPattern.matcher(str).replaceAll("\\\\$1")
   }
 
   implicit object StringInfluxReader extends InfluxReader[String] {

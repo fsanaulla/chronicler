@@ -16,7 +16,7 @@
 
 package com.github.fsanaulla.chronicler.core.query
 
-import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
+import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 
 import scala.collection.mutable
 
