@@ -1,37 +1,42 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
-import com.github.fsanaulla.chronicler.core.model.{ShardGroupsInfo, ShardInfo}
-import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import com.github.fsanaulla.chronicler.testing.it.ResultMatchers.OkResult
+import com.github.fsanaulla.chronicler.core.model.ShardGroupsInfo
+import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
-import org.scalatest.{FlatSpec, Matchers, TryValues}
+import org.scalatest.{FlatSpec, Matchers}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
-class ShardManagementSpec extends FlatSpec with Matchers with DockerizedInfluxDB with TryValues {
+class ShardManagementSpec
+  extends FlatSpec
+    with Matchers
+    with Futures
+    with DockerizedInfluxDB {
 
   val testDb = "_internal"
 
   lazy val influx: UrlManagementClient =
-    InfluxMng.apply(host, port, Some(creds))
+    InfluxMng(host, port, Some(creds))
 
-  "shard operations" should "show shards" in {
+  "Shard Management API" should "show shards" in {
 
-    influx.createDatabase(testDb, shardDuration = Some("1s")).success.value shouldEqual OkResult
+    influx.createDatabase(testDb, shardDuration = Some("1s")).get.right.get shouldEqual 200
 
-    val shards = influx.showShards.success.value.queryResult
+    val shards = influx.showShards.get.right.get
 
-    shards should not be Array.empty[ShardInfo]
+    shards should not be Nil
+
+    shards.foreach(println)
   }
 
   it should "show shards groupe" in {
 
-    val shardGroups = influx.showShardGroups.success.value.queryResult
+    val shardGroups = influx.showShardGroups.get.right.get
 
-    shardGroups should not equal Array.empty[ShardGroupsInfo]
+    shardGroups should not equal Nil
 
     shardGroups shouldBe a [Array[_]]
 

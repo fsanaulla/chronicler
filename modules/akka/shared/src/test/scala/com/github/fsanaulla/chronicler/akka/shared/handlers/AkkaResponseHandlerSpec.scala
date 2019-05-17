@@ -16,33 +16,23 @@
 
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
-import _root_.akka.actor.ActorSystem
-import _root_.akka.testkit.TestKit
+import com.github.fsanaulla.chronicler.akka.shared.implicits.jsonHandler
+import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
 import com.softwaremill.sttp.Response
 import jawn.ast._
-import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatest.{FlatSpecLike, Matchers}
-
-import scala.concurrent.ExecutionContext
+import org.scalatest.{FlatSpec, Matchers}
 
 /**
   * Created by fayaz on 12.07.17.
   */
-class AkkaResponseHandlerSpec
-  extends TestKit(ActorSystem())
-    with FlatSpecLike
-    with Matchers
-    with ScalaFutures
-    with IntegrationPatience {
+class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
 
-  implicit val ec: ExecutionContext = system.dispatcher
   implicit val p: JParser.type = JParser
-  val jsHandler = new AkkaJsonHandler()
-  val rh = new AkkaResponseHandler(jsHandler)
+  val rh = new ResponseHandler(jsonHandler)
 
-  "AsyncHttpResponseHandler" should "extract single query queryResult from response" in {
+  it should "extract single query queryResult from response" in {
 
     val singleHttpResponse: Response[JValue] =
       """
@@ -90,7 +80,7 @@ class AkkaResponseHandlerSpec
         JNum(0.64)))
     )
 
-    rh.toQueryJsResult(singleHttpResponse).futureValue.queryResult shouldEqual result
+    rh.queryResultJson(singleHttpResponse).right.get shouldEqual result
   }
 
   it should "extract bulk query results from response" in {
@@ -147,7 +137,7 @@ class AkkaResponseHandlerSpec
         |}
       """.stripMargin.toResponse
 
-    rh.toBulkQueryJsResult(bulkHttpResponse).futureValue.queryResult shouldEqual Array(
+    rh.bulkQueryResultJson(bulkHttpResponse).right.get shouldEqual Array(
       Array(
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
@@ -212,7 +202,7 @@ class AkkaResponseHandlerSpec
     }
   """.toResponse
 
-    val cqi = rh.toCqQueryResult(cqResponse).futureValue.queryResult.filter(_.queries.nonEmpty).head
+    val cqi = rh.toCqQueryResult(cqResponse).right.get.filter(_.queries.nonEmpty).head
     cqi.dbName shouldEqual "mydb"
     cqi.queries.head shouldEqual ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")
   }
@@ -231,7 +221,7 @@ class AkkaResponseHandlerSpec
         |}
       """.stripMargin.toResponse
 
-    jsHandler.responseErrorOpt(errorHttpResponse).futureValue shouldEqual Some("user not found")
+    jsonHandler.responseErrorMsgOpt(errorHttpResponse).right.get shouldEqual Some("user not found")
   }
 
   it should "extract error message" in {
@@ -239,6 +229,6 @@ class AkkaResponseHandlerSpec
     val errorHttpResponse: Response[JValue] =
       """ { "error": "user not found" } """.toResponse
 
-    jsHandler.responseError(errorHttpResponse).futureValue shouldEqual "user not found"
+    jsonHandler.responseErrorMsg(errorHttpResponse).right.get shouldEqual "user not found"
   }
 }

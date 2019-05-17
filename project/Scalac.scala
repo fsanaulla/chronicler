@@ -23,6 +23,7 @@ object Scalac {
     "-Ywarn-unused:implicits",                   // Warn if an implicit parameter is unused.
     "-Ycache-plugin-class-loader:last-modified", // cache plugin classloader
     "-Ycache-macro-class-loader:last-modified",
-    "-Ybackend-parallelism", "1"
+    "-Ybackend-parallelism", "1",
+    "-Ywarn-inaccessible"
   ) ++ options11
 }

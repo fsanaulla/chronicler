@@ -16,8 +16,8 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
+import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
-import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 import com.softwaremill.sttp.Uri.QueryFragment
 import com.softwaremill.sttp.Uri.QueryFragment.KeyValue
 import com.softwaremill.sttp._
@@ -28,8 +28,8 @@ private[urlhttp] class UrlQueryBuilder(host: String,
                                        port: Int,
                                        credentials: Option[InfluxCredentials]) extends QueryBuilder[Uri](credentials) {
 
-  private[chronicler] override def buildQuery(uri: String,
-                                              queryParams: Map[String, String]): Uri = {
+  override def buildQuery(uri: String,
+                          queryParams: Map[String, String]): Uri = {
     val u = Uri(host = host, port).path(uri)
     val encoding = Uri.QueryFragmentEncoding.All
     val kvLst = queryParams.map {

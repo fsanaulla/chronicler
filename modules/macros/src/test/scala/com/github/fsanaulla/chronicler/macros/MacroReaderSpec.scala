@@ -18,37 +18,49 @@ package com.github.fsanaulla.chronicler.macros
 
 import com.github.fsanaulla.chronicler.core.model.InfluxReader
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
-import jawn.ast
+import com.github.fsanaulla.chronicler.macros.auto._
 import jawn.ast._
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.{Matchers, WordSpec}
 
-class MacroReaderSpec extends FlatSpec with Matchers {
+class MacroReaderSpec extends WordSpec with Matchers {
+  "InfluxReader" should {
+    "read" should {
+      case class Test(@tag name: String,
+                      @tag surname: Option[String],
+                      @field age: Int)
+      val rd: InfluxReader[Test] = InfluxReader[Test]
 
-  case class Test(@tag name: String,
-                  @tag surname: Option[String],
-                  @field age: Int)
+      "with None ignoring time" in {
+        rd
+          .read(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull)))
+          .right
+          .get shouldEqual Test("Fz", None, 4)
+      }
 
-  case class Test1(@tag name: String,
-                   @tag surname: Option[String],
-                   @field age: Int,
-                   @timestamp time: Long)
+      "with Some and ignore time" in {
+        rd
+          .read(JArray(Array(JString("2015-08-04T19:05:14Z"), JNum(4), JString("Fz"), JString("Sr"))))
+          .right
+          .get shouldEqual Test("Fz", Some("Sr"), 4)
+      }
 
-  val rd: InfluxReader[Test] = Influx.reader[Test]
-  val rd1: InfluxReader[Test1] = Influx.reader[Test1]
+      case class Test1(@tag name: String,
+                       @tag surname: Option[String],
+                       @field age: Int,
+                       @timestamp time: Long)
+      val rd1: InfluxReader[Test1] = InfluxReader[Test1]
 
-  "Macros.reader" should "read with None and ignore time" in {
-    rd.read(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull))) shouldEqual Test("Fz", None, 4)
-  }
+      "with timestamp" in {
+        rd1
+        .read(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull)))
+        .right
+        .get shouldEqual Test1("Fz", None, 4, 1438715114318570484L)
 
-  it should "read with Some and ignore time" in {
-    rd.read(JArray(Array(JString("2015-08-04T19:05:14Z"), JNum(4), JString("Fz"), JString("Sr")))) shouldEqual Test("Fz", Some("Sr"), 4)
-  }
-
-  it should "read with timestamp" in {
-    rd1.read(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull))) shouldEqual
-      Test1("Fz", None, 4, 1438715114318570484L)
-
-    rd1.read(JArray(Array(ast.LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull))) shouldEqual
-      Test1("Fz", None, 4, 1438715114318570484L)
+        rd1
+        .read(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
+        .right
+        .get shouldEqual Test1("Fz", None, 4, 1438715114318570484L)
+        }
+    }
   }
 }

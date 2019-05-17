@@ -16,8 +16,8 @@
 
 package com.github.fsanaulla.chronicler.core.query
 
+import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.Destination
-import com.github.fsanaulla.chronicler.core.typeclasses.QueryBuilder
 
 /**
   * Created by

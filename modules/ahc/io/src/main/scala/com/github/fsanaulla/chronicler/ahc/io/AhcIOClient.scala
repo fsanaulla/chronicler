@@ -16,12 +16,17 @@
 
 package com.github.fsanaulla.chronicler.ahc.io
 
-import com.github.fsanaulla.chronicler.ahc.io.api.{Database, Measurement}
-import com.github.fsanaulla.chronicler.ahc.io.models.{AhcReader, AhcWriter}
 import com.github.fsanaulla.chronicler.ahc.shared.InfluxAhcClient
-import com.github.fsanaulla.chronicler.ahc.shared.handlers.{AhcJsonHandler, AhcQueryBuilder, AhcRequestExecutor, AhcResponseHandler}
+import com.github.fsanaulla.chronicler.ahc.shared.alias.Request
+import com.github.fsanaulla.chronicler.ahc.shared.handlers.{AhcQueryBuilder, AhcRequestExecutor}
+import com.github.fsanaulla.chronicler.ahc.shared.implicits._
 import com.github.fsanaulla.chronicler.core.IOClient
-import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, PingResult}
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.api.{DatabaseApi, MeasurementApi}
+import com.github.fsanaulla.chronicler.core.components.ResponseHandler
+import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
+import com.softwaremill.sttp.{Response, Uri}
+import jawn.ast.JValue
 import org.asynchttpclient.AsyncHttpClientConfig
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,24 +38,21 @@ final class AhcIOClient(host: String,
                         credentials: Option[InfluxCredentials],
                         asyncClientConfig: Option[AsyncHttpClientConfig])
                        (implicit ex: ExecutionContext)
-  extends InfluxAhcClient(asyncClientConfig) with IOClient[Future, String] {
+  extends InfluxAhcClient(asyncClientConfig) with IOClient[Future, Request, Response[JValue], Uri, String] {
 
   implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
   implicit val re: AhcRequestExecutor = new AhcRequestExecutor
-  implicit val rh: AhcResponseHandler = new AhcResponseHandler(new AhcJsonHandler())
-  implicit val wr: AhcWriter = new AhcWriter
-  implicit val rd: AhcReader = new AhcReader
+  implicit val rh: ResponseHandler[Response[JValue]] = new ResponseHandler(jsonHandler)
 
   override def database(dbName: String): Database =
-    new Database(dbName, gzipped)
+    new DatabaseApi(dbName, gzipped)
 
   override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] =
-    new Measurement[A](dbName, measurementName, gzipped)
+    new MeasurementApi(dbName, measurementName, gzipped)
 
-  override def ping(isVerbose: Boolean = false): Future[PingResult] = {
-    val queryParams = if (isVerbose) Map("verbose" -> "true") else Map.empty[String, String]
+  override def ping: Future[ErrorOr[InfluxDBInfo]] = {
     re
-      .execute(re.buildRequest(qb.buildQuery("/ping", queryParams)))
-      .flatMap(rh.toPingResult)
+      .executeUri(qb.buildQuery("/ping", Map.empty[String, String]))
+      .map(rh.pingResult)
   }
 }

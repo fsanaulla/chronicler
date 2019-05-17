@@ -16,17 +16,40 @@
 
 package com.github.fsanaulla.chronicler.ahc.shared
 
-import com.github.fsanaulla.chronicler.core.model.WriteResult
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.components.JsonHandler
+import com.github.fsanaulla.chronicler.core.model.{Failable, Functor}
+import com.softwaremill.sttp.Response
+import jawn.ast.{JParser, JValue}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 
 package object implicits {
-  implicit final class WriteResultOps(private val wr: WriteResult.type) extends AnyVal {
-    def successfulFuture(code: Int): Future[WriteResult] = Future.successful(wr.successful(code))
+  implicit val jsonHandler: JsonHandler[Response[JValue]] = new JsonHandler[Response[JValue]] {
+    override def responseBody(response: Response[JValue]): ErrorOr[JValue] =
+      response
+        .body
+        .left
+        .flatMap { str =>
+          JParser.parseFromString(str) match {
+            case Success(value)     => Right(value)
+            case Failure(exception) => Left(exception)
+          }
+        }
+
+    override def responseHeader(response: Response[JValue]): Seq[(String, String)] =
+      response.headers
+
+    override def responseCode(response: Response[JValue]): Int =
+      response.code
   }
 
-  implicit final class FutureOps(private val fut: Future.type) extends AnyVal {
-    def fromOption[A](opt: Option[A])(ifNone: => Future[A]): Future[A] =
-      opt.fold(ifNone)(fut.successful)
+  implicit def futureFunctor(implicit ec: ExecutionContext): Functor[Future] = new Functor[Future] {
+    override def map[A, B](fa: Future[A])(f: A => B): Future[B] = fa.map(f)
+  }
+
+  implicit def futureFailable: Failable[Future] = new Failable[Future] {
+    override def fail[A](ex: Throwable): Future[A] = Future.failed(ex)
   }
 }

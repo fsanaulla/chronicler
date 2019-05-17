@@ -16,30 +16,35 @@
 
 package com.github.fsanaulla.chronicler.core
 
-import _root_.jawn.ast.{JArray, JObject, JValue}
+import _root_.jawn.ast.{JArray, JObject, JValue, WrongValueException}
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 
 package object jawn {
-  implicit def jv2Int(jv: JValue): Int = jv.asInt
-  implicit def jv2Long(jv: JValue): Long = jv.asLong
-  implicit def jv2Double(jv: JValue): Double = jv.asDouble
+  implicit def jv2Int(jv: JValue): Int         = jv.asInt
+  implicit def jv2Long(jv: JValue): Long       = jv.asLong
+  implicit def jv2Double(jv: JValue): Double   = jv.asDouble
   implicit def jv2Boolean(jv: JValue): Boolean = jv.asBoolean
-  implicit def jv2String(jv: JValue): String = jv.asString
+  implicit def jv2String(jv: JValue): String   = jv.asString
 
   /** Extension to simplify parsing JAWN AST */
   implicit final class RichJValue(private val jv: JValue) extends AnyVal {
-    def arrayValue: Option[Array[JValue]] = jv match {
-      case JArray(arr) => Some(arr)
-      case _ => None
+    def arrayValue: ErrorOr[Array[JValue]] = jv match {
+      case JArray(arr) => Right(arr)
+      case other       =>
+        Left(new WrongValueException("array", other.toString()))
     }
 
-    def array: Option[JArray] = jv match {
-      case ja: JArray => Some(ja)
-      case _ => None
+    def arrayValueOr(default: => Array[JValue]): Array[JValue] =
+      arrayValue.right.getOrElse(default)
+
+    def array: ErrorOr[JArray] = jv match {
+      case ja: JArray => Right(ja)
+      case other      => Left(new WrongValueException("array", other.toString()))
     }
 
-    def obj: Option[JObject] = jv match {
-      case jo: JObject => Some(jo)
-      case _ => None
+    def obj: ErrorOr[JObject] = jv match {
+      case jo: JObject => Right(jo)
+      case other       => Left(new WrongValueException("object", other.toString()))
     }
   }
 }

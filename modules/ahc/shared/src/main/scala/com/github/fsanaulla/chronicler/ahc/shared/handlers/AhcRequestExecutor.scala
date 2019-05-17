@@ -18,17 +18,37 @@ package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
 import com.github.fsanaulla.chronicler.ahc.shared.alias._
 import com.github.fsanaulla.chronicler.ahc.shared.formats._
-import com.github.fsanaulla.chronicler.core.typeclasses.RequestExecutor
+import com.github.fsanaulla.chronicler.core.components.RequestExecutor
+import com.github.fsanaulla.chronicler.core.encoding.gzipEncoding
 import com.softwaremill.sttp.{Response, SttpBackend, Uri, sttp}
 import jawn.ast.JValue
 
 import scala.concurrent.Future
-import scala.language.implicitConversions
 
-private[ahc] class AhcRequestExecutor(implicit backend: SttpBackend[Future, Nothing])
-  extends RequestExecutor[Future, Request, Response[JValue], Uri] {
+private[ahc] final class AhcRequestExecutor(implicit backend: SttpBackend[Future, Nothing])
+  extends RequestExecutor[Future, Request, Response[JValue], Uri, String] {
 
-  private[chronicler] override implicit def buildRequest(uri: Uri): Request = sttp.get(uri).response(asJson)
+  /**
+    * Execute uri
+    *
+    * @param uri - request uri
+    * @return    - Return wrapper response
+    */
+  override def executeUri(uri: Uri): Future[Response[JValue]] =
+    sttp.get(uri).response(asJson).send()
 
-  private[chronicler] override def execute(request: Request): Future[Response[JValue]] = request.send()
+  /**
+    * Execute request
+    *
+    * @param req - request
+    * @return - Return wrapper response
+    */
+  override def executeReq(req: Request): Future[Response[JValue]] =
+    req.send()
+
+  override def execute(uri: Uri, body: String, gzipped: Boolean): Future[Response[JValue]] = {
+    val req = sttp.post(uri).body(body).response(asJson)
+    val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
+    maybeEncoded.send()
+  }
 }

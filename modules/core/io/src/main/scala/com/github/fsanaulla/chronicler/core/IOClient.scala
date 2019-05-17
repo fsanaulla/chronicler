@@ -27,7 +27,10 @@ import scala.reflect.ClassTag
   * @tparam F - Response type container
   * @tparam E - which response entity should be user
   */
-trait IOClient[F[_], E] extends SystemManagement[F] with AutoCloseable {
+trait IOClient[F[_], Req, Resp, Uri, Body] extends SystemManagement[F] with AutoCloseable {
+
+  type Database = DatabaseApi[F, Req, Resp, Uri, Body]
+  type Measurement[A] = MeasurementApi[F, Req, Resp, Uri, Body, A]
 
   /**
     * Get database instant
@@ -35,7 +38,7 @@ trait IOClient[F[_], E] extends SystemManagement[F] with AutoCloseable {
     * @param dbName - database name
     * @return       - Backend related implementation of DatabaseIO
     */
-  def database(dbName: String): DatabaseApi[F, E]
+  def database(dbName: String): Database
 
   /**
     * Get measurement instance with execution type A
@@ -45,5 +48,5 @@ trait IOClient[F[_], E] extends SystemManagement[F] with AutoCloseable {
     * @tparam A              - measurement entity type
     * @return                - Backend related implementation of MeasurementIO
     */
-  def measurement[A: ClassTag](dbName: String, measurementName: String): MeasurementApi[F, A]
+  def measurement[A: ClassTag](dbName: String, measurementName: String): MeasurementApi[F, Req, Resp, Uri, Body, A]
 }

@@ -3,6 +3,7 @@ import sbt.Keys.{libraryDependencies, name}
 val projectName = "chronicler"
 lazy val chronicler = project
   .in(file("."))
+  .settings(Settings.common: _*)
   .settings(parallelExecution in Compile := false)
   .aggregate(
     coreShared, coreIO, coreManagement,
@@ -169,10 +170,10 @@ lazy val macros = project
 /////////////////// TESTING MODULES //////////////////
 //////////////////////////////////////////////////////
 lazy val itTesting = project
-  .in(file("modules/testing/it"))
+  .in(file("modules/testing"))
   .settings(Settings.common: _*)
   .settings(
-    name := s"$projectName-it-testing",
+    name := s"$projectName-testing",
     libraryDependencies ++= Dependencies.testingDeps
   )
   .dependsOn(coreShared)
@@ -200,6 +201,25 @@ lazy val urlManagementExample =
 
 lazy val udpExample =
   exampleModule("udp-example", "udp", udp, macros)
+
+//////////////////////////////////////////////////////
+///////////////////// BENCHMARKS /////////////////////
+//////////////////////////////////////////////////////
+lazy val benchmark = project
+  .in(file("benchmark"))
+  .settings(Settings.common: _*)
+  .settings(name := "chronicler-benchmark")
+  .settings(
+    sourceDirectory in Jmh := (sourceDirectory in Test).value,
+    classDirectory in Jmh := (classDirectory in Test).value,
+    dependencyClasspath in Jmh := (dependencyClasspath in Test).value,
+      // rewire tasks, so that 'jmh:run' automatically invokes 'jmh:compile' (otherwise a clean 'jmh:run' would fail)
+    compile in Jmh := (compile in Jmh).dependsOn(compile in Test).value,
+    run in Jmh := (run in Jmh).dependsOn(Keys.compile in Jmh).evaluated,
+    libraryDependencies += "org.openjdk.jmh" % "jmh-generator-annprocess" % "1.21" % Test
+  )
+  .dependsOn(itTesting, ahcIO, macros % "test->test")
+  .enablePlugins(JmhPlugin)
 
 //////////////////////////////////////////////////////
 ////////////////////// UTILS /////////////////////////

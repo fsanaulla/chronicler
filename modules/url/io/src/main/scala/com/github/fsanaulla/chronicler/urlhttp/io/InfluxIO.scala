@@ -23,7 +23,8 @@ import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient.Customizat
 object InfluxIO {
 
   /**
-    * Retrieve IO InfluxDB client, without management functionality
+    * Retrieve IO InfluxDB client, without management functionality.
+    * See https://github.com/softwaremill/sttp/issues/114 to understand how to configure secured connection
     *
     * @param host        - hostname
     * @param port        - port value

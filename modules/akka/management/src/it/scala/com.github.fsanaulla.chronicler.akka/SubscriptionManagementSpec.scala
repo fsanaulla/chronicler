@@ -6,7 +6,6 @@ import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, In
 import com.github.fsanaulla.chronicler.core.duration._
 import com.github.fsanaulla.chronicler.core.enums.{Destination, Destinations}
 import com.github.fsanaulla.chronicler.core.model.Subscription
-import com.github.fsanaulla.chronicler.testing.it.ResultMatchers._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
 import org.scalatest.{FlatSpecLike, Matchers}
 
@@ -38,28 +37,28 @@ class SubscriptionManagementSpec
   lazy val influx: AkkaManagementClient =
     InfluxMng(host, port, Some(creds))
 
-  "Subscription operation" should "create subscription" in {
+  "Subscription API" should "create subscription" in {
 
-    influx.createDatabase(dbName).futureValue shouldEqual OkResult
+    influx.createDatabase(dbName).futureValue.right.get shouldEqual 200
 
-    influx.createRetentionPolicy(rpName, dbName, duration, 1, Some(duration)).futureValue shouldEqual OkResult
+    influx.createRetentionPolicy(rpName, dbName, duration, 1, Some(duration)).futureValue.right.get shouldEqual 200
 
-    influx.showDatabases().futureValue.queryResult.contains(dbName) shouldEqual true
+    influx.showDatabases().futureValue.right.get.contains(dbName) shouldEqual true
 
-    influx.createSubscription(subName, dbName, rpName, destType, hosts).futureValue shouldEqual OkResult
+    influx.createSubscription(subName, dbName, rpName, destType, hosts).futureValue.right.get shouldEqual 200
 
-    influx.showSubscriptionsInfo.futureValue.queryResult.head.subscriptions shouldEqual Array(subscription)
+    influx.showSubscriptionsInfo.futureValue.right.get.head.subscriptions shouldEqual Array(subscription)
   }
 
 
   it should "drop subscription" in {
-    influx.dropSubscription(subName, dbName, rpName).futureValue shouldEqual OkResult
+    influx.dropSubscription(subName, dbName, rpName).futureValue.right.get shouldEqual 200
 
-    influx.showSubscriptionsInfo.futureValue.queryResult shouldEqual Nil
+    influx.showSubscriptionsInfo.futureValue.right.get shouldEqual Nil
 
-    influx.dropRetentionPolicy(rpName, dbName).futureValue shouldEqual OkResult
+    influx.dropRetentionPolicy(rpName, dbName).futureValue.right.get shouldEqual 200
 
-    influx.dropDatabase(dbName).futureValue shouldEqual OkResult
+    influx.dropDatabase(dbName).futureValue.right.get shouldEqual 200
 
     influx.close() shouldEqual {}
   }
