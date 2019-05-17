@@ -51,13 +51,13 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
   private[this] val fieldTypes =
     Seq(getType[Boolean], getType[Int], getType[Double], getType[String], getType[Float])
 
-  private def illegalArgExc(name: String): c.universe.Tree = {
+  private[this] def illegalArgExc(name: String): c.universe.Tree = {
     val msg = s"Tag value can 't be empty string for tag: $name"
     q"new IllegalArgumentException($msg)"
   }
 
   /** Check if this method valid timestamp */
-  private def isTimestamp(m: MethodSymbol, isReader: Boolean): Boolean = {
+  private[this] def isTimestamp(m: MethodSymbol, isReader: Boolean): Boolean = {
     // check if it has @timestamp annotation
     if (m.annotations.exists(_.tree.tpe =:= timestamp)) {
 
@@ -78,13 +78,13 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     } else false
   }
 
-  private def getFieldInfo(lst: List[MethodSymbol]): List[FieldInfo] =
+  private[this] def getFieldInfo(lst: List[MethodSymbol]): List[FieldInfo] =
     lst.map(m => m.name.decodedName.toString -> m.returnType.dealias)
 
-  private def getMethods(tpe: c.universe.Type): List[MethodSymbol] =
+  private[this] def getMethods(tpe: c.universe.Type): List[MethodSymbol] =
     tpe.decls.toList.collect { case m: MethodSymbol if m.isCaseAccessor => m }
 
-  private def compileError(msg: String): Nothing =
+  private[this] def compileError(msg: String): Nothing =
     c.abort(c.enclosingPosition, msg)
 
   /**
@@ -93,7 +93,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     * @param tpe  - for which type
     * @return     - AST that will be expanded to read method
     */
-  private def createReadMethod(tpe: c.universe.Type): Tree = {
+  private[this] def createReadMethod(tpe: c.universe.Type): Tree = {
 
     def successCase(tp: c.universe.Type,
                     patterns: List[Tree],
@@ -213,7 +213,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     * @param tpe - specified type
     * @return    - AST that will be expanded to write method
     */
-  private def createWriteMethod(tpe: c.Type): Tree = {
+  private[this] def createWriteMethod(tpe: c.Type): Tree = {
     /// ADT
     sealed trait Unquotable {
       def key: Name
