@@ -3,7 +3,7 @@ package com.github.fsanaulla.chronicler.core.shared
 import com.github.fsanaulla.chronicler.core.model._
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.FlatSpec
-import org.scalatest.prop.Checkers
+import org.scalatestplus.scalacheck.Checkers
 
 class PointProp extends FlatSpec with Checkers {
 

@@ -2,7 +2,7 @@ package com.github.fsanaulla.chronicler.macros
 
 import jawn.ast.JArray
 import org.scalatest.FlatSpec
-import org.scalatest.prop.Checkers
+import org.scalatestplus.scalacheck.Checkers
 
 class InfluxWriterProperties extends FlatSpec with Checkers with InfluxFormat {
 
