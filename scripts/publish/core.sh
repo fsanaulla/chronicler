@@ -2,10 +2,6 @@
 
 modules=(
     coreShared coreIO coreManagement
-    akkaShared akkaIO akkaManagement
-    ahcShared ahcIO ahcManagement
-    urlShared urlIO urlManagement
-    udp macros
 )
 
 for md in "${modules[@]}"

@@ -20,7 +20,6 @@ cache:
     - "$HOME/.sbt/boot"
     - "$HOME/.m2"
 
-
 ignore:
   - "changelog/*"
   - "scripts/*"
@@ -33,27 +32,112 @@ before_install:
     if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
       openssl aes-256-cbc -K $encrypted_aaa7ed714ca2_key -iv $encrypted_aaa7ed714ca2_iv -in secrets.tar.enc -out secrets.tar -d
       tar xvf secrets.tar
-      chmod 777 scripts/publish.sh
     fi
 
 jobs:
   include:
-    - stage: deploy_2.11
-      script: ./scripts/publish.sh $TRAVIS_SCALA_VERSION
+    - release:
+      script:
+        - chmod 777 scripts/tag.sh
+        - ./scripts/tag.sh
+        - sbt githubRelease
+      env: INFLUXDB_VERSION=1.7.3
+      scala: 2.12.8
+      # Stages splited by modules to fit into 50 min job limit
+      # scala 2.11 stages
+      # Deploying core modules
+    - stage: publish_core_2.11
+      script:
+        - chmod 777 scripts/publish/core.sh
+        - ./scripts/publish/core.sh $TRAVIS_SCALA_VERSION
       env: INFLUXDB_VERSION=1.7.3
       scala: 2.11.8
-    - stage: deploy_2.12
-      script: ./scripts/publish.sh $TRAVIS_SCALA_VERSION
+      # Deploying ahc modules
+    - stage: publish_ahc_2.11
+      script:
+        - chmod 777 scripts/publish/ahc.sh
+        - ./scripts/publish/ahc.sh $TRAVIS_SCALA_VERSION
+      env: INFLUXDB_VERSION=1.7.3
+      scala: 2.11.8
+      # Deploying akka modules
+    - stage: publish_akka_2.11
+      script:
+        - chmod 777 scripts/publish/akka.sh
+        - ./scripts/publish/akka.sh $TRAVIS_SCALA_VERSION
+      env: INFLUXDB_VERSION=1.7.3
+      scala: 2.11.8
+      # Deploying url modules
+    - stage: publish_url_2.11
+      script: ./scripts/publish/url.sh $TRAVIS_SCALA_VERSION
+      env: INFLUXDB_VERSION=1.7.3
+      scala: 2.11.8
+      # Deploying other(udp, macros) modules
+    - stage: publish_other_2.11
+      script: ./scripts/publish/other.sh $TRAVIS_SCALA_VERSION
+      env: INFLUXDB_VERSION=1.7.3
+      scala: 2.11.8
+
+      # scala 2.12 stages
+    - stage: publish_core_2.12
+      script:
+        - chmod 777 scripts/publish/core.sh
+        - ./scripts/publish/core.sh $TRAVIS_SCALA_VERSION
+      env: INFLUXDB_VERSION=1.7.3
+      scala: 2.12.8
+      # Deploying ahc modules
+    - stage: publish_ahc_2.12
+      script:
+        - chmod 777 scripts/publish/ahc.sh
+        - ./scripts/publish/ahc.sh $TRAVIS_SCALA_VERSION
+      env: INFLUXDB_VERSION=1.7.3
+      scala: 2.12.8
+        # Deploying akka modules
+    - stage: publish_akka_2.12
+      script:
+        - chmod 777 scripts/publish/akka.sh
+        - ./scripts/publish/akka.sh $TRAVIS_SCALA_VERSION
+      env: INFLUXDB_VERSION=1.7.3
+      scala: 2.12.8
+      # Deploying url modules
+    - stage: publish_url_2.12
+      script:
+        - chmod 777 scripts/publish/url.sh
+        - ./scripts/publish/url.sh $TRAVIS_SCALA_VERSION
+      env: INFLUXDB_VERSION=1.7.3
+      scala: 2.12.8
+      # Deploying other(udp, macros) modules
+    - stage: publish_other_2.12
+      script:
+        - chmod 777 scripts/publish/other.sh
+        - ./scripts/publish/other.sh $TRAVIS_SCALA_VERSION
       env: INFLUXDB_VERSION=1.7.3
       scala: 2.12.8
 
 stages:
   - name: test
-  - name: deploy_2.11
-    if: branch = master AND type != pull_request
-  - name: deploy_2.12
-    if: branch = master AND type != pull_request
   - name: release
+    if: branch = master AND type != pull_request
+  # 2.11 stages
+  - name: publish_core_2.11
+    if: branch = master AND type != pull_request
+  - name: publish_ahc_2.11
+    if: branch = master AND type != pull_request
+  - name: publish_akka_2.11
+    if: branch = master AND type != pull_request
+  - name: publish_url_2.11
+    if: branch = master AND type != pull_request
+  - name: publish_other_2.11
+    if: branch = master AND type != pull_request
+  # 2.12 stages
+  - name: publish_core_2.12
+    if: branch = master AND type != pull_request
+  - name: publish_ahc_2.12
+    if: branch = master AND type != pull_request
+  - name: publish_akka_2.12
+    if: branch = master AND type != pull_request
+  - name: publish_url_2.12
+    if: branch = master AND type != pull_request
+  - name: publish_other_2.12
     if: branch = master AND type != pull_request
 
 env:
