@@ -36,11 +36,8 @@ before_install:
 
 jobs:
   include:
-    - release:
-      script:
-        - chmod 777 scripts/tag.sh
-        - ./scripts/tag.sh
-        - sbt githubRelease
+    - stage: release
+      script: chmod 777 scripts/release.sh && ./scripts/release.sh
       env: INFLUXDB_VERSION=1.7.3
       scala: 2.12.8
       # Stages splited by modules to fit into 50 min job limit
