@@ -2,7 +2,7 @@ package com.github.fsanaulla.chronicler.core.shared
 
 import com.github.fsanaulla.chronicler.core.duration._
 import org.scalatest.FlatSpec
-import org.scalatest.prop.Checkers
+import org.scalatestplus.scalacheck.Checkers
 
 class InfluxDurationProp extends FlatSpec with Checkers {
 

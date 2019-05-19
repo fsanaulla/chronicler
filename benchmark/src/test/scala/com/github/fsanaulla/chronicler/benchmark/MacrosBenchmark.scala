@@ -51,7 +51,7 @@ object MacrosBenchmark {
           .append(" ")
           .append(obj.time)
 
-        sb.toString()
+        Right(sb.toString())
       }
 
     @TearDown

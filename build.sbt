@@ -5,14 +5,6 @@ lazy val chronicler = project
   .in(file("."))
   .settings(Settings.common: _*)
   .settings(parallelExecution in Compile := false)
-  .aggregate(
-    coreShared, coreIO, coreManagement,
-    akkaShared, akkaIO, akkaManagement,
-    ahcShared,  ahcIO,  ahcManagement,
-    urlShared,  urlIO,  urlManagement,
-    udp,
-    macros
-  )
 
 //////////////////////////////////////////////////////
 //////////////////// CORE MODULES ////////////////////
