@@ -11,3 +11,5 @@ git tag ${tag}
 
 # push git tag to remote repo
 git push https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/fsanaulla/chronicler.git ${tag}
+
+sbt githubRelease
