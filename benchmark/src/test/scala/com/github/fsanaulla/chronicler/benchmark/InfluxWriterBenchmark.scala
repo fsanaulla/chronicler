@@ -8,8 +8,10 @@ import com.github.fsanaulla.chronicler.macros.Influx
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
 import org.openjdk.jmh.annotations._
 
+//[info] InfluxWriterBenchmark.averageCustomWriteTime  avgt    5   86.526 ±  0.460  ns/op
+//[info] InfluxWriterBenchmark.averageMacroWriteTime   avgt    5  156.521 ± 44.614  ns/op
 @BenchmarkMode(Array(Mode.AverageTime))
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
 class InfluxWriterBenchmark {
   @Benchmark
   def averageCustomWriteTime(state: CustomWriter): Unit =
