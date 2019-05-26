@@ -93,21 +93,31 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     * @param tpe  - for which type
     * @return     - AST that will be expanded to read method
     */
-  private[this] def createReadMethod(tpe: c.universe.Type): Tree = {
+  private[this] def createReadMethod(tpe: c.universe.Type, unsafe: Boolean): Tree = {
+
+    def safeOrUnsafeRead(unsafe: Boolean): (TermName, Tree) =
+      if (!unsafe) TermName("read") -> tq"com.github.fsanaulla.chronicler.core.alias.ErrorOr[$tpe]"
+      else TermName("readUnsafe") -> q"$tpe"
 
     def successCase(tp: c.universe.Type,
                     patterns: List[Tree],
-                    constructors: List[Tree]): c.universe.Tree = {
+                    constructors: List[Tree],
+                    unsafe: Boolean): c.universe.Tree = {
       val successPat  = pq"Array(..$patterns)"
-      val successBody = q"scala.util.Right(new $tp(..$constructors))"
+      val successBody =
+        if (!unsafe) q"scala.util.Right(new $tp(..$constructors))"
+        else q"new $tp(..$constructors)"
       cq"$successPat => $successBody"
     }
 
-    def failureCase(tp: c.universe.Type): c.universe.Tree = {
+    def failureCase(tp: c.universe.Type,
+                    unsafe: Boolean): c.universe.Tree = {
       // failure case clause component
       val failurePat  = pq"_"
       val failureMsg  = s"Can't deserialize $tp object."
-      val failureBody = q"scala.util.Left(new com.github.fsanaulla.chronicler.core.model.ParsingException($failureMsg))"
+      val failureBody =
+        if (!unsafe) q"scala.util.Left(new com.github.fsanaulla.chronicler.core.model.ParsingException($failureMsg))"
+        else q"throw new com.github.fsanaulla.chronicler.core.model.ParsingException($failureMsg)"
       cq"$failurePat => $failureBody"
     }
 
@@ -121,12 +131,14 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     def simpleRead(timestampCtor: Tree,
                    timestampPat: Tree,
                    patterns: List[Tree],
-                   constructors: List[Tree]): c.universe.Tree = {
-      val sCase = successCase(tpe, timestampPat :: patterns, timestampCtor :: constructors)
-      val fCase = failureCase(tpe)
+                   constructors: List[Tree],
+                   unsafe: Boolean): c.universe.Tree = {
+      val sCase = successCase(tpe, timestampPat :: patterns, timestampCtor :: constructors, unsafe)
+      val fCase = failureCase(tpe, unsafe)
       val cases = sCase :: fCase :: Nil
+      val (name, returnType) = safeOrUnsafeRead(unsafe)
 
-      q"""def read(js: jawn.ast.JArray): com.github.fsanaulla.chronicler.core.alias.ErrorOr[$tpe] = js.vs match { case ..$cases }"""
+      q"def $name(js: jawn.ast.JArray): $returnType = js.vs match { case ..$cases }"
     }
 
     def timestampPattern(timestamp: TermName): Tree =
@@ -157,32 +169,30 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
       .sorted // influx return results in alphabetical order
       .map(k => pq"${TermName(k)}: jawn.ast.JValue")
 
-    timeField.headOption match {
-      // marked as @timestamp and @epoch
-      case Some(m) if isEpoch(m.annotations, m.returnType) =>
-        val timestamp = TermName(m.name.decodedName.toString)
-        val timeConstructor = q"$timestamp = $timestamp.asLong"
-        simpleRead(timeConstructor, timestampPattern(timestamp), patternParams, constructorParams)
+    def readMethod(timeField: Option[MethodSymbol],
+                   patterns: List[Tree],
+                   ctors: List[Tree],
+                   unsafe: Boolean): c.universe.Tree = {
+      timeField match {
+        // marked as @timestamp and @epoch
+        case Some(m) if isEpoch(m.annotations, m.returnType) =>
+          val timestamp = TermName(m.name.decodedName.toString)
+          val timeConstructor = q"$timestamp = $timestamp.asLong"
+          simpleRead(timeConstructor, timestampPattern(timestamp), patterns, ctors, unsafe)
 
-      // marked as @timestamp and @utc
-      case Some(m) if isUtc(m.annotations, m.returnType) =>
-        val timestamp = TermName(m.name.decodedName.toString)
-        val timeConstructor = q"$timestamp = $timestamp.asString"
-        simpleRead(timeConstructor, timestampPattern(timestamp), patternParams, constructorParams)
+        // marked as @timestamp and @utc
+        case Some(m) if isUtc(m.annotations, m.returnType) =>
+          val timestamp = TermName(m.name.decodedName.toString)
+          val timeConstructor = q"$timestamp = $timestamp.asString"
+          simpleRead(timeConstructor, timestampPattern(timestamp), patterns, ctors, unsafe)
 
-      // marked as @timestamp
-      case Some(m) =>
-        val timestamp = TermName(m.name.decodedName.toString)
-        val constructorTime =
-          if (m.returnType =:= long) q"$timestamp = toEpoch($timestamp)"
-          else q"$timestamp = toUTC($timestamp)"
+        // marked as @timestamp
+        case Some(m) =>
+          def genericRead(cases: List[Tree], unsafe: Boolean): c.universe.Tree = {
+            val (name, returnType) = safeOrUnsafeRead(unsafe)
 
-        val patternTime: Tree = pq"$timestamp: jawn.ast.JValue"
-        val sCase = successCase(tpe, patternTime :: patternParams, constructorTime :: constructorParams)
-        val fCase = failureCase(tpe)
-        val cases = sCase :: fCase :: Nil
-          q"""
-             def read(js: jawn.ast.JArray): com.github.fsanaulla.chronicler.core.alias.ErrorOr[$tpe] = {
+            q"""
+             def $name(js: jawn.ast.JArray): $returnType = {
                @inline def toEpoch(jv: jawn.ast.JValue): Long = {
                   jv.getString.fold(jv.asLong) { str =>
                      val i = java.time.Instant.parse(str)
@@ -196,15 +206,34 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
                }
               js.vs match { case ..$cases }
              }
-        """
+            """
+          }
 
-      // mo timestamp
-      case _ =>
-        val sCase = successCase(tpe, patternParams, constructorParams)
-        val fCase = failureCase(tpe)
-        val cases = sCase :: fCase :: Nil
-        q"def read(js: jawn.ast.JArray): com.github.fsanaulla.chronicler.core.alias.ErrorOr[$tpe] = js.vs.tail match { case ..$cases }"
+          val timestamp = TermName(m.name.decodedName.toString)
+          val constructorTime =
+            if (m.returnType =:= long) q"$timestamp = toEpoch($timestamp)"
+            else q"$timestamp = toUTC($timestamp)"
+
+          val patternTime: Tree = pq"$timestamp: jawn.ast.JValue"
+          val sCase = successCase(tpe, patternTime :: patterns, constructorTime :: ctors, unsafe)
+          val fCase = failureCase(tpe, unsafe)
+          val cases = sCase :: fCase :: Nil
+
+          genericRead(cases, unsafe)
+
+        // mo timestamp
+        case _ =>
+          val sCase = successCase(tpe, patterns, ctors, unsafe)
+          val fCase = failureCase(tpe, unsafe)
+          val cases = sCase :: fCase :: Nil
+
+          val (name, returnType) = safeOrUnsafeRead(unsafe)
+
+          q"def $name(js: jawn.ast.JArray): $returnType = js.vs.tail match { case ..$cases }"
+      }
     }
+
+    readMethod(timeField.headOption, patternParams, constructorParams, unsafe)
   }
 
   /**
@@ -416,6 +445,9 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     */
   def reader[T: c.WeakTypeTag]: Tree = {
     val tpe = c.weakTypeOf[T]
-    q"new com.github.fsanaulla.chronicler.core.model.InfluxReader[$tpe] { ${createReadMethod(tpe)} }"
+    q"""new com.github.fsanaulla.chronicler.core.model.InfluxReader[$tpe] {
+        ${createReadMethod(tpe, unsafe = true)}
+        ${createReadMethod(tpe, unsafe = false)}
+     }"""
   }
 }
