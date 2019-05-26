@@ -33,50 +33,58 @@ package object implicits {
       regex.measPattern.matcher(str).replaceAll("\\\\$1")
   }
 
-  implicit object StringInfluxReader extends InfluxReader[String] {
-    def read(js: JArray): ErrorOr[String] = js.vs match {
-      case Array(str: JValue) =>
-        Right(str)
-      case _                  =>
-        Left(exception(s"Can't deserialize $js to String"))
-    }
-  }
-
-  implicit object IntInfluxReader extends InfluxReader[Int] {
-    def read(js: JArray): ErrorOr[Int] = js.vs match {
-      case Array(js: JValue) =>
-        Right(js)
-      case _                 =>
-        Left(exception(s"Can't deserialize $js to Int"))
-    }
-  }
-
-  implicit object DoubleInfluxReader extends InfluxReader[Double] {
-    def read(js: JArray): ErrorOr[Double] = js.vs match {
-      case Array(js: JValue) =>
-        Right(js)
-      case _ =>
-        Left(exception(s"Can't deserialize $js to Double"))
-    }
-  }
-
-  implicit object LongInfluxReader extends InfluxReader[Long] {
-    def read(js: JArray): ErrorOr[Long] = js.vs match {
-      case Array(js: JValue) =>
-        Right(js)
-      case _ =>
-        Left(exception(s"Can't deserialize $js to Long"))
-    }
-  }
-
-  implicit object BooleanInfluxReader extends InfluxReader[Boolean] {
-    def read(js: JArray): ErrorOr[Boolean] = js.vs match {
-      case Array(js: JValue) =>
-        Right(js)
-      case _ =>
-        Left(exception(s"Can't deserialize $js to Boolean"))
-    }
-  }
+//  implicit object StringInfluxReader extends InfluxReader[String] {
+//    override def read(js: JArray): ErrorOr[String] = js.vs match {
+//      case Array(str: JValue) =>
+//        Right(str)
+//      case _                  =>
+//        Left(exception(s"Can't deserialize $js to String"))
+//    }
+//
+//    override def readUnsafe(js: JArray): String = js.vs match {
+//      case Array(str: JValue) => str
+//      case _                  =>
+//        throw exception(s"Can't deserialize $js to String")
+//    }
+//  }
+//
+//  implicit object IntInfluxReader extends InfluxReader[Int] {
+//    def read(js: JArray): ErrorOr[Int] = js.vs match {
+//      case Array(js: JValue) =>
+//        Right(js)
+//      case _                 =>
+//        Left(exception(s"Can't deserialize $js to Int"))
+//    }
+//
+//    override def readUnsafe(js: JArray): Int = ???
+//  }
+//
+//  implicit object DoubleInfluxReader extends InfluxReader[Double] {
+//    def read(js: JArray): ErrorOr[Double] = js.vs match {
+//      case Array(js: JValue) =>
+//        Right(js)
+//      case _ =>
+//        Left(exception(s"Can't deserialize $js to Double"))
+//    }
+//  }
+//
+//  implicit object LongInfluxReader extends InfluxReader[Long] {
+//    def read(js: JArray): ErrorOr[Long] = js.vs match {
+//      case Array(js: JValue) =>
+//        Right(js)
+//      case _ =>
+//        Left(exception(s"Can't deserialize $js to Long"))
+//    }
+//  }
+//
+//  implicit object BooleanInfluxReader extends InfluxReader[Boolean] {
+//    def read(js: JArray): ErrorOr[Boolean] = js.vs match {
+//      case Array(js: JValue) =>
+//        Right(js)
+//      case _ =>
+//        Left(exception(s"Can't deserialize $js to Boolean"))
+//    }
+//  }
 
   implicit object RetentionPolicyInfluxReader extends InfluxReader[RetentionPolicyInfo] {
     def read(js: JArray): ErrorOr[RetentionPolicyInfo] = js.vs match {
@@ -84,6 +92,13 @@ package object implicits {
         Right(RetentionPolicyInfo(name, duration, shardGroupDuration, replication, default))
       case _ =>
         Left(exception(s"Can't deserialize RetentionPolicyInfo object"))
+    }
+
+    override def readUnsafe(js: JArray): RetentionPolicyInfo = js.vs match {
+      case Array(name: JValue, duration: JValue, shardGroupDuration: JValue, replication: JValue, default: JValue) =>
+        RetentionPolicyInfo(name, duration, shardGroupDuration, replication, default)
+      case _ =>
+         throw exception(s"Can't deserialize RetentionPolicyInfo object")
     }
   }
 
@@ -93,6 +108,13 @@ package object implicits {
         Right(UserInfo(username, admin))
       case _ =>
         Left(exception(s"Can't deserialize $UserInfo object"))
+    }
+
+    override def readUnsafe(js: JArray): UserInfo = js.vs match {
+      case Array(username: JValue, admin: JValue) =>
+        UserInfo(username, admin)
+      case _ =>
+         throw exception(s"Can't deserialize $UserInfo object")
     }
   }
 
@@ -105,6 +127,13 @@ package object implicits {
       case _ =>
         Left(exception(s"Can't deserialize $UserPrivilegesInfo object"))
     }
+
+    override def readUnsafe(js: JArray): UserPrivilegesInfo = js.vs match {
+      case Array(username: JValue, privilege: JValue) =>
+        UserPrivilegesInfo(username, Privileges.withName(privilege))
+      case _ =>
+        throw exception(s"Can't deserialize $UserPrivilegesInfo object")
+    }
   }
 
   implicit object ContinuousQueryInfluxReader extends InfluxReader[ContinuousQuery] {
@@ -113,6 +142,13 @@ package object implicits {
         Right(ContinuousQuery(cqName, query))
       case _ =>
         Left(exception(s"Can't deserialize $ContinuousQuery object"))
+    }
+
+    override def readUnsafe(js: JArray): ContinuousQuery = js.vs match {
+      case Array(cqName: JValue, query: JValue) =>
+        ContinuousQuery(cqName, query)
+      case _ =>
+         throw exception(s"Can't deserialize $ContinuousQuery object")
     }
   }
 
@@ -123,6 +159,13 @@ package object implicits {
       case _ =>
         Left(exception(s"Can't deserialize $Shard object"))
     }
+
+    override def readUnsafe(js: JArray): Shard = js.vs match {
+      case Array(shardId: JValue, dbName: JValue, rpName: JValue, shardGroupId: JValue, startTime: JValue, endTime: JValue, expiryTime: JValue, owners: JValue) =>
+        Shard(shardId, dbName, rpName, shardGroupId, startTime, endTime, expiryTime, owners)
+      case _ =>
+         throw exception(s"Can't deserialize $Shard object")
+    }
   }
 
   implicit object QueryInfoInfluxReader extends InfluxReader[QueryInfo] {
@@ -132,6 +175,13 @@ package object implicits {
       case _ =>
         Left(exception(s"Can't deserialize $QueryInfo object"))
     }
+
+    override def readUnsafe(js: JArray): QueryInfo = js.vs match {
+      case Array(queryId: JValue, query: JValue, dbName: JValue, duration: JValue) =>
+        QueryInfo(queryId, query, dbName, duration)
+      case _ =>
+        throw exception(s"Can't deserialize $QueryInfo object")
+    }
   }
 
   implicit object ShardGroupInfluxReader extends InfluxReader[ShardGroup] {
@@ -140,6 +190,13 @@ package object implicits {
         Right(ShardGroup(shardId, dbName, rpName, startTime, endTime, expiryTime))
       case _ =>
         Left(exception(s"Can't deserialize $ShardGroup object"))
+    }
+
+    override def readUnsafe(js: JArray): ShardGroup = js.vs match {
+      case Array(shardId: JValue, dbName: JValue, rpName: JValue, startTime: JValue, endTime: JValue, expiryTime: JValue) =>
+        ShardGroup(shardId, dbName, rpName, startTime, endTime, expiryTime)
+      case _ =>
+        throw exception(s"Can't deserialize $ShardGroup object")
     }
   }
 
@@ -154,6 +211,13 @@ package object implicits {
       case _ =>
         Left(exception(s"Can't deserialize $Subscription object"))
     }
+
+    override def readUnsafe(js: JArray): Subscription = js.vs match {
+      case Array(rpName: JValue, subsName: JValue, destType: JValue, JArray(elems)) =>
+        Subscription(rpName, subsName, Destinations.withName(destType), elems.map(_.asString))
+      case _ =>
+        throw exception(s"Can't deserialize $Subscription object")
+    }
   }
 
   implicit object FieldInfoInfluxReader extends InfluxReader[FieldInfo] {
@@ -163,6 +227,13 @@ package object implicits {
       case _ =>
         Left(exception(s"Can't deserialize FieldInfo object"))
     }
+
+    override def readUnsafe(js: JArray): FieldInfo = js.vs match {
+      case Array(fieldName: JValue, fieldType: JValue) =>
+        FieldInfo(fieldName, fieldType)
+      case _ =>
+        throw exception(s"Can't deserialize FieldInfo object")
+    }
   }
 
   implicit object TagValueInfluxReader extends InfluxReader[TagValue] {
@@ -171,6 +242,13 @@ package object implicits {
         Right(TagValue(tag, value))
       case _ =>
         Left(exception(s"Can't deserialize TagValue object"))
+    }
+
+    override def readUnsafe(js: JArray): TagValue = js.vs match {
+      case Array(tag: JValue, value: JValue) =>
+        TagValue(tag, value)
+      case _ =>
+        throw exception(s"Can't deserialize TagValue object")
     }
   }
 }
