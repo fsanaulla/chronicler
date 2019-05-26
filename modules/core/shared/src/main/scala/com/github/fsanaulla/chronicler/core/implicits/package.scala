@@ -33,20 +33,20 @@ package object implicits {
       regex.measPattern.matcher(str).replaceAll("\\\\$1")
   }
 
-//  implicit object StringInfluxReader extends InfluxReader[String] {
-//    override def read(js: JArray): ErrorOr[String] = js.vs match {
-//      case Array(str: JValue) =>
-//        Right(str)
-//      case _                  =>
-//        Left(exception(s"Can't deserialize $js to String"))
-//    }
-//
-//    override def readUnsafe(js: JArray): String = js.vs match {
-//      case Array(str: JValue) => str
-//      case _                  =>
-//        throw exception(s"Can't deserialize $js to String")
-//    }
-//  }
+  implicit object StringInfluxReader extends InfluxReader[String] {
+    override def read(js: JArray): ErrorOr[String] = js.vs match {
+      case Array(str: JValue) =>
+        Right(str)
+      case _                  =>
+        Left(exception(s"Can't deserialize $js to String"))
+    }
+
+    override def readUnsafe(js: JArray): String = js.vs match {
+      case Array(str: JValue) => str
+      case _                  =>
+        throw exception(s"Can't deserialize $js to String")
+    }
+  }
 //
 //  implicit object IntInfluxReader extends InfluxReader[Int] {
 //    def read(js: JArray): ErrorOr[Int] = js.vs match {
