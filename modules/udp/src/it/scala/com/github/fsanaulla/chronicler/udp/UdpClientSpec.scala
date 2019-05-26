@@ -176,6 +176,7 @@ object UdpClientSpec {
       case Array(age: JNum, name: JString) => Right(Test(name, age))
       case _ => Left(new Error(""))
     }
+    override def readUnsafe(js: JArray): Test = read(js).right.get
   }
 
   implicit val wr: InfluxWriter[Test] = new InfluxWriter[Test] {
