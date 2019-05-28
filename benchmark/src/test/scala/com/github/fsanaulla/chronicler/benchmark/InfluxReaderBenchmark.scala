@@ -11,19 +11,33 @@ import com.github.fsanaulla.chronicler.macros.auto._
 import jawn.ast._
 import org.openjdk.jmh.annotations._
 
-//[info] InfluxReaderBenchmark.averageCustomEpochTimestamp         avgt    5    18.809 ±   0.179  ns/op
-//[info] InfluxReaderBenchmark.averageCustomEpochTimestampUnsafe   avgt    5    12.287 ±   1.172  ns/op
-//[info] InfluxReaderBenchmark.averageEpochTimestamp               avgt    5   142.302 ±  83.900  ns/op
-//[info] InfluxReaderBenchmark.averageEpochTimestampUnsafe         avgt    5   123.555 ±  14.805  ns/op
-//[info] InfluxReaderBenchmark.averageGeneralEpochTimestamp        avgt    5   127.030 ±  12.423  ns/op
-//[info] InfluxReaderBenchmark.averageGeneralEpochTimestampUnsafe  avgt    5   145.111 ±  56.139  ns/op
-//[info] InfluxReaderBenchmark.averageGeneralUtcTimestamp          avgt    5  1014.081 ± 128.966  ns/op
-//[info] InfluxReaderBenchmark.averageGeneralUtcTimestampUnsafe    avgt    5   994.313 ± 143.860  ns/op
-//[info] InfluxReaderBenchmark.averageUtcTimestamp                 avgt    5   117.948 ±   1.048  ns/op
-//[info] InfluxReaderBenchmark.averageUtcTimestampUnsafe           avgt    5   115.961 ±   1.142  ns/op
+import scala.util.Try
+
+//[info] Benchmark                                                 Mode  Cnt    Score     Error  Units
+//[info] InfluxReaderBenchmark.averageCustomEpochTimestamp         avgt    5   17.591 ±   0.777  ns/op
+//[info] InfluxReaderBenchmark.averageCustomEpochTimestampUnsafe   avgt    5   12.113 ±   2.320  ns/op
+//[info] InfluxReaderBenchmark.averageEpochTimestamp               avgt    5  130.291 ±  36.857  ns/op
+//[info] InfluxReaderBenchmark.averageEpochTimestampUnsafe         avgt    5  121.529 ±  11.673  ns/op
+//[info] InfluxReaderBenchmark.averageGeneralEpochTimestamp        avgt    5  127.058 ±   7.573  ns/op
+//[info] InfluxReaderBenchmark.averageGeneralEpochTimestampUnsafe  avgt    5  124.862 ±   7.524  ns/op
+//[info] InfluxReaderBenchmark.averageGeneralUtcTimestamp          avgt    5  980.548 ± 128.744  ns/op
+//[info] InfluxReaderBenchmark.averageGeneralUtcTimestampUnsafe    avgt    5  972.418 ± 169.507  ns/op
+//[info] InfluxReaderBenchmark.averageNewEpochTimestamp            avgt    5   16.830 ±   0.769  ns/op
+//[info] InfluxReaderBenchmark.averageNewEpochTimestampUnsafe      avgt    5   12.286 ±   1.478  ns/op
+//[info] InfluxReaderBenchmark.averageUtcTimestamp                 avgt    5  114.618 ±   1.397  ns/op
+//[info] InfluxReaderBenchmark.averageUtcTimestampUnsafe           avgt    5  160.640 ± 160.653  ns/op
 @BenchmarkMode(Array(Mode.AverageTime))
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 class InfluxReaderBenchmark {
+
+  // new
+  @Benchmark
+  def averageNewEpochTimestamp(state: NewEpochReader): Unit =
+    state.reader.read(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
+
+  @Benchmark
+  def averageNewEpochTimestampUnsafe(state: NewEpochReader): Unit =
+    state.reader.readUnsafe(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
 
   // custom
   @Benchmark
@@ -135,15 +149,16 @@ object InfluxReaderBenchmark {
     def up(): Unit = reader = new InfluxReader[Epoch] {
       override def read(js: JArray): ErrorOr[Epoch] = {
         val arr = js.vs
-        Right(
+        Try(
           Epoch(
             arr(2).asString,
             arr(3).getString,
             arr(1).asInt,
             arr(0).asLong
           )
-        )
+        ).toEither
       }
+
       override def readUnsafe(js: JArray): Epoch = {
         val arr = js.vs
         Epoch(
@@ -154,6 +169,15 @@ object InfluxReaderBenchmark {
         )
       }
     }
+    @TearDown
+    def close(): Unit = {}
+  }
+
+  @State(Scope.Benchmark)
+  class NewEpochReader {
+    var reader: InfluxReader[Epoch] = _
+    @Setup
+    def up(): Unit = reader = InfluxReader[Epoch]
     @TearDown
     def close(): Unit = {}
   }

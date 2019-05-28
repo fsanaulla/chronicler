@@ -13,6 +13,7 @@ import org.openjdk.jmh.annotations._
 @BenchmarkMode(Array(Mode.AverageTime))
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 class InfluxWriterBenchmark {
+
   @Benchmark
   def averageCustomWriteTime(state: CustomWriter): Unit =
     state.writer.write(Test("a", Some("b"), 5, 150L))
