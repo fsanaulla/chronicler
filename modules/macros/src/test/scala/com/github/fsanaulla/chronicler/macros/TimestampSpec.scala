@@ -32,18 +32,26 @@ class TimestampSpec extends WordSpec with Matchers {
                                        @tag surname: Option[String],
                                        @field age: Int,
                                        @timestamp time: Long)
-      val epochFmt = InfluxReader[GeneralEpochTimestamp]
+      val epochRd = InfluxReader[GeneralEpochTimestamp]
 
       "epoch time" in {
-        epochFmt
+        epochRd
           .read(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull)))
           .right
           .get shouldEqual GeneralEpochTimestamp("Fz", None, 4, 1438715114318570484L)
 
-        epochFmt
+        epochRd
           .read(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
           .right
           .get shouldEqual GeneralEpochTimestamp("Fz", None, 4, 1438715114318570484L)
+
+        epochRd
+          .readUnsafe(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull)))
+          .shouldEqual(GeneralEpochTimestamp("Fz", None, 4, 1438715114318570484L))
+
+        epochRd
+          .readUnsafe(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
+          .shouldEqual(GeneralEpochTimestamp("Fz", None, 4, 1438715114318570484L))
       }
 
       case class GeneralUtcTimestamp(@tag name: String,
@@ -51,17 +59,25 @@ class TimestampSpec extends WordSpec with Matchers {
                                      @field age: Int,
                                      @timestamp time: String)
 
-      val utcFmt = InfluxReader[GeneralUtcTimestamp]
+      val utcRd = InfluxReader[GeneralUtcTimestamp]
       "utc time" in {
-        utcFmt
+        utcRd
           .read(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
           .right
           .get shouldEqual GeneralUtcTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z")
 
-        utcFmt
+        utcRd
           .read(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull)))
           .right
           .get shouldEqual GeneralUtcTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z")
+
+        utcRd
+          .readUnsafe(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
+          .shouldEqual(GeneralUtcTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z"))
+
+        utcRd
+          .readUnsafe(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull)))
+          .shouldEqual(GeneralUtcTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z"))
       }
     }
   }
@@ -72,12 +88,16 @@ class TimestampSpec extends WordSpec with Matchers {
                                 @tag surname: Option[String],
                                 @field age: Int,
                                 @epoch @timestamp time: Long)
-      val fmt = InfluxReader[EpochTimestamp]
+      val rd = InfluxReader[EpochTimestamp]
 
-      fmt
+      rd
         .read(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
         .right
         .get shouldEqual EpochTimestamp("Fz", None, 4, 1438715114318570484L)
+
+      rd
+        .readUnsafe(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
+        .shouldEqual(EpochTimestamp("Fz", None, 4, 1438715114318570484L))
     }
   }
 
@@ -87,12 +107,16 @@ class TimestampSpec extends WordSpec with Matchers {
                               @tag surname: Option[String],
                               @field age: Int,
                               @utc @timestamp time: String)
-      val fmt = InfluxReader[UTCTimestamp]
+      val rd = InfluxReader[UTCTimestamp]
 
-      fmt
+      rd
         .read(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull)))
         .right
         .get shouldEqual UTCTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z")
+
+      rd
+        .readUnsafe(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull)))
+        .shouldEqual(UTCTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z"))
     }
   }
 }

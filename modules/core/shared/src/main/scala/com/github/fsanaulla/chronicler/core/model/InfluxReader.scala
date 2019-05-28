@@ -30,7 +30,24 @@ import scala.annotation.implicitNotFound
   "No InfluxReader found for type ${T}. Try to implement an implicit InfluxReader for this type."
 )
 trait InfluxReader[T] extends JSerializable {
+
+  /**
+    * Read wrapping in Either[Throwable, T]
+    *
+    * @param js - jarray
+    * @return   - Either[Throwable, T]
+    */
   def read(js: JArray): ErrorOr[T]
+
+  /**
+    * Read unsafe throwing exception
+    *
+    * @param js - jarray
+    * @return   - T
+    *
+    * @since - 0.5.2
+    */
+  def readUnsafe(js: JArray): T
 }
 
 object InfluxReader {

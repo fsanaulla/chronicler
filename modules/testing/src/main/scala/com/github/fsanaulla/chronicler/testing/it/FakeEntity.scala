@@ -21,6 +21,7 @@ object FakeEntity {
       case _ =>
         Left(new ParsingException("Can't deserialize FakeEntity"))
     }
+    override def readUnsafe(js: JArray): FakeEntity = read(js).right.get
   }
 
   // to be compatible with scala 2.11
