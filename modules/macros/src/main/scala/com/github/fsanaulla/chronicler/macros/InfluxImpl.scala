@@ -102,7 +102,12 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     def buildResult(tp: c.universe.Type,
                     constructors: List[Tree],
                     unsafe: Boolean): c.universe.Tree = {
-      if (!unsafe) q"scala.util.Try(new $tp(..$constructors)).toEither"
+      if (!unsafe)
+        q"""scala.util.Try(new $tp(..$constructors)) match {
+              case scala.util.Success(v) => scala.util.Right(v)
+              case scala.util.Failure(e) => scala.util.Left(e)
+            }
+         """
       else q"new $tp(..$constructors)"
     }
 
