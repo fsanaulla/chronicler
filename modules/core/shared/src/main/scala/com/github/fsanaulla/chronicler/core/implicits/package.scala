@@ -47,44 +47,6 @@ package object implicits {
         throw exception(s"Can't deserialize $js to String")
     }
   }
-//
-//  implicit object IntInfluxReader extends InfluxReader[Int] {
-//    def read(js: JArray): ErrorOr[Int] = js.vs match {
-//      case Array(js: JValue) =>
-//        Right(js)
-//      case _                 =>
-//        Left(exception(s"Can't deserialize $js to Int"))
-//    }
-//
-//    override def readUnsafe(js: JArray): Int = ???
-//  }
-//
-//  implicit object DoubleInfluxReader extends InfluxReader[Double] {
-//    def read(js: JArray): ErrorOr[Double] = js.vs match {
-//      case Array(js: JValue) =>
-//        Right(js)
-//      case _ =>
-//        Left(exception(s"Can't deserialize $js to Double"))
-//    }
-//  }
-//
-//  implicit object LongInfluxReader extends InfluxReader[Long] {
-//    def read(js: JArray): ErrorOr[Long] = js.vs match {
-//      case Array(js: JValue) =>
-//        Right(js)
-//      case _ =>
-//        Left(exception(s"Can't deserialize $js to Long"))
-//    }
-//  }
-//
-//  implicit object BooleanInfluxReader extends InfluxReader[Boolean] {
-//    def read(js: JArray): ErrorOr[Boolean] = js.vs match {
-//      case Array(js: JValue) =>
-//        Right(js)
-//      case _ =>
-//        Left(exception(s"Can't deserialize $js to Boolean"))
-//    }
-//  }
 
   implicit object RetentionPolicyInfluxReader extends InfluxReader[RetentionPolicyInfo] {
     def read(js: JArray): ErrorOr[RetentionPolicyInfo] = js.vs match {
