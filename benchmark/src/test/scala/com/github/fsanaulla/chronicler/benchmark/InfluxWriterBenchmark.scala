@@ -10,7 +10,7 @@ import org.openjdk.jmh.annotations._
 
 //[info] InfluxWriterBenchmark.averageCustomWriteTime  avgt    5   86.526 ±  0.460  ns/op
 //[info] InfluxWriterBenchmark.averageMacroWriteTime   avgt    5  156.521 ± 44.614  ns/op
-@BenchmarkMode(Array(Mode.AverageTime))
+@BenchmarkMode(Array(Mode.All))
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 class InfluxWriterBenchmark {
 
