@@ -16,20 +16,9 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared
 
-import java.net.HttpURLConnection
-
-import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient.CustomizationF
-import com.softwaremill.sttp.{SttpBackend, TryHttpURLConnectionBackend}
-
-import scala.util.Try
-
-class InfluxUrlClient(customization: Option[CustomizationF]) { self: AutoCloseable =>
-  implicit val backend: SttpBackend[Try, Nothing] =
-    customization.fold(TryHttpURLConnectionBackend())(c => TryHttpURLConnectionBackend(customizeConnection = c))
-
-  def close(): Unit = backend.close()
-}
-
-object InfluxUrlClient {
-  type CustomizationF = HttpURLConnection => Unit
+final case class Url(url: String, params: List[(String, String)] = Nil, ssl: Boolean) {
+  def mkUrl: String = {
+    val protocol = if (ssl) "https" else "http"
+    protocol + "://" + url
+  }
 }

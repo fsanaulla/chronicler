@@ -19,9 +19,7 @@ package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
-import com.github.fsanaulla.chronicler.urlhttp.shared.Extensions.RichString
 import com.github.fsanaulla.chronicler.urlhttp.shared.implicits.jsonHandler
-import com.softwaremill.sttp.Response
 import jawn.ast._
 import org.scalatest.{FlatSpec, Matchers, TryValues}
 
@@ -37,7 +35,7 @@ class UrlResponseHandlerSpec extends FlatSpec with Matchers with TryValues {
 
   "UrlResponseHandler" should "extract single query result from response" in {
 
-    val singleResponse: Response[JValue] =
+    val singleResponse =
       """
         |{
         |    "results": [
@@ -88,7 +86,7 @@ class UrlResponseHandlerSpec extends FlatSpec with Matchers with TryValues {
 
   it should "extract bulk query results from response" in {
 
-    val bulkResponse: Response[JValue] =
+    val bulkResponse =
       """
         |{
         |    "results": [
@@ -138,7 +136,7 @@ class UrlResponseHandlerSpec extends FlatSpec with Matchers with TryValues {
         |        }
         |    ]
         |}
-      """.stripMargin.toResponse()
+      """.stripMargin.toResponse
 
     respHandler.bulkQueryResultJson(bulkResponse).right.get shouldEqual Array(
       Array(
@@ -204,16 +202,15 @@ class UrlResponseHandlerSpec extends FlatSpec with Matchers with TryValues {
       ]
     }
   """
-    val cqHttpResponse = Response.ok(p.parseFromString(cqStrJson).get)
 
-    val cqi = respHandler.toCqQueryResult(cqHttpResponse).right.get.filter(_.queries.nonEmpty).head
+    val cqi = respHandler.toCqQueryResult(cqStrJson.toResponse).right.get.filter(_.queries.nonEmpty).head
     cqi.dbName shouldEqual "mydb"
     cqi.queries.head shouldEqual ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")
   }
 
   it should "extract optional error message" in {
 
-    val errorResponse: Response[JValue] =
+    val errorResponse =
       """
         |{
         |        "results": [
@@ -223,15 +220,15 @@ class UrlResponseHandlerSpec extends FlatSpec with Matchers with TryValues {
         |          }
         |        ]
         |}
-      """.stripMargin.toResponse()
+      """.stripMargin.toResponse
 
     jsonHandler.responseErrorMsgOpt(errorResponse).right.get shouldEqual Some("user not found")
   }
 
   it should "extract error message" in {
 
-    val errorResponse: Response[JValue] =
-      """ { "error": "user not found" } """.toResponse()
+    val errorResponse =
+      """ { "error": "user not found" } """.toResponse
 
     jsonHandler.responseErrorMsg(errorResponse).right.get shouldEqual "user not found"
   }

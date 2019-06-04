@@ -21,13 +21,10 @@ import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.api.{DatabaseApi, MeasurementApi}
 import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
-import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient
-import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient.CustomizationF
-import com.github.fsanaulla.chronicler.urlhttp.shared.alias.Request
+import com.github.fsanaulla.chronicler.urlhttp.shared.Url
 import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlQueryBuilder, UrlRequestExecutor}
 import com.github.fsanaulla.chronicler.urlhttp.shared.implicits._
-import com.softwaremill.sttp.{Response, Uri}
-import jawn.ast.JValue
+import requests.Response
 
 import scala.reflect.ClassTag
 import scala.util.Try
@@ -36,12 +33,12 @@ final class UrlIOClient(host: String,
                         port: Int,
                         credentials: Option[InfluxCredentials],
                         gzipped: Boolean,
-                        customization: Option[CustomizationF])
-  extends InfluxUrlClient(customization) with IOClient[Try, Request, Response[JValue], Uri, String] {
+                        ssl: Boolean)
+  extends IOClient[Try, Response, Url, String] {
 
-  implicit val qb: UrlQueryBuilder = new UrlQueryBuilder(host, port, credentials)
-  implicit val re: UrlRequestExecutor = new UrlRequestExecutor
-  implicit val rh: ResponseHandler[Response[JValue]] = new ResponseHandler(jsonHandler)
+  implicit val qb: UrlQueryBuilder = new UrlQueryBuilder(host, port, credentials, ssl)
+  implicit val re: UrlRequestExecutor = new UrlRequestExecutor(ssl)
+  implicit val rh: ResponseHandler[Response] = new ResponseHandler(jsonHandler)
 
   override def database(dbName: String): Database =
     new DatabaseApi(dbName, gzipped)
@@ -55,4 +52,6 @@ final class UrlIOClient(host: String,
       .executeUri(qb.buildQuery("/ping", Map.empty[String, String]))
       .map(rh.pingResult)
   }
+
+  override def close(): Unit = {}
 }

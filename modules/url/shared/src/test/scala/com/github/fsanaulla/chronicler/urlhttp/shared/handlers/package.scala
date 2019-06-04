@@ -16,17 +16,11 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared
 
-import com.softwaremill.sttp.{ResponseAs, asString}
-import jawn.ast.{JNull, JParser, JValue}
+import requests.{Response, ResponseBlob}
 
-import scala.util.Success
-
-package object formats {
-  val asJson: ResponseAs[JValue, Nothing] =
-    asString
-      .map(JParser.parseFromString)
-      .map {
-        case Success(jv) => jv
-        case _ => JNull
-      }
+package object handlers {
+  implicit class RichString(private val str: String) extends AnyVal {
+    def toResponse: Response =
+      Response("", 200, "" ,Map.empty, new ResponseBlob(str.getBytes()), None)
+  }
 }

@@ -9,13 +9,9 @@ import org.scalatest.{FlatSpec, Matchers}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 07.09.17
   */
-class SystemManagementSpec
-  extends FlatSpec
-    with Matchers
-    with DockerizedInfluxDB {
+class SystemManagementSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 
-  lazy val influx: UrlIOClient =
-    InfluxIO(host, port, Some(creds))
+  lazy val influx: UrlIOClient = InfluxIO(host, port, Some(creds))
 
   it should "ping InfluxDB" in {
     val result = influx.ping.get.right.get
