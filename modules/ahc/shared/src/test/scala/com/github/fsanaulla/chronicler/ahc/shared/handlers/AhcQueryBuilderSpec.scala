@@ -32,7 +32,7 @@ class AhcQueryBuilderSpec extends FlatSpec with Matchers {
     )
     val res = s"http://$host:$port/query?q=FirstQuery%3BSecondQuery"
 
-    qb.buildQuery("/query", qb.buildQueryParams(queryMap)).toString() shouldEqual res
+    qb.buildQuery("/query", qb.withCredentials(queryMap)).toString() shouldEqual res
   }
 
 }

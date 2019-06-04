@@ -17,7 +17,6 @@
 package com.github.fsanaulla.chronicler.ahc.io
 
 import com.github.fsanaulla.chronicler.ahc.shared.InfluxAhcClient
-import com.github.fsanaulla.chronicler.ahc.shared.alias.Request
 import com.github.fsanaulla.chronicler.ahc.shared.handlers.{AhcQueryBuilder, AhcRequestExecutor}
 import com.github.fsanaulla.chronicler.ahc.shared.implicits._
 import com.github.fsanaulla.chronicler.core.IOClient
@@ -38,7 +37,7 @@ final class AhcIOClient(host: String,
                         credentials: Option[InfluxCredentials],
                         asyncClientConfig: Option[AsyncHttpClientConfig])
                        (implicit ex: ExecutionContext)
-  extends InfluxAhcClient(asyncClientConfig) with IOClient[Future, Request, Response[JValue], Uri, String] {
+  extends InfluxAhcClient(asyncClientConfig) with IOClient[Future, Response[JValue], Uri, String] {
 
   implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
   implicit val re: AhcRequestExecutor = new AhcRequestExecutor
