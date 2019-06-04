@@ -26,13 +26,13 @@ import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 private[chronicler] trait ContinuousQueries[U] {
 
   private[chronicler] final def showCQQuery(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.buildQueryParams("SHOW CONTINUOUS QUERIES"))
+    qb.buildQuery("/query", qb.withCredentials("SHOW CONTINUOUS QUERIES"))
 
   private[chronicler] final def dropCQQuery(dbName: String, cqName: String)
                                            (implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.buildQueryParams(s"DROP CONTINUOUS QUERY $cqName ON $dbName"))
+    qb.buildQuery("/query", qb.withCredentials(s"DROP CONTINUOUS QUERY $cqName ON $dbName"))
 
   private[chronicler] final def createCQQuery(dbName: String, cqName: String, query: String)
                                              (implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.buildQueryParams(s"CREATE CONTINUOUS QUERY $cqName ON $dbName BEGIN $query END"))
+    qb.buildQuery("/query", qb.withCredentials(s"CREATE CONTINUOUS QUERY $cqName ON $dbName BEGIN $query END"))
 }

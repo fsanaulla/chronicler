@@ -26,12 +26,12 @@ import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 private[chronicler] trait ShardManagementQuery[U] {
 
   private[chronicler] final def dropShardQuery(shardId: Int)(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.buildQueryParams(s"DROP SHARD $shardId"))
+    qb.buildQuery("/query", qb.withCredentials(s"DROP SHARD $shardId"))
 
   private[chronicler] final def showShardsQuery(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.buildQueryParams("SHOW SHARDS"))
+    qb.buildQuery("/query", qb.withCredentials("SHOW SHARDS"))
 
   private[chronicler] final def showShardGroupsQuery(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.buildQueryParams("SHOW SHARD GROUPS"))
+    qb.buildQuery("/query", qb.withCredentials("SHOW SHARD GROUPS"))
 
 }

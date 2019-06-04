@@ -26,8 +26,8 @@ import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 private[chronicler] trait QueriesManagementQuery[U] {
 
   private[chronicler] final def showQuerysQuery(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.buildQueryParams("SHOW QUERIES"))
+    qb.buildQuery("/query", qb.withCredentials("SHOW QUERIES"))
 
   private[chronicler] final def killQueryQuery(queryId: Int)(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.buildQueryParams(s"KILL QUERY $queryId"))
+    qb.buildQuery("/query", qb.withCredentials(s"KILL QUERY $queryId"))
 }

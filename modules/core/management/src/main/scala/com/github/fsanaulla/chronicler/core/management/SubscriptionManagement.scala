@@ -28,9 +28,9 @@ import com.github.fsanaulla.chronicler.core.query.SubscriptionsManagementQuery
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-trait SubscriptionManagement[F[_], Req, Resp, Uri, Entity] extends SubscriptionsManagementQuery[Uri] {
+trait SubscriptionManagement[F[_], Resp, Uri, Entity] extends SubscriptionsManagementQuery[Uri] {
   implicit val qb: QueryBuilder[Uri]
-  implicit val re: RequestExecutor[F, Req, Resp, Uri, Entity]
+  implicit val re: RequestExecutor[F, Resp, Uri, Entity]
   implicit val rh: ResponseHandler[Resp]
   implicit val F: Functor[F]
 

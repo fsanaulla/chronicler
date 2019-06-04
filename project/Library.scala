@@ -5,12 +5,13 @@ import sbt._
   * Author: fayaz.sanaulla@gmail.com
   * Date: 28.08.17
   */
-object Dependencies {
+object Library {
 
   object Versions {
     val sttp       = "1.5.17"
     val netty      = "4.1.36.Final"
-
+    val request    = "0.1.8"
+    
     object Akka {
       val akka     = "2.5.22"
       val akkaHttp = "10.1.7"
@@ -64,4 +65,7 @@ object Dependencies {
     "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp   exclude("io.netty", "netty-handler") exclude("org.reactivestreams", "reactive-streams"),
     "org.reactivestreams"   %  "reactive-streams"                 % "1.0.2"
   )
+
+  val requestScala =
+    "com.lihaoyi" %% "requests" % Versions.request
 }

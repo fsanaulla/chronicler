@@ -39,7 +39,7 @@ trait DatabaseOperationQuery[U] {
     for (pr <- precision) queryParams += ("precision" -> pr.toString)
     for (cons <- consistency) queryParams += ("consistency" -> cons.toString)
 
-    qb.buildQuery("/write", qb.buildQueryParams(queryParams))
+    qb.buildQuery("/write", qb.withCredentials(queryParams))
   }
 
   final def readFromInfluxSingleQuery(dbName: String,
@@ -58,7 +58,7 @@ trait DatabaseOperationQuery[U] {
     if (chunked) queryParams += ("chunked" -> chunked.toString)
     if (pretty) queryParams += ("pretty" -> pretty.toString)
 
-    qb.buildQuery("/query", qb.buildQueryParams(queryParams))
+    qb.buildQuery("/query", qb.withCredentials(queryParams))
   }
 
   final def readFromInfluxBulkQuery(dbName: String,
@@ -76,6 +76,6 @@ trait DatabaseOperationQuery[U] {
     if (chunked) queryParams += ("chunked" -> chunked.toString)
     if (pretty) queryParams += ("pretty" -> pretty.toString)
 
-    qb.buildQuery("/query", qb.buildQueryParams(queryParams))
+    qb.buildQuery("/query", qb.withCredentials(queryParams))
   }
 }

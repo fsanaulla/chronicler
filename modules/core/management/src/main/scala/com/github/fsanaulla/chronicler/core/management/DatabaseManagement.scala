@@ -27,9 +27,9 @@ import com.github.fsanaulla.chronicler.core.query.DataManagementQuery
   * Author: fayaz.sanaulla@gmail.com
   * Date: 08.08.17
   */
-trait DatabaseManagement[F[_], Req, Resp, Uri, Body] extends DataManagementQuery[Uri] {
+trait DatabaseManagement[F[_], Resp, Uri, Body] extends DataManagementQuery[Uri] {
   implicit val qb: QueryBuilder[Uri]
-  implicit val re: RequestExecutor[F, Req, Resp, Uri, Body]
+  implicit val re: RequestExecutor[F, Resp, Uri, Body]
   implicit val rh: ResponseHandler[Resp]
   implicit val F: Functor[F]
 
@@ -48,7 +48,6 @@ trait DatabaseManagement[F[_], Req, Resp, Uri, Body] extends DataManagementQuery
                            shardDuration: Option[String] = None,
                            rpName: Option[String] = None): F[ErrorOr[ResponseCode]] =
     F.map(re.executeUri(createDatabaseQuery(dbName, duration, replication, shardDuration, rpName)))(rh.writeResult)
-
 
   /** Drop database */
   final def dropDatabase(dbName: String): F[ErrorOr[ResponseCode]] =

@@ -43,7 +43,7 @@ abstract class QueryBuilder[A](credentials: Option[InfluxCredentials]) {
     * @param queryMap - query parameters map
     * @return         - updated query parameters map with embedded credentials
     */
-  final def buildQueryParams(queryMap: mutable.Map[String, String]): Map[String, String] = {
+  final def withCredentials(queryMap: mutable.Map[String, String]): Map[String, String] = {
     for {
       c <- credentials
     } yield queryMap += ("u" -> c.username, "p" -> c.password)
@@ -57,6 +57,6 @@ abstract class QueryBuilder[A](credentials: Option[InfluxCredentials]) {
     * @param query - query string parameter
     * @return      - query parameters
     */
-  final def buildQueryParams(query: String): Map[String, String] =
-    buildQueryParams(scala.collection.mutable.Map("q" -> query))
+  final def withCredentials(query: String): Map[String, String] =
+    withCredentials(scala.collection.mutable.Map("q" -> query))
 }

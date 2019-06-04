@@ -27,9 +27,9 @@ import com.github.fsanaulla.chronicler.core.query.QueriesManagementQuery
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-trait QueriesManagement[F[_], Req, Resp, Uri, Entity] extends QueriesManagementQuery[Uri] {
+trait QueriesManagement[F[_], Resp, Uri, Entity] extends QueriesManagementQuery[Uri] {
   implicit val qb: QueryBuilder[Uri]
-  implicit val re: RequestExecutor[F, Req, Resp, Uri, Entity]
+  implicit val re: RequestExecutor[F, Resp, Uri, Entity]
   implicit val rh: ResponseHandler[Resp]
   implicit val F: Functor[F]
 
