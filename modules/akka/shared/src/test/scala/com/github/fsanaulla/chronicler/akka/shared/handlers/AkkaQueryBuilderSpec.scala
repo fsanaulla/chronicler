@@ -31,7 +31,7 @@ class AkkaQueryBuilderSpec extends FlatSpec with Matchers {
     )
     val res = s"http://localhost:8086/query?q=FirstQuery%3BSecondQuery"
 
-    qb.buildQuery("/query", qb.buildQueryParams(queryMap)).toString() shouldEqual res
+    qb.buildQuery("/query", qb.withCredentials(queryMap)).toString() shouldEqual res
   }
 
 }
