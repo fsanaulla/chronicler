@@ -44,6 +44,7 @@ trait JsonHandler[A] {
     */
   def responseHeader(response: A): Seq[(String, String)]
 
+  // todo: charset support
   /***
     * Extracting JSON from Response
     */

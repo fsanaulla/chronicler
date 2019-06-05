@@ -5,6 +5,13 @@ lazy val chronicler = project
   .in(file("."))
   .settings(Settings.common: _*)
   .settings(parallelExecution in Compile := false)
+//  .aggregate(
+//    coreIO, coreManagement, coreShared,
+//    ahcIO, ahcManagement, ahcShared,
+//    akkaIO, akkaManagement, akkaShared,
+//    urlIO, urlManagement, urlShared,
+//    macros, udp
+//  )
 
 //////////////////////////////////////////////////////
 //////////////////// CORE MODULES ////////////////////
@@ -67,7 +74,7 @@ lazy val urlShared = project
   .settings(
     name := s"$projectName-url-shared",
     libraryDependencies ++=
-      Library.scalaTest /*:: Library.sttp*/ :: Library.requestScala :: Nil
+      Library.scalaTest :: Library.requestScala :: Nil
   )
   .configure(defaultSettings)
   .dependsOn(coreShared)

@@ -45,6 +45,7 @@ private[urlhttp] final class UrlRequestExecutor(ssl: Boolean) extends RequestExe
         uri.mkUrl,
         RequestAuth.Empty,
         uri.params,
+        // todo: PR for ssl support
         verifySslCerts = ssl,
         data = RequestBlob.StringRequestBlob(body)
       )
