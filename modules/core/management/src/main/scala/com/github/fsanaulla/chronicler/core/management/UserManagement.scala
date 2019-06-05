@@ -23,10 +23,10 @@ import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.UserManagementQuery
 
-trait UserManagement[F[_], Req, Resp, Uri, Body] extends UserManagementQuery[Uri] {
+trait UserManagement[F[_], Resp, Uri, Body] extends UserManagementQuery[Uri] {
 
   implicit val qb: QueryBuilder[Uri]
-  implicit val re: RequestExecutor[F, Req, Resp, Uri, Body]
+  implicit val re: RequestExecutor[F, Resp, Uri, Body]
   implicit val rh: ResponseHandler[Resp]
   implicit val F: Functor[F]
 

@@ -18,7 +18,6 @@ package com.github.fsanaulla.chronicler.urlhttp.io
 
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
-import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient.CustomizationF
 
 object InfluxIO {
 
@@ -36,8 +35,8 @@ object InfluxIO {
             port: Int = 8086,
             credentials: Option[InfluxCredentials] = None,
             gzipped: Boolean = false,
-            customization: Option[CustomizationF] = None): UrlIOClient =
-    new UrlIOClient(host, port, credentials, gzipped, customization)
+            ssl: Boolean = false): UrlIOClient =
+    new UrlIOClient(host, port, credentials, gzipped, ssl)
 
   /**
     * Retrieve IO InfluxDB client, without management functionality using configuration object
@@ -46,6 +45,6 @@ object InfluxIO {
     * @return     - [[UrlIOClient]]
     */
   def apply(conf: InfluxConfig): UrlIOClient =
-    apply(conf.host, conf.port, conf.credentials, conf.gzipped, conf.customization)
+    apply(conf.host, conf.port, conf.credentials, conf.gzipped, conf.ssl)
 
 }

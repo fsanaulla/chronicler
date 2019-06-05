@@ -29,15 +29,15 @@ import scala.reflect.ClassTag
 /**
   * Main functionality for measurement api
   */
-final class MeasurementApi[F[_], Req, Resp, Uri, Body, A](dbName: String,
-                                                          measurementName: String,
-                                                          gzipped: Boolean)
-                                                         (implicit qb: QueryBuilder[Uri],
-                                                          bd: BodyBuilder[Body],
-                                                          re: RequestExecutor[F, Req, Resp, Uri, Body],
-                                                          rh: ResponseHandler[Resp],
-                                                          F: Functor[F],
-                                                          FA: Failable[F]) extends DatabaseOperationQuery[Uri] {
+final class MeasurementApi[F[_], Resp, Uri, Body, A](dbName: String,
+                                                     measurementName: String,
+                                                     gzipped: Boolean)
+                                                    (implicit qb: QueryBuilder[Uri],
+                                                     bd: BodyBuilder[Body],
+                                                     re: RequestExecutor[F, Resp, Uri, Body],
+                                                     rh: ResponseHandler[Resp],
+                                                     F: Functor[F],
+                                                     FA: Failable[F]) extends DatabaseOperationQuery[Uri] {
 
   /**
     * Make single write

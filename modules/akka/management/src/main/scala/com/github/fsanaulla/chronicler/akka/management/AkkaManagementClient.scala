@@ -19,7 +19,6 @@ package com.github.fsanaulla.chronicler.akka.management
 import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.HttpsConnectionContext
 import com.github.fsanaulla.chronicler.akka.shared.InfluxAkkaClient
-import com.github.fsanaulla.chronicler.akka.shared.alias.Request
 import com.github.fsanaulla.chronicler.akka.shared.handlers.{AkkaQueryBuilder, AkkaRequestExecutor}
 import com.github.fsanaulla.chronicler.akka.shared.implicits._
 import com.github.fsanaulla.chronicler.core.ManagementClient
@@ -37,7 +36,7 @@ final class AkkaManagementClient(host: String,
                                  httpsContext: Option[HttpsConnectionContext])
                                 (implicit val ex: ExecutionContext, val system: ActorSystem, val F: Functor[Future])
   extends InfluxAkkaClient(httpsContext)
-    with ManagementClient[Future, Request, Response[JValue], Uri, String] {
+    with ManagementClient[Future, Response[JValue], Uri, String] {
 
   implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(host, port, credentials)
   implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor

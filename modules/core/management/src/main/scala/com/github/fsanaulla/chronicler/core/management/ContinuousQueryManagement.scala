@@ -27,9 +27,9 @@ import com.github.fsanaulla.chronicler.core.query.ContinuousQueries
   * Author: fayaz.sanaulla@gmail.com
   * Date: 08.08.17
   */
-trait ContinuousQueryManagement[F[_], Req, Resp, Uri, Entity] extends ContinuousQueries[Uri] {
+trait ContinuousQueryManagement[F[_], Resp, Uri, Entity] extends ContinuousQueries[Uri] {
   implicit val qb: QueryBuilder[Uri]
-  implicit val re: RequestExecutor[F, Req, Resp, Uri, Entity]
+  implicit val re: RequestExecutor[F, Resp, Uri, Entity]
   implicit val rh: ResponseHandler[Resp]
   implicit val F: Functor[F]
 

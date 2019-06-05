@@ -56,29 +56,29 @@ private[chronicler] trait DataManagementQuery[U] {
       sb.append(s" NAME $rp")
     }
 
-    qb.buildQuery("/query", qb.buildQueryParams(sb.toString()))
+    qb.buildQuery("/query", qb.withCredentials(sb.toString()))
   }
 
   private[chronicler] final def dropDatabaseQuery(dbName: String)(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.buildQueryParams(s"DROP DATABASE $dbName"))
+    qb.buildQuery("/query", qb.withCredentials(s"DROP DATABASE $dbName"))
 
   private[chronicler] final def dropSeriesQuery(dbName: String, seriesName: String)(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DROP SERIES FROM $seriesName")))
+    qb.buildQuery("/query", qb.withCredentials(mutable.Map("db" -> dbName, "q" -> s"DROP SERIES FROM $seriesName")))
 
   private[chronicler] final def dropMeasurementQuery(dbName: String, measurementName: String)(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DROP MEASUREMENT $measurementName")))
+    qb.buildQuery("/query", qb.withCredentials(mutable.Map("db" -> dbName, "q" -> s"DROP MEASUREMENT $measurementName")))
 
   private[chronicler] final def deleteAllSeriesQuery(dbName: String, seriesName: String)(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"DELETE FROM $seriesName")))
+    qb.buildQuery("/query", qb.withCredentials(mutable.Map("db" -> dbName, "q" -> s"DELETE FROM $seriesName")))
 
   private[chronicler] final def showMeasurementQuery(dbName: String)(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.buildQueryParams(mutable.Map("db" -> dbName, "q" -> s"SHOW MEASUREMENTS")))
+    qb.buildQuery("/query", qb.withCredentials(mutable.Map("db" -> dbName, "q" -> s"SHOW MEASUREMENTS")))
 
   private[chronicler] final def showDatabasesQuery(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.buildQueryParams(s"SHOW DATABASES"))
+    qb.buildQuery("/query", qb.withCredentials(s"SHOW DATABASES"))
 
   private[chronicler] final def showFieldKeysQuery(dbName: String, measurementName: String)(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.buildQueryParams(s"SHOW FIELD KEYS ON $dbName FROM $measurementName"))
+    qb.buildQuery("/query", qb.withCredentials(s"SHOW FIELD KEYS ON $dbName FROM $measurementName"))
 
   private[chronicler] final def showTagKeysQuery(dbName: String,
                              measurementName: String,
@@ -105,7 +105,7 @@ private[chronicler] trait DataManagementQuery[U] {
       sb.append(" OFFSET ").append(o)
     }
 
-    qb.buildQuery("/query", qb.buildQueryParams(sb.toString()))
+    qb.buildQuery("/query", qb.withCredentials(sb.toString()))
   }
 
   private[chronicler] final def showTagValuesQuery(dbName: String,
@@ -142,6 +142,6 @@ private[chronicler] trait DataManagementQuery[U] {
       sb.append(" OFFSET ").append(o)
     }
 
-    qb.buildQuery("/query", qb.buildQueryParams(sb.toString()))
+    qb.buildQuery("/query", qb.withCredentials(sb.toString()))
   }
 }

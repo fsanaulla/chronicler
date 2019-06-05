@@ -16,10 +16,9 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
-import com.softwaremill.sttp.Response
+import com.github.fsanaulla.chronicler.urlhttp.shared.implicits.jsonHandler
 import jawn.ast._
 import org.scalatest.{FlatSpec, Matchers, OptionValues, TryValues}
-import com.github.fsanaulla.chronicler.urlhttp.shared.implicits.jsonHandler
 
 /**
   * Created by
@@ -60,11 +59,9 @@ class UrlJsonHandlerSpec extends FlatSpec with Matchers with TryValues with Opti
                       ]
                   }"""
 
-    val resp: Response[JValue] = Response.ok(JParser.parseFromString(singleStrJson).get)
-
     val result: JValue = JParser.parseFromString(singleStrJson).get
 
-    jsonHandler.responseBody(resp).right.get shouldEqual result
+    jsonHandler.responseBody(singleStrJson.toResponse).right.get shouldEqual result
   }
 
   it should "extract single query result from JSON" in {

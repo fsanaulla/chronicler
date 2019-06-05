@@ -30,13 +30,13 @@ import jawn.ast.JArray
   * @tparam F - container type
   * @tparam Body - Entity type
   */
-final class DatabaseApi[F[_], Req, Resp, Uri, Body](dbName: String,
-                                                    gzipped: Boolean)
-                                                   (implicit qb: QueryBuilder[Uri],
-                                                    bd: BodyBuilder[Body],
-                                                    re: RequestExecutor[F, Req, Resp, Uri, Body],
-                                                    rh: ResponseHandler[Resp],
-                                                    F: Functor[F]) extends DatabaseOperationQuery[Uri] {
+final class DatabaseApi[F[_], Resp, Uri, Body](dbName: String,
+                                               gzipped: Boolean)
+                                              (implicit qb: QueryBuilder[Uri],
+                                               bd: BodyBuilder[Body],
+                                               re: RequestExecutor[F, Resp, Uri, Body],
+                                               rh: ResponseHandler[Resp],
+                                               F: Functor[F]) extends DatabaseOperationQuery[Uri] {
 
    def writeFromFile(file: File,
                      consistency: Option[Consistency] = None,

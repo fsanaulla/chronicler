@@ -18,32 +18,14 @@ package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
 import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
-import com.softwaremill.sttp.Uri.QueryFragment
-import com.softwaremill.sttp.Uri.QueryFragment.KeyValue
-import com.softwaremill.sttp._
-
-import scala.annotation.tailrec
+import com.github.fsanaulla.chronicler.urlhttp.shared.Url
 
 private[urlhttp] class UrlQueryBuilder(host: String,
                                        port: Int,
-                                       credentials: Option[InfluxCredentials]) extends QueryBuilder[Uri](credentials) {
+                                       credentials: Option[InfluxCredentials],
+                                       ssl: Boolean) extends QueryBuilder[Url](credentials) {
 
-  override def buildQuery(uri: String,
-                          queryParams: Map[String, String]): Uri = {
-    val u = Uri(host = host, port).path(uri)
-    val encoding = Uri.QueryFragmentEncoding.All
-    val kvLst = queryParams.map {
-      case (k, v) => KeyValue(k, v, valueEncoding = encoding)
-    }
-
-    @tailrec
-    def addQueryParam(u: Uri, lst: Seq[QueryFragment]): Uri = {
-      lst match {
-        case Nil => u
-        case h :: tail => addQueryParam(u.queryFragment(h), tail)
-      }
-    }
-
-    addQueryParam(u, kvLst.toList)
-  }
+  // used as a stub class to collect all request information
+  override def buildQuery(uri: String, queryParams: Map[String, String]): Url =
+    new Url(host + ":" + port + uri, queryParams.toList, ssl)
 }

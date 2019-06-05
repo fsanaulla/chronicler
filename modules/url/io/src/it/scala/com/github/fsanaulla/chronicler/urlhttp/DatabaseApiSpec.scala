@@ -18,15 +18,12 @@ import org.scalatest.{FlatSpec, Matchers}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 02.03.18
   */
-class DatabaseApiSpec
-  extends FlatSpec
-    with Matchers
-    with DockerizedInfluxDB {
+class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 
   val testDB = "db"
 
   lazy val influxConf =
-    InfluxConfig(host, port, credentials = Some(creds), gzipped = false, None)
+    InfluxConfig(host, port, credentials = Some(creds))
 
   lazy val mng: UrlManagementClient =
     InfluxMng(host, port, credentials = Some(creds))

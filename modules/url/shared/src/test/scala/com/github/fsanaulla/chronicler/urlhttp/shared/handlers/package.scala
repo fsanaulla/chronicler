@@ -16,20 +16,11 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared
 
-import java.net.HttpURLConnection
+import requests.{Response, ResponseBlob}
 
-import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxUrlClient.CustomizationF
-import com.softwaremill.sttp.{SttpBackend, TryHttpURLConnectionBackend}
-
-import scala.util.Try
-
-class InfluxUrlClient(customization: Option[CustomizationF]) { self: AutoCloseable =>
-  implicit val backend: SttpBackend[Try, Nothing] =
-    customization.fold(TryHttpURLConnectionBackend())(c => TryHttpURLConnectionBackend(customizeConnection = c))
-
-  def close(): Unit = backend.close()
-}
-
-object InfluxUrlClient {
-  type CustomizationF = HttpURLConnection => Unit
+package object handlers {
+  implicit class RichString(private val str: String) extends AnyVal {
+    def toResponse: Response =
+      Response("", 200, "" ,Map.empty, new ResponseBlob(str.getBytes()), None)
+  }
 }

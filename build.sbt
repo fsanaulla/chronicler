@@ -5,6 +5,13 @@ lazy val chronicler = project
   .in(file("."))
   .settings(Settings.common: _*)
   .settings(parallelExecution in Compile := false)
+//  .aggregate(
+//    coreIO, coreManagement, coreShared,
+//    ahcIO, ahcManagement, ahcShared,
+//    akkaIO, akkaManagement, akkaShared,
+//    urlIO, urlManagement, urlShared,
+//    macros, udp
+//  )
 
 //////////////////////////////////////////////////////
 //////////////////// CORE MODULES ////////////////////
@@ -35,7 +42,7 @@ lazy val coreShared = project
   .configs(Settings.PropertyTest)
   .settings(
     name := s"$projectName-core-shared",
-    libraryDependencies ++= Dependencies.coreDep,
+    libraryDependencies ++= Library.coreDep,
     scalacOptions ++= Seq(
       "-language:implicitConversions",
       "-language:higherKinds"
@@ -66,8 +73,8 @@ lazy val urlShared = project
   .in(file("modules/url/shared"))
   .settings(
     name := s"$projectName-url-shared",
-    libraryDependencies ++= 
-      Dependencies.scalaTest :: Dependencies.sttp :: Nil
+    libraryDependencies ++=
+      Library.scalaTest :: Library.requestScala :: Nil
   )
   .configure(defaultSettings)
   .dependsOn(coreShared)
@@ -79,7 +86,7 @@ lazy val akkaManagement = project
   .in(file("modules/akka/management"))
   .settings(
     name := s"$projectName-akka-management",
-    libraryDependencies += Dependencies.akkaTestKit % Scope.test
+    libraryDependencies += Library.akkaTestKit % Scope.test
   )
   .configure(defaultSettingsWithIt)
   .dependsOn(coreManagement, akkaShared)
@@ -89,7 +96,7 @@ lazy val akkaIO = project
   .in(file("modules/akka/io"))
   .settings(
     name := s"$projectName-akka-io",
-    libraryDependencies += Dependencies.akkaTestKit % Scope.test
+    libraryDependencies += Library.akkaTestKit % Scope.test
   )
   .configure(defaultSettingsWithIt)
   .dependsOn(coreIO, akkaShared)
@@ -101,7 +108,7 @@ lazy val akkaShared = project
   .settings(
     name := s"$projectName-akka-shared",
     libraryDependencies ++=
-      Dependencies.scalaTest :: Dependencies.akkaDep
+      Library.scalaTest :: Library.akkaDep
   )
   .configure(defaultSettings)
   .dependsOn(coreShared)
@@ -129,7 +136,7 @@ lazy val ahcShared = project
   .settings(
     name := s"$projectName-ahc-shared",
     libraryDependencies ++=
-      Dependencies.scalaTest :: Dependencies.asyncDeps
+      Library.scalaTest :: Library.asyncDeps
   )
   .configure(defaultSettings)
   .dependsOn(coreShared)
@@ -153,7 +160,7 @@ lazy val macros = project
   .configs(Settings.PropertyTest)
   .settings(
     name := s"$projectName-macros",
-    libraryDependencies ++= Dependencies.macroDeps(scalaVersion.value)
+    libraryDependencies ++= Library.macroDeps(scalaVersion.value)
   )
   .configure(defaultSettings)
   .dependsOn(coreShared)
@@ -166,7 +173,7 @@ lazy val itTesting = project
   .settings(Settings.common: _*)
   .settings(
     name := s"$projectName-testing",
-    libraryDependencies ++= Dependencies.testingDeps
+    libraryDependencies ++= Library.testingDeps
   )
   .dependsOn(coreShared)
 

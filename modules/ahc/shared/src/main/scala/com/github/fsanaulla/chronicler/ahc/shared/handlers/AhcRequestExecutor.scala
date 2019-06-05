@@ -16,7 +16,6 @@
 
 package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
-import com.github.fsanaulla.chronicler.ahc.shared.alias._
 import com.github.fsanaulla.chronicler.ahc.shared.formats._
 import com.github.fsanaulla.chronicler.core.components.RequestExecutor
 import com.github.fsanaulla.chronicler.core.encoding.gzipEncoding
@@ -26,7 +25,7 @@ import jawn.ast.JValue
 import scala.concurrent.Future
 
 private[ahc] final class AhcRequestExecutor(implicit backend: SttpBackend[Future, Nothing])
-  extends RequestExecutor[Future, Request, Response[JValue], Uri, String] {
+  extends RequestExecutor[Future, Response[JValue], Uri, String] {
 
   /**
     * Execute uri
@@ -36,15 +35,6 @@ private[ahc] final class AhcRequestExecutor(implicit backend: SttpBackend[Future
     */
   override def executeUri(uri: Uri): Future[Response[JValue]] =
     sttp.get(uri).response(asJson).send()
-
-  /**
-    * Execute request
-    *
-    * @param req - request
-    * @return - Return wrapper response
-    */
-  override def executeReq(req: Request): Future[Response[JValue]] =
-    req.send()
 
   override def execute(uri: Uri, body: String, gzipped: Boolean): Future[Response[JValue]] = {
     val req = sttp.post(uri).body(body).response(asJson)

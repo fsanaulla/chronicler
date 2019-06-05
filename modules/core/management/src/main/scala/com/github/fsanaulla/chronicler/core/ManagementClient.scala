@@ -22,18 +22,17 @@ import com.github.fsanaulla.chronicler.core.management._
   * Functionality of management client
   *
   * @tparam F      - Container
-  * @tparam Req    - Request type
   * @tparam Resp   - Response type
   * @tparam Uri    - Uri type
   * @tparam Entity - Request entity type
   */
-trait ManagementClient[F[_], Req, Resp, Uri, Entity]
+trait ManagementClient[F[_], Resp, Uri, Entity]
   extends SystemManagement[F]
-    with DatabaseManagement[F, Req, Resp, Uri, Entity]
-    with UserManagement[F, Req, Resp, Uri, Entity]
-    with QueriesManagement[F, Req, Resp, Uri, Entity]
-    with RetentionPolicyManagement[F, Req, Resp, Uri, Entity]
-    with ContinuousQueryManagement[F, Req, Resp, Uri, Entity]
-    with ShardManagement[F, Req, Resp, Uri, Entity]
-    with SubscriptionManagement[F, Req, Resp, Uri, Entity]
+    with DatabaseManagement[F, Resp, Uri, Entity]
+    with UserManagement[F, Resp, Uri, Entity]
+    with QueriesManagement[F, Resp, Uri, Entity]
+    with RetentionPolicyManagement[F, Resp, Uri, Entity]
+    with ContinuousQueryManagement[F, Resp, Uri, Entity]
+    with ShardManagement[F, Resp, Uri, Entity]
+    with SubscriptionManagement[F, Resp, Uri, Entity]
     with AutoCloseable

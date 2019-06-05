@@ -44,6 +44,7 @@ trait JsonHandler[A] {
     */
   def responseHeader(response: A): Seq[(String, String)]
 
+  // todo: charset support
   /***
     * Extracting JSON from Response
     */
@@ -52,8 +53,12 @@ trait JsonHandler[A] {
   final def databaseInfo(response: A): ErrorOr[InfluxDBInfo] = {
     val headers = responseHeader(response)
     val result = for {
-      build <- headers.collectFirst { case (k, v) if k == buildHeader => v }
-      version <- headers.collectFirst { case (k, v) if k == versionHeader => v }
+      build <- headers.collectFirst {
+        case (k, v) if k == buildHeader || k == buildHeader.toLowerCase /*coz request-scala return lowercase headers*/ => v
+      }
+      version <- headers.collectFirst {
+        case (k, v) if k == versionHeader || k == versionHeader.toLowerCase /* /*coz request-scala return lowercase headers*/ */ => v
+      }
     } yield InfluxDBInfo(build, version)
 
     result.toRight(new ParsingException(s"Can't find $buildHeader or $versionHeader"))

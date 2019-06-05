@@ -46,12 +46,12 @@ private[chronicler] trait RetentionPolicyManagementQuery[U] {
 
     if (default) sb.append(" DEFAULT")
 
-    qb.buildQuery("/query", qb.buildQueryParams(sb.toString()))
+    qb.buildQuery("/query", qb.withCredentials(sb.toString()))
   }
 
   private[chronicler] final def dropRetentionPolicyQuery(rpName: String, dbName: String)
                                                         (implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.buildQueryParams(s"DROP RETENTION POLICY $rpName ON $dbName"))
+    qb.buildQuery("/query", qb.withCredentials(s"DROP RETENTION POLICY $rpName ON $dbName"))
 
   private[chronicler] final def updateRetentionPolicyQuery(rpName: String,
                                                            dbName: String,
@@ -81,10 +81,10 @@ private[chronicler] trait RetentionPolicyManagementQuery[U] {
 
     if (default) sb.append(" DEFAULT")
 
-    qb.buildQuery("/query", qb.buildQueryParams(sb.toString()))
+    qb.buildQuery("/query", qb.withCredentials(sb.toString()))
   }
 
   private[chronicler] final def showRetentionPoliciesQuery(dbName: String)
                                                           (implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.buildQueryParams(mutable.Map("db" -> dbName, "q" -> "SHOW RETENTION POLICIES")))
+    qb.buildQuery("/query", qb.withCredentials(mutable.Map("db" -> dbName, "q" -> "SHOW RETENTION POLICIES")))
 }
