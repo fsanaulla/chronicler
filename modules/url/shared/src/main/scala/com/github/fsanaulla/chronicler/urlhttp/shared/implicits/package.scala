@@ -20,6 +20,7 @@ import java.nio.charset.Charset
 
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.components.JsonHandler
+import com.github.fsanaulla.chronicler.core.encoding.encodingFromContentType
 import com.github.fsanaulla.chronicler.core.model.{Failable, Functor}
 import jawn.ast.{JParser, JValue}
 import requests.Response
@@ -35,7 +36,10 @@ package object implicits {
           case Failure(exception) => Left(exception)
         }
       }
-      response.contentType.fold(body("UTF-8"))(body)
+      response
+        .contentType
+        .flatMap(encodingFromContentType)
+        .fold(body("UTF-8"))(body)
     }
 
     override def responseHeader(response: Response): Seq[(String, String)] =
