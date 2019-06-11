@@ -29,7 +29,7 @@ package object implicits {
   implicit val jsonHandler: JsonHandler[Response[JValue]] = new JsonHandler[Response[JValue]] {
     override def responseBody(response: Response[JValue]): ErrorOr[JValue] =
       response
-        .body
+        .body // fallback encoding utf-8
         .left
         .flatMap { str =>
           JParser.parseFromString(str) match {
