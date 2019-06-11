@@ -39,11 +39,12 @@ final class DatabaseApi[F[_], Resp, Uri, Body](dbName: String,
                                                F: Functor[F]) extends DatabaseOperationQuery[Uri] {
 
    def writeFromFile(file: File,
+                     enc: String = "UTF-8",
                      consistency: Option[Consistency] = None,
                      precision: Option[Precision] = None,
                      retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
-    F.map(re.execute(uri, bd.fromFile(file), gzipped))(rh.writeResult)
+    F.map(re.execute(uri, bd.fromFile(file, enc), gzipped))(rh.writeResult)
   }
 
 
