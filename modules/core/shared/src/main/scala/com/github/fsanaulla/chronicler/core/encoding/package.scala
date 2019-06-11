@@ -18,4 +18,11 @@ package com.github.fsanaulla.chronicler.core
 
 package object encoding {
   val gzipEncoding = "gzip"
+
+  // extract encoding from content type
+  def encodingFromContentType(ct: String): Option[String] =
+    ct
+      .split(";")
+      .map(_.trim.toLowerCase)
+      .collectFirst { case s if s.startsWith("charset=") && s.substring(8).trim != "" => s.substring(8).trim }
 }
