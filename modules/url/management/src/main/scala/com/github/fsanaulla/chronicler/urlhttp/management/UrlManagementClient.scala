@@ -36,7 +36,7 @@ final class UrlManagementClient(host: String,
   extends ManagementClient[Try, Response, Url, String] {
 
   implicit val qb: UrlQueryBuilder = new UrlQueryBuilder(host, port, credentials, ssl)
-  implicit val re: UrlRequestExecutor = new UrlRequestExecutor(ssl)
+  implicit val re: UrlRequestExecutor = new UrlRequestExecutor(ssl, jsonHandler)
   implicit val rh: ResponseHandler[Response] = new ResponseHandler(jsonHandler)
 
   override def ping: Try[ErrorOr[InfluxDBInfo]] = {
