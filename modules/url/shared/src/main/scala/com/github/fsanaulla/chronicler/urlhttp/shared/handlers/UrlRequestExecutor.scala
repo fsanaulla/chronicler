@@ -19,12 +19,13 @@ package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.components.{JsonHandler, RequestExecutor}
 import com.github.fsanaulla.chronicler.core.either._
+import com.github.fsanaulla.chronicler.core.jawn.RichJParser
 import com.github.fsanaulla.chronicler.urlhttp.shared.Url
 import jawn.ast.{JArray, JParser}
 import requests._
 
 import scala.io.Source
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonHandler[Response]) extends RequestExecutor[Try, Response, Url, String] {
   /**
@@ -59,17 +60,13 @@ private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonH
   def executeStreaming(url: Url): Iterator[ErrorOr[Array[JArray]]] = {
     var iterator: Iterator[String] = null
 
-    requests.get.stream(url.mkUrl, params = url.params)(
-      onDownload = in => iterator = Source.fromInputStream(in).getLines()
-    )
+    requests.get.stream(
+      url.mkUrl,
+      params = url.params
+    )(onDownload = in => iterator = Source.fromInputStream(in).getLines())
 
-    iterator.map {
-      JParser.parseFromString(_) match {
-        case Success(value)     => Right(value)
-        case Failure(exception) => Left(exception)
-      }
-    }
+    iterator
+      .map(JParser.parseFromStringEither(_))
       .map(_.flatMapRight(jsonHandler.queryResult))
-
   }
 }
