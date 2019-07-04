@@ -115,7 +115,6 @@ class DatabaseOperationQuerySpec extends FlatSpec with Matchers with DatabaseOpe
       "u" -> credentials.get.username,
       "p" -> credentials.get.password,
       "pretty" -> "true",
-      "chunked" -> "true",
       "epoch" -> "ns",
       "q" -> "SELECT * FROM test;SELECT * FROM test1"
     )
