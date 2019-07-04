@@ -51,7 +51,7 @@ class DatabaseApiOperationQuerySpec extends FlatSpec with Matchers with Database
 
   it should "return correct write query" in new AuthEnv {
 
-    writeToInfluxQuery(testDB, Consistencies.ONE, Precisions.NANOSECONDS, None).toString() shouldEqual queryTester(
+    writeToInfluxQuery(testDB, Consistencies.One, Precisions.Nanoseconds, None).toString() shouldEqual queryTester(
       "/write",
       Map(
         "precision" -> "ns",
@@ -62,7 +62,7 @@ class DatabaseApiOperationQuerySpec extends FlatSpec with Matchers with Database
       )
     )
 
-    writeToInfluxQuery(testDB, Consistencies.ALL, Precisions.NANOSECONDS, None).toString() shouldEqual queryTester(
+    writeToInfluxQuery(testDB, Consistencies.All, Precisions.Nanoseconds, None).toString() shouldEqual queryTester(
       "/write",
       Map(
         "precision" -> "ns",
@@ -74,10 +74,10 @@ class DatabaseApiOperationQuerySpec extends FlatSpec with Matchers with Database
   }
 
   it should "return correct write query without auth " in new NonAuthEnv {
-    writeToInfluxQuery(testDB, Consistencies.ONE, Precisions.NANOSECONDS, None).toString() shouldEqual
+    writeToInfluxQuery(testDB, Consistencies.One, Precisions.Nanoseconds, None).toString() shouldEqual
       queryTester("/write", Map("db" -> testDB, "consistency" -> "one", "precision" -> "ns"))
 
-    writeToInfluxQuery(testDB, Consistencies.ONE, Precisions.MICROSECONDS, None).toString() shouldEqual
+    writeToInfluxQuery(testDB, Consistencies.One, Precisions.Microseconds, None).toString() shouldEqual
       queryTester("/write", Map("db" -> testDB, "consistency" -> "one", "precision" -> "u"))
   }
 
@@ -89,7 +89,7 @@ class DatabaseApiOperationQuerySpec extends FlatSpec with Matchers with Database
       "epoch" -> "ns",
       "q" -> "SELECT * FROM test"
     )
-    readFromInfluxSingleQuery(testDB, testQuery, Epochs.NANOSECONDS, pretty = false, chunked = false).toString() shouldEqual
+    readFromInfluxSingleQuery(testDB, testQuery, Epochs.Nanoseconds, pretty = false).toString() shouldEqual
       queryTester("/query", map)
   }
 
@@ -101,7 +101,7 @@ class DatabaseApiOperationQuerySpec extends FlatSpec with Matchers with Database
       "epoch" -> "ns",
       "q" -> "SELECT * FROM test;SELECT * FROM test1"
     )
-    readFromInfluxBulkQuery(testDB, Seq("SELECT * FROM test", "SELECT * FROM test1"), Epochs.NANOSECONDS, pretty = false, chunked = false).toString() shouldEqual
+    readFromInfluxBulkQuery(testDB, Seq("SELECT * FROM test", "SELECT * FROM test1"), Epochs.Nanoseconds, pretty = false).toString() shouldEqual
       queryTester("/query", map)
 
     val map1: Map[String, String] = Map[String, String](
@@ -113,7 +113,7 @@ class DatabaseApiOperationQuerySpec extends FlatSpec with Matchers with Database
       "epoch" -> "ns",
       "q" -> "SELECT * FROM test;SELECT * FROM test1"
     )
-    readFromInfluxBulkQuery(testDB, Seq("SELECT * FROM test", "SELECT * FROM test1"), Epochs.NANOSECONDS, pretty = true, chunked = true).toString() shouldEqual
+    readFromInfluxBulkQuery(testDB, Seq("SELECT * FROM test", "SELECT * FROM test1"), Epochs.Nanoseconds, pretty = true).toString() shouldEqual
       queryTester("/query", map1)
   }
 }
