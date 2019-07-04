@@ -47,7 +47,7 @@ class DatabaseOperationQuerySpec extends FlatSpec with Matchers with DatabaseOpe
 
   "DatabaseOperationQuery" should "return correct write query" in new AuthEnv {
 
-    writeToInfluxQuery(testDB, Consistencies.One, Precisions.Nanoseconds, None).toString() shouldEqual queryTester(
+    write(testDB, Consistencies.One, Precisions.Nanoseconds, None).toString() shouldEqual queryTester(
       "/write",
       Map(
         "precision" -> "ns",
@@ -58,7 +58,7 @@ class DatabaseOperationQuerySpec extends FlatSpec with Matchers with DatabaseOpe
       )
     )
 
-    writeToInfluxQuery(testDB, Consistencies.All, Precisions.Nanoseconds, None).toString() shouldEqual queryTester(
+    write(testDB, Consistencies.All, Precisions.Nanoseconds, None).toString() shouldEqual queryTester(
       "/write",
       Map(
         "precision" -> "ns",
@@ -70,13 +70,13 @@ class DatabaseOperationQuerySpec extends FlatSpec with Matchers with DatabaseOpe
   }
 
   it should "return correct write query without auth " in new NonAuthEnv {
-    writeToInfluxQuery(testDB, Consistencies.One, Precisions.Nanoseconds, None).toString() shouldEqual
+    write(testDB, Consistencies.One, Precisions.Nanoseconds, None).toString() shouldEqual
       queryTester(
         "/write",
         Map("db" -> testDB, "consistency" -> "one", "precision" -> "ns")
       )
 
-    writeToInfluxQuery(testDB, Consistencies.One, Precisions.Microseconds, None).toString() shouldEqual
+    write(testDB, Consistencies.One, Precisions.Microseconds, None).toString() shouldEqual
       queryTester(
         "/write",
         Map("db" -> testDB, "consistency" -> "one", "precision" -> "u")
@@ -91,7 +91,7 @@ class DatabaseOperationQuerySpec extends FlatSpec with Matchers with DatabaseOpe
       "epoch" -> "ns",
       "q" -> "SELECT * FROM test"
     )
-    readFromInfluxSingleQuery(testDB, testQuery, Epochs.Nanoseconds, pretty = false).toString() shouldEqual
+    singleQuery(testDB, testQuery, Epochs.Nanoseconds, pretty = false).toString() shouldEqual
       queryTester("/query", map)
   }
 
@@ -103,7 +103,7 @@ class DatabaseOperationQuerySpec extends FlatSpec with Matchers with DatabaseOpe
       "epoch" -> "ns",
       "q" -> "SELECT * FROM test;SELECT * FROM test1"
     )
-    readFromInfluxBulkQuery(
+    bulkQuery(
       testDB,
       Seq("SELECT * FROM test", "SELECT * FROM test1"),
       Epochs.Nanoseconds,
@@ -118,7 +118,7 @@ class DatabaseOperationQuerySpec extends FlatSpec with Matchers with DatabaseOpe
       "epoch" -> "ns",
       "q" -> "SELECT * FROM test;SELECT * FROM test1"
     )
-    readFromInfluxBulkQuery(
+    bulkQuery(
       testDB,
       Seq("SELECT * FROM test", "SELECT * FROM test1"),
       Epochs.Nanoseconds,

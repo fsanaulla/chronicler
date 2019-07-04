@@ -43,7 +43,7 @@ class DatabaseApi[F[_], Resp, Uri, Body](dbName: String,
                      consistency: Consistency = Consistencies.None,
                      precision: Precision = Precisions.None,
                      retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
-    val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
+    val uri = write(dbName, consistency, precision, retentionPolicy)
     F.map(re.execute(uri, bd.fromFile(file, enc), gzipped))(rh.writeResult)
   }
 
@@ -52,7 +52,7 @@ class DatabaseApi[F[_], Resp, Uri, Body](dbName: String,
                    consistency: Consistency = Consistencies.None,
                    precision: Precision = Precisions.None,
                    retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
-    val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
+    val uri = write(dbName, consistency, precision, retentionPolicy)
     F.map(re.execute(uri, bd.fromString(point), gzipped))(rh.writeResult)
   }
 
@@ -61,7 +61,7 @@ class DatabaseApi[F[_], Resp, Uri, Body](dbName: String,
                        consistency: Consistency = Consistencies.None,
                        precision: Precision = Precisions.None,
                        retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
-    val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
+    val uri = write(dbName, consistency, precision, retentionPolicy)
     F.map(re.execute(uri, bd.fromStrings(points), gzipped))(rh.writeResult)
   }
 
@@ -70,7 +70,7 @@ class DatabaseApi[F[_], Resp, Uri, Body](dbName: String,
                   consistency: Consistency = Consistencies.None,
                   precision: Precision = Precisions.None,
                   retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
-    val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
+    val uri = write(dbName, consistency, precision, retentionPolicy)
     F.map(re.execute(uri, bd.fromPoint(point), gzipped))(rh.writeResult)
   }
 
@@ -79,7 +79,7 @@ class DatabaseApi[F[_], Resp, Uri, Body](dbName: String,
                        consistency: Consistency = Consistencies.None,
                        precision: Precision = Precisions.None,
                        retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
-    val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
+    val uri = write(dbName, consistency, precision, retentionPolicy)
     F.map(re.execute(uri, bd.fromPoints(points), gzipped))(rh.writeResult)
   }
 
@@ -87,21 +87,21 @@ class DatabaseApi[F[_], Resp, Uri, Body](dbName: String,
    def readJson(query: String,
                 epoch: Epoch = Epochs.None,
                 pretty: Boolean = false): F[ErrorOr[Array[JArray]]] = {
-    val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty)
+    val uri = singleQuery(dbName, query, epoch, pretty)
     F.map(re.executeUri(uri))(rh.queryResultJson)
   }
 
    def bulkReadJson(queries: Seq[String],
                     epoch: Epoch = Epochs.None,
                     pretty: Boolean = false): F[ErrorOr[Array[Array[JArray]]]] = {
-    val uri = readFromInfluxBulkQuery(dbName, queries, epoch, pretty)
+    val uri = bulkQuery(dbName, queries, epoch, pretty)
     F.map(re.executeUri(uri))(rh.bulkQueryResultJson)
   }
 
    def readGroupedJson(query: String,
                        epoch: Epoch = Epochs.None,
                        pretty: Boolean = false): F[ErrorOr[Array[(Array[String], JArray)]]] = {
-    val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty)
+    val uri = singleQuery(dbName, query, epoch, pretty)
     F.map(re.executeUri(uri))(rh.groupedResultJson)
   }
 }

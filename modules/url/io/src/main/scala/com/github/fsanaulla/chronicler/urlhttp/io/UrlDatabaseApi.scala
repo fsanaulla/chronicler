@@ -38,7 +38,7 @@ final class UrlDatabaseApi(dbName: String, gzipped: Boolean)
                       epoch: Epoch = Epochs.None,
                       pretty: Boolean = false,
                       chunkSize: Int = 10000): Iterator[ErrorOr[Array[JArray]]] = {
-    val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunkSize)
+    val uri = chunkedQuery(dbName, query, epoch, pretty, chunkSize)
     re.executeStreaming(uri)
   }
 }

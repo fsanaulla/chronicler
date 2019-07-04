@@ -53,7 +53,7 @@ class MeasurementApi[F[_], Resp, Uri, Body, A](dbName: String,
             precision: Precision = Precisions.None,
             retentionPolicy: Option[String] = None)
            (implicit wr: InfluxWriter[A]): F[ErrorOr[ResponseCode]] = {
-    val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
+    val uri = write(dbName, consistency, precision, retentionPolicy)
 
     bd.fromT(measurementName, entity) match {
       // fail if entity not properly serialized
@@ -78,7 +78,7 @@ class MeasurementApi[F[_], Resp, Uri, Body, A](dbName: String,
                 precision: Precision = Precisions.None,
                 retentionPolicy: Option[String] = None)
                (implicit writer: InfluxWriter[A]): F[ErrorOr[ResponseCode]] = {
-    val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
+    val uri = write(dbName, consistency, precision, retentionPolicy)
 
     bd.fromSeqT(measurementName, entities) match {
       // fail if entity not properly serialized
@@ -93,7 +93,7 @@ class MeasurementApi[F[_], Resp, Uri, Body, A](dbName: String,
            epoch: Epoch = Epochs.None,
            pretty: Boolean = false)
           (implicit rd: InfluxReader[A], clsTag: ClassTag[A]): F[ErrorOr[Array[A]]] = {
-    val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty)
+    val uri = singleQuery(dbName, query, epoch, pretty)
     F.map(
       F.map(
         re.executeUri(uri))(rh.queryResultJson)

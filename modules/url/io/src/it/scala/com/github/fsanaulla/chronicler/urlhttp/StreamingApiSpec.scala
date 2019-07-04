@@ -7,7 +7,7 @@ import com.github.fsanaulla.chronicler.macros.annotations.reader.epoch
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
 import com.github.fsanaulla.chronicler.macros.auto._
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import com.github.fsanaulla.chronicler.urlhttp.DatabaseApiStreamingSpec.Point
+import com.github.fsanaulla.chronicler.urlhttp.StreamingApiSpec.Point
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlDatabaseApi, UrlIOClient, UrlMeasurementApi}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
@@ -16,7 +16,7 @@ import org.scalatest.{FlatSpec, Matchers}
 
 import scala.collection.mutable.ArrayBuffer
 
-class DatabaseApiStreamingSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
+class StreamingApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 
   val testDB = "db"
   val measName = "test1"
@@ -73,9 +73,24 @@ class DatabaseApiStreamingSpec extends FlatSpec with Matchers with DockerizedInf
 
     arr.size shouldEqual 3
   }
+
+  it should "read chunked json as one batch" in {
+    val arr = new ArrayBuffer[JValue](3)
+
+    val iter = db.readChunkedJson(s"SELECT * FROM $measName")
+
+    val nxt = iter.next()
+    nxt match {
+      case Right(vl) => vl.foreach(arr += _)
+      case _ => fail()
+    }
+
+    arr.size shouldEqual 3
+    iter.hasNext shouldEqual false
+  }
 }
 
-object DatabaseApiStreamingSpec {
+object StreamingApiSpec {
   case class Point(@tag direction: Option[String],
                    @tag host: String,
                    @tag region: Option[String],
