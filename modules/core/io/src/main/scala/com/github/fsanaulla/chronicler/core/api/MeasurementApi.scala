@@ -20,7 +20,7 @@ import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
 import com.github.fsanaulla.chronicler.core.components._
 import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either._
-import com.github.fsanaulla.chronicler.core.enums.{Consistency, Epoch, Precision}
+import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
 
@@ -29,15 +29,15 @@ import scala.reflect.ClassTag
 /**
   * Main functionality for measurement api
   */
-final class MeasurementApi[F[_], Resp, Uri, Body, A](dbName: String,
-                                                     measurementName: String,
-                                                     gzipped: Boolean)
-                                                    (implicit qb: QueryBuilder[Uri],
-                                                     bd: BodyBuilder[Body],
-                                                     re: RequestExecutor[F, Resp, Uri, Body],
-                                                     rh: ResponseHandler[Resp],
-                                                     F: Functor[F],
-                                                     FA: Failable[F]) extends DatabaseOperationQuery[Uri] {
+class MeasurementApi[F[_], Resp, Uri, Body, A](dbName: String,
+                                               measurementName: String,
+                                               gzipped: Boolean)
+                                              (implicit qb: QueryBuilder[Uri],
+                                               bd: BodyBuilder[Body],
+                                               re: RequestExecutor[F, Resp, Uri, Body],
+                                               rh: ResponseHandler[Resp],
+                                               F: Functor[F],
+                                               FA: Failable[F]) extends DatabaseOperationQuery[Uri] {
 
   /**
     * Make single write
@@ -49,9 +49,10 @@ final class MeasurementApi[F[_], Resp, Uri, Body, A](dbName: String,
     * @return                - Write result on backend container
     */
   def write(entity: A,
-            consistency: Option[Consistency] = None,
-            precision: Option[Precision] = None,
-            retentionPolicy: Option[String] = None)(implicit wr: InfluxWriter[A]): F[ErrorOr[ResponseCode]] = {
+            consistency: Consistency = Consistencies.None,
+            precision: Precision = Precisions.None,
+            retentionPolicy: Option[String] = None)
+           (implicit wr: InfluxWriter[A]): F[ErrorOr[ResponseCode]] = {
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
 
     bd.fromT(measurementName, entity) match {
@@ -73,9 +74,10 @@ final class MeasurementApi[F[_], Resp, Uri, Body, A](dbName: String,
     * @return                - Write result on backend container
     */
   def bulkWrite(entities: Seq[A],
-                consistency: Option[Consistency] = None,
-                precision: Option[Precision] = None,
-                retentionPolicy: Option[String] = None)(implicit writer: InfluxWriter[A]): F[ErrorOr[ResponseCode]] = {
+                consistency: Consistency = Consistencies.None,
+                precision: Precision = Precisions.None,
+                retentionPolicy: Option[String] = None)
+               (implicit writer: InfluxWriter[A]): F[ErrorOr[ResponseCode]] = {
     val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
 
     bd.fromSeqT(measurementName, entities) match {
@@ -88,16 +90,15 @@ final class MeasurementApi[F[_], Resp, Uri, Body, A](dbName: String,
   }
 
   def read(query: String,
-           epoch: Option[Epoch] = None,
-           pretty: Boolean = false,
-           chunked: Boolean = false)
+           epoch: Epoch = Epochs.None,
+           pretty: Boolean = false)
           (implicit rd: InfluxReader[A], clsTag: ClassTag[A]): F[ErrorOr[Array[A]]] = {
-    val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
+    val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty)
     F.map(
       F.map(
         re.executeUri(uri))(rh.queryResultJson)
-    ) { e =>
-          e.flatMapRight { arr =>
+    ) { resp =>
+          resp.flatMapRight { arr =>
             either.array[Throwable, A](arr.map(rd.read))
       }
     }
