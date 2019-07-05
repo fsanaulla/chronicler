@@ -14,8 +14,10 @@ Open-source [Scala](https://www.scala-lang.org/) toolchain for [InfluxDB](https:
 - Flexible API
 - Code generation with macros
 - High modularity
+- Chunking
+- Data compression (in-progress)
 - Spark support (located [here](https://github.com/fsanaulla/chronicler-spark))
-- Easy to customize
+- Kafka sink (in-progress)
 
 # Documentation
 1. [Modules](docs/modules.md)

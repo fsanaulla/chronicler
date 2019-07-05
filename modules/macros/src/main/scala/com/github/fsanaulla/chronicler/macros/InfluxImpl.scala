@@ -45,7 +45,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
 
   private[this] val timestamp: c.universe.Type = getType[timestamp]
 
-  private[this] val timestampTypes = Seq(getType[Long], getType[String])
+  private[this] val timestampTypes = List(getType[Long], getType[String])
   private[this] val tagsTypes =
     Seq(getType[Option[String]], getType[String])
   private[this] val fieldTypes =
@@ -156,7 +156,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
         case (k, `long`, idx)      => q"$k = arr($idx).asLong"
         case (k, `double`, idx)    => q"$k = arr($idx).asDouble"
         case (k, `optString`, idx) => q"$k = arr($idx).getString"
-        case (_, other, _)       => compileError(s"Unsupported type $other")
+        case (_, other, _)         => compileError(s"Unsupported type $other")
       }
 
     def readMethod(timeField: Option[MethodSymbol], ctors: List[Tree], unsafe: Boolean): c.universe.Tree = {

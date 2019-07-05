@@ -66,8 +66,7 @@ lazy val urlIO = project
   .settings(name := s"$projectName-url-io")
   .configure(defaultSettingsWithIt)
   .dependsOn(coreIO, urlShared)
-  .dependsOn(urlManagement % "test->test")
-  .dependsOn(itTesting % "test->test")
+  .dependsOn(urlManagement, itTesting, macros % "test->test")
 
 lazy val urlShared = project
   .in(file("modules/url/shared"))

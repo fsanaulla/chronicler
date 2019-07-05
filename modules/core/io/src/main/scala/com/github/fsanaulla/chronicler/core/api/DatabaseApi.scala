@@ -30,7 +30,7 @@ import jawn.ast.JArray
   * @tparam F - container type
   * @tparam Body - Entity type
   */
-final class DatabaseApi[F[_], Resp, Uri, Body](dbName: String,
+class DatabaseApi[F[_], Resp, Uri, Body](dbName: String,
                                                gzipped: Boolean)
                                               (implicit qb: QueryBuilder[Uri],
                                                bd: BodyBuilder[Body],
@@ -40,71 +40,68 @@ final class DatabaseApi[F[_], Resp, Uri, Body](dbName: String,
 
    def writeFromFile(file: File,
                      enc: String = "UTF-8",
-                     consistency: Option[Consistency] = None,
-                     precision: Option[Precision] = None,
+                     consistency: Consistency = Consistencies.None,
+                     precision: Precision = Precisions.None,
                      retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
-    val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
-    F.map(re.execute(uri, bd.fromFile(file, enc), gzipped))(rh.writeResult)
+    val uri = write(dbName, consistency, precision, retentionPolicy)
+    F.map(re.post(uri, bd.fromFile(file, enc), gzipped))(rh.writeResult)
   }
 
 
    def writeNative(point: String,
-                   consistency: Option[Consistency] = None,
-                   precision: Option[Precision] = None,
+                   consistency: Consistency = Consistencies.None,
+                   precision: Precision = Precisions.None,
                    retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
-    val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
-    F.map(re.execute(uri, bd.fromString(point), gzipped))(rh.writeResult)
+    val uri = write(dbName, consistency, precision, retentionPolicy)
+    F.map(re.post(uri, bd.fromString(point), gzipped))(rh.writeResult)
   }
 
 
    def bulkWriteNative(points: Seq[String],
-                       consistency: Option[Consistency] = None,
-                       precision: Option[Precision] = None,
+                       consistency: Consistency = Consistencies.None,
+                       precision: Precision = Precisions.None,
                        retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
-    val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
-    F.map(re.execute(uri, bd.fromStrings(points), gzipped))(rh.writeResult)
+    val uri = write(dbName, consistency, precision, retentionPolicy)
+    F.map(re.post(uri, bd.fromStrings(points), gzipped))(rh.writeResult)
   }
 
 
    def writePoint(point: Point,
-                  consistency: Option[Consistency] = None,
-                  precision: Option[Precision] = None,
+                  consistency: Consistency = Consistencies.None,
+                  precision: Precision = Precisions.None,
                   retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
-    val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
-    F.map(re.execute(uri, bd.fromPoint(point), gzipped))(rh.writeResult)
+    val uri = write(dbName, consistency, precision, retentionPolicy)
+    F.map(re.post(uri, bd.fromPoint(point), gzipped))(rh.writeResult)
   }
 
 
    def bulkWritePoints(points: Seq[Point],
-                       consistency: Option[Consistency] = None,
-                       precision: Option[Precision] = None,
+                       consistency: Consistency = Consistencies.None,
+                       precision: Precision = Precisions.None,
                        retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
-    val uri = writeToInfluxQuery(dbName, consistency, precision, retentionPolicy)
-    F.map(re.execute(uri, bd.fromPoints(points), gzipped))(rh.writeResult)
+    val uri = write(dbName, consistency, precision, retentionPolicy)
+    F.map(re.post(uri, bd.fromPoints(points), gzipped))(rh.writeResult)
   }
 
 
    def readJson(query: String,
-                epoch: Option[Epoch] = None,
-                pretty: Boolean = false,
-                chunked: Boolean = false): F[ErrorOr[Array[JArray]]] = {
-    val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
-    F.map(re.executeUri(uri))(rh.queryResultJson)
+                epoch: Epoch = Epochs.None,
+                pretty: Boolean = false): F[ErrorOr[Array[JArray]]] = {
+    val uri = singleQuery(dbName, query, epoch, pretty)
+    F.map(re.get(uri))(rh.queryResultJson)
   }
 
    def bulkReadJson(queries: Seq[String],
-                    epoch: Option[Epoch] = None,
-                    pretty: Boolean = false,
-                    chunked: Boolean = false): F[ErrorOr[Array[Array[JArray]]]] = {
-    val uri = readFromInfluxBulkQuery(dbName, queries, epoch, pretty, chunked)
-    F.map(re.executeUri(uri))(rh.bulkQueryResultJson)
+                    epoch: Epoch = Epochs.None,
+                    pretty: Boolean = false): F[ErrorOr[Array[Array[JArray]]]] = {
+    val uri = bulkQuery(dbName, queries, epoch, pretty)
+    F.map(re.get(uri))(rh.bulkQueryResultJson)
   }
 
    def readGroupedJson(query: String,
-                       epoch: Option[Epoch] = None,
-                       pretty: Boolean = false,
-                       chunked: Boolean = false): F[ErrorOr[Array[(Array[String], JArray)]]] = {
-    val uri = readFromInfluxSingleQuery(dbName, query, epoch, pretty, chunked)
-    F.map(re.executeUri(uri))(rh.groupedResultJson)
+                       epoch: Epoch = Epochs.None,
+                       pretty: Boolean = false): F[ErrorOr[Array[(Array[String], JArray)]]] = {
+    val uri = singleQuery(dbName, query, epoch, pretty)
+    F.map(re.get(uri))(rh.groupedResultJson)
   }
 }

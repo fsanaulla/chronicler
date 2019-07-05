@@ -63,7 +63,7 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 
     db.writePoint(point1).get.right.get shouldEqual 204
 
-    db.readJson("SELECT * FROM test2", epoch = Some(Epochs.NANOSECONDS))
+    db.readJson("SELECT * FROM test2", epoch = Epochs.Nanoseconds)
       .get
       .right
       .get
@@ -74,7 +74,7 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 
     db.bulkWritePoints(Array(point1, point2)).get.right.get shouldEqual 204
 
-    db.readJson("SELECT * FROM test2", epoch = Some(Epochs.NANOSECONDS))
+    db.readJson("SELECT * FROM test2", epoch = Epochs.Nanoseconds)
       .get
       .right
       .get
@@ -148,7 +148,7 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
       .get shouldEqual 204
 
     db
-      .readGroupedJson("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"", epoch = Some(Epochs.NANOSECONDS))
+      .readGroupedJson("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"", epoch = Epochs.Nanoseconds)
       .get
       .right
       .get

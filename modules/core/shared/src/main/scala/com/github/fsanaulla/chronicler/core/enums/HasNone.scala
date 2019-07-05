@@ -14,22 +14,8 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.components
+package com.github.fsanaulla.chronicler.core.enums
 
-/**
-  * This trait define functionality for build and executing HTTP requests
-  *
-  */
-trait RequestExecutor[F[_], Resp, Uri, Body] {
-
-  // todo: properly request compression
-  def post(uri: Uri, body: Body, gzipped: Boolean): F[Resp]
-
-  /**
-    * Execute uri
-    *
-    * @param uri - request uri
-    * @return    - Return wrapper response
-    */
-  def get(uri: Uri): F[Resp]
+private[enums] trait HasNone {
+  def isNone: Boolean = false
 }

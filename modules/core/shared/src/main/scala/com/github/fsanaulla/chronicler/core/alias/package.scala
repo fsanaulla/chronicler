@@ -16,10 +16,12 @@
 
 package com.github.fsanaulla.chronicler.core
 
+import _root_.jawn.ast.JArray
+
 package object alias {
-  // http response code
   type ResponseCode = Int
   type ErrorOr[A] = Either[Throwable, A]
-  type BulkQueryResult[A] = Array[Array[A]]
-  type GroupByResult[A] = Array[(Array[String], A)]
+
+  // point representation in JSON array
+  type JPoint = JArray
 }

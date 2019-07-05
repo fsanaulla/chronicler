@@ -35,13 +35,13 @@ private[chronicler] trait ShardManagement[F[_], Resp, Uri, Entity] extends Shard
 
   /** Drop shard */
   final def dropShard(shardId: Int): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(dropShardQuery(shardId)))(rh.writeResult)
+    F.map(re.get(dropShardQuery(shardId)))(rh.writeResult)
 
   /** Show shard groups */
   final def showShardGroups: F[ErrorOr[Array[ShardGroupsInfo]]] =
-    F.map(re.executeUri(showShardGroupsQuery))(rh.toShardGroupQueryResult)
+    F.map(re.get(showShardGroupsQuery))(rh.toShardGroupQueryResult)
 
   /** Show shards */
   final def showShards: F[ErrorOr[Array[ShardInfo]]] =
-    F.map(re.executeUri(showShardsQuery))(rh.toShardQueryResult)
+    F.map(re.get(showShardsQuery))(rh.toShardQueryResult)
 }

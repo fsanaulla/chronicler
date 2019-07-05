@@ -25,17 +25,18 @@ import scala.collection.immutable
   * Author: fayaz.sanaulla@gmail.com
   * Date: 29.07.17
   */
-sealed abstract class Precision extends EnumEntry {
+sealed abstract class Precision extends EnumEntry with HasNone {
   override def toString: String = entryName
 }
 
 object Precisions extends enumeratum.Enum[Precision] {
   val values: immutable.IndexedSeq[Precision] = findValues
 
-  case object NANOSECONDS  extends Precision { override val entryName: String = "ns"}
-  case object MICROSECONDS extends Precision { override val entryName: String = "u" }
-  case object MILLISECONDS extends Precision { override val entryName: String = "ms"}
-  case object SECONDS      extends Precision { override val entryName: String = "s" }
-  case object MINUTES      extends Precision { override val entryName: String = "m" }
-  case object HOURS        extends Precision { override val entryName: String = "h" }
+  case object Nanoseconds  extends Precision { override val entryName: String = "ns"}
+  case object Microseconds extends Precision { override val entryName: String = "u" }
+  case object Milliseconds extends Precision { override val entryName: String = "ms"}
+  case object Seconds      extends Precision { override val entryName: String = "s" }
+  case object Minutes      extends Precision { override val entryName: String = "m" }
+  case object Hours        extends Precision { override val entryName: String = "h" }
+  case object None         extends Precision { override val isNone: Boolean = true}
 }
