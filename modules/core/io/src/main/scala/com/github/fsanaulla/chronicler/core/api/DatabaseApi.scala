@@ -44,7 +44,7 @@ class DatabaseApi[F[_], Resp, Uri, Body](dbName: String,
                      precision: Precision = Precisions.None,
                      retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
     val uri = write(dbName, consistency, precision, retentionPolicy)
-    F.map(re.execute(uri, bd.fromFile(file, enc), gzipped))(rh.writeResult)
+    F.map(re.post(uri, bd.fromFile(file, enc), gzipped))(rh.writeResult)
   }
 
 
@@ -53,7 +53,7 @@ class DatabaseApi[F[_], Resp, Uri, Body](dbName: String,
                    precision: Precision = Precisions.None,
                    retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
     val uri = write(dbName, consistency, precision, retentionPolicy)
-    F.map(re.execute(uri, bd.fromString(point), gzipped))(rh.writeResult)
+    F.map(re.post(uri, bd.fromString(point), gzipped))(rh.writeResult)
   }
 
 
@@ -62,7 +62,7 @@ class DatabaseApi[F[_], Resp, Uri, Body](dbName: String,
                        precision: Precision = Precisions.None,
                        retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
     val uri = write(dbName, consistency, precision, retentionPolicy)
-    F.map(re.execute(uri, bd.fromStrings(points), gzipped))(rh.writeResult)
+    F.map(re.post(uri, bd.fromStrings(points), gzipped))(rh.writeResult)
   }
 
 
@@ -71,7 +71,7 @@ class DatabaseApi[F[_], Resp, Uri, Body](dbName: String,
                   precision: Precision = Precisions.None,
                   retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
     val uri = write(dbName, consistency, precision, retentionPolicy)
-    F.map(re.execute(uri, bd.fromPoint(point), gzipped))(rh.writeResult)
+    F.map(re.post(uri, bd.fromPoint(point), gzipped))(rh.writeResult)
   }
 
 
@@ -80,7 +80,7 @@ class DatabaseApi[F[_], Resp, Uri, Body](dbName: String,
                        precision: Precision = Precisions.None,
                        retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
     val uri = write(dbName, consistency, precision, retentionPolicy)
-    F.map(re.execute(uri, bd.fromPoints(points), gzipped))(rh.writeResult)
+    F.map(re.post(uri, bd.fromPoints(points), gzipped))(rh.writeResult)
   }
 
 
@@ -88,20 +88,20 @@ class DatabaseApi[F[_], Resp, Uri, Body](dbName: String,
                 epoch: Epoch = Epochs.None,
                 pretty: Boolean = false): F[ErrorOr[Array[JArray]]] = {
     val uri = singleQuery(dbName, query, epoch, pretty)
-    F.map(re.executeUri(uri))(rh.queryResultJson)
+    F.map(re.get(uri))(rh.queryResultJson)
   }
 
    def bulkReadJson(queries: Seq[String],
                     epoch: Epoch = Epochs.None,
                     pretty: Boolean = false): F[ErrorOr[Array[Array[JArray]]]] = {
     val uri = bulkQuery(dbName, queries, epoch, pretty)
-    F.map(re.executeUri(uri))(rh.bulkQueryResultJson)
+    F.map(re.get(uri))(rh.bulkQueryResultJson)
   }
 
    def readGroupedJson(query: String,
                        epoch: Epoch = Epochs.None,
                        pretty: Boolean = false): F[ErrorOr[Array[(Array[String], JArray)]]] = {
     val uri = singleQuery(dbName, query, epoch, pretty)
-    F.map(re.executeUri(uri))(rh.groupedResultJson)
+    F.map(re.get(uri))(rh.groupedResultJson)
   }
 }

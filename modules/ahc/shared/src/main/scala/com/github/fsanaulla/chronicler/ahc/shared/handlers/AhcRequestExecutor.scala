@@ -33,10 +33,10 @@ private[ahc] final class AhcRequestExecutor(implicit backend: SttpBackend[Future
     * @param uri - request uri
     * @return    - Return wrapper response
     */
-  override def executeUri(uri: Uri): Future[Response[JValue]] =
+  override def get(uri: Uri): Future[Response[JValue]] =
     sttp.get(uri).response(asJson).send()
 
-  override def execute(uri: Uri, body: String, gzipped: Boolean): Future[Response[JValue]] = {
+  override def post(uri: Uri, body: String, gzipped: Boolean): Future[Response[JValue]] = {
     val req = sttp.post(uri).body(body).response(asJson)
     val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
     maybeEncoded.send()

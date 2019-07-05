@@ -3,11 +3,12 @@ package com.github.fsanaulla.chronicler.urlhttp
 import java.io.File
 
 import com.github.fsanaulla.chronicler.core.enums.Epochs
+import com.github.fsanaulla.chronicler.core.model.InfluxReader
+import com.github.fsanaulla.chronicler.macros.Influx
 import com.github.fsanaulla.chronicler.macros.annotations.reader.epoch
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
-import com.github.fsanaulla.chronicler.macros.auto._
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import com.github.fsanaulla.chronicler.urlhttp.StreamingApiSpec.Point
+import com.github.fsanaulla.chronicler.urlhttp.StreamingApiSpec._
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlDatabaseApi, UrlIOClient, UrlMeasurementApi}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
@@ -20,6 +21,7 @@ class StreamingApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 
   val testDB = "db"
   val measName = "test1"
+
   lazy val influxConf =
     InfluxConfig(host, port, credentials = Some(creds))
 
@@ -57,17 +59,23 @@ class StreamingApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
   }
 
   it should "read typed chunked response" in {
+
     val arr = new ArrayBuffer[Point](3)
 
-    val iter = meas.readChunked(s"SELECT * FROM $measName", epoch = Epochs.Milliseconds, chunkSize = 2)
+    val iterator = meas.readChunked(
+      s"SELECT * FROM $measName",
+      epoch = Epochs.Milliseconds,
+      chunkSize = 3
+    )
 
-    while (iter.hasNext) {
-      val nxt = iter.next()
+    while (iterator.hasNext) {
+      val nxt = iterator.next()
 
       nxt match {
         case Right(vl) =>
           vl.foreach(arr += _)
-        case Left(err) => fail(err)
+        case Left(err) =>
+          fail(err)
       }
     }
 
@@ -91,9 +99,11 @@ class StreamingApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 }
 
 object StreamingApiSpec {
-  case class Point(@tag direction: Option[String],
-                   @tag host: String,
-                   @tag region: Option[String],
-                   @field value: Double,
-                   @epoch @timestamp time: Long)
+  final case class Point(@tag direction: Option[String],
+                         @tag host: String,
+                         @tag region: Option[String],
+                         @field value: Double,
+                         @epoch @timestamp time: Long)
+
+  implicit val rd: InfluxReader[Point] = Influx.reader
 }

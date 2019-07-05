@@ -34,7 +34,7 @@ private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonH
     * @param uri - request uri
     * @return    - Return wrapper response
     */
-  override def executeUri(uri: Url): Try[Response] = {
+  override def get(uri: Url): Try[Response] = {
     Try {
       requests.get(
         uri.mkUrl,
@@ -44,7 +44,7 @@ private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonH
     }
   }
 
-  override def execute(uri: Url, body: String, gzipped: Boolean): Try[Response] = {
+  override def post(uri: Url, body: String, gzipped: Boolean): Try[Response] = {
     Try {
       requests.post(
         uri.mkUrl,

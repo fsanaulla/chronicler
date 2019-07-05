@@ -41,7 +41,7 @@ final class UrlManagementClient(host: String,
 
   override def ping: Try[ErrorOr[InfluxDBInfo]] = {
     re
-      .executeUri(qb.buildQuery("/ping", Map.empty[String, String]))
+      .get(qb.buildQuery("/ping", Map.empty[String, String]))
       .map(rh.pingResult)
   }
 

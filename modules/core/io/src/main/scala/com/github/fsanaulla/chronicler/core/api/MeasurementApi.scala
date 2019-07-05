@@ -60,7 +60,7 @@ class MeasurementApi[F[_], Resp, Uri, Body, A](dbName: String,
       case Left(ex) =>
         FA.fail(ex)
       case Right(body) =>
-        F.map(re.execute(uri, body, gzipped))(rh.writeResult)
+        F.map(re.post(uri, body, gzipped))(rh.writeResult)
     }
   }
 
@@ -85,7 +85,7 @@ class MeasurementApi[F[_], Resp, Uri, Body, A](dbName: String,
       case Left(ex) =>
         FA.fail(ex)
       case Right(body) =>
-        F.map(re.execute(uri, body, gzipped))(rh.writeResult)
+        F.map(re.post(uri, body, gzipped))(rh.writeResult)
     }
   }
 
@@ -96,7 +96,7 @@ class MeasurementApi[F[_], Resp, Uri, Body, A](dbName: String,
     val uri = singleQuery(dbName, query, epoch, pretty)
     F.map(
       F.map(
-        re.executeUri(uri))(rh.queryResultJson)
+        re.get(uri))(rh.queryResultJson)
     ) { resp =>
           resp.flatMapRight { arr =>
             either.array[Throwable, A](arr.map(rd.read))

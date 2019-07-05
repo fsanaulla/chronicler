@@ -44,7 +44,7 @@ final class AkkaManagementClient(host: String,
 
   override def ping: Future[ErrorOr[InfluxDBInfo]] = {
     re
-      .executeUri(qb.buildQuery("/ping", Map.empty[String, String]))
+      .get(qb.buildQuery("/ping", Map.empty[String, String]))
       .map(rh.pingResult)
   }
 }

@@ -23,7 +23,7 @@ package com.github.fsanaulla.chronicler.core.components
 trait RequestExecutor[F[_], Resp, Uri, Body] {
 
   // todo: properly request compression
-  def execute(uri: Uri, body: Body, gzipped: Boolean): F[Resp]
+  def post(uri: Uri, body: Body, gzipped: Boolean): F[Resp]
 
   /**
     * Execute uri
@@ -31,5 +31,5 @@ trait RequestExecutor[F[_], Resp, Uri, Body] {
     * @param uri - request uri
     * @return    - Return wrapper response
     */
-  def executeUri(uri: Uri): F[Resp]
+  def get(uri: Uri): F[Resp]
 }

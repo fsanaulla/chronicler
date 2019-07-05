@@ -19,7 +19,6 @@ package com.github.fsanaulla.chronicler.urlhttp.io
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.api.MeasurementApi
 import com.github.fsanaulla.chronicler.core.components.{BodyBuilder, ResponseHandler}
-import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.enums.{Epoch, Epochs}
 import com.github.fsanaulla.chronicler.core.model.{Failable, Functor, InfluxReader}
@@ -38,12 +37,33 @@ class UrlMeasurementApi[T: ClassTag](dbName: String,
                                      F: Functor[Try], FA: Failable[Try])
   extends MeasurementApi[Try, Response, Url, String, T](dbName, measurementName, gzipped) {
 
+  /**
+    * Chunked query executiomn
+    *
+    * @param query     - influx compatible SQL query
+    * @param epoch     - epoch timestamp precision
+    * @param pretty    - pretty printing response
+    * @param chunkSize - count points in the chunk
+    * @param rd        - reader
+    *
+    * @return          - iterator with chunked response
+    * @since           - 0.5.2
+    *
+    * */
   def readChunked(query: String,
                   epoch: Epoch = Epochs.None,
                   pretty: Boolean = false,
                   chunkSize: Int = 10000)(implicit rd: InfluxReader[T]): Iterator[ErrorOr[Array[T]]] = {
     val uri = chunkedQuery(dbName, query, epoch, pretty, chunkSize)
     re.executeStreaming(uri)
-      .map(_.flatMapRight(arr => either.array[Throwable, T](arr.map(rd.read))))
+      .map(
+        _.mapRight { arr =>
+//          either.array[Throwable, T](arr.map(rd.read))
+          arr.map { rc =>
+            println(rc.vs.toSeq)
+            rd.readUnsafe(rc)
+          }
+        }
+      )
   }
 }
