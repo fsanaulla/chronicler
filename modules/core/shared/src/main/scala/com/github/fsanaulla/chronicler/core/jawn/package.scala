@@ -52,7 +52,7 @@ package object jawn {
 
   implicit final class RichJParser(private val jp: JParser.type) extends AnyVal {
     def parseFromStringEither(str: String): ErrorOr[JValue] = {
-      JParser.parseFromString(str) match {
+      jp.parseFromString(str) match {
         case Success(value)     => Right(value)
         case Failure(exception) => Left(exception)
       }
