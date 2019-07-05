@@ -16,14 +16,13 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.io
 
-import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, JPoint}
 import com.github.fsanaulla.chronicler.core.api.DatabaseApi
 import com.github.fsanaulla.chronicler.core.components.{BodyBuilder, ResponseHandler}
 import com.github.fsanaulla.chronicler.core.enums.{Epoch, Epochs}
 import com.github.fsanaulla.chronicler.core.model.Functor
 import com.github.fsanaulla.chronicler.urlhttp.shared.Url
 import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlQueryBuilder, UrlRequestExecutor}
-import jawn.ast.JArray
 import requests.Response
 
 import scala.util.Try
@@ -34,10 +33,22 @@ final class UrlDatabaseApi(dbName: String, gzipped: Boolean)
                            F: Functor[Try])
   extends DatabaseApi[Try, Response, Url, String](dbName, gzipped) {
 
+  /**
+    * Chunked query execution with json response
+    *
+    * @param query     - influx compatible SQL query
+    * @param epoch     - epoch timestamp precision
+    * @param pretty    - pretty printing response
+    * @param chunkSize - count points in the chunk
+    *
+    * @return          - chunks iterator
+    * @since           - 0.5.2
+    *
+    * */
   def readChunkedJson(query: String,
                       epoch: Epoch = Epochs.None,
                       pretty: Boolean = false,
-                      chunkSize: Int = 10000): Iterator[ErrorOr[Array[JArray]]] = {
+                      chunkSize: Int = 10000): Iterator[ErrorOr[Array[JPoint]]] = {
     val uri = chunkedQuery(dbName, query, epoch, pretty, chunkSize)
     re.executeStreaming(uri)
   }
