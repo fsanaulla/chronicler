@@ -8,8 +8,8 @@ import com.github.fsanaulla.chronicler.core.model.InfluxReader
 import com.github.fsanaulla.chronicler.macros.annotations.reader.{epoch, utc}
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
 import com.github.fsanaulla.chronicler.macros.auto._
-import jawn.ast._
 import org.openjdk.jmh.annotations._
+import org.typelevel.jawn.ast._
 
 import scala.util.{Failure, Success, Try}
 

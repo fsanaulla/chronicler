@@ -24,10 +24,10 @@ object Settings extends LibraryManagementSyntax {
   }
 
    val common = Seq(
-     scalaVersion := "2.12.8",
+     scalaVersion := "2.13.0",
      organization := "com.github.fsanaulla",
      scalacOptions ++= Scalac.options(scalaVersion.value),
-     crossScalaVersions := Seq("2.11.8", scalaVersion.value),
+     crossScalaVersions := Seq("2.11.8", "2.12.8", scalaVersion.value),
      homepage := Some(url("https://github.com/fsanaulla/chronicler")),
      licenses += "Apache-2.0" -> url(apacheUrl),
      developers += Developer(

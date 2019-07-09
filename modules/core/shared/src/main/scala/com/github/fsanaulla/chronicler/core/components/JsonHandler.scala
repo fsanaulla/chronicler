@@ -23,7 +23,7 @@ import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.headers.{buildHeader, versionHeader}
 import com.github.fsanaulla.chronicler.core.jawn._
 import com.github.fsanaulla.chronicler.core.model.{InfluxDBInfo, InfluxReader, ParsingException}
-import jawn.ast.{JArray, JValue}
+import org.typelevel.jawn.ast.{JArray, JValue}
 
 import scala.reflect.ClassTag
 

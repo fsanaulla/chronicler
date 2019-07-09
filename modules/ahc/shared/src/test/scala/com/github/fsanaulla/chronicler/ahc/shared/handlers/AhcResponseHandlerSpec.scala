@@ -21,10 +21,10 @@ import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
 import com.softwaremill.sttp.Response
-import jawn.ast._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Second, Seconds, Span}
 import org.scalatest.{FlatSpec, Matchers}
+import org.typelevel.jawn.ast._
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._

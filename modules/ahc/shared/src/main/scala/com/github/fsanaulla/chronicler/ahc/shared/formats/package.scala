@@ -17,7 +17,7 @@
 package com.github.fsanaulla.chronicler.ahc.shared
 
 import com.softwaremill.sttp.{ResponseAs, asString}
-import jawn.ast.{JNull, JParser, JValue}
+import org.typelevel.jawn.ast.{JNull, JParser, JValue}
 
 import scala.util.Success
 

@@ -12,8 +12,8 @@ import com.github.fsanaulla.chronicler.core.enums.Epochs
 import com.github.fsanaulla.chronicler.core.jawn._
 import com.github.fsanaulla.chronicler.core.model.Point
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
-import jawn.ast.{JArray, JNum, JString}
 import org.scalatest.{FlatSpecLike, Matchers}
+import org.typelevel.jawn.ast.{JArray, JNum, JString}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

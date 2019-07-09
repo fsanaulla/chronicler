@@ -124,7 +124,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
       val sCase = buildResult(tpe, timestampCtor :: constructors, unsafe)
       val (name, returnType) = safeOrUnsafeRead(unsafe)
 
-      q"""def $name(js: jawn.ast.JArray): $returnType = {
+      q"""def $name(js: org.typelevel.jawn.ast.JArray): $returnType = {
             val arr = js.vs
             $sCase
           }
@@ -188,14 +188,14 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
             val (name, returnType) = safeOrUnsafeRead(unsafe)
 
             q"""
-               def $name(js: jawn.ast.JArray): $returnType = {
-                 @inline def toEpoch(jv: jawn.ast.JValue): Long = {
+               def $name(js: org.typelevel.jawn.ast.JArray): $returnType = {
+                 @inline def toEpoch(jv: org.typelevel.jawn.ast.JValue): Long = {
                     jv.getString.fold(jv.asLong) { str =>
                        val i = java.time.Instant.parse(str)
                        i.getEpochSecond * 1000000000 + i.getNano
                    }
                  }
-                 @inline def toUtc(jv: jawn.ast.JValue): String = {
+                 @inline def toUtc(jv: org.typelevel.jawn.ast.JValue): String = {
                     jv.getLong.fold(jv.asString) { l =>
                        java.time.Instant.ofEpochMilli(l / 1000000).plusNanos(l % 1000000).toString
                     }
@@ -215,7 +215,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
         // mo timestamp
         case _ =>
           val (name, returnType) = safeOrUnsafeRead(unsafe)
-          q"""def $name(js: jawn.ast.JArray): $returnType = {
+          q"""def $name(js: org.typelevel.jawn.ast.JArray): $returnType = {
                 val arr = js.vs
                 ${buildResult(tpe, ctors, unsafe)}
               }"""

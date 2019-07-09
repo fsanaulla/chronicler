@@ -25,8 +25,8 @@ import com.github.fsanaulla.chronicler.core.api.{DatabaseApi, MeasurementApi}
 import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
 import com.softwaremill.sttp.{Response, Uri}
-import jawn.ast.JValue
 import org.asynchttpclient.AsyncHttpClientConfig
+import org.typelevel.jawn.ast.JValue
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag

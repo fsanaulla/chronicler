@@ -19,8 +19,8 @@ package com.github.fsanaulla.chronicler.macros
 import com.github.fsanaulla.chronicler.core.model.InfluxReader
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
 import com.github.fsanaulla.chronicler.macros.auto._
-import jawn.ast._
 import org.scalatest.{Matchers, WordSpec}
+import org.typelevel.jawn.ast._
 
 class MacroReaderSpec extends WordSpec with Matchers {
   "InfluxReader" should {

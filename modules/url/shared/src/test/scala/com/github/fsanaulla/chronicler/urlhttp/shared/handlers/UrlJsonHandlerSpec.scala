@@ -17,8 +17,8 @@
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
 import com.github.fsanaulla.chronicler.urlhttp.shared.implicits.jsonHandler
-import jawn.ast._
 import org.scalatest.{FlatSpec, Matchers, OptionValues, TryValues}
+import org.typelevel.jawn.ast._
 
 /**
   * Created by

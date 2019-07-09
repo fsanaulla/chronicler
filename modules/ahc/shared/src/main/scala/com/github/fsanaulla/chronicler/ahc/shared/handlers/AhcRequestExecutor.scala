@@ -20,7 +20,7 @@ import com.github.fsanaulla.chronicler.ahc.shared.formats._
 import com.github.fsanaulla.chronicler.core.components.RequestExecutor
 import com.github.fsanaulla.chronicler.core.encoding.gzipEncoding
 import com.softwaremill.sttp.{Response, SttpBackend, Uri, sttp}
-import jawn.ast.JValue
+import org.typelevel.jawn.ast.JValue
 
 import scala.concurrent.Future
 

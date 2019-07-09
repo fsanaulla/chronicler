@@ -8,6 +8,7 @@ jdk:
 scala:
   - 2.11.8
   - 2.12.8
+  - 2.13.0
 
 services:
   - docker
@@ -110,6 +111,42 @@ jobs:
       env: INFLUXDB_VERSION=1.7.3
       scala: 2.12.8
 
+    # scala 2.13 stages
+    - stage: publish_core_2.13
+      script:
+        - chmod 777 scripts/publish/core.sh
+        - ./scripts/publish/core.sh $TRAVIS_SCALA_VERSION
+      env: INFLUXDB_VERSION=1.7.3
+      scala: 2.13.0
+      # Deploying ahc modules
+    - stage: publish_ahc_2.13
+      script:
+        - chmod 777 scripts/publish/ahc.sh
+        - ./scripts/publish/ahc.sh $TRAVIS_SCALA_VERSION
+      env: INFLUXDB_VERSION=1.7.3
+      scala: 2.13.0
+      # Deploying akka modules
+    - stage: publish_akka_2.13
+      script:
+        - chmod 777 scripts/publish/akka.sh
+        - ./scripts/publish/akka.sh $TRAVIS_SCALA_VERSION
+      env: INFLUXDB_VERSION=1.7.3
+      scala: 2.13.0
+      # Deploying url modules
+    - stage: publish_url_2.13
+      script:
+        - chmod 777 scripts/publish/url.sh
+        - ./scripts/publish/url.sh $TRAVIS_SCALA_VERSION
+      env: INFLUXDB_VERSION=1.7.3
+      scala: 2.13.0
+      # Deploying other(udp, macros) modules
+    - stage: publish_other_2.13
+      script:
+        - chmod 777 scripts/publish/other.sh
+        - ./scripts/publish/other.sh $TRAVIS_SCALA_VERSION
+      env: INFLUXDB_VERSION=1.7.3
+      scala: 2.13.0
+
 stages:
   - name: test
   - name: release
@@ -135,6 +172,17 @@ stages:
   - name: publish_url_2.12
     if: branch = master AND type != pull_request
   - name: publish_other_2.12
+    if: branch = master AND type != pull_request
+  # 2.13 stages
+  - name: publish_core_2.13
+    if: branch = master AND type != pull_request
+  - name: publish_ahc_2.13
+    if: branch = master AND type != pull_request
+  - name: publish_akka_2.13
+    if: branch = master AND type != pull_request
+  - name: publish_url_2.13
+    if: branch = master AND type != pull_request
+  - name: publish_other_2.13
     if: branch = master AND type != pull_request
 
 env:

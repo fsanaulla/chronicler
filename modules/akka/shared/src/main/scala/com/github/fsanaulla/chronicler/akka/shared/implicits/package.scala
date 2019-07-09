@@ -20,7 +20,7 @@ import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.components.JsonHandler
 import com.github.fsanaulla.chronicler.core.model.{Failable, Functor}
 import com.softwaremill.sttp.Response
-import jawn.ast.{JParser, JValue}
+import org.typelevel.jawn.ast.{JParser, JValue}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}

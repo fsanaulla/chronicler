@@ -16,7 +16,7 @@
 
 package com.github.fsanaulla.chronicler.core
 
-import _root_.jawn.ast.JArray
+import org.typelevel.jawn.ast.JArray
 
 package object alias {
   type ResponseCode = Int

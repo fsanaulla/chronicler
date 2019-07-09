@@ -16,8 +16,8 @@
 
 package com.github.fsanaulla.chronicler.core
 
-import _root_.jawn.ast._
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import org.typelevel.jawn.ast._
 
 import scala.util.{Failure, Success}
 

@@ -22,7 +22,7 @@ import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.components.JsonHandler
 import com.github.fsanaulla.chronicler.core.encoding.encodingFromContentType
 import com.github.fsanaulla.chronicler.core.model.{Failable, Functor}
-import jawn.ast.{JParser, JValue}
+import org.typelevel.jawn.ast.{JParser, JValue}
 import requests.Response
 
 import scala.util.{Failure, Success, Try}

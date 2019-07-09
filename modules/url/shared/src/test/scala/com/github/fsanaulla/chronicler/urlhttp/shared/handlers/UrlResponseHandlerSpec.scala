@@ -20,8 +20,8 @@ import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
 import com.github.fsanaulla.chronicler.urlhttp.shared.implicits.jsonHandler
-import jawn.ast._
 import org.scalatest.{FlatSpec, Matchers, TryValues}
+import org.typelevel.jawn.ast._
 
 /**
   * Created by

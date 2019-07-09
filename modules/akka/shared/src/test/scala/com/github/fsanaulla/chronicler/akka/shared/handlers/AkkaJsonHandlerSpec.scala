@@ -19,8 +19,8 @@ package com.github.fsanaulla.chronicler.akka.shared.handlers
 import com.github.fsanaulla.chronicler.akka.shared.handlers.AkkaJsonHandlerSpec._
 import com.github.fsanaulla.chronicler.akka.shared.implicits.jsonHandler
 import com.softwaremill.sttp.Response
-import jawn.ast._
 import org.scalatest._
+import org.typelevel.jawn.ast._
 
 import scala.util.{Failure, Success, Try}
 

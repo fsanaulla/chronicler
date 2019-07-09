@@ -5,9 +5,8 @@ import com.github.fsanaulla.chronicler.core.model.{InfluxReader, InfluxWriter}
 import com.github.fsanaulla.chronicler.macros.annotations.reader.epoch
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
 import com.github.fsanaulla.chronicler.macros.auto._
-import com.github.fsanaulla.scalacheck.Arb
-import jawn.ast._
 import org.scalacheck.{Arbitrary, Gen}
+import org.typelevel.jawn.ast._
 import sun.security.provider.PolicyParser.ParsingException
 
 trait InfluxFormat {
@@ -22,7 +21,18 @@ trait InfluxFormat {
   val rd: InfluxReader[Test] = InfluxReader[Test]
   val wr: InfluxWriter[Test] = InfluxWriter[Test]
 
-  implicit val gen: Arbitrary[Test] = Arb.dummy[Test]
+  implicit val gen: Arbitrary[Test] = Arbitrary {
+    for {
+      name <- Arbitrary.arbString.arbitrary
+      surname <- Arbitrary.arbOption(Arbitrary.arbString).arbitrary
+      age <- Arbitrary.arbInt.arbitrary
+      schooler <- Arbitrary.arbBool.arbitrary
+      city <- Arbitrary.arbString.arbitrary
+      time <- Arbitrary.arbLong.arbitrary
+    } yield {
+      Test(name, surname, age, schooler, city, time)
+    }
+  }
 
   val validStr: Gen[String] = for (s <- Gen.alphaStr if s.nonEmpty && s != null) yield s
 

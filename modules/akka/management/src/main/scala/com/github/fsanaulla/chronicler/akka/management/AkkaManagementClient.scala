@@ -26,7 +26,7 @@ import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.model._
 import com.softwaremill.sttp.{Response, Uri}
-import jawn.ast.JValue
+import org.typelevel.jawn.ast.JValue
 
 import scala.concurrent.{ExecutionContext, Future}
 

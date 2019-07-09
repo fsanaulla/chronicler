@@ -21,7 +21,7 @@ import com.github.fsanaulla.chronicler.core.components.{JsonHandler, RequestExec
 import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.jawn.RichJParser
 import com.github.fsanaulla.chronicler.urlhttp.shared.Url
-import jawn.ast.{JArray, JParser}
+import org.typelevel.jawn.ast.{JArray, JParser}
 import requests._
 
 import scala.io.Source
@@ -52,6 +52,7 @@ private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonH
         uri.params,
         // todo: PR for ssl support
         verifySslCerts = ssl,
+        compress = if (gzipped) Compress.Gzip else Compress.None,
         data = RequestBlob.StringRequestBlob(body)
       )
     }

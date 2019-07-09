@@ -18,9 +18,9 @@ package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
 import com.github.fsanaulla.chronicler.ahc.shared.implicits.jsonHandler
 import com.softwaremill.sttp.Response
-import jawn.ast._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpec, Matchers, OptionValues}
+import org.typelevel.jawn.ast._
 
 /**
   * Created by

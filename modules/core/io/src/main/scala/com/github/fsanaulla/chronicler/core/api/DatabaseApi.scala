@@ -23,7 +23,7 @@ import com.github.fsanaulla.chronicler.core.components._
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import jawn.ast.JArray
+import org.typelevel.jawn.ast.JArray
 
 /**
   * Generic interface for basic database IO operation
@@ -31,12 +31,10 @@ import jawn.ast.JArray
   * @tparam Body - Entity type
   */
 class DatabaseApi[F[_], Resp, Uri, Body](dbName: String,
-                                               gzipped: Boolean)
-                                              (implicit qb: QueryBuilder[Uri],
-                                               bd: BodyBuilder[Body],
-                                               re: RequestExecutor[F, Resp, Uri, Body],
-                                               rh: ResponseHandler[Resp],
-                                               F: Functor[F]) extends DatabaseOperationQuery[Uri] {
+                                         gzipped: Boolean)
+                                        (implicit qb: QueryBuilder[Uri], bd: BodyBuilder[Body],
+                                         re: RequestExecutor[F, Resp, Uri, Body], rh: ResponseHandler[Resp],
+                                         F: Functor[F]) extends DatabaseOperationQuery[Uri] {
 
    def writeFromFile(file: File,
                      enc: String = "UTF-8",

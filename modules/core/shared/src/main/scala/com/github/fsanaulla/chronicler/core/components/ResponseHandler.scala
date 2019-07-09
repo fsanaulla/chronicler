@@ -20,7 +20,7 @@ import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
 import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.model._
-import jawn.ast.JArray
+import org.typelevel.jawn.ast.JArray
 
 import scala.reflect.ClassTag
 
@@ -44,6 +44,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @return         - Result in future container
     */
   def writeResult(response: R): ErrorOr[ResponseCode] = {
+    println(response)
     jsonHandler.responseCode(response) match {
       case code if isSuccessful(code) && code != 204 =>
         jsonHandler

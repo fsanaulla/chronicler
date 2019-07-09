@@ -24,8 +24,8 @@ import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.model.{Functor, InfluxCredentials, InfluxDBInfo}
 import com.softwaremill.sttp.{Response, Uri}
-import jawn.ast.JValue
 import org.asynchttpclient.AsyncHttpClientConfig
+import org.typelevel.jawn.ast.JValue
 
 import scala.concurrent.{ExecutionContext, Future}
 

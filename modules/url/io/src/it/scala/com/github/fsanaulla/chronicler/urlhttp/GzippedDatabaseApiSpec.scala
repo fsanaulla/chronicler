@@ -10,8 +10,8 @@ import com.github.fsanaulla.chronicler.urlhttp.SampleEntitys._
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
-import jawn.ast.{JArray, JNum, JString}
 import org.scalatest.{FlatSpec, Matchers}
+import org.typelevel.jawn.ast.{JArray, JNum, JString}
 
 class GzippedDatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 

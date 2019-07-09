@@ -1,8 +1,8 @@
 package com.github.fsanaulla.chronicler.macros
 
-import jawn.ast.JArray
 import org.scalatest.FlatSpec
 import org.scalatestplus.scalacheck.Checkers
+import org.typelevel.jawn.ast.JArray
 
 class InfluxWriterProperties extends FlatSpec with Checkers with InfluxFormat {
 

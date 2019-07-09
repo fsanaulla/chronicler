@@ -17,7 +17,7 @@
 package com.github.fsanaulla.chronicler.akka.shared
 
 import com.softwaremill.sttp.Response
-import jawn.ast.{JParser, JValue}
+import org.typelevel.jawn.ast.{JParser, JValue}
 
 package object handlers {
   implicit class RichString(private val str: String) extends AnyVal {

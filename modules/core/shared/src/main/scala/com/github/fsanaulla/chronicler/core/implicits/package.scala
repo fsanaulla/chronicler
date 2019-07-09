@@ -16,11 +16,11 @@
 
 package com.github.fsanaulla.chronicler.core
 
-import _root_.jawn.ast.{JArray, JValue}
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.enums.{Destinations, Privileges}
 import com.github.fsanaulla.chronicler.core.jawn._
 import com.github.fsanaulla.chronicler.core.model._
+import org.typelevel.jawn.ast.{JArray, JValue}
 
 package object implicits {
 
