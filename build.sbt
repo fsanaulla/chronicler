@@ -73,7 +73,7 @@ lazy val urlShared = project
   .settings(
     name := s"$projectName-url-shared",
     libraryDependencies ++=
-      Library.scalaTest :: Library.requestScala :: Nil
+      Library.scalaTest :: Library.requestScala(scalaVersion.value) :: Nil
   )
   .configure(defaultSettings)
   .dependsOn(coreShared)
