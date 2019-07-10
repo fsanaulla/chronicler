@@ -29,13 +29,15 @@ import org.typelevel.jawn.ast._
   */
 class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
 
-  implicit val p: JParser.type = JParser
   val rh = new ResponseHandler(jsonHandler)
+
+  def toResponse(str: String): Response[JValue] =
+    Response.ok(JParser.parseFromString(str).get)
 
   it should "extract single query queryResult from response" in {
 
     val singleHttpResponse: Response[JValue] =
-      """
+      toResponse("""
         |{
         |    "results": [
         |        {
@@ -66,7 +68,7 @@ class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
         |        }
         |    ]
         |}
-      """.stripMargin.toResponse
+      """.stripMargin)
 
     val result = Array(
       JArray(Array(
@@ -85,7 +87,7 @@ class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
 
   it should "extract bulk query results from response" in {
 
-    val bulkHttpResponse: Response[JValue] =
+    val bulkHttpResponse: Response[JValue] = toResponse(
       """
         |{
         |    "results": [
@@ -135,7 +137,7 @@ class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
         |        }
         |    ]
         |}
-      """.stripMargin.toResponse
+      """.stripMargin)
 
     rh.bulkQueryResultJson(bulkHttpResponse).right.get shouldEqual Array(
       Array(
@@ -150,7 +152,7 @@ class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
 
   it should "cq unpacking" in {
 
-    val cqResponse = """{
+    val cqResponse = toResponse("""{
       "results": [
         {
           "statement_id": 0,
@@ -200,7 +202,7 @@ class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
         }
       ]
     }
-  """.toResponse
+  """.stripMargin)
 
     val cqi = rh.toCqQueryResult(cqResponse).right.get.filter(_.queries.nonEmpty).head
     cqi.dbName shouldEqual "mydb"
@@ -209,7 +211,7 @@ class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
 
   it should "extract optional error message" in {
 
-    val errorHttpResponse: Response[JValue] =
+    val errorHttpResponse: Response[JValue] = toResponse(
       """
         |{
         |        "results": [
@@ -219,7 +221,7 @@ class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
         |          }
         |        ]
         |}
-      """.stripMargin.toResponse
+      """.stripMargin)
 
     jsonHandler.responseErrorMsgOpt(errorHttpResponse).right.get shouldEqual Some("user not found")
   }
@@ -227,7 +229,7 @@ class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
   it should "extract error message" in {
 
     val errorHttpResponse: Response[JValue] =
-      """ { "error": "user not found" } """.toResponse
+      toResponse("""{ "error": "user not found" }""")
 
     jsonHandler.responseErrorMsg(errorHttpResponse).right.get shouldEqual "user not found"
   }
