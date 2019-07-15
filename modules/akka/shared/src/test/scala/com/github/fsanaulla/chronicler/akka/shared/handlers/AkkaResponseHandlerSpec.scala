@@ -38,48 +38,42 @@ class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
 
     val singleHttpResponse: Response[JValue] =
       toResponse("""
-        |{
-        |    "results": [
-        |        {
-        |            "statement_id": 0,
-        |            "series": [
-        |                {
-        |                    "name": "cpu_load_short",
-        |                    "columns": [
-        |                        "time",
-        |                        "value"
-        |                    ],
-        |                    "values": [
-        |                        [
-        |                            "2015-01-29T21:55:43.702900257Z",
-        |                            2
-        |                        ],
-        |                        [
-        |                            "2015-01-29T21:55:43.702900257Z",
-        |                            0.55
-        |                        ],
-        |                        [
-        |                            "2015-06-11T20:46:02Z",
-        |                            0.64
-        |                        ]
-        |                    ]
-        |                }
-        |            ]
-        |        }
-        |    ]
-        |}
+                   |{
+                   |    "results": [
+                   |        {
+                   |            "statement_id": 0,
+                   |            "series": [
+                   |                {
+                   |                    "name": "cpu_load_short",
+                   |                    "columns": [
+                   |                        "time",
+                   |                        "value"
+                   |                    ],
+                   |                    "values": [
+                   |                        [
+                   |                            "2015-01-29T21:55:43.702900257Z",
+                   |                            2
+                   |                        ],
+                   |                        [
+                   |                            "2015-01-29T21:55:43.702900257Z",
+                   |                            0.55
+                   |                        ],
+                   |                        [
+                   |                            "2015-06-11T20:46:02Z",
+                   |                            0.64
+                   |                        ]
+                   |                    ]
+                   |                }
+                   |            ]
+                   |        }
+                   |    ]
+                   |}
       """.stripMargin)
 
     val result = Array(
-      JArray(Array(
-        JString("2015-01-29T21:55:43.702900257Z"),
-        JNum(2))),
-      JArray(Array(
-        JString("2015-01-29T21:55:43.702900257Z"),
-        JNum(0.55))),
-      JArray(Array(
-        JString("2015-06-11T20:46:02Z"),
-        JNum(0.64)))
+      JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
+      JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
+      JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
     )
 
     rh.queryResultJson(singleHttpResponse).right.get shouldEqual result
@@ -87,63 +81,64 @@ class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
 
   it should "extract bulk query results from response" in {
 
-    val bulkHttpResponse: Response[JValue] = toResponse(
-      """
-        |{
-        |    "results": [
-        |        {
-        |            "statement_id": 0,
-        |            "series": [
-        |                {
-        |                    "name": "cpu_load_short",
-        |                    "columns": [
-        |                        "time",
-        |                        "value"
-        |                    ],
-        |                    "values": [
-        |                        [
-        |                            "2015-01-29T21:55:43.702900257Z",
-        |                            2
-        |                        ],
-        |                        [
-        |                            "2015-01-29T21:55:43.702900257Z",
-        |                            0.55
-        |                        ],
-        |                        [
-        |                            "2015-06-11T20:46:02Z",
-        |                            0.64
-        |                        ]
-        |                    ]
-        |                }
-        |            ]
-        |        },
-        |        {
-        |            "statement_id": 1,
-        |            "series": [
-        |                {
-        |                    "name": "cpu_load_short",
-        |                    "columns": [
-        |                        "time",
-        |                        "count"
-        |                    ],
-        |                    "values": [
-        |                        [
-        |                            "1970-01-01T00:00:00Z",
-        |                            3
-        |                        ]
-        |                    ]
-        |                }
-        |            ]
-        |        }
-        |    ]
-        |}
+    val bulkHttpResponse: Response[JValue] =
+      toResponse("""
+                   |{
+                   |    "results": [
+                   |        {
+                   |            "statement_id": 0,
+                   |            "series": [
+                   |                {
+                   |                    "name": "cpu_load_short",
+                   |                    "columns": [
+                   |                        "time",
+                   |                        "value"
+                   |                    ],
+                   |                    "values": [
+                   |                        [
+                   |                            "2015-01-29T21:55:43.702900257Z",
+                   |                            2
+                   |                        ],
+                   |                        [
+                   |                            "2015-01-29T21:55:43.702900257Z",
+                   |                            0.55
+                   |                        ],
+                   |                        [
+                   |                            "2015-06-11T20:46:02Z",
+                   |                            0.64
+                   |                        ]
+                   |                    ]
+                   |                }
+                   |            ]
+                   |        },
+                   |        {
+                   |            "statement_id": 1,
+                   |            "series": [
+                   |                {
+                   |                    "name": "cpu_load_short",
+                   |                    "columns": [
+                   |                        "time",
+                   |                        "count"
+                   |                    ],
+                   |                    "values": [
+                   |                        [
+                   |                            "1970-01-01T00:00:00Z",
+                   |                            3
+                   |                        ]
+                   |                    ]
+                   |                }
+                   |            ]
+                   |        }
+                   |    ]
+                   |}
       """.stripMargin)
 
     rh.bulkQueryResultJson(bulkHttpResponse).right.get shouldEqual Array(
       Array(
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
-        JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))),
+        JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
+      ),
       Array(
         JArray(Array(JString("1970-01-01T00:00:00Z"), JNum(3)))
       )
@@ -152,7 +147,8 @@ class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
 
   it should "cq unpacking" in {
 
-    val cqResponse = toResponse("""{
+    val cqResponse = toResponse(
+      """{
       "results": [
         {
           "statement_id": 0,
@@ -202,25 +198,28 @@ class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
         }
       ]
     }
-  """.stripMargin)
+  """.stripMargin
+    )
 
     val cqi = rh.toCqQueryResult(cqResponse).right.get.filter(_.queries.nonEmpty).head
     cqi.dbName shouldEqual "mydb"
-    cqi.queries.head shouldEqual ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")
+    cqi.queries.head shouldEqual ContinuousQuery(
+      "cq",
+      "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END"
+    )
   }
 
   it should "extract optional error message" in {
 
-    val errorHttpResponse: Response[JValue] = toResponse(
-      """
-        |{
-        |        "results": [
-        |          {
-        |            "statement_id": 0,
-        |            "error": "user not found"
-        |          }
-        |        ]
-        |}
+    val errorHttpResponse: Response[JValue] = toResponse("""
+                                                           |{
+                                                           |        "results": [
+                                                           |          {
+                                                           |            "statement_id": 0,
+                                                           |            "error": "user not found"
+                                                           |          }
+                                                           |        ]
+                                                           |}
       """.stripMargin)
 
     jsonHandler.responseErrorMsgOpt(errorHttpResponse).right.get shouldEqual Some("user not found")

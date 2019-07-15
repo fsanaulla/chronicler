@@ -30,21 +30,24 @@ import org.typelevel.jawn.ast.JValue
 
 import scala.concurrent.{ExecutionContext, Future}
 
-final class AkkaManagementClient(host: String,
-                                 port: Int,
-                                 val credentials: Option[InfluxCredentials],
-                                 httpsContext: Option[HttpsConnectionContext])
-                                (implicit val ex: ExecutionContext, val system: ActorSystem, val F: Functor[Future])
-  extends InfluxAkkaClient(httpsContext)
+final class AkkaManagementClient(
+    host: String,
+    port: Int,
+    val credentials: Option[InfluxCredentials],
+    httpsContext: Option[HttpsConnectionContext]
+  )(
+    implicit val ex: ExecutionContext,
+    val system: ActorSystem,
+    val F: Functor[Future])
+    extends InfluxAkkaClient(httpsContext)
     with ManagementClient[Future, Response[JValue], Uri, String] {
 
-  implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(host, port, credentials)
-  implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor
+  implicit val qb: AkkaQueryBuilder                  = new AkkaQueryBuilder(host, port, credentials)
+  implicit val re: AkkaRequestExecutor               = new AkkaRequestExecutor
   implicit val rh: ResponseHandler[Response[JValue]] = new ResponseHandler(jsonHandler)
 
   override def ping: Future[ErrorOr[InfluxDBInfo]] = {
-    re
-      .get(qb.buildQuery("/ping", Map.empty[String, String]))
+    re.get(qb.buildQuery("/ping"))
       .map(rh.pingResult)
   }
 }

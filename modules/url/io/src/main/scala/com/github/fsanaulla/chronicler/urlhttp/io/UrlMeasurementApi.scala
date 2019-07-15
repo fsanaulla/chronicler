@@ -30,13 +30,18 @@ import requests.Response
 import scala.reflect.ClassTag
 import scala.util.Try
 
-class UrlMeasurementApi[T: ClassTag](dbName: String,
-                                     measurementName: String,
-                                     gzipped: Boolean)
-                                    (implicit qb: UrlQueryBuilder, bd: BodyBuilder[String],
-                                     re: UrlRequestExecutor, rh: ResponseHandler[Response],
-                                     F: Functor[Try], FA: Failable[Try])
-  extends MeasurementApi[Try, Response, Url, String, T](dbName, measurementName, gzipped) {
+class UrlMeasurementApi[T: ClassTag](
+    dbName: String,
+    measurementName: String,
+    gzipped: Boolean
+  )(
+    implicit qb: UrlQueryBuilder,
+    bd: BodyBuilder[String],
+    re: UrlRequestExecutor,
+    rh: ResponseHandler[Response],
+    F: Functor[Try],
+    FA: Failable[Try])
+    extends MeasurementApi[Try, Response, Url, String, T](dbName, measurementName, gzipped) {
 
   /**
     * Chunked query execution with typed response
@@ -46,15 +51,18 @@ class UrlMeasurementApi[T: ClassTag](dbName: String,
     * @param pretty    - pretty printing response
     * @param chunkSize - count points in the chunk
     * @param rd        - reader
-    *
     * @return          - iterator with chunked response
     * @since           - 0.5.2
     *
     * */
-  def readChunked(query: String,
-                  epoch: Epoch = Epochs.None,
-                  pretty: Boolean = false,
-                  chunkSize: Int = 10000)(implicit rd: InfluxReader[T]): Iterator[ErrorOr[Array[T]]] = {
+  def readChunked(
+      query: String,
+      epoch: Epoch = Epochs.None,
+      pretty: Boolean = false,
+      chunkSize: Int = 10000
+    )(
+      implicit rd: InfluxReader[T]
+    ): Iterator[ErrorOr[Array[T]]] = {
     val uri = chunkedQuery(dbName, query, epoch, pretty, chunkSize)
     re.executeStreaming(uri)
       .map(_.flatMapRight(arr => either.array[Throwable, T](arr.map(rd.read))))

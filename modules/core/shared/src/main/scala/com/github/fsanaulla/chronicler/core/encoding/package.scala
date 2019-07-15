@@ -21,8 +21,9 @@ package object encoding {
 
   // extract encoding from content type
   def encodingFromContentType(ct: String): Option[String] =
-    ct
-      .split(";")
+    ct.split(";")
       .map(_.trim.toLowerCase)
-      .collectFirst { case s if s.startsWith("charset=") && s.substring(8).trim != "" => s.substring(8).trim }
+      .collectFirst {
+        case s if s.startsWith("charset=") && s.substring(8).trim != "" => s.substring(8).trim
+      }
 }

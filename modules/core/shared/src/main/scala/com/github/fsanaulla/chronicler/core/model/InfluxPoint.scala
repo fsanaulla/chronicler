@@ -59,22 +59,28 @@ final case class BigDecimalField(key: String, value: BigDecimal) extends InfluxF
   override def toString: String = key.escapeKey + "=" + value
 }
 
-final case class Point(measurement: String,
-                       tags: List[InfluxTag] = Nil,
-                       fields: List[InfluxField] = Nil,
-                       time: Long = -1L) {
+final case class Point(
+    measurement: String,
+    tags: List[InfluxTag] = Nil,
+    fields: List[InfluxField] = Nil,
+    time: Long = -1L) {
 
   def addTag(key: String, value: String): Point = copy(tags = tags :+ InfluxTag(key, value))
+
   def addField(key: String, value: String): Point = {
     require(value.nonEmpty, "String can't be empty")
     copy(fields = fields :+ StringField(key, value))
   }
-  def addField(key: String, value: Int): Point = copy(fields = fields :+ IntField(key, value))
-  def addField(key: String, value: Long): Point = copy(fields = fields :+ LongField(key, value))
+  def addField(key: String, value: Int): Point    = copy(fields = fields :+ IntField(key, value))
+  def addField(key: String, value: Long): Point   = copy(fields = fields :+ LongField(key, value))
   def addField(key: String, value: Double): Point = copy(fields = fields :+ DoubleField(key, value))
-  def addField(key: String, value: Float): Point = copy(fields = fields :+ DoubleField(key, value))
-  def addField(key: String, value: BigDecimal): Point = copy(fields = fields :+ BigDecimalField(key, value))
-  def addField(key: String, value: Boolean): Point = copy(fields = fields :+ BooleanField(key, value))
+  def addField(key: String, value: Float): Point  = copy(fields = fields :+ DoubleField(key, value))
+
+  def addField(key: String, value: BigDecimal): Point =
+    copy(fields = fields :+ BigDecimalField(key, value))
+
+  def addField(key: String, value: Boolean): Point =
+    copy(fields = fields :+ BooleanField(key, value))
   def addField(key: String, value: Char): Point = copy(fields = fields :+ CharField(key, value))
 
   /** You need to specify time in nanosecond precision */

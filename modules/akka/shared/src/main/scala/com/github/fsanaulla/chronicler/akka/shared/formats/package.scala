@@ -16,12 +16,13 @@
 
 package com.github.fsanaulla.chronicler.akka.shared
 
-import com.softwaremill.sttp.{ResponseAs, asString}
+import com.softwaremill.sttp.{asString, ResponseAs}
 import org.typelevel.jawn.ast.{JNull, JParser, JValue}
 
 import scala.util.Success
 
 package object formats {
+
   val asJson: ResponseAs[JValue, Nothing] = {
     asString
       .map(JParser.parseFromString)

@@ -23,30 +23,34 @@ import com.github.fsanaulla.chronicler.core.query.SubscriptionsManagementQuery
 import com.softwaremill.sttp.Uri
 import org.scalatest.{FlatSpec, Matchers}
 
-
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 21.08.17
   */
-class SubscriptionsManagementQuerySpec extends FlatSpec with Matchers with SubscriptionsManagementQuery[Uri] {
+class SubscriptionsManagementQuerySpec
+    extends FlatSpec
+    with Matchers
+    with SubscriptionsManagementQuery[Uri] {
 
   trait AuthEnv {
-    val credentials = Some(InfluxCredentials("admin", "admin"))
+    val credentials                   = Some(InfluxCredentials("admin", "admin"))
     implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("localhost", 8086, credentials)
   }
+
   trait NonAuthEnv {
     implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("localhost", 8086, None)
   }
 
-  val subName = "subs"
-  val dbName = "db"
-  val rpName = "rp"
+  val subName                         = "subs"
+  val dbName                          = "db"
+  val rpName                          = "rp"
   val destType: Destinations.ANY.type = Destinations.ANY
-  val hosts: Seq[String] = Seq("host1", "host2")
-  val resHosts: String = Seq("host1", "host2").map(str => s"'$str'").mkString(", ")
+  val hosts: Seq[String]              = Seq("host1", "host2")
+  val resHosts: String                = Seq("host1", "host2").map(str => s"'$str'").mkString(", ")
 
-  val createRes = s"CREATE SUBSCRIPTION $subName ON $dbName.$rpName DESTINATIONS $destType $resHosts"
+  val createRes =
+    s"CREATE SUBSCRIPTION $subName ON $dbName.$rpName DESTINATIONS $destType $resHosts"
 
   "SubscriptionsManagementQuery" should "create subs query" in new AuthEnv {
     createSubscriptionQuery(subName, dbName, rpName, destType, hosts).toString() shouldEqual
@@ -54,7 +58,8 @@ class SubscriptionsManagementQuerySpec extends FlatSpec with Matchers with Subsc
   }
 
   it should "create subs query without auth" in new NonAuthEnv {
-    createSubscriptionQuery(subName, dbName, rpName, destType, hosts).toString() shouldEqual queryTester(createRes)
+    createSubscriptionQuery(subName, dbName, rpName, destType, hosts)
+      .toString() shouldEqual queryTester(createRes)
   }
 
   val dropRes = s"DROP SUBSCRIPTION $subName ON $dbName.$rpName"

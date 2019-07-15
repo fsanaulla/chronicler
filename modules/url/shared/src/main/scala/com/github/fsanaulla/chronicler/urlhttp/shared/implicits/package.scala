@@ -36,14 +36,13 @@ package object implicits {
           case Failure(exception) => Left(exception)
         }
       }
-      response
-        .contentType
+      response.contentType
         .flatMap(encodingFromContentType)
         .fold(body("UTF-8"))(body)
     }
 
     override def responseHeader(response: Response): Seq[(String, String)] =
-      response.headers.mapValues(_.head).toSeq
+      response.headers.view.mapValues(_.head).toList
 
     override def responseCode(response: Response): Int =
       response.statusCode

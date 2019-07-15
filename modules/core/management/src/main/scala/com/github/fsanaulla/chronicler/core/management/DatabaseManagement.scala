@@ -42,12 +42,16 @@ trait DatabaseManagement[F[_], Resp, Uri, Body] extends DataManagementQuery[Uri]
     * @param rpName        - retention policy name
     * @return              - execution R
     */
-  final def createDatabase(dbName: String,
-                           duration: Option[String] = None,
-                           replication: Option[Int] = None,
-                           shardDuration: Option[String] = None,
-                           rpName: Option[String] = None): F[ErrorOr[ResponseCode]] =
-    F.map(re.get(createDatabaseQuery(dbName, duration, replication, shardDuration, rpName)))(rh.writeResult)
+  final def createDatabase(
+      dbName: String,
+      duration: Option[String] = None,
+      replication: Option[Int] = None,
+      shardDuration: Option[String] = None,
+      rpName: Option[String] = None
+    ): F[ErrorOr[ResponseCode]] =
+    F.map(re.get(createDatabaseQuery(dbName, duration, replication, shardDuration, rpName)))(
+      rh.writeResult
+    )
 
   /** Drop database */
   final def dropDatabase(dbName: String): F[ErrorOr[ResponseCode]] =
@@ -70,19 +74,27 @@ trait DatabaseManagement[F[_], Resp, Uri, Body] extends DataManagementQuery[Uri]
     F.map(re.get(showFieldKeysQuery(dbName, measurementName)))(rh.queryResust[FieldInfo])
 
   /** Show tags keys list */
-  final def showTagKeys(dbName: String,
-                        measurementName: String,
-                        whereClause: Option[String] = None,
-                        limit: Option[Int] = None,
-                        offset: Option[Int] = None): F[ErrorOr[Array[String]]] =
-    F.map(re.get(showTagKeysQuery(dbName, measurementName, whereClause, limit, offset)))(rh.queryResust[String])
+  final def showTagKeys(
+      dbName: String,
+      measurementName: String,
+      whereClause: Option[String] = None,
+      limit: Option[Int] = None,
+      offset: Option[Int] = None
+    ): F[ErrorOr[Array[String]]] =
+    F.map(re.get(showTagKeysQuery(dbName, measurementName, whereClause, limit, offset)))(
+      rh.queryResust[String]
+    )
 
   /** Show tag values list */
-  final def showTagValues(dbName: String,
-                          measurementName: String,
-                          withKey: Seq[String],
-                          whereClause: Option[String] = None,
-                          limit: Option[Int] = None,
-                          offset: Option[Int] = None): F[ErrorOr[Array[TagValue]]] =
-    F.map(re.get(showTagValuesQuery(dbName, measurementName, withKey, whereClause, limit, offset)))(rh.queryResust[TagValue])
+  final def showTagValues(
+      dbName: String,
+      measurementName: String,
+      withKey: Seq[String],
+      whereClause: Option[String] = None,
+      limit: Option[Int] = None,
+      offset: Option[Int] = None
+    ): F[ErrorOr[Array[TagValue]]] =
+    F.map(re.get(showTagValuesQuery(dbName, measurementName, withKey, whereClause, limit, offset)))(
+      rh.queryResust[TagValue]
+    )
 }

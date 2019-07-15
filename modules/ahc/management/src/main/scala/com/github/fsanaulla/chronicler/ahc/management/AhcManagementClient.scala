@@ -29,20 +29,23 @@ import org.typelevel.jawn.ast.JValue
 
 import scala.concurrent.{ExecutionContext, Future}
 
-final class AhcManagementClient(host: String,
-                                port: Int,
-                                credentials: Option[InfluxCredentials],
-                                asyncClientConfig: Option[AsyncHttpClientConfig])
-                               (implicit ex: ExecutionContext, val F: Functor[Future])
-  extends InfluxAhcClient(asyncClientConfig) with ManagementClient[Future, Response[JValue], Uri, String] {
+final class AhcManagementClient(
+    host: String,
+    port: Int,
+    credentials: Option[InfluxCredentials],
+    asyncClientConfig: Option[AsyncHttpClientConfig]
+  )(
+    implicit ex: ExecutionContext,
+    val F: Functor[Future])
+    extends InfluxAhcClient(asyncClientConfig)
+    with ManagementClient[Future, Response[JValue], Uri, String] {
 
-  implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
-  implicit val re: AhcRequestExecutor = new AhcRequestExecutor
+  implicit val qb: AhcQueryBuilder                   = new AhcQueryBuilder(host, port, credentials)
+  implicit val re: AhcRequestExecutor                = new AhcRequestExecutor
   implicit val rh: ResponseHandler[Response[JValue]] = new ResponseHandler(jsonHandler)
 
   override def ping: Future[ErrorOr[InfluxDBInfo]] = {
-    re
-      .get(qb.buildQuery("/ping", Map.empty[String, String]))
+    re.get(qb.buildQuery("/ping"))
       .map(rh.pingResult)
   }
 }

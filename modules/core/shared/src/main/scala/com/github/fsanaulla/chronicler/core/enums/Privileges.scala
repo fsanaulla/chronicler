@@ -30,9 +30,9 @@ sealed trait Privilege extends EnumEntry
 object Privileges extends enumeratum.Enum[Privilege] {
   val values: immutable.IndexedSeq[Privilege] = findValues
 
-  case object READ extends Privilege
+  case object READ  extends Privilege
   case object WRITE extends Privilege
-  case object ALL extends Privilege
+  case object ALL   extends Privilege
   case object NO_PRIVILEGES extends Privilege {
     override def toString: String = "NO PRIVILEGES"
   }

@@ -16,7 +16,11 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared
 
-final class Url(val url: String, val params: List[(String, String)], val ssl: Boolean) {
+final case class Url(
+    url: String,
+    params: List[(String, String)] = Nil,
+    ssl: Boolean) {
+
   def mkUrl: String = {
     val protocol = if (ssl) "https" else "http"
     protocol + "://" + url

@@ -20,7 +20,7 @@ import org.typelevel.jawn.ast.JArray
 
 package object alias {
   type ResponseCode = Int
-  type ErrorOr[A] = Either[Throwable, A]
+  type ErrorOr[A]   = Either[Throwable, A]
 
   // point representation in JSON array
   type JPoint = JArray

@@ -30,9 +30,10 @@ package object jawn {
 
   /** Extension to simplify parsing JAWN AST */
   implicit final class RichJValue(private val jv: JValue) extends AnyVal {
+
     def arrayValue: ErrorOr[Array[JValue]] = jv match {
       case JArray(arr) => Right(arr)
-      case other       =>
+      case other =>
         Left(new WrongValueException("array", other.toString()))
     }
 
@@ -51,6 +52,7 @@ package object jawn {
   }
 
   implicit final class RichJParser(private val jp: JParser.type) extends AnyVal {
+
     def parseFromStringEither(str: String): ErrorOr[JValue] = {
       jp.parseFromString(str) match {
         case Success(value)     => Right(value)

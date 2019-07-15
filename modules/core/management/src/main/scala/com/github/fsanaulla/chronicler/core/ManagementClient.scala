@@ -27,7 +27,7 @@ import com.github.fsanaulla.chronicler.core.management._
   * @tparam Entity - Request entity type
   */
 trait ManagementClient[F[_], Resp, Uri, Entity]
-  extends SystemManagement[F]
+    extends SystemManagement[F]
     with DatabaseManagement[F, Resp, Uri, Entity]
     with UserManagement[F, Resp, Uri, Entity]
     with QueriesManagement[F, Resp, Uri, Entity]

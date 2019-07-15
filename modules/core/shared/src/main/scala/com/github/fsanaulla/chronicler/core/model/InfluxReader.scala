@@ -44,7 +44,6 @@ trait InfluxReader[T] extends JSerializable {
     *
     * @param js - jarray
     * @return   - T
-    *
     * @since - 0.5.2
     */
   def readUnsafe(js: JArray): T

@@ -27,21 +27,21 @@ import requests.Response
 
 import scala.util.Try
 
+final class UrlManagementClient(
+    host: String,
+    port: Int,
+    credentials: Option[InfluxCredentials],
+    ssl: Boolean
+  )(
+    implicit val F: Functor[Try])
+    extends ManagementClient[Try, Response, Url, String] {
 
-final class UrlManagementClient(host: String,
-                                port: Int,
-                                credentials: Option[InfluxCredentials],
-                                ssl: Boolean)
-                               (implicit val F: Functor[Try])
-  extends ManagementClient[Try, Response, Url, String] {
-
-  implicit val qb: UrlQueryBuilder = new UrlQueryBuilder(host, port, credentials, ssl)
-  implicit val re: UrlRequestExecutor = new UrlRequestExecutor(ssl, jsonHandler)
+  implicit val qb: UrlQueryBuilder           = new UrlQueryBuilder(host, port, credentials, ssl)
+  implicit val re: UrlRequestExecutor        = new UrlRequestExecutor(ssl, jsonHandler)
   implicit val rh: ResponseHandler[Response] = new ResponseHandler(jsonHandler)
 
   override def ping: Try[ErrorOr[InfluxDBInfo]] = {
-    re
-      .get(qb.buildQuery("/ping", Map.empty[String, String]))
+    re.get(qb.buildQuery("/ping"))
       .map(rh.pingResult)
   }
 

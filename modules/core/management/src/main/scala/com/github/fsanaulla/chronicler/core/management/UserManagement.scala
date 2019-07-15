@@ -57,12 +57,19 @@ trait UserManagement[F[_], Resp, Uri, Body] extends UserManagementQuery[Uri] {
     F.map(re.get(setUserPasswordQuery(username, password)))(rh.writeResult)
 
   /** Set user privilege on specified database */
-  final def setPrivileges(username: String, dbName: String, privilege: Privilege): F[ErrorOr[ResponseCode]] =
+  final def setPrivileges(
+      username: String,
+      dbName: String,
+      privilege: Privilege
+    ): F[ErrorOr[ResponseCode]] =
     F.map(re.get(setPrivilegesQuery(dbName, username, privilege)))(rh.writeResult)
 
-
   /** Revoke user privilege on specified datasbase */
-  final def revokePrivileges(username: String, dbName: String, privilege: Privilege): F[ErrorOr[ResponseCode]] =
+  final def revokePrivileges(
+      username: String,
+      dbName: String,
+      privilege: Privilege
+    ): F[ErrorOr[ResponseCode]] =
     F.map(re.get(revokePrivilegesQuery(dbName, username, privilege)))(rh.writeResult)
 
   /** Grant admin rights */

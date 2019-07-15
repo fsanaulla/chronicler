@@ -22,7 +22,6 @@ import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 
 import scala.annotation.implicitNotFound
 
-
 /**
   * Return string must be in following format
   * <measurement>,[<tag-key>=<tag-value>...] [<field-key>=<field-value>,<field2-key>=<field2-value>...] [unix-nano-timestamp]

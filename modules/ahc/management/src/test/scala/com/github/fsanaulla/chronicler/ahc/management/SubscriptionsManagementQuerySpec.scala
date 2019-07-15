@@ -28,28 +28,34 @@ import org.scalatest.{FlatSpec, Matchers}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 21.08.17
   */
-class SubscriptionsManagementQuerySpec extends FlatSpec with Matchers with SubscriptionsManagementQuery[Uri] {
+class SubscriptionsManagementQuerySpec
+    extends FlatSpec
+    with Matchers
+    with SubscriptionsManagementQuery[Uri] {
 
   trait Env {
     val host = "localhost"
     val port = 8086
   }
+
   trait AuthEnv extends Env {
-    val credentials = Some(InfluxCredentials("admin", "admin"))
+    val credentials                  = Some(InfluxCredentials("admin", "admin"))
     implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
   }
+
   trait NonAuthEnv extends Env {
     implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, None)
   }
 
-  val subName = "subs"
-  val dbName = "db"
-  val rpName = "rp"
+  val subName                         = "subs"
+  val dbName                          = "db"
+  val rpName                          = "rp"
   val destType: Destinations.ANY.type = Destinations.ANY
-  val hosts: Seq[String] = Seq("host1", "host2")
-  val resHosts: String = Seq("host1", "host2").map(str => s"'$str'").mkString(", ")
+  val hosts: Seq[String]              = Seq("host1", "host2")
+  val resHosts: String                = Seq("host1", "host2").map(str => s"'$str'").mkString(", ")
 
-  val createRes = s"CREATE SUBSCRIPTION $subName ON $dbName.$rpName DESTINATIONS $destType $resHosts"
+  val createRes =
+    s"CREATE SUBSCRIPTION $subName ON $dbName.$rpName DESTINATIONS $destType $resHosts"
 
   it should "create subs query" in new AuthEnv {
     createSubscriptionQuery(subName, dbName, rpName, destType, hosts).toString() shouldEqual

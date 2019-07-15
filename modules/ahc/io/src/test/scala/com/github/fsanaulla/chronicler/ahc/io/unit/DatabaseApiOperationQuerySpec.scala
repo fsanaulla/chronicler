@@ -30,89 +30,109 @@ import scala.language.implicitConversions
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class DatabaseApiOperationQuerySpec extends FlatSpec with Matchers with DatabaseOperationQuery[Uri] {
+class DatabaseApiOperationQuerySpec
+    extends FlatSpec
+    with Matchers
+    with DatabaseOperationQuery[Uri] {
 
   trait Env {
     val host = "localhost"
     val port = 8086
   }
+
   trait AuthEnv extends Env {
-    val credentials = Some(InfluxCredentials("admin", "admin"))
+    val credentials                  = Some(InfluxCredentials("admin", "admin"))
     implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
   }
+
   trait NonAuthEnv extends Env {
     implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, None)
   }
 
-  val testDB = "db"
+  val testDB    = "db"
   val testQuery = "SELECT * FROM test"
 
   implicit def a2Opt[A](a: A): Option[A] = Some(a)
 
   it should "return correct write query" in new AuthEnv {
-
-    write(testDB, Consistencies.One, Precisions.Nanoseconds, None).toString() shouldEqual queryTester(
+    write(testDB, Consistencies.One, Precisions.Nanoseconds, None)
+      .toString() shouldEqual queryTester(
       "/write",
-      Map(
-        "precision" -> "ns",
-        "u" -> credentials.get.username,
+      List(
+        "db"          -> testDB,
+        "u"           -> credentials.get.username,
+        "p"           -> credentials.get.password,
         "consistency" -> "one",
-        "db" -> testDB,
-        "p" -> credentials.get.password
+        "precision"   -> "ns"
       )
     )
 
-    write(testDB, Consistencies.All, Precisions.Nanoseconds, None).toString() shouldEqual queryTester(
+    write(testDB, Consistencies.All, Precisions.Nanoseconds, None)
+      .toString() shouldEqual queryTester(
       "/write",
-      Map(
-        "precision" -> "ns",
-        "u" -> credentials.get.username,
+      List(
+        "db"          -> testDB,
+        "u"           -> credentials.get.username,
+        "p"           -> credentials.get.password,
         "consistency" -> "all",
-        "db" -> testDB,
-        "p" -> credentials.get.password)
+        "precision"   -> "ns"
+      )
     )
   }
 
   it should "return correct write query without auth " in new NonAuthEnv {
     write(testDB, Consistencies.One, Precisions.Nanoseconds, None).toString() shouldEqual
-      queryTester("/write", Map("db" -> testDB, "consistency" -> "one", "precision" -> "ns"))
+      queryTester("/write", List("db" -> testDB, "consistency" -> "one", "precision" -> "ns"))
 
     write(testDB, Consistencies.One, Precisions.Microseconds, None).toString() shouldEqual
-      queryTester("/write", Map("db" -> testDB, "consistency" -> "one", "precision" -> "u"))
+      queryTester("/write", List("db" -> testDB, "consistency" -> "one", "precision" -> "u"))
   }
 
   it should "return correct single read query" in new AuthEnv {
-    val map: Map[String, String] = Map[String, String](
-      "db" -> testDB,
-      "u" -> credentials.get.username,
-      "p" -> credentials.get.password,
+
+    val queryPrms = List(
+      "db"    -> testDB,
+      "u"     -> credentials.get.username,
+      "p"     -> credentials.get.password,
       "epoch" -> "ns",
-      "q" -> "SELECT * FROM test"
+      "q"     -> "SELECT * FROM test"
     )
     singleQuery(testDB, testQuery, Epochs.Nanoseconds, pretty = false).toString() shouldEqual
-      queryTester("/query", map)
+      queryTester("/query", queryPrms)
   }
 
   it should "return correct bulk read query" in new AuthEnv {
-    val map: Map[String, String] = Map[String, String](
-      "db" -> testDB,
-      "u" -> credentials.get.username,
-      "p" -> credentials.get.password,
-      "epoch" -> "ns",
-      "q" -> "SELECT * FROM test;SELECT * FROM test1"
-    )
-    bulkQuery(testDB, Seq("SELECT * FROM test", "SELECT * FROM test1"), Epochs.Nanoseconds, pretty = false).toString() shouldEqual
-      queryTester("/query", map)
 
-    val map1: Map[String, String] = Map[String, String](
-      "db" -> testDB,
-      "u" -> credentials.get.username,
-      "p" -> credentials.get.password,
-      "pretty" -> "true",
+    val queryPrms: List[(String, String)] = List(
+      "db"    -> testDB,
+      "u"     -> credentials.get.username,
+      "p"     -> credentials.get.password,
       "epoch" -> "ns",
-      "q" -> "SELECT * FROM test;SELECT * FROM test1"
+      "q"     -> "SELECT * FROM test;SELECT * FROM test1"
     )
-    bulkQuery(testDB, Seq("SELECT * FROM test", "SELECT * FROM test1"), Epochs.Nanoseconds, pretty = true).toString() shouldEqual
-      queryTester("/query", map1)
+
+    bulkQuery(
+      testDB,
+      Seq("SELECT * FROM test", "SELECT * FROM test1"),
+      Epochs.Nanoseconds,
+      pretty = false
+    ).toString() shouldEqual
+      queryTester("/query", queryPrms)
+
+    val queryPrms1: List[(String, String)] = List(
+      "db"     -> testDB,
+      "u"      -> credentials.get.username,
+      "p"      -> credentials.get.password,
+      "pretty" -> "true",
+      "epoch"  -> "ns",
+      "q"      -> "SELECT * FROM test;SELECT * FROM test1"
+    )
+    bulkQuery(
+      testDB,
+      Seq("SELECT * FROM test", "SELECT * FROM test1"),
+      Epochs.Nanoseconds,
+      pretty = true
+    ).toString() shouldEqual
+      queryTester("/query", queryPrms1)
   }
 }

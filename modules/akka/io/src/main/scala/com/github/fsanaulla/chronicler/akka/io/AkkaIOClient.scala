@@ -32,16 +32,20 @@ import org.typelevel.jawn.ast.JValue
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
-final class AkkaIOClient(host: String,
-                         port: Int,
-                         credentials: Option[InfluxCredentials],
-                         gzipped: Boolean,
-                         httpsContext: Option[HttpsConnectionContext])
-                        (implicit ex: ExecutionContext, system: ActorSystem)
-  extends InfluxAkkaClient(httpsContext) with IOClient[Future, Response[JValue], Uri, String] {
+final class AkkaIOClient(
+    host: String,
+    port: Int,
+    credentials: Option[InfluxCredentials],
+    gzipped: Boolean,
+    httpsContext: Option[HttpsConnectionContext]
+  )(
+    implicit ex: ExecutionContext,
+    system: ActorSystem)
+    extends InfluxAkkaClient(httpsContext)
+    with IOClient[Future, Response[JValue], Uri, String] {
 
-  implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder(host, port, credentials)
-  implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor
+  implicit val qb: AkkaQueryBuilder                  = new AkkaQueryBuilder(host, port, credentials)
+  implicit val re: AkkaRequestExecutor               = new AkkaRequestExecutor
   implicit val rh: ResponseHandler[Response[JValue]] = new ResponseHandler(jsonHandler)
 
   override def database(dbName: String): Database =
@@ -51,8 +55,7 @@ final class AkkaIOClient(host: String,
     new MeasurementApi(dbName, measurementName, gzipped)
 
   override def ping: Future[ErrorOr[InfluxDBInfo]] = {
-    re
-      .get(qb.buildQuery("/ping", Map.empty[String, String]))
+    re.get(qb.buildQuery("/ping", Nil))
       .map(rh.pingResult)
   }
 }

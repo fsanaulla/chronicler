@@ -42,12 +42,16 @@ object InfluxIO {
     * @param ex           - implicit execution context, by default use standard one
     * @return             - [[AkkaIOClient]]
     */
-  def apply(host: String,
-            port: Int = 8086,
-            credentials: Option[InfluxCredentials] = None,
-            gzipped: Boolean = false,
-            httpsContext: Option[HttpsConnectionContext] = None)
-           (implicit ex: ExecutionContext, system: ActorSystem): AkkaIOClient =
+  def apply(
+      host: String,
+      port: Int = 8086,
+      credentials: Option[InfluxCredentials] = None,
+      gzipped: Boolean = false,
+      httpsContext: Option[HttpsConnectionContext] = None
+    )(
+      implicit ex: ExecutionContext,
+      system: ActorSystem
+    ): AkkaIOClient =
     new AkkaIOClient(host, port, credentials, gzipped, httpsContext)
 
   /**
@@ -58,7 +62,6 @@ object InfluxIO {
     * @param ex          - implicit execution context, by default use standard one
     * @return            - [[AkkaIOClient]]
     */
-  def apply(conf: InfluxConfig)
-           (implicit ex: ExecutionContext, system: ActorSystem): AkkaIOClient =
+  def apply(conf: InfluxConfig)(implicit ex: ExecutionContext, system: ActorSystem): AkkaIOClient =
     apply(conf.host, conf.port, conf.credentials, conf.gzipped, conf.httpsContext)
 }

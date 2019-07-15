@@ -30,10 +30,12 @@ object InfluxMng {
     * @param credentials - user credentials
     * @return            - UrlManagementClient
     */
-  def apply(host: String,
-            port: Int = 8086,
-            credentials: Option[InfluxCredentials] = None,
-            ssl: Boolean = false): UrlManagementClient =
+  def apply(
+      host: String,
+      port: Int = 8086,
+      credentials: Option[InfluxCredentials] = None,
+      ssl: Boolean = false
+    ): UrlManagementClient =
     new UrlManagementClient(host, port, credentials, ssl)
 
   /**

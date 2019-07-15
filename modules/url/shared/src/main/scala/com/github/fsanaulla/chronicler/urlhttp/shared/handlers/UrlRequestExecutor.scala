@@ -27,7 +27,9 @@ import requests._
 import scala.io.Source
 import scala.util.Try
 
-private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonHandler[Response]) extends RequestExecutor[Try, Response, Url, String] {
+private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonHandler[Response])
+    extends RequestExecutor[Try, Response, Url, String] {
+
   /**
     * Execute uri
     *
@@ -44,7 +46,11 @@ private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonH
     }
   }
 
-  override def post(uri: Url, body: String, gzipped: Boolean): Try[Response] = {
+  override def post(
+      uri: Url,
+      body: String,
+      gzipped: Boolean
+    ): Try[Response] = {
     Try {
       requests.post(
         uri.mkUrl,

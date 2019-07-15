@@ -33,10 +33,12 @@ class QueriesManagementQuerySpec extends FlatSpec with Matchers with QueriesMana
     val host = "localhost"
     val port = 8086
   }
+
   trait AuthEnv extends Env {
-    val credentials = Some(InfluxCredentials("admin", "admin"))
+    val credentials                  = Some(InfluxCredentials("admin", "admin"))
     implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
   }
+
   trait NonAuthEnv extends Env {
     implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, None)
   }

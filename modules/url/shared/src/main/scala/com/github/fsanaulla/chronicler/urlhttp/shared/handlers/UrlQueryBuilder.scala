@@ -20,12 +20,17 @@ import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.urlhttp.shared.Url
 
-private[urlhttp] class UrlQueryBuilder(host: String,
-                                       port: Int,
-                                       credentials: Option[InfluxCredentials],
-                                       ssl: Boolean) extends QueryBuilder[Url](credentials) {
+private[urlhttp] class UrlQueryBuilder(
+    host: String,
+    port: Int,
+    credentials: Option[InfluxCredentials],
+    ssl: Boolean)
+    extends QueryBuilder[Url](credentials) {
+
+  override def buildQuery(url: String): Url =
+    Url(host + ":" + port + url, ssl = ssl)
 
   // used as a stub class to collect all request information
-  override def buildQuery(uri: String, queryParams: Map[String, String]): Url =
-    new Url(host + ":" + port + uri, queryParams.toList, ssl)
+  override def buildQuery(uri: String, queryParams: List[(String, String)]): Url =
+    Url(host + ":" + port + uri, queryParams, ssl)
 }

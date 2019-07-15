@@ -31,11 +31,13 @@ object InfluxIO {
     * @param gzipped     - enable gzip compression
     * @return            - [[UrlIOClient]]
     */
-  def apply(host: String,
-            port: Int = 8086,
-            credentials: Option[InfluxCredentials] = None,
-            gzipped: Boolean = false,
-            ssl: Boolean = false): UrlIOClient =
+  def apply(
+      host: String,
+      port: Int = 8086,
+      credentials: Option[InfluxCredentials] = None,
+      gzipped: Boolean = false,
+      ssl: Boolean = false
+    ): UrlIOClient =
     new UrlIOClient(host, port, credentials, gzipped, ssl)
 
   /**
