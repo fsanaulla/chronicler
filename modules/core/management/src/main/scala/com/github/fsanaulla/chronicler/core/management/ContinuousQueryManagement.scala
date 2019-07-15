@@ -41,7 +41,11 @@ trait ContinuousQueryManagement[F[_], Resp, Uri, Entity] extends ContinuousQueri
     * @param query  - query
     * @return
     */
-  final def createCQ(dbName: String, cqName: String, query: String): F[ErrorOr[ResponseCode]] = {
+  final def createCQ(
+      dbName: String,
+      cqName: String,
+      query: String
+    ): F[ErrorOr[ResponseCode]] = {
     require(validCQQuery(query), "Query required INTO and GROUP BY clause")
     F.map(re.get(createCQQuery(dbName, cqName, query)))(rh.writeResult)
   }

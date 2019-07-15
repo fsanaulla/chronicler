@@ -6,11 +6,20 @@ lazy val chronicler = project
   .settings(Settings.common: _*)
   .settings(parallelExecution in Compile := false)
 //  .aggregate(
-//    coreIO, coreManagement, coreShared,
-//    ahcIO, ahcManagement, ahcShared,
-//    akkaIO, akkaManagement, akkaShared,
-//    urlIO, urlManagement, urlShared,
-//    macros, udp
+//    coreIO,
+//    coreManagement,
+//    coreShared,
+//    ahcIO,
+//    ahcManagement,
+//    ahcShared,
+//    akkaIO,
+//    akkaManagement,
+//    akkaShared,
+//    urlIO,
+//    urlManagement,
+//    urlShared,
+//    macros,
+//    udp
 //  )
 
 //////////////////////////////////////////////////////
@@ -73,7 +82,7 @@ lazy val urlShared = project
   .settings(
     name := s"$projectName-url-shared",
     libraryDependencies ++=
-      Library.scalaTest :: Library.requestScala :: Nil
+      Library.scalaTest :: Library.requestScala(scalaVersion.value) :: Nil
   )
   .configure(defaultSettings)
   .dependsOn(coreShared)
@@ -211,7 +220,7 @@ lazy val benchmark = project
     sourceDirectory in Jmh := (sourceDirectory in Test).value,
     classDirectory in Jmh := (classDirectory in Test).value,
     dependencyClasspath in Jmh := (dependencyClasspath in Test).value,
-      // rewire tasks, so that 'jmh:run' automatically invokes 'jmh:compile' (otherwise a clean 'jmh:run' would fail)
+    // rewire tasks, so that 'jmh:run' automatically invokes 'jmh:compile' (otherwise a clean 'jmh:run' would fail)
     compile in Jmh := (compile in Jmh).dependsOn(compile in Test).value,
     run in Jmh := (run in Jmh).dependsOn(Keys.compile in Jmh).evaluated,
     libraryDependencies += "org.openjdk.jmh" % "jmh-generator-annprocess" % "1.21" % Test
@@ -222,20 +231,22 @@ lazy val benchmark = project
 //////////////////////////////////////////////////////
 ////////////////////// UTILS /////////////////////////
 //////////////////////////////////////////////////////
-def defaultSettings: Project => Project = _
-  .settings(Settings.common: _*)
-  .settings(Settings.publish: _*)
-  .settings(Settings.header)
-  .enablePlugins(AutomateHeaderPlugin)
+def defaultSettings: Project => Project =
+  _.settings(Settings.common: _*)
+    .settings(Settings.publish: _*)
+    .settings(Settings.header)
+    .enablePlugins(AutomateHeaderPlugin, ScalafmtPlugin)
 
-def defaultSettingsWithIt: Project => Project = _
-  .configs(Settings.CompileTimeIntegrationTest)
-  .settings(Defaults.itSettings)
-  .configure(defaultSettings)
+def defaultSettingsWithIt: Project => Project =
+  _.configs(Settings.CompileTimeIntegrationTest)
+    .settings(Defaults.itSettings)
+    .configure(defaultSettings)
 
-def exampleModule(moduleName: String,
-                  moduleDir: String,
-                  dependsOn: sbt.ClasspathDep[sbt.ProjectReference]*): Project =
+def exampleModule(
+    moduleName: String,
+    moduleDir: String,
+    dependsOn: sbt.ClasspathDep[sbt.ProjectReference]*
+  ): Project =
   Project(s"$projectName-$moduleName", file(s"examples/$moduleDir"))
     .settings(Settings.common: _*)
     .dependsOn(dependsOn: _*)

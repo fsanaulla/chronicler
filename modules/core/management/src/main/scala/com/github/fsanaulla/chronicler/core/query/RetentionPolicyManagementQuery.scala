@@ -18,17 +18,18 @@ package com.github.fsanaulla.chronicler.core.query
 
 import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 
-import scala.collection.mutable
-
 private[chronicler] trait RetentionPolicyManagementQuery[U] {
 
-  private[chronicler] final def createRetentionPolicyQuery(rpName: String,
-                                                           dbName: String,
-                                                           duration: String,
-                                                           replication: Int,
-                                                           shardDuration: Option[String],
-                                                           default: Boolean = false)
-                                                          (implicit qb: QueryBuilder[U]): U = {
+  private[chronicler] final def createRPQuery(
+      rpName: String,
+      dbName: String,
+      duration: String,
+      replication: Int,
+      shardDuration: Option[String],
+      default: Boolean = false
+    )(
+      implicit qb: QueryBuilder[U]
+    ): U = {
     val sb = StringBuilder.newBuilder
 
     sb.append("CREATE RETENTION POLICY ")
@@ -46,20 +47,27 @@ private[chronicler] trait RetentionPolicyManagementQuery[U] {
 
     if (default) sb.append(" DEFAULT")
 
-    qb.buildQuery("/query", qb.withCredentials(sb.toString()))
+    qb.buildQuery("/query", qb.appendCredentials(sb.toString()))
   }
 
-  private[chronicler] final def dropRetentionPolicyQuery(rpName: String, dbName: String)
-                                                        (implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.withCredentials(s"DROP RETENTION POLICY $rpName ON $dbName"))
+  private[chronicler] final def dropRPQuery(
+      rpName: String,
+      dbName: String
+    )(
+      implicit qb: QueryBuilder[U]
+    ): U =
+    qb.buildQuery("/query", qb.appendCredentials(s"DROP RETENTION POLICY $rpName ON $dbName"))
 
-  private[chronicler] final def updateRetentionPolicyQuery(rpName: String,
-                                                           dbName: String,
-                                                           duration: Option[String],
-                                                           replication: Option[Int],
-                                                           shardDuration: Option[String],
-                                                           default: Boolean = false)
-                                                          (implicit qb: QueryBuilder[U]): U = {
+  private[chronicler] final def updateRPQuery(
+      rpName: String,
+      dbName: String,
+      duration: Option[String],
+      replication: Option[Int],
+      shardDuration: Option[String],
+      default: Boolean = false
+    )(
+      implicit qb: QueryBuilder[U]
+    ): U = {
     val sb = StringBuilder.newBuilder
 
     sb.append("ALTER RETENTION POLICY ")
@@ -81,10 +89,12 @@ private[chronicler] trait RetentionPolicyManagementQuery[U] {
 
     if (default) sb.append(" DEFAULT")
 
-    qb.buildQuery("/query", qb.withCredentials(sb.toString()))
+    qb.buildQuery("/query", qb.appendCredentials(sb.toString()))
   }
 
-  private[chronicler] final def showRetentionPoliciesQuery(dbName: String)
-                                                          (implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.withCredentials(mutable.Map("db" -> dbName, "q" -> "SHOW RETENTION POLICIES")))
+  private[chronicler] final def showRPQuery(dbName: String)(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery(
+      "/query",
+      qb.appendCredentials(List("db" -> dbName, "q" -> "SHOW RETENTION POLICIES"))
+    )
 }

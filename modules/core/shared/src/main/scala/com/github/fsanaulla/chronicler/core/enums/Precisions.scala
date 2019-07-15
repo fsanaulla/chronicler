@@ -32,11 +32,11 @@ sealed abstract class Precision extends EnumEntry with HasNone {
 object Precisions extends enumeratum.Enum[Precision] {
   val values: immutable.IndexedSeq[Precision] = findValues
 
-  case object Nanoseconds  extends Precision { override val entryName: String = "ns"}
-  case object Microseconds extends Precision { override val entryName: String = "u" }
-  case object Milliseconds extends Precision { override val entryName: String = "ms"}
-  case object Seconds      extends Precision { override val entryName: String = "s" }
-  case object Minutes      extends Precision { override val entryName: String = "m" }
-  case object Hours        extends Precision { override val entryName: String = "h" }
-  case object None         extends Precision { override val isNone: Boolean = true}
+  case object Nanoseconds  extends Precision { override val entryName: String = "ns" }
+  case object Microseconds extends Precision { override val entryName: String = "u"  }
+  case object Milliseconds extends Precision { override val entryName: String = "ms" }
+  case object Seconds      extends Precision { override val entryName: String = "s"  }
+  case object Minutes      extends Precision { override val entryName: String = "m"  }
+  case object Hours        extends Precision { override val entryName: String = "h"  }
+  case object None         extends Precision { override val isNone: Boolean   = true }
 }

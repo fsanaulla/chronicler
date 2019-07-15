@@ -17,7 +17,7 @@
 package com.github.fsanaulla.chronicler.ahc.shared
 
 import com.softwaremill.sttp.{Id, RequestT}
-import jawn.ast.JValue
+import org.typelevel.jawn.ast.JValue
 
 package object alias {
   type Request = RequestT[Id, JValue, Nothing]

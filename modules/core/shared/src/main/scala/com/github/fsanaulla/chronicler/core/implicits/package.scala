@@ -16,19 +16,21 @@
 
 package com.github.fsanaulla.chronicler.core
 
-import _root_.jawn.ast.{JArray, JValue}
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.enums.{Destinations, Privileges}
 import com.github.fsanaulla.chronicler.core.jawn._
 import com.github.fsanaulla.chronicler.core.model._
+import org.typelevel.jawn.ast.{JArray, JValue}
 
 package object implicits {
 
   private[this] def exception(msg: String) = new ParsingException(msg)
 
   implicit final class RichString(private val str: String) extends AnyVal {
+
     def escapeKey: String =
       regex.tagPattern.matcher(str).replaceAll("\\\\$1")
+
     def escapeMeas: String =
       regex.measPattern.matcher(str).replaceAll("\\\\$1")
   }
@@ -37,30 +39,43 @@ package object implicits {
     override def read(js: JArray): ErrorOr[String] = js.vs match {
       case Array(str: JValue) =>
         Right(str)
-      case _                  =>
+      case _ =>
         Left(exception(s"Can't deserialize $js to String"))
     }
 
     override def readUnsafe(js: JArray): String = js.vs match {
       case Array(str: JValue) => str
-      case _                  =>
+      case _ =>
         throw exception(s"Can't deserialize $js to String")
     }
   }
 
   implicit object RetentionPolicyInfluxReader extends InfluxReader[RetentionPolicyInfo] {
+
     def read(js: JArray): ErrorOr[RetentionPolicyInfo] = js.vs match {
-      case Array(name: JValue, duration: JValue, shardGroupDuration: JValue, replication: JValue, default: JValue) =>
+      case Array(
+          name: JValue,
+          duration: JValue,
+          shardGroupDuration: JValue,
+          replication: JValue,
+          default: JValue
+          ) =>
         Right(RetentionPolicyInfo(name, duration, shardGroupDuration, replication, default))
       case _ =>
         Left(exception(s"Can't deserialize RetentionPolicyInfo object"))
     }
 
     override def readUnsafe(js: JArray): RetentionPolicyInfo = js.vs match {
-      case Array(name: JValue, duration: JValue, shardGroupDuration: JValue, replication: JValue, default: JValue) =>
+      case Array(
+          name: JValue,
+          duration: JValue,
+          shardGroupDuration: JValue,
+          replication: JValue,
+          default: JValue
+          ) =>
         RetentionPolicyInfo(name, duration, shardGroupDuration, replication, default)
       case _ =>
-         throw exception(s"Can't deserialize RetentionPolicyInfo object")
+        throw exception(s"Can't deserialize RetentionPolicyInfo object")
     }
   }
 
@@ -76,16 +91,18 @@ package object implicits {
       case Array(username: JValue, admin: JValue) =>
         UserInfo(username, admin)
       case _ =>
-         throw exception(s"Can't deserialize $UserInfo object")
+        throw exception(s"Can't deserialize $UserInfo object")
     }
   }
 
   implicit object UserPrivilegesInfoInfluxReader extends InfluxReader[UserPrivilegesInfo] {
     override def read(js: JArray): ErrorOr[UserPrivilegesInfo] = js.vs match {
       case Array(username: JValue, privilege: JValue) =>
-        Privileges.withNameOption(privilege).fold[ErrorOr[UserPrivilegesInfo]](
-          Left(new IllegalArgumentException(s"Unsupported privilege: $privilege"))
-        )(p => Right(UserPrivilegesInfo(username, p)))
+        Privileges
+          .withNameOption(privilege)
+          .fold[ErrorOr[UserPrivilegesInfo]](
+            Left(new IllegalArgumentException(s"Unsupported privilege: $privilege"))
+          )(p => Right(UserPrivilegesInfo(username, p)))
       case _ =>
         Left(exception(s"Can't deserialize $UserPrivilegesInfo object"))
     }
@@ -110,23 +127,41 @@ package object implicits {
       case Array(cqName: JValue, query: JValue) =>
         ContinuousQuery(cqName, query)
       case _ =>
-         throw exception(s"Can't deserialize $ContinuousQuery object")
+        throw exception(s"Can't deserialize $ContinuousQuery object")
     }
   }
 
   implicit object ShardInfluxReader extends InfluxReader[Shard] {
     override def read(js: JArray): ErrorOr[Shard] = js.vs match {
-      case Array(shardId: JValue, dbName: JValue, rpName: JValue, shardGroupId: JValue, startTime: JValue, endTime: JValue, expiryTime: JValue, owners: JValue) =>
+      case Array(
+          shardId: JValue,
+          dbName: JValue,
+          rpName: JValue,
+          shardGroupId: JValue,
+          startTime: JValue,
+          endTime: JValue,
+          expiryTime: JValue,
+          owners: JValue
+          ) =>
         Right(Shard(shardId, dbName, rpName, shardGroupId, startTime, endTime, expiryTime, owners))
       case _ =>
         Left(exception(s"Can't deserialize $Shard object"))
     }
 
     override def readUnsafe(js: JArray): Shard = js.vs match {
-      case Array(shardId: JValue, dbName: JValue, rpName: JValue, shardGroupId: JValue, startTime: JValue, endTime: JValue, expiryTime: JValue, owners: JValue) =>
+      case Array(
+          shardId: JValue,
+          dbName: JValue,
+          rpName: JValue,
+          shardGroupId: JValue,
+          startTime: JValue,
+          endTime: JValue,
+          expiryTime: JValue,
+          owners: JValue
+          ) =>
         Shard(shardId, dbName, rpName, shardGroupId, startTime, endTime, expiryTime, owners)
       case _ =>
-         throw exception(s"Can't deserialize $Shard object")
+        throw exception(s"Can't deserialize $Shard object")
     }
   }
 
@@ -148,14 +183,28 @@ package object implicits {
 
   implicit object ShardGroupInfluxReader extends InfluxReader[ShardGroup] {
     override def read(js: JArray): ErrorOr[ShardGroup] = js.vs match {
-      case Array(shardId: JValue, dbName: JValue, rpName: JValue, startTime: JValue, endTime: JValue, expiryTime: JValue) =>
+      case Array(
+          shardId: JValue,
+          dbName: JValue,
+          rpName: JValue,
+          startTime: JValue,
+          endTime: JValue,
+          expiryTime: JValue
+          ) =>
         Right(ShardGroup(shardId, dbName, rpName, startTime, endTime, expiryTime))
       case _ =>
         Left(exception(s"Can't deserialize $ShardGroup object"))
     }
 
     override def readUnsafe(js: JArray): ShardGroup = js.vs match {
-      case Array(shardId: JValue, dbName: JValue, rpName: JValue, startTime: JValue, endTime: JValue, expiryTime: JValue) =>
+      case Array(
+          shardId: JValue,
+          dbName: JValue,
+          rpName: JValue,
+          startTime: JValue,
+          endTime: JValue,
+          expiryTime: JValue
+          ) =>
         ShardGroup(shardId, dbName, rpName, startTime, endTime, expiryTime)
       case _ =>
         throw exception(s"Can't deserialize $ShardGroup object")
@@ -167,9 +216,11 @@ package object implicits {
       case Array(rpName: JValue, subsName: JValue, destType: JValue, JArray(elems)) =>
         Destinations
           .withNameOption(destType)
-          .fold[ErrorOr[Subscription]](Left(new IllegalArgumentException(s"Unsupported destination type: $destType"))) {
-            d => Right(Subscription(rpName, subsName, d, elems.map(_.asString)))
-        }
+          .fold[ErrorOr[Subscription]](
+            Left(new IllegalArgumentException(s"Unsupported destination type: $destType"))
+          ) { d =>
+            Right(Subscription(rpName, subsName, d, elems.map(_.asString)))
+          }
       case _ =>
         Left(exception(s"Can't deserialize $Subscription object"))
     }

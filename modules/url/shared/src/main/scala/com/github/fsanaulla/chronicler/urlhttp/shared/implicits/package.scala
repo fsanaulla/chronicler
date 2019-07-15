@@ -22,7 +22,7 @@ import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.components.JsonHandler
 import com.github.fsanaulla.chronicler.core.encoding.encodingFromContentType
 import com.github.fsanaulla.chronicler.core.model.{Failable, Functor}
-import jawn.ast.{JParser, JValue}
+import org.typelevel.jawn.ast.{JParser, JValue}
 import requests.Response
 
 import scala.util.{Failure, Success, Try}
@@ -36,14 +36,13 @@ package object implicits {
           case Failure(exception) => Left(exception)
         }
       }
-      response
-        .contentType
+      response.contentType
         .flatMap(encodingFromContentType)
         .fold(body("UTF-8"))(body)
     }
 
     override def responseHeader(response: Response): Seq[(String, String)] =
-      response.headers.mapValues(_.head).toSeq
+      response.headers.mapValues(_.head).toList
 
     override def responseCode(response: Response): Int =
       response.statusCode

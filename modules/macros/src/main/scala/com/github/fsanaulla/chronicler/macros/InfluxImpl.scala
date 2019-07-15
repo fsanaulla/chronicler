@@ -36,11 +36,11 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
   /** return type dealias */
   private def getType[A: TypeTag]: c.universe.Type = typeOf[A].dealias
 
-  private[this] val bool: c.universe.Type = getType[Boolean]
-  private[this] val int: c.universe.Type = getType[Int]
-  private[this] val long: c.universe.Type = getType[Long]
-  private[this] val double: c.universe.Type = getType[Double]
-  private[this] val string: c.universe.Type = getType[String]
+  private[this] val bool: c.universe.Type      = getType[Boolean]
+  private[this] val int: c.universe.Type       = getType[Int]
+  private[this] val long: c.universe.Type      = getType[Long]
+  private[this] val double: c.universe.Type    = getType[Double]
+  private[this] val string: c.universe.Type    = getType[String]
   private[this] val optString: c.universe.Type = getType[Option[String]]
 
   private[this] val timestamp: c.universe.Type = getType[timestamp]
@@ -66,13 +66,17 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
         if (timestampTypes.exists(_ =:= m.returnType)) true
         else {
           // reader supports only string and long
-          compileError(s"""@timestamp field: "${m.name}" has unsupported type ${m.returnType}. Timestamp must be Long/String for InfluxReader""")
+          compileError(
+            s"""@timestamp field: "${m.name}" has unsupported type ${m.returnType}. Timestamp must be Long/String for InfluxReader"""
+          )
         }
       } else {
         if (m.returnType =:= long) true
         else {
           // writer supports only long
-          compileError(s"""@timestamp field: "${m.name}" has unsupported type ${m.returnType}. Timestamp must be Long for InfluxWriter""")
+          compileError(
+            s"""@timestamp field: "${m.name}" has unsupported type ${m.returnType}. Timestamp must be Long for InfluxWriter"""
+          )
         }
       }
     } else false
@@ -97,11 +101,13 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
 
     def safeOrUnsafeRead(unsafe: Boolean): (TermName, Tree) =
       if (!unsafe) TermName("read") -> tq"com.github.fsanaulla.chronicler.core.alias.ErrorOr[$tpe]"
-      else TermName("readUnsafe") -> q"$tpe"
+      else TermName("readUnsafe")   -> q"$tpe"
 
-    def buildResult(tp: c.universe.Type,
-                    constructors: List[Tree],
-                    unsafe: Boolean): c.universe.Tree = {
+    def buildResult(
+        tp: c.universe.Type,
+        constructors: List[Tree],
+        unsafe: Boolean
+      ): c.universe.Tree = {
       if (!unsafe)
         q"""scala.util.Try(new $tp(..$constructors)) match {
               case scala.util.Success(v) => scala.util.Right(v)
@@ -118,13 +124,15 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     def isUtc(annotations: List[c.universe.Annotation], tp: c.universe.Type): Boolean =
       annotations.exists(_.tree.tpe =:= getType[utc]) && tp =:= string
 
-    def simpleRead(timestampCtor: Tree,
-                   constructors: List[Tree],
-                   unsafe: Boolean): c.universe.Tree = {
-      val sCase = buildResult(tpe, timestampCtor :: constructors, unsafe)
+    def simpleRead(
+        timestampCtor: Tree,
+        constructors: List[Tree],
+        unsafe: Boolean
+      ): c.universe.Tree = {
+      val sCase              = buildResult(tpe, timestampCtor :: constructors, unsafe)
       val (name, returnType) = safeOrUnsafeRead(unsafe)
 
-      q"""def $name(js: jawn.ast.JArray): $returnType = {
+      q"""def $name(js: org.typelevel.jawn.ast.JArray): $returnType = {
             val arr = js.vs
             $sCase
           }
@@ -139,7 +147,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     val fields = getFieldInfo(othFields)
 
     val constructorParams = fields
-      // sort by field name
+    // sort by field name
       .sortBy(_._1)
 
       // to future extraction from incoming array by index
@@ -159,9 +167,17 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
         case (_, other, _)         => compileError(s"Unsupported type $other")
       }
 
-    def readMethod(timeField: Option[MethodSymbol], ctors: List[Tree], unsafe: Boolean): c.universe.Tree = {
+    def readMethod(
+        timeField: Option[MethodSymbol],
+        ctors: List[Tree],
+        unsafe: Boolean
+      ): c.universe.Tree = {
 
-      def buildTimestamp(nm: MethodSymbol, isLong: Boolean, isGeneric: Boolean): c.universe.Tree = {
+      def buildTimestamp(
+          nm: MethodSymbol,
+          isLong: Boolean,
+          isGeneric: Boolean
+        ): c.universe.Tree = {
         val tnm = TermName(nm.name.decodedName.toString)
 
         if (!isGeneric) {
@@ -188,14 +204,14 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
             val (name, returnType) = safeOrUnsafeRead(unsafe)
 
             q"""
-               def $name(js: jawn.ast.JArray): $returnType = {
-                 @inline def toEpoch(jv: jawn.ast.JValue): Long = {
+               def $name(js: org.typelevel.jawn.ast.JArray): $returnType = {
+                 @inline def toEpoch(jv: org.typelevel.jawn.ast.JValue): Long = {
                     jv.getString.fold(jv.asLong) { str =>
                        val i = java.time.Instant.parse(str)
                        i.getEpochSecond * 1000000000 + i.getNano
                    }
                  }
-                 @inline def toUtc(jv: jawn.ast.JValue): String = {
+                 @inline def toUtc(jv: org.typelevel.jawn.ast.JValue): String = {
                     jv.getLong.fold(jv.asString) { l =>
                        java.time.Instant.ofEpochMilli(l / 1000000).plusNanos(l % 1000000).toString
                     }
@@ -208,14 +224,18 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
           }
 
           genericRead(
-            buildResult(tpe, buildTimestamp(m, m.returnType =:= long, isGeneric = true) :: ctors, unsafe),
+            buildResult(
+              tpe,
+              buildTimestamp(m, m.returnType =:= long, isGeneric = true) :: ctors,
+              unsafe
+            ),
             unsafe
           )
 
         // mo timestamp
         case _ =>
           val (name, returnType) = safeOrUnsafeRead(unsafe)
-          q"""def $name(js: jawn.ast.JArray): $returnType = {
+          q"""def $name(js: org.typelevel.jawn.ast.JArray): $returnType = {
                 val arr = js.vs
                 ${buildResult(tpe, ctors, unsafe)}
               }"""
@@ -236,16 +256,19 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     sealed trait Unquotable {
       def key: Name
       def value: Tree
+
       /** Unquote class into Tree */
       def unquoted(head: Boolean): Tree
       final def name: String = key.decodedName.toString.escapeKey
     }
     sealed trait Field extends Unquotable
 
-    final class Tag(val key: Name,
-                    val value: Tree,
-                    optional: Boolean,
-                    escapable: Boolean) extends Unquotable {
+    final class Tag(
+        val key: Name,
+        val value: Tree,
+        optional: Boolean,
+        escapable: Boolean)
+        extends Unquotable {
       def escaped(value: Tree): c.universe.Tree =
         q"com.github.fsanaulla.chronicler.core.regex.tagPattern.matcher($value).replaceAll(com.github.fsanaulla.chronicler.core.regex.replace)"
 
@@ -254,7 +277,9 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
           q"""
               for (v <- $value) {
                 if (v.isEmpty) return Left(${illegalArgExc(name)})
-                else sb.append(${if (head) q"""$name + "=" + v""" else q""""," + $name + "=" + com.github.fsanaulla.chronicler.core.regex.tagPattern.matcher(v).replaceAll(com.github.fsanaulla.chronicler.core.regex.replace)"""})
+                else sb.append(${if (head) q"""$name + "=" + v"""
+          else
+            q""""," + $name + "=" + com.github.fsanaulla.chronicler.core.regex.tagPattern.matcher(v).replaceAll(com.github.fsanaulla.chronicler.core.regex.replace)"""})
               }
             """
         case (true, false) =>
@@ -266,21 +291,24 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
             """
         case (false, true) =>
           q"""if ($value.isEmpty) return Left(${illegalArgExc(name)})
-              else sb.append(${if (head) q"""$name + "=" + ${escaped(value)}""" else q""""," + $name + "=" + ${escaped(value)}"""})
+              else sb.append(${if (head) q"""$name + "=" + ${escaped(value)}"""
+          else q""""," + $name + "=" + ${escaped(value)}"""})
             """
         case _ =>
           q"""if ($value.isEmpty) return Left(${illegalArgExc(name)})
-              else sb.append(${if (head) q"""$name + "=" + $value""" else q""""," + $name + "=" + $value"""})
+              else sb.append(${if (head) q"""$name + "=" + $value"""
+          else q""""," + $name + "=" + $value"""})
             """
       }
     }
 
     final class IntField(val key: Name, val value: Tree) extends Field {
       override def unquoted(head: Boolean): c.universe.Tree = {
-        val str = if (head)
-          q"""new String($name + "=" + $value + "i")"""
-        else
-          q"""new String("," + $name + "=" + $value + "i")"""
+        val str =
+          if (head)
+            q"""new String($name + "=" + $value + "i")"""
+          else
+            q"""new String("," + $name + "=" + $value + "i")"""
 
         q"sb.append($str)"
       }
@@ -288,10 +316,11 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
 
     final class StringField(val key: Name, val value: Tree) extends Field {
       override def unquoted(head: Boolean): c.universe.Tree = {
-        val str = if (head)
-          q"""new String($name + "=" + "\"" + $value + "\"")"""
-        else
-          q"""new String("," + $name + "=" + "\"" + $value + "\"")"""
+        val str =
+          if (head)
+            q"""new String($name + "=" + "\"" + $value + "\"")"""
+          else
+            q"""new String("," + $name + "=" + "\"" + $value + "\"")"""
 
         q"sb.append($str)"
       }
@@ -299,10 +328,11 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
 
     final class OtherField(val key: Name, val value: Tree) extends Field {
       override def unquoted(head: Boolean): c.universe.Tree = {
-        val str = if (head)
-          q"""new String("," + $name + "=" + $value)"""
-        else
-          q"""new String("," + $name + "=" + $value)"""
+        val str =
+          if (head)
+            q"""new String("," + $name + "=" + $value)"""
+          else
+            q"""new String("," + $name + "=" + $value)"""
 
         q"sb.append($str)"
       }
@@ -311,7 +341,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     def isOption(tpe: c.universe.Type): Boolean =
       tpe.typeConstructor =:= typeOf[Option[_]].typeConstructor
     def isString(tpe: c.universe.Type): Boolean = tpe =:= string
-    def isInt(tpe: c.universe.Type): Boolean = tpe =:= int
+    def isInt(tpe: c.universe.Type): Boolean    = tpe =:= int
 
     /** Is it valid tag type */
     def isTagType(tpe: c.universe.Type): Boolean =
@@ -325,7 +355,10 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     def isTag(m: MethodSymbol): Boolean = {
       if (m.annotations.exists(_.tree.tpe =:= typeOf[tag])) {
         if (isTagType(m.returnType)) true
-        else compileError(s"@tag ${m.name} has unsupported type ${m.returnType}. Tag must have String or Optional[String]")
+        else
+          compileError(
+            s"@tag ${m.name} has unsupported type ${m.returnType}. Tag must have String or Optional[String]"
+          )
       } else false
     }
 
@@ -355,32 +388,30 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     val (timeField, othField) = getMethods(tpe).partition(isTimestamp(_, isReader = false))
 
     if (othField.lengthCompare(1) < 0)
-      compileError(
-        s"""
-           |Error: annotated fields were not found
-           |
-           |While generating InfluxWriter[$tpe] error was found.
-           |Class: '$tpe' -  must be a case class with at least 2 annotated fields.
-           |For more info: https://github.com/fsanaulla/chronicler/blob/master/docs/macros.md.
-           |
-           |""".stripMargin)
+      compileError(s"""
+                      |Error: annotated fields were not found
+                      |
+                      |While generating InfluxWriter[$tpe] error was found.
+                      |Class: '$tpe' -  must be a case class with at least 2 annotated fields.
+                      |For more info: https://github.com/fsanaulla/chronicler/blob/master/docs/macros.md.
+                      |
+                      |""".stripMargin)
 
     if (timeField.size > 1)
-      compileError(
-        s"""
-           |Error: too much '@timestamp' annotations were found
-           |
-           |While generating InfluxWriter[$tpe] error was found.
-           |Class: '$tpe' -  must be a case class with only one '@timestamp' field.
-           |For more info: https://github.com/fsanaulla/chronicler/blob/master/docs/macros.md.
-           |
-           |""".stripMargin)
+      compileError(s"""
+                      |Error: too much '@timestamp' annotations were found
+                      |
+                      |While generating InfluxWriter[$tpe] error was found.
+                      |Class: '$tpe' -  must be a case class with only one '@timestamp' field.
+                      |For more info: https://github.com/fsanaulla/chronicler/blob/master/docs/macros.md.
+                      |
+                      |""".stripMargin)
 
     val (tagMethods, fieldMethods) = othField
       .filter(isAnnotated)
       .span {
         case m: MethodSymbol if isTag(m) => true
-        case _ => false
+        case _                           => false
       }
 
     val tags: List[Tag] = tagMethods map {
@@ -399,7 +430,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
         new OtherField(m.name, q"obj.${m.name}")
     }
 
-    val tagString = unquote(tags)
+    val tagString   = unquote(tags)
     val fieldString = unquote(fields)
     val timestampString = timeField.headOption.fold(q"") { m =>
       q"""
@@ -421,6 +452,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
 
   /***
     * Generate AST for current type at compile time.
+    *
     * @tparam T - Type parameter for whom will be generated AST
     */
   def writer[T: c.WeakTypeTag]: Tree = {
@@ -430,6 +462,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
 
   /***
     * Generate AST for current type at compile time.
+    *
     * @tparam T - Type parameter for whom will be generated AST
     */
   def reader[T: c.WeakTypeTag]: Tree = {

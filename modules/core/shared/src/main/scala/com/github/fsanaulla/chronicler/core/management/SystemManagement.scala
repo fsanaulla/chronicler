@@ -21,13 +21,14 @@ import com.github.fsanaulla.chronicler.core.model.InfluxDBInfo
 
 /**
   * Basic system related management operations
- *
+  *
   * @tparam F - Response container type
   */
 trait SystemManagement[F[_]] {
 
   /**
     * Method for checking InfluxDB status
+    *
     * @return - Write result with status information
     */
   def ping: F[ErrorOr[InfluxDBInfo]]

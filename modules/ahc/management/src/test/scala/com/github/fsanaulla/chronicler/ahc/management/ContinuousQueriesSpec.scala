@@ -33,16 +33,18 @@ class ContinuousQueriesSpec extends FlatSpec with Matchers with ContinuousQuerie
     val host = "localhost"
     val port = 8086
   }
+
   trait AuthEnv extends Env {
-    val credentials = Some(InfluxCredentials("admin", "admin"))
+    val credentials                  = Some(InfluxCredentials("admin", "admin"))
     implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
   }
+
   trait NonAuthEnv extends Env {
     implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, None)
   }
 
-  val db = "mydb"
-  val cq = "bee_cq"
+  val db    = "mydb"
+  val cq    = "bee_cq"
   val query = "SELECT mean(bees) AS mean_bees INTO aggregate_bees FROM farm GROUP BY time(30m)"
 
   "ContinuousQuerys operation" should "generate correct show query" in new AuthEnv {
@@ -50,11 +52,15 @@ class ContinuousQueriesSpec extends FlatSpec with Matchers with ContinuousQuerie
   }
 
   it should "generate correct drop query" in new AuthEnv {
-    dropCQQuery(db, cq).toString() shouldEqual queryTesterAuth(s"DROP CONTINUOUS QUERY $cq ON $db")(credentials.get)
+    dropCQQuery(db, cq).toString() shouldEqual queryTesterAuth(s"DROP CONTINUOUS QUERY $cq ON $db")(
+      credentials.get
+    )
   }
 
   it should "generate correct create query" in new AuthEnv {
-    createCQQuery(db, cq, query).toString() shouldEqual queryTesterAuth(s"CREATE CONTINUOUS QUERY $cq ON $db BEGIN $query END")(credentials.get)
+    createCQQuery(db, cq, query).toString() shouldEqual queryTesterAuth(
+      s"CREATE CONTINUOUS QUERY $cq ON $db BEGIN $query END"
+    )(credentials.get)
   }
 
   it should "generate correct show query without auth" in new NonAuthEnv {
@@ -66,6 +72,8 @@ class ContinuousQueriesSpec extends FlatSpec with Matchers with ContinuousQuerie
   }
 
   it should "generate correct create query without auth" in new NonAuthEnv {
-    createCQQuery(db, cq, query).toString() shouldEqual queryTester(s"CREATE CONTINUOUS QUERY $cq ON $db BEGIN $query END")
+    createCQQuery(db, cq, query).toString() shouldEqual queryTester(
+      s"CREATE CONTINUOUS QUERY $cq ON $db BEGIN $query END"
+    )
   }
 }

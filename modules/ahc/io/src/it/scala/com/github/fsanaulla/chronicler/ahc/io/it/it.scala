@@ -1,7 +1,7 @@
 package com.github.fsanaulla.chronicler.ahc.io
 
 import com.github.fsanaulla.chronicler.testing.it.FakeEntity
-import jawn.ast.{JArray, JNum, JString}
+import org.typelevel.jawn.ast.{JArray, JNum, JString}
 
 package object it {
   val currentNanoTime: Long = System.currentTimeMillis() * 1000000

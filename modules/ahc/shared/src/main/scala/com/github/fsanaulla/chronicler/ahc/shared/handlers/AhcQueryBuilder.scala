@@ -24,13 +24,17 @@ import com.softwaremill.sttp._
 
 import scala.annotation.tailrec
 
-private[ahc] class AhcQueryBuilder(host: String,
-                                   port: Int,
-                                   credentials: Option[InfluxCredentials]) extends QueryBuilder[Uri](credentials) {
+private[ahc] class AhcQueryBuilder(
+    host: String,
+    port: Int,
+    credentials: Option[InfluxCredentials])
+    extends QueryBuilder[Uri](credentials) {
 
-  override def buildQuery(uri: String,
-                          queryParams: Map[String, String]): Uri = {
-    val u = Uri(host = host, port).path(uri)
+  override def buildQuery(url: String): Uri =
+    Uri(host = host, port).path(url)
+
+  override def buildQuery(uri: String, queryParams: List[(String, String)]): Uri = {
+    val u        = Uri(host = host, port).path(uri)
     val encoding = Uri.QueryFragmentEncoding.All
     val kvLst = queryParams.map {
       case (k, v) => KeyValue(k, v, valueEncoding = encoding)
@@ -44,6 +48,6 @@ private[ahc] class AhcQueryBuilder(host: String,
       }
     }
 
-    addQueryParam(u, kvLst.toList)
+    addQueryParam(u, kvLst)
   }
 }

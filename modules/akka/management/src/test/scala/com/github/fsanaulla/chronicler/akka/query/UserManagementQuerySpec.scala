@@ -23,7 +23,6 @@ import com.github.fsanaulla.chronicler.core.query.UserManagementQuery
 import com.softwaremill.sttp.Uri
 import org.scalatest.{FlatSpec, Matchers}
 
-
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
@@ -32,16 +31,17 @@ import org.scalatest.{FlatSpec, Matchers}
 class UserManagementQuerySpec extends FlatSpec with Matchers with UserManagementQuery[Uri] {
 
   trait AuthEnv {
-    val credentials = Some(InfluxCredentials("admin", "admin"))
+    val credentials                   = Some(InfluxCredentials("admin", "admin"))
     implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("localhost", 8086, credentials)
   }
+
   trait NonAuthEnv {
     implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("localhost", 8086, None)
   }
 
-  private val testUsername = "TEST_USER_NAME"
-  private val testPassword = "TEST_PASSWORD"
-  private val testDatabase = "TEST_DATABASE"
+  private val testUsername  = "TEST_USER_NAME"
+  private val testPassword  = "TEST_PASSWORD"
+  private val testDatabase  = "TEST_DATABASE"
   private val testPrivilege = Privileges.ALL
 
   "UserManagementQuery" should "create user query" in new AuthEnv {
@@ -56,7 +56,9 @@ class UserManagementQuerySpec extends FlatSpec with Matchers with UserManagement
 
   it should "create admin user query" in new AuthEnv {
     createAdminQuery(testUsername, testPassword).toString() shouldEqual
-      queryTesterAuth(s"CREATE USER $testUsername WITH PASSWORD '$testPassword' WITH ALL PRIVILEGES")(credentials.get)
+      queryTesterAuth(
+        s"CREATE USER $testUsername WITH PASSWORD '$testPassword' WITH ALL PRIVILEGES"
+      )(credentials.get)
 
   }
 
@@ -89,7 +91,9 @@ class UserManagementQuerySpec extends FlatSpec with Matchers with UserManagement
   }
 
   it should "show user privileges query without auth" in new NonAuthEnv {
-    showUserPrivilegesQuery(testUsername).toString() shouldEqual queryTester(s"SHOW GRANTS FOR $testUsername")
+    showUserPrivilegesQuery(testUsername).toString() shouldEqual queryTester(
+      s"SHOW GRANTS FOR $testUsername"
+    )
   }
 
   it should "make admin query" in new AuthEnv {
@@ -98,7 +102,9 @@ class UserManagementQuerySpec extends FlatSpec with Matchers with UserManagement
   }
 
   it should "make admin query without auth" in new NonAuthEnv {
-    makeAdminQuery(testUsername).toString() shouldEqual queryTester(s"GRANT ALL PRIVILEGES TO $testUsername")
+    makeAdminQuery(testUsername).toString() shouldEqual queryTester(
+      s"GRANT ALL PRIVILEGES TO $testUsername"
+    )
   }
 
   it should "disable admin query" in new AuthEnv {
@@ -107,7 +113,9 @@ class UserManagementQuerySpec extends FlatSpec with Matchers with UserManagement
   }
 
   it should "disable admin query without auth" in new NonAuthEnv {
-    disableAdminQuery(testUsername).toString() shouldEqual queryTester(s"REVOKE ALL PRIVILEGES FROM $testUsername")
+    disableAdminQuery(testUsername).toString() shouldEqual queryTester(
+      s"REVOKE ALL PRIVILEGES FROM $testUsername"
+    )
   }
 
   it should "set user password query" in new AuthEnv {

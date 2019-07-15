@@ -19,6 +19,7 @@ package com.github.fsanaulla.chronicler.core
 import java.util.regex.Pattern
 
 package object regex {
+
   /***
     * Escape pattern for tag field
     */

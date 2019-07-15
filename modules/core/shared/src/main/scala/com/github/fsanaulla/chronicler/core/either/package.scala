@@ -19,26 +19,26 @@ package com.github.fsanaulla.chronicler.core
 import scala.reflect.ClassTag
 
 package object either {
+
   def array[L, R: ClassTag](s: Array[Either[L, R]]): Either[L, Array[R]] =
-    s.foldRight(Right(Array.empty[R]): Either[L, Array[R]]) {
-      (e, acc) =>
-        for {
-          xs <- acc.right
-          x  <- e.right
-        } yield x +: xs
+    s.foldRight(Right(Array.empty[R]): Either[L, Array[R]]) { (e, acc) =>
+      for {
+        xs <- acc.right
+        x  <- e.right
+      } yield x +: xs
     }
 
   def seq[L, R: ClassTag](s: Seq[Either[L, R]]): Either[L, Seq[R]] =
-    s.foldRight(Right(Seq.empty): Either[L, Seq[R]]) {
-      (e, acc) =>
-        for {
-          xs <- acc.right
-          x  <- e.right
-        } yield x +: xs
+    s.foldRight(Right(Seq.empty): Either[L, Seq[R]]) { (e, acc) =>
+      for {
+        xs <- acc.right
+        x  <- e.right
+      } yield x +: xs
     }
 
   // to be back compatible with scala 2.11
   implicit final class EitherOps[A, B](private val either: Either[A, B]) extends AnyVal {
+
     def mapRight[C](f: B => C): Either[A, C] =
       either.right.map(f)
 

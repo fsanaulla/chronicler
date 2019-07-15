@@ -27,7 +27,8 @@ import com.github.fsanaulla.chronicler.core.query.ShardManagementQuery
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-private[chronicler] trait ShardManagement[F[_], Resp, Uri, Entity] extends ShardManagementQuery[Uri] {
+private[chronicler] trait ShardManagement[F[_], Resp, Uri, Entity]
+    extends ShardManagementQuery[Uri] {
   implicit val qb: QueryBuilder[Uri]
   implicit val re: RequestExecutor[F, Resp, Uri, Entity]
   implicit val rh: ResponseHandler[Resp]

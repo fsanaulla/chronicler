@@ -18,19 +18,20 @@ package com.github.fsanaulla.chronicler.core.query
 
 import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 
-import scala.collection.mutable
-
 /**
   * Created by fayaz on 27.06.17.
   */
 private[chronicler] trait DataManagementQuery[U] {
 
-  private[chronicler] final def createDatabaseQuery(dbName: String,
-                                duration: Option[String],
-                                replication: Option[Int],
-                                shardDuration: Option[String],
-                                rpName: Option[String])
-                               (implicit qb: QueryBuilder[U]): U = {
+  private[chronicler] final def createDatabaseQuery(
+      dbName: String,
+      duration: Option[String],
+      replication: Option[Int],
+      shardDuration: Option[String],
+      rpName: Option[String]
+    )(
+      implicit qb: QueryBuilder[U]
+    ): U = {
 
     val sb = StringBuilder.newBuilder
 
@@ -56,36 +57,75 @@ private[chronicler] trait DataManagementQuery[U] {
       sb.append(s" NAME $rp")
     }
 
-    qb.buildQuery("/query", qb.withCredentials(sb.toString()))
+    qb.buildQuery("/query", qb.appendCredentials(sb.toString()))
   }
 
   private[chronicler] final def dropDatabaseQuery(dbName: String)(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.withCredentials(s"DROP DATABASE $dbName"))
+    qb.buildQuery("/query", qb.appendCredentials(s"DROP DATABASE $dbName"))
 
-  private[chronicler] final def dropSeriesQuery(dbName: String, seriesName: String)(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.withCredentials(mutable.Map("db" -> dbName, "q" -> s"DROP SERIES FROM $seriesName")))
+  private[chronicler] final def dropSeriesQuery(
+      dbName: String,
+      seriesName: String
+    )(
+      implicit qb: QueryBuilder[U]
+    ): U =
+    qb.buildQuery(
+      "/query",
+      qb.appendCredentials(dbName, s"DROP SERIES FROM $seriesName")
+    )
 
-  private[chronicler] final def dropMeasurementQuery(dbName: String, measurementName: String)(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.withCredentials(mutable.Map("db" -> dbName, "q" -> s"DROP MEASUREMENT $measurementName")))
+  private[chronicler] final def dropMeasurementQuery(
+      dbName: String,
+      measurementName: String
+    )(
+      implicit qb: QueryBuilder[U]
+    ): U =
+    qb.buildQuery(
+      "/query",
+      qb.appendCredentials(dbName, s"DROP MEASUREMENT $measurementName")
+    )
 
-  private[chronicler] final def deleteAllSeriesQuery(dbName: String, seriesName: String)(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.withCredentials(mutable.Map("db" -> dbName, "q" -> s"DELETE FROM $seriesName")))
+  private[chronicler] final def deleteAllSeriesQuery(
+      dbName: String,
+      seriesName: String
+    )(
+      implicit qb: QueryBuilder[U]
+    ): U =
+    qb.buildQuery(
+      "/query",
+      qb.appendCredentials(dbName, s"DELETE FROM $seriesName")
+    )
 
-  private[chronicler] final def showMeasurementQuery(dbName: String)(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.withCredentials(mutable.Map("db" -> dbName, "q" -> s"SHOW MEASUREMENTS")))
+  private[chronicler] final def showMeasurementQuery(
+      dbName: String
+    )(
+      implicit qb: QueryBuilder[U]
+    ): U =
+    qb.buildQuery("/query", qb.appendCredentials(dbName, s"SHOW MEASUREMENTS"))
 
   private[chronicler] final def showDatabasesQuery(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.withCredentials(s"SHOW DATABASES"))
+    qb.buildQuery("/query", qb.appendCredentials(s"SHOW DATABASES"))
 
-  private[chronicler] final def showFieldKeysQuery(dbName: String, measurementName: String)(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.withCredentials(s"SHOW FIELD KEYS ON $dbName FROM $measurementName"))
+  private[chronicler] final def showFieldKeysQuery(
+      dbName: String,
+      measurementName: String
+    )(
+      implicit qb: QueryBuilder[U]
+    ): U =
+    qb.buildQuery(
+      "/query",
+      qb.appendCredentials(s"SHOW FIELD KEYS ON $dbName FROM $measurementName")
+    )
 
-  private[chronicler] final def showTagKeysQuery(dbName: String,
-                             measurementName: String,
-                             whereClause: Option[String],
-                             limit: Option[Int],
-                             offset: Option[Int])
-                            (implicit qb: QueryBuilder[U]): U = {
+  private[chronicler] final def showTagKeysQuery(
+      dbName: String,
+      measurementName: String,
+      whereClause: Option[String],
+      limit: Option[Int],
+      offset: Option[Int]
+    )(
+      implicit qb: QueryBuilder[U]
+    ): U = {
     val sb = StringBuilder.newBuilder
 
     sb.append("SHOW TAG KEYS ON ")
@@ -105,16 +145,19 @@ private[chronicler] trait DataManagementQuery[U] {
       sb.append(" OFFSET ").append(o)
     }
 
-    qb.buildQuery("/query", qb.withCredentials(sb.toString()))
+    qb.buildQuery("/query", qb.appendCredentials(sb.toString()))
   }
 
-  private[chronicler] final def showTagValuesQuery(dbName: String,
-                               measurementName: String,
-                               withKey: Seq[String],
-                               whereClause: Option[String],
-                               limit: Option[Int],
-                               offset: Option[Int])
-                              (implicit qb: QueryBuilder[U]): U = {
+  private[chronicler] final def showTagValuesQuery(
+      dbName: String,
+      measurementName: String,
+      withKey: Seq[String],
+      whereClause: Option[String],
+      limit: Option[Int],
+      offset: Option[Int]
+    )(
+      implicit qb: QueryBuilder[U]
+    ): U = {
     require(withKey.nonEmpty, "Keys can't be empty")
 
     val sb = StringBuilder.newBuilder
@@ -142,6 +185,6 @@ private[chronicler] trait DataManagementQuery[U] {
       sb.append(" OFFSET ").append(o)
     }
 
-    qb.buildQuery("/query", qb.withCredentials(sb.toString()))
+    qb.buildQuery("/query", qb.appendCredentials(sb.toString()))
   }
 }

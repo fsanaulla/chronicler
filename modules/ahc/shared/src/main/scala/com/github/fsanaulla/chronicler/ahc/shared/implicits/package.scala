@@ -20,7 +20,7 @@ import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.components.JsonHandler
 import com.github.fsanaulla.chronicler.core.model.{Failable, Functor}
 import com.softwaremill.sttp.Response
-import jawn.ast.{JParser, JValue}
+import org.typelevel.jawn.ast.{JParser, JValue}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
@@ -28,9 +28,8 @@ import scala.util.{Failure, Success}
 package object implicits {
   implicit val jsonHandler: JsonHandler[Response[JValue]] = new JsonHandler[Response[JValue]] {
     override def responseBody(response: Response[JValue]): ErrorOr[JValue] = {
-      response
-        .body // fallback encoding utf-8
-        .left
+      response.body // fallback encoding utf-8
+      .left
         .flatMap { str =>
           JParser.parseFromString(str) match {
             case Success(value)     => Right(value)

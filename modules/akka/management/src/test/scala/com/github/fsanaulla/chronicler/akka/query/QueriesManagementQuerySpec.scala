@@ -22,7 +22,6 @@ import com.github.fsanaulla.chronicler.core.query.QueriesManagementQuery
 import com.softwaremill.sttp.Uri
 import org.scalatest.{FlatSpec, Matchers}
 
-
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
@@ -31,9 +30,10 @@ import org.scalatest.{FlatSpec, Matchers}
 class QueriesManagementQuerySpec extends FlatSpec with Matchers with QueriesManagementQuery[Uri] {
 
   trait AuthEnv {
-    val credentials = Some(InfluxCredentials("admin", "admin"))
+    val credentials                   = Some(InfluxCredentials("admin", "admin"))
     implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("localhost", 8086, credentials)
   }
+
   trait NonAuthEnv {
     implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("localhost", 8086, None)
   }

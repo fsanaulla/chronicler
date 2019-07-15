@@ -23,84 +23,99 @@ import com.github.fsanaulla.chronicler.core.components._
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import jawn.ast.JArray
+import org.typelevel.jawn.ast.JArray
 
 /**
   * Generic interface for basic database IO operation
+  *
   * @tparam F - container type
   * @tparam Body - Entity type
   */
-class DatabaseApi[F[_], Resp, Uri, Body](dbName: String,
-                                               gzipped: Boolean)
-                                              (implicit qb: QueryBuilder[Uri],
-                                               bd: BodyBuilder[Body],
-                                               re: RequestExecutor[F, Resp, Uri, Body],
-                                               rh: ResponseHandler[Resp],
-                                               F: Functor[F]) extends DatabaseOperationQuery[Uri] {
+class DatabaseApi[F[_], Resp, Uri, Body](
+    dbName: String,
+    gzipped: Boolean
+  )(
+    implicit qb: QueryBuilder[Uri],
+    bd: BodyBuilder[Body],
+    re: RequestExecutor[F, Resp, Uri, Body],
+    rh: ResponseHandler[Resp],
+    F: Functor[F])
+    extends DatabaseOperationQuery[Uri] {
 
-   def writeFromFile(file: File,
-                     enc: String = "UTF-8",
-                     consistency: Consistency = Consistencies.None,
-                     precision: Precision = Precisions.None,
-                     retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
+  def writeFromFile(
+      file: File,
+      enc: String = "UTF-8",
+      consistency: Consistency = Consistencies.None,
+      precision: Precision = Precisions.None,
+      retentionPolicy: Option[String] = None
+    ): F[Either[Throwable, ResponseCode]] = {
     val uri = write(dbName, consistency, precision, retentionPolicy)
     F.map(re.post(uri, bd.fromFile(file, enc), gzipped))(rh.writeResult)
   }
 
-
-   def writeNative(point: String,
-                   consistency: Consistency = Consistencies.None,
-                   precision: Precision = Precisions.None,
-                   retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
+  def writeNative(
+      point: String,
+      consistency: Consistency = Consistencies.None,
+      precision: Precision = Precisions.None,
+      retentionPolicy: Option[String] = None
+    ): F[Either[Throwable, ResponseCode]] = {
     val uri = write(dbName, consistency, precision, retentionPolicy)
     F.map(re.post(uri, bd.fromString(point), gzipped))(rh.writeResult)
   }
 
-
-   def bulkWriteNative(points: Seq[String],
-                       consistency: Consistency = Consistencies.None,
-                       precision: Precision = Precisions.None,
-                       retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
+  def bulkWriteNative(
+      points: Seq[String],
+      consistency: Consistency = Consistencies.None,
+      precision: Precision = Precisions.None,
+      retentionPolicy: Option[String] = None
+    ): F[Either[Throwable, ResponseCode]] = {
     val uri = write(dbName, consistency, precision, retentionPolicy)
     F.map(re.post(uri, bd.fromStrings(points), gzipped))(rh.writeResult)
   }
 
-
-   def writePoint(point: Point,
-                  consistency: Consistency = Consistencies.None,
-                  precision: Precision = Precisions.None,
-                  retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
+  def writePoint(
+      point: Point,
+      consistency: Consistency = Consistencies.None,
+      precision: Precision = Precisions.None,
+      retentionPolicy: Option[String] = None
+    ): F[Either[Throwable, ResponseCode]] = {
     val uri = write(dbName, consistency, precision, retentionPolicy)
     F.map(re.post(uri, bd.fromPoint(point), gzipped))(rh.writeResult)
   }
 
-
-   def bulkWritePoints(points: Seq[Point],
-                       consistency: Consistency = Consistencies.None,
-                       precision: Precision = Precisions.None,
-                       retentionPolicy: Option[String]= None): F[Either[Throwable, ResponseCode]] = {
+  def bulkWritePoints(
+      points: Seq[Point],
+      consistency: Consistency = Consistencies.None,
+      precision: Precision = Precisions.None,
+      retentionPolicy: Option[String] = None
+    ): F[Either[Throwable, ResponseCode]] = {
     val uri = write(dbName, consistency, precision, retentionPolicy)
     F.map(re.post(uri, bd.fromPoints(points), gzipped))(rh.writeResult)
   }
 
-
-   def readJson(query: String,
-                epoch: Epoch = Epochs.None,
-                pretty: Boolean = false): F[ErrorOr[Array[JArray]]] = {
+  def readJson(
+      query: String,
+      epoch: Epoch = Epochs.None,
+      pretty: Boolean = false
+    ): F[ErrorOr[Array[JArray]]] = {
     val uri = singleQuery(dbName, query, epoch, pretty)
     F.map(re.get(uri))(rh.queryResultJson)
   }
 
-   def bulkReadJson(queries: Seq[String],
-                    epoch: Epoch = Epochs.None,
-                    pretty: Boolean = false): F[ErrorOr[Array[Array[JArray]]]] = {
+  def bulkReadJson(
+      queries: Seq[String],
+      epoch: Epoch = Epochs.None,
+      pretty: Boolean = false
+    ): F[ErrorOr[Array[Array[JArray]]]] = {
     val uri = bulkQuery(dbName, queries, epoch, pretty)
     F.map(re.get(uri))(rh.bulkQueryResultJson)
   }
 
-   def readGroupedJson(query: String,
-                       epoch: Epoch = Epochs.None,
-                       pretty: Boolean = false): F[ErrorOr[Array[(Array[String], JArray)]]] = {
+  def readGroupedJson(
+      query: String,
+      epoch: Epoch = Epochs.None,
+      pretty: Boolean = false
+    ): F[ErrorOr[Array[(Array[String], JArray)]]] = {
     val uri = singleQuery(dbName, query, epoch, pretty)
     F.map(re.get(uri))(rh.groupedResultJson)
   }

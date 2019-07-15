@@ -21,13 +21,15 @@ import com.github.fsanaulla.chronicler.core.components.{JsonHandler, RequestExec
 import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.jawn.RichJParser
 import com.github.fsanaulla.chronicler.urlhttp.shared.Url
-import jawn.ast.{JArray, JParser}
+import org.typelevel.jawn.ast.{JArray, JParser}
 import requests._
 
 import scala.io.Source
 import scala.util.Try
 
-private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonHandler[Response]) extends RequestExecutor[Try, Response, Url, String] {
+private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonHandler[Response])
+    extends RequestExecutor[Try, Response, Url, String] {
+
   /**
     * Execute uri
     *
@@ -44,7 +46,11 @@ private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonH
     }
   }
 
-  override def post(uri: Url, body: String, gzipped: Boolean): Try[Response] = {
+  override def post(
+      uri: Url,
+      body: String,
+      gzipped: Boolean
+    ): Try[Response] = {
     Try {
       requests.post(
         uri.mkUrl,
@@ -52,6 +58,7 @@ private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonH
         uri.params,
         // todo: PR for ssl support
         verifySslCerts = ssl,
+        compress = if (gzipped) Compress.Gzip else Compress.None,
         data = RequestBlob.StringRequestBlob(body)
       )
     }

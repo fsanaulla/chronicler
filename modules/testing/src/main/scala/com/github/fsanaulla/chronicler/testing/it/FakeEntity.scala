@@ -3,7 +3,7 @@ package com.github.fsanaulla.chronicler.testing.it
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.jawn._
 import com.github.fsanaulla.chronicler.core.model.{InfluxReader, InfluxWriter, ParsingException}
-import jawn.ast.{JArray, JNum, JString}
+import org.typelevel.jawn.ast.{JArray, JNum, JString}
 
 case class FakeEntity(sex: String, firstName: String, lastName: String, age: Int)
 

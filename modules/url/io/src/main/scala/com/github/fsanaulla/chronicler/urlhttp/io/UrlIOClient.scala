@@ -28,27 +28,29 @@ import requests.Response
 import scala.reflect.ClassTag
 import scala.util.Try
 
-final class UrlIOClient(host: String,
-                        port: Int,
-                        credentials: Option[InfluxCredentials],
-                        gzipped: Boolean,
-                        ssl: Boolean)
-  extends IOClient[Try, Response, Url, String] {
+final class UrlIOClient(
+    host: String,
+    port: Int,
+    credentials: Option[InfluxCredentials],
+    gzipped: Boolean,
+    ssl: Boolean)
+    extends IOClient[Try, Response, Url, String] {
 
-  implicit val qb: UrlQueryBuilder = new UrlQueryBuilder(host, port, credentials, ssl)
-  implicit val re: UrlRequestExecutor = new UrlRequestExecutor(ssl, jsonHandler)
+  implicit val qb: UrlQueryBuilder           = new UrlQueryBuilder(host, port, credentials, ssl)
+  implicit val re: UrlRequestExecutor        = new UrlRequestExecutor(ssl, jsonHandler)
   implicit val rh: ResponseHandler[Response] = new ResponseHandler(jsonHandler)
 
   override def database(dbName: String): UrlDatabaseApi =
     new UrlDatabaseApi(dbName, gzipped)
 
-  override def measurement[A: ClassTag](dbName: String,
-                                        measurementName: String): UrlMeasurementApi[A] =
+  override def measurement[A: ClassTag](
+      dbName: String,
+      measurementName: String
+    ): UrlMeasurementApi[A] =
     new UrlMeasurementApi(dbName, measurementName, gzipped)
 
   override def ping: Try[ErrorOr[InfluxDBInfo]] = {
-    re
-      .get(qb.buildQuery("/ping", Map.empty[String, String]))
+    re.get(qb.buildQuery("/ping"))
       .map(rh.pingResult)
   }
 

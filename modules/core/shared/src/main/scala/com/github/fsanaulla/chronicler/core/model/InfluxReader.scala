@@ -19,7 +19,7 @@ package com.github.fsanaulla.chronicler.core.model
 import java.io.{Serializable => JSerializable}
 
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
-import jawn.ast.JArray
+import org.typelevel.jawn.ast.JArray
 
 import scala.annotation.implicitNotFound
 
@@ -44,7 +44,6 @@ trait InfluxReader[T] extends JSerializable {
     *
     * @param js - jarray
     * @return   - T
-    *
     * @since - 0.5.2
     */
   def readUnsafe(js: JArray): T
