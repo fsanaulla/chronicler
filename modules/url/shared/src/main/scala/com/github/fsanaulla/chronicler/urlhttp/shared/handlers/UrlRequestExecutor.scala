@@ -58,7 +58,7 @@ private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonH
         uri.params,
         // todo: PR for ssl support
         verifySslCerts = ssl,
-        compress = if (gzipped) Compress.Gzip else Compress.None,
+//        compress = if (gzipped) Compress.Gzip else Compress.None,
         data = RequestBlob.StringRequestBlob(body)
       )
     }
