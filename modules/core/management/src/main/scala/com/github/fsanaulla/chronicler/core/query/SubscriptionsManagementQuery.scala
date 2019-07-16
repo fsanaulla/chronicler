@@ -26,23 +26,33 @@ import com.github.fsanaulla.chronicler.core.enums.Destination
   */
 private[chronicler] trait SubscriptionsManagementQuery[U] {
 
-  private[chronicler] final def createSubscriptionQuery(subsName: String,
-                                                        dbName: String,
-                                                        rpName: String,
-                                                        destinationType: Destination,
-                                                        addresses: Seq[String])(implicit qb: QueryBuilder[U]): U = {
+  private[chronicler] final def createSubscriptionQuery(
+      subsName: String,
+      dbName: String,
+      rpName: String,
+      destinationType: Destination,
+      addresses: Seq[String]
+    )(implicit qb: QueryBuilder[U]
+    ): U = {
 
     val addressesStr = addresses.map(str => s"\'$str\'").mkString(", ")
-    qb.buildQuery("/query", qb.buildQueryParams(s"CREATE SUBSCRIPTION $subsName ON $dbName.$rpName DESTINATIONS $destinationType $addressesStr"))
+    qb.buildQuery(
+      "/query",
+      qb.appendCredentials(
+        s"CREATE SUBSCRIPTION $subsName ON $dbName.$rpName DESTINATIONS $destinationType $addressesStr"
+      )
+    )
   }
 
-  private[chronicler] final def dropSubscriptionQuery(subsName: String,
-                                                      dbName: String,
-                                                      rpName: String)(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.buildQueryParams(s"DROP SUBSCRIPTION $subsName ON $dbName.$rpName"))
-
+  private[chronicler] final def dropSubscriptionQuery(
+      subsName: String,
+      dbName: String,
+      rpName: String
+    )(implicit qb: QueryBuilder[U]
+    ): U =
+    qb.buildQuery("/query", qb.appendCredentials(s"DROP SUBSCRIPTION $subsName ON $dbName.$rpName"))
 
   private[chronicler] final def showSubscriptionsQuery(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.buildQueryParams("SHOW SUBSCRIPTIONS"))
+    qb.buildQuery("/query", qb.appendCredentials("SHOW SUBSCRIPTIONS"))
 
 }

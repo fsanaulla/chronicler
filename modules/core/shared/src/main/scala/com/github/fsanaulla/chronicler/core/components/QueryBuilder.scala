@@ -18,15 +18,15 @@ package com.github.fsanaulla.chronicler.core.components
 
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 
-import scala.collection.mutable
-
 /**
   * Trait that define functionality for handling query building
   *
-  * @tparam A - Result type parameter, for example for AkkaHttpBackend
+  * @tparam U - Result type parameter, for example for AkkaHttpBackend
   *           - used `akka.http.scaladsl.model.Uri`
   */
-abstract class QueryBuilder[A](credentials: Option[InfluxCredentials]) {
+abstract class QueryBuilder[U](credentials: Option[InfluxCredentials]) {
+
+  def buildQuery(url: String): U
 
   /**
     * Method that build result URI object of type [A], from uri path, and query parameters
@@ -35,21 +35,42 @@ abstract class QueryBuilder[A](credentials: Option[InfluxCredentials]) {
     * @param queryParams - query parameters that will be embedded into request
     * @return            - URI object
     */
-  def buildQuery(uri: String, queryParams: Map[String, String]): A
+  def buildQuery(uri: String, queryParams: List[(String, String)]): U
 
   /**
-    * Method that embed credentials to already created query parameters map
+    * Method that embed credentials to already created query parameters map, sorted by key
     *
     * @param queryMap - query parameters map
     * @return         - updated query parameters map with embedded credentials
     */
-  final def buildQueryParams(queryMap: mutable.Map[String, String]): Map[String, String] = {
-    for {
-      c <- credentials
-    } yield queryMap += ("u" -> c.username, "p" -> c.password)
+  final def appendCredentials(queryMap: List[(String, String)]): List[(String, String)] =
+    credentials.fold(queryMap)(c => "u" -> c.username :: "p" -> c.password :: queryMap)
 
-    queryMap.toMap
-  }
+  /**
+    * Update query params by appending db, user credentials
+    *
+    * @param db       - database name
+    * @param queryMap - query parameter list
+    * @return         - new updated query parameter list
+    */
+  final def appendCredentials(
+      db: String,
+      queryMap: List[(String, String)]
+    ): List[(String, String)] =
+    credentials.fold("db" -> db :: queryMap)(
+      c => List("db" -> db, "u" -> c.username, "p" -> c.password) ::: queryMap
+    )
+
+  final def appendCredentials(dbName: String, query: String): List[(String, String)] =
+    credentials.fold(List("db" -> dbName, "q" -> query))(
+      c =>
+        List(
+          "db" -> dbName,
+          "u"  -> c.username,
+          "p"  -> c.password,
+          "q"  -> query
+        )
+    )
 
   /**
     * Produce query parameters map for string parameter, with embedding credentials
@@ -57,6 +78,6 @@ abstract class QueryBuilder[A](credentials: Option[InfluxCredentials]) {
     * @param query - query string parameter
     * @return      - query parameters
     */
-  final def buildQueryParams(query: String): Map[String, String] =
-    buildQueryParams(scala.collection.mutable.Map("q" -> query))
+  final def appendCredentials(query: String): List[(String, String)] =
+    appendCredentials("q" -> query :: Nil)
 }

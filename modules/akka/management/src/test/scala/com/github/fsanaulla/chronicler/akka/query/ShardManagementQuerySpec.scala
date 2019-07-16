@@ -22,7 +22,6 @@ import com.github.fsanaulla.chronicler.core.query.ShardManagementQuery
 import com.softwaremill.sttp.Uri
 import org.scalatest.{FlatSpec, Matchers}
 
-
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
@@ -31,9 +30,10 @@ import org.scalatest.{FlatSpec, Matchers}
 class ShardManagementQuerySpec extends FlatSpec with Matchers with ShardManagementQuery[Uri] {
 
   trait AuthEnv {
-    val credentials = Some(InfluxCredentials("admin", "admin"))
+    val credentials                   = Some(InfluxCredentials("admin", "admin"))
     implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("localhost", 8086, credentials)
   }
+
   trait NonAuthEnv {
     implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("localhost", 8086, None)
   }
@@ -55,7 +55,9 @@ class ShardManagementQuerySpec extends FlatSpec with Matchers with ShardManageme
   }
 
   it should "show shard groups" in new AuthEnv {
-    showShardGroupsQuery.toString() shouldEqual queryTesterAuth("SHOW SHARD GROUPS")(credentials.get)
+    showShardGroupsQuery.toString() shouldEqual queryTesterAuth("SHOW SHARD GROUPS")(
+      credentials.get
+    )
   }
 
   it should "show shard groups without auth" in new NonAuthEnv {

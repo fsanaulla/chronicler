@@ -33,10 +33,12 @@ class ShardManagementQuerySpec extends FlatSpec with Matchers with ShardManageme
     val host = "localhost"
     val port = 8086
   }
+
   trait AuthEnv extends Env {
-    val credentials = Some(InfluxCredentials("admin", "admin"))
+    val credentials                  = Some(InfluxCredentials("admin", "admin"))
     implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
   }
+
   trait NonAuthEnv extends Env {
     implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, None)
   }
@@ -58,7 +60,9 @@ class ShardManagementQuerySpec extends FlatSpec with Matchers with ShardManageme
   }
 
   it should "show shard groups" in new AuthEnv {
-    showShardGroupsQuery.toString() shouldEqual queryTesterAuth("SHOW SHARD GROUPS")(credentials.get)
+    showShardGroupsQuery.toString() shouldEqual queryTesterAuth("SHOW SHARD GROUPS")(
+      credentials.get
+    )
   }
 
   it should "show shard groups without auth" in new NonAuthEnv {

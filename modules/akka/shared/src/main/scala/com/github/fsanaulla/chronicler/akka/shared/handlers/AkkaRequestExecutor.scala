@@ -16,12 +16,11 @@
 
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
-import com.github.fsanaulla.chronicler.akka.shared.alias.Request
 import com.github.fsanaulla.chronicler.akka.shared.formats._
 import com.github.fsanaulla.chronicler.core.components.RequestExecutor
 import com.github.fsanaulla.chronicler.core.encoding.gzipEncoding
-import com.softwaremill.sttp.{Response, SttpBackend, Uri, sttp}
-import jawn.ast.JValue
+import com.softwaremill.sttp.{sttp, Response, SttpBackend, Uri}
+import org.typelevel.jawn.ast.JValue
 
 import scala.concurrent.Future
 
@@ -31,7 +30,7 @@ import scala.concurrent.Future
   * Date: 15.03.18
   */
 private[akka] final class AkkaRequestExecutor(implicit backend: SttpBackend[Future, Nothing])
-  extends RequestExecutor[Future, Request, Response[JValue], Uri, String] {
+  extends RequestExecutor[Future, Response[JValue], Uri, String] {
 
   /**
     * Execute uri
@@ -39,20 +38,15 @@ private[akka] final class AkkaRequestExecutor(implicit backend: SttpBackend[Futu
     * @param uri - request uri
     * @return    - Return wrapper response
     */
-  override def executeUri(uri: Uri): Future[Response[JValue]] =
+  override def get(uri: Uri): Future[Response[JValue]] =
     sttp.get(uri).response(asJson).send()
 
-  /**
-    * Execute request
-    *
-    * @param req - request
-    * @return - Return wrapper response
-    */
-  override def executeReq(req: Request): Future[Response[JValue]] =
-    req.send()
-
-  override def execute(uri: Uri, body: String, gzipped: Boolean): Future[Response[JValue]] = {
-    val req = sttp.post(uri).body(body).response(asJson)
+  override def post(
+      uri: Uri,
+      body: String,
+      gzipped: Boolean
+    ): Future[Response[JValue]] = {
+    val req          = sttp.post(uri).body(body).response(asJson)
     val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
     maybeEncoded.send()
   }

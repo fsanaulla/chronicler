@@ -23,7 +23,7 @@ import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.headers.{buildHeader, versionHeader}
 import com.github.fsanaulla.chronicler.core.jawn._
 import com.github.fsanaulla.chronicler.core.model.{InfluxDBInfo, InfluxReader, ParsingException}
-import jawn.ast.{JArray, JValue}
+import org.typelevel.jawn.ast.{JArray, JValue}
 
 import scala.reflect.ClassTag
 
@@ -33,7 +33,7 @@ import scala.reflect.ClassTag
   * @tparam A - Response type
   */
 trait JsonHandler[A] {
-  
+
   /***
     * Extract response http code
     */
@@ -44,6 +44,7 @@ trait JsonHandler[A] {
     */
   def responseHeader(response: A): Seq[(String, String)]
 
+  // todo: charset support
   /***
     * Extracting JSON from Response
     */
@@ -52,8 +53,8 @@ trait JsonHandler[A] {
   final def databaseInfo(response: A): ErrorOr[InfluxDBInfo] = {
     val headers = responseHeader(response)
     val result = for {
-      build <- headers.collectFirst { case (k, v) if k == buildHeader => v }
-      version <- headers.collectFirst { case (k, v) if k == versionHeader => v }
+      build   <- headers.collectFirst { case (k, v) if k.equalsIgnoreCase(buildHeader)   => v }
+      version <- headers.collectFirst { case (k, v) if k.equalsIgnoreCase(versionHeader) => v }
     } yield InfluxDBInfo(build, version)
 
     result.toRight(new ParsingException(s"Can't find $buildHeader or $versionHeader"))
@@ -76,7 +77,10 @@ trait JsonHandler[A] {
     */
   final def responseErrorMsgOpt(response: A): ErrorOr[Option[String]] =
     responseBody(response)
-      .flatMapRight(_.get("results").arrayValue.flatMapRight(_.headRight(new NoSuchElementException("results[0]"))))
+      .flatMapRight(
+        _.get("results").arrayValue
+          .flatMapRight(_.headRight(new NoSuchElementException("results[0]")))
+      )
       .mapRight(_.get("error").getString)
 
   /**
@@ -86,13 +90,20 @@ trait JsonHandler[A] {
     * @return - optional array of points
     */
   final def queryResult(js: JValue): ErrorOr[Array[JArray]] =
-    js.get("results").arrayValue.flatMapRight(_.headRight(new NoSuchElementException("results[0]"))) // get head of 'results' field
-      .flatMapRight(_.get("series").arrayValue.flatMapRight(_.headRight(new NoSuchElementException("series[0]")))) // get head of 'series' field
-      .mapRight(_.get("values").arrayValueOr(Array.empty)) // get array of jValue
+    js.get("results")
+      .arrayValue
+      .flatMapRight(_.headRight(new NoSuchElementException("results[0]"))) // get head of 'results' field
+      .flatMapRight(
+        _.get("series").arrayValue
+          .flatMapRight(_.headRight(new NoSuchElementException("series[0]")))
+      )                                                                       // get head of 'series' field
+      .mapRight(_.get("values").arrayValueOr(Array.empty))                    // get array of jValue
       .flatMapRight(arr => either.array[Throwable, JArray](arr.map(_.array))) // map to array of JArray
 
   final def gropedResult(js: JValue): ErrorOr[Array[(Array[String], JArray)]] = {
-    js.get("results").arrayValue.flatMapRight(_.headRight(new NoSuchElementException("results[0]")))
+    js.get("results")
+      .arrayValue
+      .flatMapRight(_.headRight(new NoSuchElementException("results[0]")))
       .flatMapRight(_.get("series").arrayValue)
       .mapRight(_.map(_.obj))
       .mapRight(either.array)
@@ -116,8 +127,14 @@ trait JsonHandler[A] {
     * @return - Array of points
     */
   final def bulkResult(js: JValue): ErrorOr[Array[Array[JArray]]] = {
-    js.get("results").arrayValue // get array from 'results' field
-      .mapRight(_.map(_.get("series").arrayValue.flatMapRight(_.headRight(new NoSuchElementException("series[0]"))))) // get head of 'series' field
+    js.get("results")
+      .arrayValue // get array from 'results' field
+      .mapRight(
+        _.map(
+          _.get("series").arrayValue
+            .flatMapRight(_.headRight(new NoSuchElementException("series[0]")))
+        )
+      ) // get head of 'series' field
       .mapRight(either.array)
       .joinRight
       .mapRight(_.map(_.get("values").arrayValue))
@@ -136,7 +153,9 @@ trait JsonHandler[A] {
     * @return - array of meas name -> meas points
     */
   final def groupedSystemInfoJs(js: JValue): ErrorOr[Array[(String, Array[JArray])]] = {
-    js.get("results").arrayValue.flatMapRight(_.headRight(new NoSuchElementException("results[0]")))
+    js.get("results")
+      .arrayValue
+      .flatMapRight(_.headRight(new NoSuchElementException("results[0]")))
       .mapRight(_.get("series").arrayValueOr(Array.empty))
       .mapRight(_.map(_.obj))
       .mapRight(either.array)
@@ -160,7 +179,10 @@ trait JsonHandler[A] {
     * @param js - JSON value
     * @return - Array of pairs
     */
-  final def groupedSystemInfo[T: ClassTag](js: JValue)(implicit rd: InfluxReader[T]): ErrorOr[Array[(String, Array[T])]] = {
+  final def groupedSystemInfo[T: ClassTag](
+      js: JValue
+    )(implicit rd: InfluxReader[T]
+    ): ErrorOr[Array[(String, Array[T])]] = {
     groupedSystemInfoJs(js)
       .mapRight { arr =>
         arr.map {

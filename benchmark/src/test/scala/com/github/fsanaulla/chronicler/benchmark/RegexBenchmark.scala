@@ -11,7 +11,7 @@ import org.openjdk.jmh.annotations._
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 class RegexBenchmark {
 
-  // 10x time faster on local machine
+  // 10x time faster
   @Benchmark
   def compiledPattern(state: CompiledPattern): Unit =
     state.pattern.matcher("My=, Name").replaceAll("\\\\$1")

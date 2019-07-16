@@ -2,15 +2,18 @@ package com.github.fsanaulla.chronicler.benchmark
 
 import java.util.concurrent.TimeUnit
 
-import com.github.fsanaulla.chronicler.benchmark.MacrosBenchmark.{CustomWriter, MacroWriter, Test}
+import com.github.fsanaulla.chronicler.benchmark.InfluxWriterBenchmark._
 import com.github.fsanaulla.chronicler.core.model.InfluxWriter
 import com.github.fsanaulla.chronicler.macros.Influx
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
 import org.openjdk.jmh.annotations._
 
-@BenchmarkMode(Array(Mode.AverageTime))
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
-class MacrosBenchmark {
+//[info] InfluxWriterBenchmark.averageCustomWriteTime  avgt    5   86.526 ±  0.460  ns/op
+//[info] InfluxWriterBenchmark.averageMacroWriteTime   avgt    5  156.521 ± 44.614  ns/op
+@BenchmarkMode(Array(Mode.All))
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+class InfluxWriterBenchmark {
+
   @Benchmark
   def averageCustomWriteTime(state: CustomWriter): Unit =
     state.writer.write(Test("a", Some("b"), 5, 150L))
@@ -20,7 +23,7 @@ class MacrosBenchmark {
     state.writer.write(Test("a", Some("b"), 5, 150L))
 }
 
-object MacrosBenchmark {
+object InfluxWriterBenchmark {
   final case class Test(@tag name: String,
                         @tag surname: Option[String],
                         @field age: Int,

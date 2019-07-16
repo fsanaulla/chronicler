@@ -27,9 +27,10 @@ import com.github.fsanaulla.chronicler.core.query.RetentionPolicyManagementQuery
   * Author: fayaz.sanaulla@gmail.com
   * Date: 08.08.17
   */
-trait RetentionPolicyManagement[F[_], Req, Resp, Uri, Entity] extends RetentionPolicyManagementQuery[Uri] {
+trait RetentionPolicyManagement[F[_], Resp, Uri, Entity]
+  extends RetentionPolicyManagementQuery[Uri] {
   implicit val qb: QueryBuilder[Uri]
-  implicit val re: RequestExecutor[F, Req, Resp, Uri, Entity]
+  implicit val re: RequestExecutor[F, Resp, Uri, Entity]
   implicit val rh: ResponseHandler[Resp]
   implicit val F: Functor[F]
 
@@ -43,32 +44,39 @@ trait RetentionPolicyManagement[F[_], Req, Resp, Uri, Entity] extends RetentionP
     * @param default       - use default
     * @return              - execution result
     */
-  final def createRetentionPolicy(rpName: String,
-                                  dbName: String,
-                                  duration: String,
-                                  replication: Int = 1,
-                                  shardDuration: Option[String] = None,
-                                  default: Boolean = false): F[ErrorOr[ResponseCode]] = {
+  final def createRetentionPolicy(
+      rpName: String,
+      dbName: String,
+      duration: String,
+      replication: Int = 1,
+      shardDuration: Option[String] = None,
+      default: Boolean = false
+    ): F[ErrorOr[ResponseCode]] = {
     require(replication > 0, "Replication must greater that 0")
-    F.map(re.executeUri(createRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)))(rh.writeResult)
+    F.map(re.get(createRPQuery(rpName, dbName, duration, replication, shardDuration, default)))(
+      rh.writeResult
+    )
   }
 
   /** Update retention policy */
-  final def updateRetentionPolicy(rpName: String,
-                                  dbName: String,
-                                  duration: Option[String] = None,
-                                  replication: Option[Int] = None,
-                                  shardDuration: Option[String] = None,
-                                  default: Boolean = false): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(updateRetentionPolicyQuery(rpName, dbName, duration, replication, shardDuration, default)))(rh.writeResult)
-
+  final def updateRetentionPolicy(
+      rpName: String,
+      dbName: String,
+      duration: Option[String] = None,
+      replication: Option[Int] = None,
+      shardDuration: Option[String] = None,
+      default: Boolean = false
+    ): F[ErrorOr[ResponseCode]] =
+    F.map(re.get(updateRPQuery(rpName, dbName, duration, replication, shardDuration, default)))(
+      rh.writeResult
+    )
 
   /** Drop retention policy */
   final def dropRetentionPolicy(rpName: String, dbName: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(dropRetentionPolicyQuery(rpName, dbName)))(rh.writeResult)
+    F.map(re.get(dropRPQuery(rpName, dbName)))(rh.writeResult)
 
   /** Show list of retention polices */
   final def showRetentionPolicies(dbName: String): F[ErrorOr[Array[RetentionPolicyInfo]]] =
-    F.map(re.executeUri(showRetentionPoliciesQuery(dbName)))(rh.queryResust[RetentionPolicyInfo])
+    F.map(re.get(showRPQuery(dbName)))(rh.queryResust[RetentionPolicyInfo])
 
 }

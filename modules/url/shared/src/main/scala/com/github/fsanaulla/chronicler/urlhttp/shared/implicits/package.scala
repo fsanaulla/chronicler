@@ -16,32 +16,36 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared
 
+import java.nio.charset.Charset
+
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.components.JsonHandler
+import com.github.fsanaulla.chronicler.core.encoding.encodingFromContentType
 import com.github.fsanaulla.chronicler.core.model.{Failable, Functor}
-import com.softwaremill.sttp.Response
-import jawn.ast.{JParser, JValue}
+import org.typelevel.jawn.ast.{JParser, JValue}
+import requests.Response
 
 import scala.util.{Failure, Success, Try}
 
 package object implicits {
-  implicit val jsonHandler: JsonHandler[Response[JValue]] = new JsonHandler[Response[JValue]] {
-    override def responseBody(response: Response[JValue]): ErrorOr[JValue] =
-      response
-        .body
-        .left
-        .flatMap { str =>
-          JParser.parseFromString(str) match {
-            case Success(value)     => Right(value)
-            case Failure(exception) => Left(exception)
-          }
+  implicit val jsonHandler: JsonHandler[Response] = new JsonHandler[Response] {
+    override def responseBody(response: Response): ErrorOr[JValue] = {
+      def body(enc: String): Either[Throwable, JValue] = {
+        JParser.parseFromString(response.text(Charset.forName(enc))) match {
+          case Success(value)     => Right(value)
+          case Failure(exception) => Left(exception)
         }
+      }
+      response.contentType
+        .flatMap(encodingFromContentType)
+        .fold(body("UTF-8"))(body)
+    }
 
-    override def responseHeader(response: Response[JValue]): Seq[(String, String)] =
-      response.headers
+    override def responseHeader(response: Response): Seq[(String, String)] =
+      response.headers.mapValues(_.head).toList
 
-    override def responseCode(response: Response[JValue]): Int =
-      response.code
+    override def responseCode(response: Response): Int =
+      response.statusCode
   }
 
   implicit val tryFunctor: Functor[Try] = new Functor[Try] {

@@ -13,7 +13,7 @@ final case class Test(@escape @tag name: String, @field age: Int, @timestamp tim
 Generate your writer/reader manually:
 ```
 implicit val wr: InfluxWriter[Test] = Influx.writer[Test]
-implicit val rd: InfluxWriter[Test] = Influx.reader[Test]
+implicit val rd: InfluxReader[Test] = Influx.reader[Test]
 ```
 or 
 ```

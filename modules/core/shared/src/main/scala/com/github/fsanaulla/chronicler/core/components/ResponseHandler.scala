@@ -20,7 +20,7 @@ import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
 import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.model._
-import jawn.ast.JArray
+import org.typelevel.jawn.ast.JArray
 
 import scala.reflect.ClassTag
 
@@ -44,11 +44,14 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @return         - Result in future container
     */
   def writeResult(response: R): ErrorOr[ResponseCode] = {
+    println(response)
     jsonHandler.responseCode(response) match {
       case code if isSuccessful(code) && code != 204 =>
         jsonHandler
           .responseErrorMsgOpt(response)
-          .flatMapRight(_.fold[ErrorOr[ResponseCode]](Right(code))(str => Left(InfluxException(code, str))))
+          .flatMapRight(
+            _.fold[ErrorOr[ResponseCode]](Right(code))(str => Left(InfluxException(code, str)))
+          )
       case 204 =>
         Right(204)
       case _ =>
@@ -115,16 +118,19 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @tparam B       - info object
     * @return         - Query result of [B] in future container
     */
-  def toComplexQueryResult[A: ClassTag: InfluxReader, B: ClassTag](response: R,
-                                                                   f: (String, Array[A]) => B): ErrorOr[Array[B]] = {
-      jsonHandler.responseCode(response) match {
-        case code if isSuccessful(code) =>
-          jsonHandler.responseBody(response)
-            .flatMapRight(jsonHandler.groupedSystemInfo[A])
-            .mapRight(_.map { case (dbName, queries) => f(dbName, queries) })
-        case _ =>
-          Left(errorHandler(response))
-      }
+  def toComplexQueryResult[A: ClassTag: InfluxReader, B: ClassTag](
+      response: R,
+      f: (String, Array[A]) => B
+    ): ErrorOr[Array[B]] = {
+    jsonHandler.responseCode(response) match {
+      case code if isSuccessful(code) =>
+        jsonHandler
+          .responseBody(response)
+          .flatMapRight(jsonHandler.groupedSystemInfo[A])
+          .mapRight(_.map { case (dbName, queries) => f(dbName, queries) })
+      case _ =>
+        Left(errorHandler(response))
+    }
   }
 
   /**
@@ -139,7 +145,6 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
       .mapRight(_.map(rd.read))
       .mapRight(either.array)
       .joinRight
-
 
   /***
     * Handler error codes by it's value
@@ -161,8 +166,10 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @param reader - implicit influx reader, predefined
     * @return - CQ results
     */
-  def toCqQueryResult(response: R)
-                     (implicit reader: InfluxReader[ContinuousQuery]): ErrorOr[Array[ContinuousQueryInfo]] = {
+  def toCqQueryResult(
+      response: R
+    )(implicit reader: InfluxReader[ContinuousQuery]
+    ): ErrorOr[Array[ContinuousQueryInfo]] = {
     toComplexQueryResult[ContinuousQuery, ContinuousQueryInfo](
       response,
       (dbName: String, queries: Array[ContinuousQuery]) => ContinuousQueryInfo(dbName, queries)
@@ -176,8 +183,10 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @param reader - implicit influx reader, predefined
     * @return - Shard info  results
     */
-  def toShardQueryResult(response: R)
-                              (implicit reader: InfluxReader[Shard]): ErrorOr[Array[ShardInfo]] = {
+  def toShardQueryResult(
+      response: R
+    )(implicit reader: InfluxReader[Shard]
+    ): ErrorOr[Array[ShardInfo]] = {
     toComplexQueryResult[Shard, ShardInfo](
       response,
       (dbName: String, shards: Array[Shard]) => ShardInfo(dbName, shards)
@@ -191,11 +200,14 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @param reader - implicit influx reader, predefined
     * @return - Subscription info  results
     */
-  def toSubscriptionQueryResult(response: R)
-                                     (implicit reader: InfluxReader[Subscription]): ErrorOr[Array[SubscriptionInfo]] = {
+  def toSubscriptionQueryResult(
+      response: R
+    )(implicit reader: InfluxReader[Subscription]
+    ): ErrorOr[Array[SubscriptionInfo]] = {
     toComplexQueryResult[Subscription, SubscriptionInfo](
       response,
-      (dbName: String, subscriptions: Array[Subscription]) => SubscriptionInfo(dbName, subscriptions)
+      (dbName: String, subscriptions: Array[Subscription]) =>
+        SubscriptionInfo(dbName, subscriptions)
     )
   }
 
@@ -206,8 +218,10 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @param reader - implicit influx reader, predefined
     * @return - Shard group info  results
     */
-  def toShardGroupQueryResult(response: R)
-                                   (implicit reader: InfluxReader[ShardGroup]): ErrorOr[Array[ShardGroupsInfo]] = {
+  def toShardGroupQueryResult(
+      response: R
+    )(implicit reader: InfluxReader[ShardGroup]
+    ): ErrorOr[Array[ShardGroupsInfo]] = {
     toComplexQueryResult[ShardGroup, ShardGroupsInfo](
       response,
       (dbName: String, shardGroups: Array[ShardGroup]) => ShardGroupsInfo(dbName, shardGroups)

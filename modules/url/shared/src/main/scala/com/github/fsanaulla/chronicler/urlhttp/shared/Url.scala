@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.akka.shared
+package com.github.fsanaulla.chronicler.urlhttp.shared
 
-import com.softwaremill.sttp.Response
-import jawn.ast.{JParser, JValue}
+final case class Url(
+    url: String,
+    params: List[(String, String)] = Nil,
+    ssl: Boolean) {
 
-package object handlers {
-  implicit class RichString(private val str: String) extends AnyVal {
-    def toResponse()(implicit p: JParser.type): Response[JValue] = {
-      Response.ok(p.parseFromString(str).get)
-    }
+  def make: String = {
+    val protocol = if (ssl) "https" else "http"
+    protocol + "://" + url
   }
-
 }

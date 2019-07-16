@@ -31,8 +31,7 @@ import scala.util.{Failure, Try}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.08.17
   */
-final class InfluxUDPClient(host: String,
-                            port: Int) extends AutoCloseable {
+final class InfluxUDPClient(host: String, port: Int) extends AutoCloseable {
   private[this] val socket = new DatagramSocket()
   private[this] def buildAndSend(msg: Array[Byte]): Try[Unit] =
     Try(
@@ -45,18 +44,18 @@ final class InfluxUDPClient(host: String,
       )
     )
 
-  def writeNative(point: String,
-                  charset: Charset = StandardCharsets.UTF_8): Try[Unit] =
+  def writeNative(point: String, charset: Charset = StandardCharsets.UTF_8): Try[Unit] =
     buildAndSend(point.getBytes(charset))
 
-  def bulkWriteNative(points: Seq[String],
-                      charset: Charset = StandardCharsets.UTF_8): Try[Unit] =
+  def bulkWriteNative(points: Seq[String], charset: Charset = StandardCharsets.UTF_8): Try[Unit] =
     buildAndSend(points.mkString("\n").getBytes(charset))
 
-  def write[T](measurement: String,
-               entity: T,
-               charset: Charset = StandardCharsets.UTF_8)
-              (implicit writer: InfluxWriter[T]): Try[Unit] = {
+  def write[T](
+      measurement: String,
+      entity: T,
+      charset: Charset = StandardCharsets.UTF_8
+    )(implicit writer: InfluxWriter[T]
+    ): Try[Unit] = {
     BodyBuilder.stringBodyBuilder.fromT(measurement, entity) match {
       case Left(ex) => scala.util.Failure(ex)
       case Right(r) =>
@@ -64,10 +63,12 @@ final class InfluxUDPClient(host: String,
     }
   }
 
-  def bulkWrite[T](measurement: String,
-                   entities: Seq[T],
-                   charset: Charset = StandardCharsets.UTF_8)
-                  (implicit writer: InfluxWriter[T]): Try[Unit] = {
+  def bulkWrite[T](
+      measurement: String,
+      entities: Seq[T],
+      charset: Charset = StandardCharsets.UTF_8
+    )(implicit writer: InfluxWriter[T]
+    ): Try[Unit] = {
     BodyBuilder.stringBodyBuilder.fromSeqT(measurement, entities) match {
       case Left(ex) => Failure(ex)
       case Right(r) =>
@@ -75,8 +76,7 @@ final class InfluxUDPClient(host: String,
     }
   }
 
-  def writeFromFile(file: File,
-                    charset: Charset = StandardCharsets.UTF_8): Try[Unit] = {
+  def writeFromFile(file: File, charset: Charset = StandardCharsets.UTF_8): Try[Unit] = {
     val sendData = Source
       .fromFile(file)
       .getLines()
@@ -86,12 +86,10 @@ final class InfluxUDPClient(host: String,
     buildAndSend(sendData)
   }
 
-  def writePoint(point: Point,
-                 charset: Charset = StandardCharsets.UTF_8): Try[Unit] =
+  def writePoint(point: Point, charset: Charset = StandardCharsets.UTF_8): Try[Unit] =
     buildAndSend(point.serialize.getBytes(charset))
 
-  def bulkWritePoints(points: Seq[Point],
-                      charset: Charset = StandardCharsets.UTF_8): Try[Unit] =
+  def bulkWritePoints(points: Seq[Point], charset: Charset = StandardCharsets.UTF_8): Try[Unit] =
     buildAndSend(
       points
         .map(_.serialize)

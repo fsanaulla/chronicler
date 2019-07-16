@@ -22,7 +22,7 @@ class MeasurementApiSpec
   val measName = "meas"
 
   lazy val influxConf =
-    InfluxConfig(host, port, credentials = Some(creds), gzipped = false, None)
+    InfluxConfig(host, port, credentials = Some(creds))
 
   lazy val mng: UrlManagementClient =
     InfluxMng(host, port, credentials = Some(creds))

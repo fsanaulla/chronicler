@@ -16,38 +16,64 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
-import com.github.fsanaulla.chronicler.core.components.RequestExecutor
-import com.github.fsanaulla.chronicler.core.encoding.gzipEncoding
-import com.github.fsanaulla.chronicler.urlhttp.shared.alias.Request
-import com.github.fsanaulla.chronicler.urlhttp.shared.formats.asJson
-import com.softwaremill.sttp.{Response, SttpBackend, Uri, sttp}
-import jawn.ast.JValue
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.components.{JsonHandler, RequestExecutor}
+import com.github.fsanaulla.chronicler.core.either._
+import com.github.fsanaulla.chronicler.core.jawn.RichJParser
+import com.github.fsanaulla.chronicler.urlhttp.shared.Url
+import org.typelevel.jawn.ast.{JArray, JParser}
+import requests._
 
+import scala.io.Source
 import scala.util.Try
 
-private[urlhttp] class UrlRequestExecutor(implicit backend: SttpBackend[Try, Nothing])
-  extends RequestExecutor[Try, Request, Response[JValue], Uri, String] {
+private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonHandler[Response])
+  extends RequestExecutor[Try, Response, Url, String] {
+
   /**
     * Execute uri
     *
     * @param uri - request uri
     * @return    - Return wrapper response
     */
-  override def executeUri(uri: Uri): Try[Response[JValue]] =
-    sttp.get(uri).response(asJson).send()
+  override def get(uri: Url): Try[Response] = {
+    Try {
+      requests.get(
+        uri.make,
+        params = uri.params,
+        verifySslCerts = ssl
+      )
+    }
+  }
 
-  /**
-    * Execute request
-    *
-    * @param req - request
-    * @return - Return wrapper response
-    */
-  override def executeReq(req: Request): Try[Response[JValue]] =
-    req.send()
+  override def post(
+      uri: Url,
+      body: String,
+      gzipped: Boolean
+    ): Try[Response] = {
+    Try {
+      requests.post(
+        uri.make,
+        RequestAuth.Empty,
+        uri.params,
+        // todo: PR for ssl support
+        verifySslCerts = ssl,
+//        compress = if (gzipped) Compress.Gzip else Compress.None,
+        data = RequestBlob.StringRequestBlob(body)
+      )
+    }
+  }
 
-  override def execute(uri: Uri, body: String, gzipped: Boolean): Try[Response[JValue]] = {
-    val req = sttp.post(uri).body(body).response(asJson)
-    val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
-    maybeEncoded.send()
+  def getStream(url: Url): Iterator[ErrorOr[Array[JArray]]] = {
+    var iterator: Iterator[String] = null
+
+    requests.get.stream(
+      url.make,
+      params = url.params
+    )(onDownload = in => iterator = Source.fromInputStream(in).getLines())
+
+    iterator
+      .map(JParser.parseFromStringEither(_))
+      .map(_.flatMapRight(jsonHandler.queryResult))
   }
 }

@@ -19,8 +19,6 @@ package com.github.fsanaulla.chronicler.core.query
 import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Epoch, Precision}
 
-import scala.collection.mutable
-
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
@@ -28,54 +26,93 @@ import scala.collection.mutable
   */
 trait DatabaseOperationQuery[U] {
 
-  final def writeToInfluxQuery(dbName: String,
-                               consistency: Option[Consistency],
-                               precision: Option[Precision],
-                               retentionPolicy: Option[String])
-                              (implicit qb: QueryBuilder[U]): U = {
+  private[this] def addPrettyQueryParam(
+      pretty: Boolean,
+      queryParams: List[(String, String)]
+    ): List[(String, String)] =
+    if (!pretty) queryParams
+    else ("pretty" -> pretty.toString) :: queryParams
 
-    val queryParams = scala.collection.mutable.Map[String, String]("db" -> dbName)
-    for (rp <- retentionPolicy) queryParams += ("rp" -> rp)
-    for (pr <- precision) queryParams += ("precision" -> pr.toString)
-    for (cons <- consistency) queryParams += ("consistency" -> cons.toString)
+  private[this] def addEpochQueryParam(
+      epoch: Epoch,
+      queryParams: List[(String, String)]
+    ): List[(String, String)] =
+    if (epoch.isNone) queryParams
+    else ("epoch" -> epoch.toString) :: queryParams
 
-    qb.buildQuery("/write", qb.buildQueryParams(queryParams))
+  private[chronicler] final def write(
+      dbName: String,
+      consistency: Consistency,
+      precision: Precision,
+      retentionPolicy: Option[String]
+    )(implicit qb: QueryBuilder[U]
+    ): U = {
+
+    val queryParams = Nil
+
+    val withRP =
+      if (retentionPolicy.isEmpty) queryParams
+      else "rp" -> retentionPolicy.get :: queryParams
+
+    val withPrecision =
+      if (precision.isNone) withRP
+      else "precision" -> precision.toString :: withRP
+
+    val withConsistency =
+      if (consistency.isNone) withPrecision
+      else "consistency" -> consistency.toString :: withPrecision
+
+    qb.buildQuery("/write", qb.appendCredentials(dbName, withConsistency))
   }
 
-  final def readFromInfluxSingleQuery(dbName: String,
-                                      query: String,
-                                      epoch: Option[Epoch],
-                                      pretty: Boolean,
-                                      chunked: Boolean)
-                                     (implicit qb: QueryBuilder[U]): U = {
+  private[chronicler] final def singleQuery(
+      dbName: String,
+      query: String,
+      epoch: Epoch,
+      pretty: Boolean
+    )(implicit qb: QueryBuilder[U]
+    ): U = {
 
-    val queryParams = scala.collection.mutable.Map[String, String](
-      "db" -> dbName,
-      "q" -> query
-    )
+    val queryParams = List("q" -> query)
+    val withEpoch   = addEpochQueryParam(epoch, queryParams)
+    val withPretty  = addPrettyQueryParam(pretty, withEpoch)
 
-    for (ep <- epoch) queryParams += ("epoch" -> ep.toString)
-    if (chunked) queryParams += ("chunked" -> chunked.toString)
-    if (pretty) queryParams += ("pretty" -> pretty.toString)
-
-    qb.buildQuery("/query", qb.buildQueryParams(queryParams))
+    qb.buildQuery("/query", qb.appendCredentials(dbName, withPretty))
   }
 
-  final def readFromInfluxBulkQuery(dbName: String,
-                                    queries: Seq[String],
-                                    epoch: Option[Epoch],
-                                    pretty: Boolean,
-                                    chunked: Boolean)
-                                   (implicit qb: QueryBuilder[U]): U = {
-    val queryParams = mutable.Map[String, String](
-      "db" -> dbName,
-      "q" -> queries.mkString(";")
+  private[chronicler] final def chunkedQuery(
+      dbName: String,
+      query: String,
+      epoch: Epoch,
+      pretty: Boolean,
+      chunkSize: Int
+    )(implicit qb: QueryBuilder[U]
+    ): U = {
+
+    val queryParams = List(
+      "db"         -> dbName,
+      "q"          -> query,
+      "chunked"    -> String.valueOf(true),
+      "chunk_size" -> String.valueOf(chunkSize)
     )
 
-    for (ep <- epoch) queryParams += ("epoch" -> ep.toString)
-    if (chunked) queryParams += ("chunked" -> chunked.toString)
-    if (pretty) queryParams += ("pretty" -> pretty.toString)
+    val withEpoch  = addEpochQueryParam(epoch, queryParams)
+    val withPretty = addPrettyQueryParam(pretty, withEpoch)
 
-    qb.buildQuery("/query", qb.buildQueryParams(queryParams))
+    qb.buildQuery("/query", qb.appendCredentials(withPretty))
+  }
+
+  private[chronicler] final def bulkQuery(
+      dbName: String,
+      queries: Seq[String],
+      epoch: Epoch,
+      pretty: Boolean
+    )(implicit qb: QueryBuilder[U]
+    ): U = {
+    val queryParams = List("q" -> queries.mkString(";"))
+    val withEpoch   = addEpochQueryParam(epoch, queryParams)
+    val withPretty  = addPrettyQueryParam(pretty, withEpoch)
+
+    qb.buildQuery("/query", qb.appendCredentials(dbName, withPretty))
   }
 }

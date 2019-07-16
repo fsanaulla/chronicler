@@ -16,8 +16,10 @@
 
 package com.github.fsanaulla.chronicler.core
 
-import _root_.jawn.ast.{JArray, JObject, JValue, WrongValueException}
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import org.typelevel.jawn.ast._
+
+import scala.util.{Failure, Success}
 
 package object jawn {
   implicit def jv2Int(jv: JValue): Int         = jv.asInt
@@ -28,9 +30,10 @@ package object jawn {
 
   /** Extension to simplify parsing JAWN AST */
   implicit final class RichJValue(private val jv: JValue) extends AnyVal {
+
     def arrayValue: ErrorOr[Array[JValue]] = jv match {
       case JArray(arr) => Right(arr)
-      case other       =>
+      case other =>
         Left(new WrongValueException("array", other.toString()))
     }
 
@@ -45,6 +48,16 @@ package object jawn {
     def obj: ErrorOr[JObject] = jv match {
       case jo: JObject => Right(jo)
       case other       => Left(new WrongValueException("object", other.toString()))
+    }
+  }
+
+  implicit final class RichJParser(private val jp: JParser.type) extends AnyVal {
+
+    def parseFromStringEither(str: String): ErrorOr[JValue] = {
+      jp.parseFromString(str) match {
+        case Success(value)     => Right(value)
+        case Failure(exception) => Left(exception)
+      }
     }
   }
 }

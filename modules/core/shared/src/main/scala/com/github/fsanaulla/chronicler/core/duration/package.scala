@@ -19,25 +19,25 @@ package com.github.fsanaulla.chronicler.core
 package object duration {
 
   implicit final class IntDurationExtension(private val i: Int) extends AnyVal {
-    def nanoseconds: String = i.toString + "ns"
+    def nanoseconds: String  = i.toString + "ns"
     def microseconds: String = i.toString + "u"
     def milliseconds: String = i.toString + "ms"
-    def seconds: String = i.toString + "s"
-    def minutes: String = i.toString + "m"
-    def hours: String = i.toString + "h"
-    def days: String = i.toString + "d"
-    def weeks: String = i.toString + "w"
+    def seconds: String      = i.toString + "s"
+    def minutes: String      = i.toString + "m"
+    def hours: String        = i.toString + "h"
+    def days: String         = i.toString + "d"
+    def weeks: String        = i.toString + "w"
   }
 
   implicit final class LongDurationExtension(private val l: Long) extends AnyVal {
-    def nanoseconds: String = l.toString + "ns"
+    def nanoseconds: String  = l.toString + "ns"
     def microseconds: String = l.toString + "u"
     def milliseconds: String = l.toString + "ms"
-    def seconds: String = l.toString + "s"
-    def minutes: String = l.toString + "m"
-    def hours: String = l.toString + "h"
-    def days: String = l.toString + "d"
-    def weeks: String = l.toString + "w"
+    def seconds: String      = l.toString + "s"
+    def minutes: String      = l.toString + "m"
+    def hours: String        = l.toString + "h"
+    def days: String         = l.toString + "d"
+    def weeks: String        = l.toString + "w"
   }
 
 }

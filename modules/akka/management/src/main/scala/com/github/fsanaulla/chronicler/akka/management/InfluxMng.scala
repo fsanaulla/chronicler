@@ -42,11 +42,14 @@ object InfluxMng {
     * @param ex           - implicit execution context, by default use standard one
     * @return             - [[AkkaManagementClient]]
     */
-  def apply(host: String,
-            port: Int = 8086,
-            credentials: Option[InfluxCredentials] = None,
-            httpsContext: Option[HttpsConnectionContext] = None)
-           (implicit ex: ExecutionContext, system: ActorSystem): AkkaManagementClient =
+  def apply(
+      host: String,
+      port: Int = 8086,
+      credentials: Option[InfluxCredentials] = None,
+      httpsContext: Option[HttpsConnectionContext] = None
+    )(implicit ex: ExecutionContext,
+      system: ActorSystem
+    ): AkkaManagementClient =
     new AkkaManagementClient(host, port, credentials, httpsContext)
 
   /**
@@ -57,7 +60,10 @@ object InfluxMng {
     * @param ex          - implicit execution context, by default use standard one
     * @return            - [[AkkaManagementClient]]
     */
-  def apply(conf: InfluxConfig)
-           (implicit ex: ExecutionContext, system: ActorSystem): AkkaManagementClient =
+  def apply(
+      conf: InfluxConfig
+    )(implicit ex: ExecutionContext,
+      system: ActorSystem
+    ): AkkaManagementClient =
     apply(conf.host, conf.port, conf.credentials, conf.httpsContext)
 }

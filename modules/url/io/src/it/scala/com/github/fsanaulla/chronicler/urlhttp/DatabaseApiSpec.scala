@@ -10,23 +10,20 @@ import com.github.fsanaulla.chronicler.urlhttp.SampleEntitys._
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
-import jawn.ast.{JArray, JNum, JString}
 import org.scalatest.{FlatSpec, Matchers}
+import org.typelevel.jawn.ast.{JArray, JNum, JString}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 02.03.18
   */
-class DatabaseApiSpec
-  extends FlatSpec
-    with Matchers
-    with DockerizedInfluxDB {
+class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 
   val testDB = "db"
 
   lazy val influxConf =
-    InfluxConfig(host, port, credentials = Some(creds), gzipped = false, None)
+    InfluxConfig(host, port, credentials = Some(creds))
 
   lazy val mng: UrlManagementClient =
     InfluxMng(host, port, credentials = Some(creds))
@@ -66,7 +63,7 @@ class DatabaseApiSpec
 
     db.writePoint(point1).get.right.get shouldEqual 204
 
-    db.readJson("SELECT * FROM test2", epoch = Some(Epochs.NANOSECONDS))
+    db.readJson("SELECT * FROM test2", epoch = Epochs.Nanoseconds)
       .get
       .right
       .get
@@ -77,7 +74,7 @@ class DatabaseApiSpec
 
     db.bulkWritePoints(Array(point1, point2)).get.right.get shouldEqual 204
 
-    db.readJson("SELECT * FROM test2", epoch = Some(Epochs.NANOSECONDS))
+    db.readJson("SELECT * FROM test2", epoch = Epochs.Nanoseconds)
       .get
       .right
       .get
@@ -151,7 +148,7 @@ class DatabaseApiSpec
       .get shouldEqual 204
 
     db
-      .readGroupedJson("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"", epoch = Some(Epochs.NANOSECONDS))
+      .readGroupedJson("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"", epoch = Epochs.Nanoseconds)
       .get
       .right
       .get

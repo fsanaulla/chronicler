@@ -29,26 +29,30 @@ import scala.annotation.tailrec
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[akka] class AkkaQueryBuilder(host: String,
-                                     port: Int,
-                                     credentials: Option[InfluxCredentials])
+private[akka] class AkkaQueryBuilder(
+    host: String,
+    port: Int,
+    credentials: Option[InfluxCredentials])
   extends QueryBuilder[Uri](credentials) {
 
-  override def buildQuery(uri: String, queryParams: Map[String, String]): Uri = {
-    val u = Uri(host = host, port).path(uri)
+  override def buildQuery(url: String): Uri =
+    Uri(host = host, port).path(url)
+
+  override def buildQuery(uri: String, queryParams: List[(String, String)]): Uri = {
+    val u        = Uri(host = host, port).path(uri)
     val encoding = Uri.QueryFragmentEncoding.All
     val kvLst = queryParams.map {
       case (k, v) => KeyValue(k, v, valueEncoding = encoding)
     }
 
     @tailrec
-    def addQueryParam(u: Uri, lst: Seq[QueryFragment]): Uri = {
+    def addQueryParam(u: Uri, lst: List[QueryFragment]): Uri = {
       lst match {
         case Nil       => u
         case h :: tail => addQueryParam(u.queryFragment(h), tail)
       }
     }
 
-    addQueryParam(u, kvLst.toList)
+    addQueryParam(u, kvLst)
   }
 }

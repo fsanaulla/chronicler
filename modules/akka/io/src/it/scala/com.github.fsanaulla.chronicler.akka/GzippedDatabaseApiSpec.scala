@@ -12,8 +12,8 @@ import com.github.fsanaulla.chronicler.core.enums.Epochs
 import com.github.fsanaulla.chronicler.core.jawn._
 import com.github.fsanaulla.chronicler.core.model.Point
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
-import jawn.ast.{JArray, JNum, JString}
 import org.scalatest.{FlatSpecLike, Matchers}
+import org.typelevel.jawn.ast.{JArray, JNum, JString}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -67,7 +67,7 @@ class GzippedDatabaseApiSpec
 
     db.writePoint(point1).futureValue.right.get shouldEqual 204
 
-    db.readJson("SELECT * FROM test2", epoch = Some(Epochs.NANOSECONDS))
+    db.readJson("SELECT * FROM test2", epoch = Epochs.Nanoseconds)
       .futureValue
       .right
       .get
@@ -78,7 +78,7 @@ class GzippedDatabaseApiSpec
 
     db.bulkWritePoints(Array(point1, point2)).futureValue.right.get shouldEqual 204
 
-    db.readJson("SELECT * FROM test2", epoch = Some(Epochs.NANOSECONDS))
+    db.readJson("SELECT * FROM test2", epoch = Epochs.Nanoseconds)
       .futureValue
       .right
       .get
@@ -155,7 +155,7 @@ class GzippedDatabaseApiSpec
       .get shouldEqual 204
 
     db
-      .readGroupedJson("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"", epoch = Some(Epochs.NANOSECONDS))
+      .readGroupedJson("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"", epoch = Epochs.Nanoseconds)
       .futureValue
       .right
       .get

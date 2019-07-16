@@ -35,11 +35,13 @@ object InfluxMng {
     * @param ex                - implicit execution context, by default use standard one
     * @return                  - [[AhcManagementClient]]
     */
-  def apply(host: String,
-            port: Int = 8086,
-            credentials: Option[InfluxCredentials] = None,
-            asyncClientConfig: Option[AsyncHttpClientConfig] = None)
-           (implicit ex: ExecutionContext): AhcManagementClient =
+  def apply(
+      host: String,
+      port: Int = 8086,
+      credentials: Option[InfluxCredentials] = None,
+      asyncClientConfig: Option[AsyncHttpClientConfig] = None
+    )(implicit ex: ExecutionContext
+    ): AhcManagementClient =
     new AhcManagementClient(host, port, credentials, asyncClientConfig)
 
   /**

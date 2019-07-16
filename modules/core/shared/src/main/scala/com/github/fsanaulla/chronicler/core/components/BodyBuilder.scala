@@ -26,7 +26,7 @@ import com.github.fsanaulla.chronicler.core.model.{Appender, InfluxWriter, Point
 import scala.io.Source
 
 trait BodyBuilder[A] {
-  def fromFile(file: File): A
+  def fromFile(file: File, enc: String): A
   def fromString(string: String): A
   def fromStrings(strings: Seq[String]): A
   def fromPoint(point: Point): A
@@ -37,8 +37,8 @@ trait BodyBuilder[A] {
 
 object BodyBuilder {
   implicit val stringBodyBuilder: BodyBuilder[String] = new BodyBuilder[String] with Appender {
-    override def fromFile(file: File): String =
-      Source.fromFile(file).getLines().mkString("\n")
+    override def fromFile(file: File, enc: String): String =
+      Source.fromFile(file, enc).getLines().mkString("\n")
 
     override def fromStrings(strings: Seq[String]): String =
       strings.mkString("\n")
@@ -55,7 +55,11 @@ object BodyBuilder {
     override def fromT[T](meas: String, t: T)(implicit wr: InfluxWriter[T]): ErrorOr[String] =
       wr.write(t).mapRight(append(meas, _))
 
-    override def fromSeqT[T](meas: String, ts: Seq[T])(implicit wr: InfluxWriter[T]): ErrorOr[String] = {
+    override def fromSeqT[T](
+        meas: String,
+        ts: Seq[T]
+      )(implicit wr: InfluxWriter[T]
+      ): ErrorOr[String] = {
       either.seq(ts.map(wr.write)).mapRight(append(meas, _))
     }
   }

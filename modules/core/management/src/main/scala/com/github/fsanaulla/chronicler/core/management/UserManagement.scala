@@ -23,10 +23,10 @@ import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.UserManagementQuery
 
-trait UserManagement[F[_], Req, Resp, Uri, Body] extends UserManagementQuery[Uri] {
+trait UserManagement[F[_], Resp, Uri, Body] extends UserManagementQuery[Uri] {
 
   implicit val qb: QueryBuilder[Uri]
-  implicit val re: RequestExecutor[F, Req, Resp, Uri, Body]
+  implicit val re: RequestExecutor[F, Resp, Uri, Body]
   implicit val rh: ResponseHandler[Resp]
   implicit val F: Functor[F]
 
@@ -37,7 +37,7 @@ trait UserManagement[F[_], Req, Resp, Uri, Body] extends UserManagementQuery[Uri
     * @return         - Result of execution
     */
   final def createUser(username: String, password: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(createUserQuery(username, password)))(rh.writeResult)
+    F.map(re.get(createUserQuery(username, password)))(rh.writeResult)
 
   /**
     * Create admin user
@@ -46,39 +46,46 @@ trait UserManagement[F[_], Req, Resp, Uri, Body] extends UserManagementQuery[Uri
     * @return         - execution response
     */
   final def createAdmin(username: String, password: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(createAdminQuery(username, password)))(rh.writeResult)
+    F.map(re.get(createAdminQuery(username, password)))(rh.writeResult)
 
   /** Drop user */
   final def dropUser(username: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(dropUserQuery(username)))(rh.writeResult)
+    F.map(re.get(dropUserQuery(username)))(rh.writeResult)
 
   /** Set password for user */
   final def setUserPassword(username: String, password: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(setUserPasswordQuery(username, password)))(rh.writeResult)
+    F.map(re.get(setUserPasswordQuery(username, password)))(rh.writeResult)
 
   /** Set user privilege on specified database */
-  final def setPrivileges(username: String, dbName: String, privilege: Privilege): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(setPrivilegesQuery(dbName, username, privilege)))(rh.writeResult)
-
+  final def setPrivileges(
+      username: String,
+      dbName: String,
+      privilege: Privilege
+    ): F[ErrorOr[ResponseCode]] =
+    F.map(re.get(setPrivilegesQuery(dbName, username, privilege)))(rh.writeResult)
 
   /** Revoke user privilege on specified datasbase */
-  final def revokePrivileges(username: String, dbName: String, privilege: Privilege): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(revokePrivilegesQuery(dbName, username, privilege)))(rh.writeResult)
+  final def revokePrivileges(
+      username: String,
+      dbName: String,
+      privilege: Privilege
+    ): F[ErrorOr[ResponseCode]] =
+    F.map(re.get(revokePrivilegesQuery(dbName, username, privilege)))(rh.writeResult)
 
   /** Grant admin rights */
   final def makeAdmin(username: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(makeAdminQuery(username)))(rh.writeResult)
+    F.map(re.get(makeAdminQuery(username)))(rh.writeResult)
 
   /** Remove admin rights */
   final def disableAdmin(username: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(disableAdminQuery(username)))(rh.writeResult)
+    F.map(re.get(disableAdminQuery(username)))(rh.writeResult)
 
   /** Show user lists */
   final def showUsers: F[ErrorOr[Array[UserInfo]]] =
-    F.map(re.executeUri(showUsersQuery))(rh.queryResust[UserInfo])
+    F.map(re.get(showUsersQuery))(rh.queryResust[UserInfo])
 
   /** Show user privileges */
   final def showUserPrivileges(username: String): F[ErrorOr[Array[UserPrivilegesInfo]]] =
-    F.map(re.executeUri(showUserPrivilegesQuery(username)))(rh.queryResust[UserPrivilegesInfo])
+    F.map(re.get(showUserPrivilegesQuery(username)))(rh.queryResust[UserPrivilegesInfo])
 
 }

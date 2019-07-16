@@ -27,9 +27,9 @@ import com.github.fsanaulla.chronicler.core.query.ContinuousQueries
   * Author: fayaz.sanaulla@gmail.com
   * Date: 08.08.17
   */
-trait ContinuousQueryManagement[F[_], Req, Resp, Uri, Entity] extends ContinuousQueries[Uri] {
+trait ContinuousQueryManagement[F[_], Resp, Uri, Entity] extends ContinuousQueries[Uri] {
   implicit val qb: QueryBuilder[Uri]
-  implicit val re: RequestExecutor[F, Req, Resp, Uri, Entity]
+  implicit val re: RequestExecutor[F, Resp, Uri, Entity]
   implicit val rh: ResponseHandler[Resp]
   implicit val F: Functor[F]
 
@@ -41,14 +41,18 @@ trait ContinuousQueryManagement[F[_], Req, Resp, Uri, Entity] extends Continuous
     * @param query  - query
     * @return
     */
-  final def createCQ(dbName: String, cqName: String, query: String): F[ErrorOr[ResponseCode]] = {
+  final def createCQ(
+      dbName: String,
+      cqName: String,
+      query: String
+    ): F[ErrorOr[ResponseCode]] = {
     require(validCQQuery(query), "Query required INTO and GROUP BY clause")
-    F.map(re.executeUri(createCQQuery(dbName, cqName, query)))(rh.writeResult)
+    F.map(re.get(createCQQuery(dbName, cqName, query)))(rh.writeResult)
   }
 
   /** Show continuous query information */
   final def showCQs: F[ErrorOr[Array[ContinuousQueryInfo]]] =
-    F.map(re.executeUri(showCQQuery))(rh.toCqQueryResult)
+    F.map(re.get(showCQQuery))(rh.toCqQueryResult)
 
   /**
     * Drop continuous query
@@ -58,7 +62,7 @@ trait ContinuousQueryManagement[F[_], Req, Resp, Uri, Entity] extends Continuous
     * @return       - execution result
     */
   final def dropCQ(dbName: String, cqName: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.executeUri(dropCQQuery(dbName, cqName)))(rh.writeResult)
+    F.map(re.get(dropCQQuery(dbName, cqName)))(rh.writeResult)
 
   private[this] def validCQQuery(query: String): Boolean =
     query.contains("INTO") && query.contains("GROUP BY")

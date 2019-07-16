@@ -21,13 +21,14 @@ import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
 import com.softwaremill.sttp.Response
-import jawn.ast._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Second, Seconds, Span}
 import org.scalatest.{FlatSpec, Matchers}
+import org.typelevel.jawn.ast._
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
+import scala.language.implicitConversions
 
 /**
   * Created by
@@ -46,6 +47,8 @@ class AhcResponseHandlerSpec extends FlatSpec with Matchers with ScalaFutures {
 
   val rh = new ResponseHandler(jsonHandler)
 
+  implicit def str2resp(str: String): Response[JValue] =
+    Response.ok(p.parseFromString(str).get)
 
   it should "extract single query result from response" in {
 
@@ -81,18 +84,12 @@ class AhcResponseHandlerSpec extends FlatSpec with Matchers with ScalaFutures {
         |        }
         |    ]
         |}
-      """.stripMargin.toResponse
+      """.stripMargin
 
     val result = Array(
-      JArray(Array(
-        JString("2015-01-29T21:55:43.702900257Z"),
-        JNum(2))),
-      JArray(Array(
-        JString("2015-01-29T21:55:43.702900257Z"),
-        JNum(0.55))),
-      JArray(Array(
-        JString("2015-06-11T20:46:02Z"),
-        JNum(0.64)))
+      JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
+      JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
+      JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
     )
 
     rh.queryResultJson(singleResponse).right.get shouldEqual result
@@ -150,13 +147,14 @@ class AhcResponseHandlerSpec extends FlatSpec with Matchers with ScalaFutures {
         |        }
         |    ]
         |}
-      """.stripMargin.toResponse
+      """.stripMargin
 
     rh.bulkQueryResultJson(bulkResponse).right.get shouldEqual Array(
       Array(
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
-        JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))),
+        JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
+      ),
       Array(
         JArray(Array(JString("1970-01-01T00:00:00Z"), JNum(3)))
       )
@@ -165,7 +163,8 @@ class AhcResponseHandlerSpec extends FlatSpec with Matchers with ScalaFutures {
 
   it should "cq unpacking" in {
 
-    val cqStrJson = """{
+    val cqStrJson =
+      """{
       "results": [
         {
           "statement_id": 0,
@@ -216,11 +215,13 @@ class AhcResponseHandlerSpec extends FlatSpec with Matchers with ScalaFutures {
       ]
     }
   """
-    val cqHttpResponse = Response.ok(p.parseFromString(cqStrJson).get)
 
-    val cqi = rh.toCqQueryResult(cqHttpResponse).right.get.filter(_.queries.nonEmpty).head
+    val cqi = rh.toCqQueryResult(cqStrJson).right.get.filter(_.queries.nonEmpty).head
     cqi.dbName shouldEqual "mydb"
-    cqi.queries.head shouldEqual ContinuousQuery("cq", "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END")
+    cqi.queries.head shouldEqual ContinuousQuery(
+      "cq",
+      "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END"
+    )
   }
 
   it should "extract optional error message" in {
@@ -235,7 +236,7 @@ class AhcResponseHandlerSpec extends FlatSpec with Matchers with ScalaFutures {
         |          }
         |        ]
         |}
-      """.stripMargin.toResponse()
+      """.stripMargin
 
     jsonHandler.responseErrorMsgOpt(errorResponse).right.get shouldEqual Some("user not found")
   }
@@ -243,7 +244,7 @@ class AhcResponseHandlerSpec extends FlatSpec with Matchers with ScalaFutures {
   it should "extract error message" in {
 
     val errorResponse: Response[JValue] =
-      """ { "error": "user not found" } """.toResponse()
+      """ { "error": "user not found" } """
 
     jsonHandler.responseErrorMsg(errorResponse).right.get shouldEqual "user not found"
   }

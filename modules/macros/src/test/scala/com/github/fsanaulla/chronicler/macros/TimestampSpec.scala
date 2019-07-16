@@ -20,79 +20,115 @@ import com.github.fsanaulla.chronicler.core.model.InfluxReader
 import com.github.fsanaulla.chronicler.macros.annotations._
 import com.github.fsanaulla.chronicler.macros.annotations.reader.{epoch, utc}
 import com.github.fsanaulla.chronicler.macros.auto._
-import jawn.ast._
 import org.scalatest.{Matchers, WordSpec}
+import org.typelevel.jawn.ast._
 
 class TimestampSpec extends WordSpec with Matchers {
 
   "@timestamp" should {
 
     "deserialize" should {
-      case class GeneralEpochTimestamp(@tag name: String,
-                                       @tag surname: Option[String],
-                                       @field age: Int,
-                                       @timestamp time: Long)
-      val epochFmt = InfluxReader[GeneralEpochTimestamp]
+      case class GeneralEpochTimestamp(
+          @tag name: String,
+          @tag surname: Option[String],
+          @field age: Int,
+          @timestamp time: Long)
+      val epochRd = InfluxReader[GeneralEpochTimestamp]
 
       "epoch time" in {
-        epochFmt
-          .read(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull)))
+        epochRd
+          .read(
+            JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull))
+          )
           .right
           .get shouldEqual GeneralEpochTimestamp("Fz", None, 4, 1438715114318570484L)
 
-        epochFmt
+        epochRd
           .read(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
           .right
           .get shouldEqual GeneralEpochTimestamp("Fz", None, 4, 1438715114318570484L)
+
+        epochRd
+          .readUnsafe(
+            JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull))
+          )
+          .shouldEqual(GeneralEpochTimestamp("Fz", None, 4, 1438715114318570484L))
+
+        epochRd
+          .readUnsafe(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
+          .shouldEqual(GeneralEpochTimestamp("Fz", None, 4, 1438715114318570484L))
       }
 
-      case class GeneralUtcTimestamp(@tag name: String,
-                                     @tag surname: Option[String],
-                                     @field age: Int,
-                                     @timestamp time: String)
+      case class GeneralUtcTimestamp(
+          @tag name: String,
+          @tag surname: Option[String],
+          @field age: Int,
+          @timestamp time: String)
 
-      val utcFmt = InfluxReader[GeneralUtcTimestamp]
+      val utcRd = InfluxReader[GeneralUtcTimestamp]
       "utc time" in {
-        utcFmt
+        utcRd
           .read(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
           .right
           .get shouldEqual GeneralUtcTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z")
 
-        utcFmt
-          .read(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull)))
+        utcRd
+          .read(
+            JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull))
+          )
           .right
           .get shouldEqual GeneralUtcTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z")
+
+        utcRd
+          .readUnsafe(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
+          .shouldEqual(GeneralUtcTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z"))
+
+        utcRd
+          .readUnsafe(
+            JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull))
+          )
+          .shouldEqual(GeneralUtcTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z"))
       }
     }
   }
 
   "@epoch @timestamp" should {
     "deserialize epoch time" in {
-      case class EpochTimestamp(@tag name: String,
-                                @tag surname: Option[String],
-                                @field age: Int,
-                                @epoch @timestamp time: Long)
-      val fmt = InfluxReader[EpochTimestamp]
+      case class EpochTimestamp(
+          @tag name: String,
+          @tag surname: Option[String],
+          @field age: Int,
+          @epoch @timestamp time: Long)
+      val rd = InfluxReader[EpochTimestamp]
 
-      fmt
-        .read(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
+      rd.read(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
         .right
         .get shouldEqual EpochTimestamp("Fz", None, 4, 1438715114318570484L)
+
+      rd.readUnsafe(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
+        .shouldEqual(EpochTimestamp("Fz", None, 4, 1438715114318570484L))
     }
   }
 
   "@utc @timestamp" should {
     "deserialize utc time" in {
-      case class UTCTimestamp(@tag name: String,
-                              @tag surname: Option[String],
-                              @field age: Int,
-                              @utc @timestamp time: String)
-      val fmt = InfluxReader[UTCTimestamp]
+      case class UTCTimestamp(
+          @tag name: String,
+          @tag surname: Option[String],
+          @field age: Int,
+          @utc @timestamp time: String)
+      val rd = InfluxReader[UTCTimestamp]
 
-      fmt
-        .read(JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull)))
+      rd.read(
+          JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull))
+        )
         .right
         .get shouldEqual UTCTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z")
+
+      rd.readUnsafe(
+          JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull))
+        )
+        .shouldEqual(UTCTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z"))
     }
   }
 }

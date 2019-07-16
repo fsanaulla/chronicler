@@ -18,7 +18,6 @@ package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
 import org.scalatest.{FlatSpec, Matchers}
 
-
 class AhcQueryBuilderSpec extends FlatSpec with Matchers {
 
   val host = "localhost"
@@ -27,12 +26,12 @@ class AhcQueryBuilderSpec extends FlatSpec with Matchers {
   val qb = new AhcQueryBuilder(host, port, None)
 
   it should "properly generate URI" in {
-    val queryMap = scala.collection.mutable.Map[String, String](
+    val queryMap = List(
       "q" -> "FirstQuery;SecondQuery"
     )
     val res = s"http://$host:$port/query?q=FirstQuery%3BSecondQuery"
 
-    qb.buildQuery("/query", qb.buildQueryParams(queryMap)).toString() shouldEqual res
+    qb.buildQuery("/query", qb.appendCredentials(queryMap)).toString() shouldEqual res
   }
 
 }
