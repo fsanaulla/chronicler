@@ -25,7 +25,7 @@ import org.typelevel.jawn.ast.JValue
 import scala.concurrent.Future
 
 private[ahc] final class AhcRequestExecutor(implicit backend: SttpBackend[Future, Nothing])
-    extends RequestExecutor[Future, Response[JValue], Uri, String] {
+  extends RequestExecutor[Future, Response[JValue], Uri, String] {
 
   /**
     * Execute uri

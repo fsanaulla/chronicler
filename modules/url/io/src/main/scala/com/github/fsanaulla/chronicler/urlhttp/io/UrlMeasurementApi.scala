@@ -34,14 +34,13 @@ class UrlMeasurementApi[T: ClassTag](
     dbName: String,
     measurementName: String,
     gzipped: Boolean
-  )(
-    implicit qb: UrlQueryBuilder,
+  )(implicit qb: UrlQueryBuilder,
     bd: BodyBuilder[String],
     re: UrlRequestExecutor,
     rh: ResponseHandler[Response],
     F: Functor[Try],
     FA: Failable[Try])
-    extends MeasurementApi[Try, Response, Url, String, T](dbName, measurementName, gzipped) {
+  extends MeasurementApi[Try, Response, Url, String, T](dbName, measurementName, gzipped) {
 
   /**
     * Chunked query execution with typed response
@@ -60,11 +59,10 @@ class UrlMeasurementApi[T: ClassTag](
       epoch: Epoch = Epochs.None,
       pretty: Boolean = false,
       chunkSize: Int = 10000
-    )(
-      implicit rd: InfluxReader[T]
+    )(implicit rd: InfluxReader[T]
     ): Iterator[ErrorOr[Array[T]]] = {
     val uri = chunkedQuery(dbName, query, epoch, pretty, chunkSize)
-    re.executeStreaming(uri)
+    re.getStream(uri)
       .map(_.flatMapRight(arr => either.array[Throwable, T](arr.map(rd.read))))
   }
 }

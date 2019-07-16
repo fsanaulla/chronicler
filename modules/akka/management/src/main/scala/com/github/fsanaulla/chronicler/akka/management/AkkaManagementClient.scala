@@ -35,12 +35,11 @@ final class AkkaManagementClient(
     port: Int,
     val credentials: Option[InfluxCredentials],
     httpsContext: Option[HttpsConnectionContext]
-  )(
-    implicit val ex: ExecutionContext,
+  )(implicit val ex: ExecutionContext,
     val system: ActorSystem,
     val F: Functor[Future])
-    extends InfluxAkkaClient(httpsContext)
-    with ManagementClient[Future, Response[JValue], Uri, String] {
+  extends InfluxAkkaClient(httpsContext)
+  with ManagementClient[Future, Response[JValue], Uri, String] {
 
   implicit val qb: AkkaQueryBuilder                  = new AkkaQueryBuilder(host, port, credentials)
   implicit val re: AkkaRequestExecutor               = new AkkaRequestExecutor

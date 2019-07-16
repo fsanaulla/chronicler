@@ -31,8 +31,7 @@ private[chronicler] trait ContinuousQueries[U] {
   private[chronicler] final def dropCQQuery(
       dbName: String,
       cqName: String
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U =
     qb.buildQuery("/query", qb.appendCredentials(s"DROP CONTINUOUS QUERY $cqName ON $dbName"))
 
@@ -40,8 +39,7 @@ private[chronicler] trait ContinuousQueries[U] {
       dbName: String,
       cqName: String,
       query: String
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U =
     qb.buildQuery(
       "/query",

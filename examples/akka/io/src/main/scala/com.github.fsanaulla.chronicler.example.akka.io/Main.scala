@@ -2,38 +2,40 @@ package com.github.fsanaulla.chronicler.example.akka.io
 
 import akka.actor.ActorSystem
 import com.github.fsanaulla.chronicler.akka.io.InfluxIO
-import com.github.fsanaulla.chronicler.core.model.{InfluxFormatter, Point}
-import com.github.fsanaulla.chronicler.macros.Influx
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag}
+import com.github.fsanaulla.chronicler.macros.auto._
 
-import scala.concurrent.Await
-import scala.concurrent.duration._
+import scala.concurrent.Future
+import scala.util.{Failure, Success}
 
 object Main {
+
   def main(args: Array[String]): Unit = {
-    final case class Test(@tag name: String, @field age: Int)
+    final case class Girl(@tag name: String, @field age: Int)
 
     implicit val system: ActorSystem = ActorSystem()
 
-    // generate formatter at compile-time
-    implicit val fmt: InfluxFormatter[Test] = Influx.formatter[Test]
     import system.dispatcher
 
-    val t = Test("f", 1)
-    val host = args.headOption.getOrElse("localhost")
+    val t      = Girl("f", 1)
+    val host   = args.headOption.getOrElse("localhost")
     val influx = InfluxIO(host)
-    val meas = influx.measurement[Test]("db", "cpu")
+    val meas   = influx.measurement[Girl]("db", "cpu")
 
     val result = for {
       // write record to Influx
-      writeResult <- meas.write(t) if writeResult.isSuccess
+      _ <- meas.write(t)
       // retrieve written record from Influx
-      queryResult <- meas.read("SELECT * FROM cpu")
+      girls <- meas.read("SELECT * FROM cpu")
       // close client
-      _ <- influx.closeAsync
+      _ <- Future.successful(influx.close())
 
-    } yield queryResult.queryResult
+    } yield girls
 
-    Await.result(result, Duration.Inf).foreach(println)
+    result.onComplete {
+      case Success(Right(girls)) => girls.foreach(b => println(b.name))
+      case Success(Left(err))    => println(s"Can't retrieve boys coz of: $err")
+      case Failure(exception)    => println(s"Execution error: $exception")
+    }
   }
 }

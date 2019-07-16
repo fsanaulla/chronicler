@@ -153,8 +153,8 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
       // to future extraction from incoming array by index
       .zipWithIndex
 
-      // fields starts from 1 by alphabetical order
-      .map { case (fld, index) => (TermName(fld._1), fld._2, index + 1) }
+      // fields starts from 1 by alphabetical order, index started from 1, coz timestamp comes as 0 index
+      .map { case ((fieldName, fieldType), index) => (TermName(fieldName), fieldType, index + 1) }
 
       // extracting value by index from incoming array
       .map {
@@ -268,7 +268,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
         val value: Tree,
         optional: Boolean,
         escapable: Boolean)
-        extends Unquotable {
+      extends Unquotable {
       def escaped(value: Tree): c.universe.Tree =
         q"com.github.fsanaulla.chronicler.core.regex.tagPattern.matcher($value).replaceAll(com.github.fsanaulla.chronicler.core.regex.replace)"
 

@@ -40,8 +40,7 @@ object InfluxMng {
       port: Int = 8086,
       credentials: Option[InfluxCredentials] = None,
       asyncClientConfig: Option[AsyncHttpClientConfig] = None
-    )(
-      implicit ex: ExecutionContext
+    )(implicit ex: ExecutionContext
     ): AhcManagementClient =
     new AhcManagementClient(host, port, credentials, asyncClientConfig)
 

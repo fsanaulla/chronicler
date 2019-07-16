@@ -34,13 +34,12 @@ import org.typelevel.jawn.ast.JArray
 class DatabaseApi[F[_], Resp, Uri, Body](
     dbName: String,
     gzipped: Boolean
-  )(
-    implicit qb: QueryBuilder[Uri],
+  )(implicit qb: QueryBuilder[Uri],
     bd: BodyBuilder[Body],
     re: RequestExecutor[F, Resp, Uri, Body],
     rh: ResponseHandler[Resp],
     F: Functor[F])
-    extends DatabaseOperationQuery[Uri] {
+  extends DatabaseOperationQuery[Uri] {
 
   def writeFromFile(
       file: File,

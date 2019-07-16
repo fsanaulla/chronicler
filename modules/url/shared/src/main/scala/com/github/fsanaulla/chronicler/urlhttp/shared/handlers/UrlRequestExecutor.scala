@@ -28,7 +28,7 @@ import scala.io.Source
 import scala.util.Try
 
 private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonHandler[Response])
-    extends RequestExecutor[Try, Response, Url, String] {
+  extends RequestExecutor[Try, Response, Url, String] {
 
   /**
     * Execute uri
@@ -39,7 +39,7 @@ private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonH
   override def get(uri: Url): Try[Response] = {
     Try {
       requests.get(
-        uri.mkUrl,
+        uri.make,
         params = uri.params,
         verifySslCerts = ssl
       )
@@ -53,7 +53,7 @@ private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonH
     ): Try[Response] = {
     Try {
       requests.post(
-        uri.mkUrl,
+        uri.make,
         RequestAuth.Empty,
         uri.params,
         // todo: PR for ssl support
@@ -64,11 +64,11 @@ private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonH
     }
   }
 
-  def executeStreaming(url: Url): Iterator[ErrorOr[Array[JArray]]] = {
+  def getStream(url: Url): Iterator[ErrorOr[Array[JArray]]] = {
     var iterator: Iterator[String] = null
 
     requests.get.stream(
-      url.mkUrl,
+      url.make,
       params = url.params
     )(onDownload = in => iterator = Source.fromInputStream(in).getLines())
 

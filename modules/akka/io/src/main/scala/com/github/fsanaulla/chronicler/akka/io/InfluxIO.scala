@@ -48,8 +48,7 @@ object InfluxIO {
       credentials: Option[InfluxCredentials] = None,
       gzipped: Boolean = false,
       httpsContext: Option[HttpsConnectionContext] = None
-    )(
-      implicit ex: ExecutionContext,
+    )(implicit ex: ExecutionContext,
       system: ActorSystem
     ): AkkaIOClient =
     new AkkaIOClient(host, port, credentials, gzipped, httpsContext)

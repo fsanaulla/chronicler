@@ -30,7 +30,7 @@ import scala.concurrent.Future
   * Date: 15.03.18
   */
 private[akka] final class AkkaRequestExecutor(implicit backend: SttpBackend[Future, Nothing])
-    extends RequestExecutor[Future, Response[JValue], Uri, String] {
+  extends RequestExecutor[Future, Response[JValue], Uri, String] {
 
   /**
     * Execute uri

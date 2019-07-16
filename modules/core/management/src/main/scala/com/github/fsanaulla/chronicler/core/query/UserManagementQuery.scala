@@ -26,24 +26,21 @@ private[fsanaulla] trait UserManagementQuery[U] {
 
   private[chronicler] final def showUserPrivilegesQuery(
       username: String
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U =
     qb.buildQuery("/query", qb.appendCredentials(s"SHOW GRANTS FOR $username"))
 
   private[chronicler] final def setUserPasswordQuery(
       username: String,
       password: String
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U =
     qb.buildQuery("/query", qb.appendCredentials(s"SET PASSWORD FOR $username = '$password'"))
 
   private[chronicler] final def createAdminQuery(
       username: String,
       password: String
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U =
     qb.buildQuery(
       "/query",
@@ -55,16 +52,14 @@ private[fsanaulla] trait UserManagementQuery[U] {
 
   private[chronicler] final def disableAdminQuery(
       username: String
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U =
     qb.buildQuery("/query", qb.appendCredentials(s"REVOKE ALL PRIVILEGES FROM $username"))
 
   private[chronicler] final def createUserQuery(
       username: String,
       password: String
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U =
     qb.buildQuery(
       "/query",
@@ -78,8 +73,7 @@ private[fsanaulla] trait UserManagementQuery[U] {
       dbName: String,
       username: String,
       privileges: Privilege
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U =
     qb.buildQuery("/query", qb.appendCredentials(s"GRANT $privileges ON $dbName TO $username"))
 
@@ -87,8 +81,7 @@ private[fsanaulla] trait UserManagementQuery[U] {
       dbName: String,
       username: String,
       privileges: Privilege
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U =
     qb.buildQuery("/query", qb.appendCredentials(s"REVOKE $privileges ON $dbName FROM $username"))
 

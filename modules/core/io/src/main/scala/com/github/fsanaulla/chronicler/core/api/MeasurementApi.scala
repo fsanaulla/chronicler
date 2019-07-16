@@ -33,14 +33,13 @@ class MeasurementApi[F[_], Resp, Uri, Body, A](
     dbName: String,
     measurementName: String,
     gzipped: Boolean
-  )(
-    implicit qb: QueryBuilder[Uri],
+  )(implicit qb: QueryBuilder[Uri],
     bd: BodyBuilder[Body],
     re: RequestExecutor[F, Resp, Uri, Body],
     rh: ResponseHandler[Resp],
     F: Functor[F],
     FA: Failable[F])
-    extends DatabaseOperationQuery[Uri] {
+  extends DatabaseOperationQuery[Uri] {
 
   /**
     * Make single write
@@ -57,8 +56,7 @@ class MeasurementApi[F[_], Resp, Uri, Body, A](
       consistency: Consistency = Consistencies.None,
       precision: Precision = Precisions.None,
       retentionPolicy: Option[String] = None
-    )(
-      implicit wr: InfluxWriter[A]
+    )(implicit wr: InfluxWriter[A]
     ): F[ErrorOr[ResponseCode]] = {
     val uri = write(dbName, consistency, precision, retentionPolicy)
 
@@ -86,8 +84,7 @@ class MeasurementApi[F[_], Resp, Uri, Body, A](
       consistency: Consistency = Consistencies.None,
       precision: Precision = Precisions.None,
       retentionPolicy: Option[String] = None
-    )(
-      implicit writer: InfluxWriter[A]
+    )(implicit writer: InfluxWriter[A]
     ): F[ErrorOr[ResponseCode]] = {
     val uri = write(dbName, consistency, precision, retentionPolicy)
 
@@ -104,8 +101,7 @@ class MeasurementApi[F[_], Resp, Uri, Body, A](
       query: String,
       epoch: Epoch = Epochs.None,
       pretty: Boolean = false
-    )(
-      implicit rd: InfluxReader[A],
+    )(implicit rd: InfluxReader[A],
       clsTag: ClassTag[A]
     ): F[ErrorOr[Array[A]]] = {
     val uri = singleQuery(dbName, query, epoch, pretty)

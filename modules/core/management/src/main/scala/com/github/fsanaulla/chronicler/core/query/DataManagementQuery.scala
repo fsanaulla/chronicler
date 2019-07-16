@@ -29,8 +29,7 @@ private[chronicler] trait DataManagementQuery[U] {
       replication: Option[Int],
       shardDuration: Option[String],
       rpName: Option[String]
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U = {
 
     val sb = StringBuilder.newBuilder
@@ -66,8 +65,7 @@ private[chronicler] trait DataManagementQuery[U] {
   private[chronicler] final def dropSeriesQuery(
       dbName: String,
       seriesName: String
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U =
     qb.buildQuery(
       "/query",
@@ -77,8 +75,7 @@ private[chronicler] trait DataManagementQuery[U] {
   private[chronicler] final def dropMeasurementQuery(
       dbName: String,
       measurementName: String
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U =
     qb.buildQuery(
       "/query",
@@ -88,8 +85,7 @@ private[chronicler] trait DataManagementQuery[U] {
   private[chronicler] final def deleteAllSeriesQuery(
       dbName: String,
       seriesName: String
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U =
     qb.buildQuery(
       "/query",
@@ -98,8 +94,7 @@ private[chronicler] trait DataManagementQuery[U] {
 
   private[chronicler] final def showMeasurementQuery(
       dbName: String
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U =
     qb.buildQuery("/query", qb.appendCredentials(dbName, s"SHOW MEASUREMENTS"))
 
@@ -109,8 +104,7 @@ private[chronicler] trait DataManagementQuery[U] {
   private[chronicler] final def showFieldKeysQuery(
       dbName: String,
       measurementName: String
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U =
     qb.buildQuery(
       "/query",
@@ -123,8 +117,7 @@ private[chronicler] trait DataManagementQuery[U] {
       whereClause: Option[String],
       limit: Option[Int],
       offset: Option[Int]
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U = {
     val sb = StringBuilder.newBuilder
 
@@ -155,8 +148,7 @@ private[chronicler] trait DataManagementQuery[U] {
       whereClause: Option[String],
       limit: Option[Int],
       offset: Option[Int]
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U = {
     require(withKey.nonEmpty, "Keys can't be empty")
 

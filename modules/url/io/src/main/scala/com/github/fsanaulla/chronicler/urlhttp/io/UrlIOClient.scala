@@ -34,7 +34,7 @@ final class UrlIOClient(
     credentials: Option[InfluxCredentials],
     gzipped: Boolean,
     ssl: Boolean)
-    extends IOClient[Try, Response, Url, String] {
+  extends IOClient[Try, Response, Url, String] {
 
   implicit val qb: UrlQueryBuilder           = new UrlQueryBuilder(host, port, credentials, ssl)
   implicit val re: UrlRequestExecutor        = new UrlRequestExecutor(ssl, jsonHandler)

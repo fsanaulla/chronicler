@@ -32,9 +32,8 @@ final class UrlManagementClient(
     port: Int,
     credentials: Option[InfluxCredentials],
     ssl: Boolean
-  )(
-    implicit val F: Functor[Try])
-    extends ManagementClient[Try, Response, Url, String] {
+  )(implicit val F: Functor[Try])
+  extends ManagementClient[Try, Response, Url, String] {
 
   implicit val qb: UrlQueryBuilder           = new UrlQueryBuilder(host, port, credentials, ssl)
   implicit val re: UrlRequestExecutor        = new UrlRequestExecutor(ssl, jsonHandler)

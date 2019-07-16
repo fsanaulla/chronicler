@@ -1,31 +1,35 @@
 package com.github.fsanaulla.chronicler.example.url.io
 
-import com.github.fsanaulla.chronicler.core.model.{InfluxFormatter, Point}
-import com.github.fsanaulla.chronicler.macros.Influx
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag}
+import com.github.fsanaulla.chronicler.macros.auto._
 import com.github.fsanaulla.chronicler.urlhttp.io.InfluxIO
 
+import scala.util.{Failure, Success}
+
 object Main {
+
   def main(args: Array[String]): Unit = {
-    final case class Test(@tag name: String, @field age: Int)
+    final case class Dogs(@tag name: String, @field age: Int)
 
     // generate formatter at compile-time
-    implicit val fmt: InfluxFormatter[Test] = Influx.formatter[Test]
-
-    val t = Test("f", 1)
-    val host = args.headOption.getOrElse("localhost")
+    val t      = Dogs("f", 1)
+    val host   = args.headOption.getOrElse("localhost")
     val influx = InfluxIO(host)
-    val meas = influx.measurement[Test]("db", "cpu")
+    val meas   = influx.measurement[Dogs]("db", "cpu")
 
     val result = for {
       // write record to Influx
-      writeResult <- meas.write(t) if writeResult.isSuccess
+      _ <- meas.write(t)
       // retrieve written record from Influx
-      queryResult <- meas.read("SELECT * FROM cpu")
+      dogs <- meas.read("SELECT * FROM cpu")
       // close
       _ = influx.close()
-    } yield queryResult.queryResult
+    } yield dogs
 
-    result.foreach(_.foreach(println))
+    result match {
+      case Success(Right(dogs)) => dogs.foreach(b => println(b.name))
+      case Success(Left(err))   => println(s"Can't retrieve boys coz of: $err")
+      case Failure(exception)   => println(s"Execution error: $exception")
+    }
   }
 }

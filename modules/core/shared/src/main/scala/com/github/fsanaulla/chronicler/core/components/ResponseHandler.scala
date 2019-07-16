@@ -168,8 +168,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     */
   def toCqQueryResult(
       response: R
-    )(
-      implicit reader: InfluxReader[ContinuousQuery]
+    )(implicit reader: InfluxReader[ContinuousQuery]
     ): ErrorOr[Array[ContinuousQueryInfo]] = {
     toComplexQueryResult[ContinuousQuery, ContinuousQueryInfo](
       response,
@@ -186,8 +185,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     */
   def toShardQueryResult(
       response: R
-    )(
-      implicit reader: InfluxReader[Shard]
+    )(implicit reader: InfluxReader[Shard]
     ): ErrorOr[Array[ShardInfo]] = {
     toComplexQueryResult[Shard, ShardInfo](
       response,
@@ -204,8 +202,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     */
   def toSubscriptionQueryResult(
       response: R
-    )(
-      implicit reader: InfluxReader[Subscription]
+    )(implicit reader: InfluxReader[Subscription]
     ): ErrorOr[Array[SubscriptionInfo]] = {
     toComplexQueryResult[Subscription, SubscriptionInfo](
       response,
@@ -223,8 +220,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     */
   def toShardGroupQueryResult(
       response: R
-    )(
-      implicit reader: InfluxReader[ShardGroup]
+    )(implicit reader: InfluxReader[ShardGroup]
     ): ErrorOr[Array[ShardGroupsInfo]] = {
     toComplexQueryResult[ShardGroup, ShardGroupsInfo](
       response,

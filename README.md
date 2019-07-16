@@ -14,7 +14,7 @@ Open-source [Scala](https://www.scala-lang.org/) toolchain for [InfluxDB](https:
 - Flexible API
 - Code generation with macros
 - High modularity
-- Chunking
+- Response streaming
 - Data compression (in-progress)
 - Spark support (located [here](https://github.com/fsanaulla/chronicler-spark))
 - Kafka sink (in-progress)
@@ -34,6 +34,7 @@ Open-source [Scala](https://www.scala-lang.org/) toolchain for [InfluxDB](https:
 10. [Response handling](docs/response_handling.md)
 11. [Macros](docs/macros.md)
 12. [Utils](docs/utils.md)
+13. [Streaming](docs/streaming.md)
 
 # Inspirations
 - [scala-influxdb-client](https://github.com/paulgoldbaum/scala-influxdb-client) by [Paul Goldbaum](https://github.com/paulgoldbaum)

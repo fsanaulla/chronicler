@@ -28,7 +28,7 @@ import com.github.fsanaulla.chronicler.core.query.RetentionPolicyManagementQuery
   * Date: 08.08.17
   */
 trait RetentionPolicyManagement[F[_], Resp, Uri, Entity]
-    extends RetentionPolicyManagementQuery[Uri] {
+  extends RetentionPolicyManagementQuery[Uri] {
   implicit val qb: QueryBuilder[Uri]
   implicit val re: RequestExecutor[F, Resp, Uri, Entity]
   implicit val rh: ResponseHandler[Resp]

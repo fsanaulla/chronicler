@@ -181,8 +181,7 @@ trait JsonHandler[A] {
     */
   final def groupedSystemInfo[T: ClassTag](
       js: JValue
-    )(
-      implicit rd: InfluxReader[T]
+    )(implicit rd: InfluxReader[T]
     ): ErrorOr[Array[(String, Array[T])]] = {
     groupedSystemInfoJs(js)
       .mapRight { arr =>

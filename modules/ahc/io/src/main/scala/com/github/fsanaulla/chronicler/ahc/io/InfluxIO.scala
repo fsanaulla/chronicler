@@ -41,8 +41,7 @@ object InfluxIO {
       credentials: Option[InfluxCredentials] = None,
       gzipped: Boolean = false,
       asyncClientConfig: Option[AsyncHttpClientConfig] = None
-    )(
-      implicit ex: ExecutionContext
+    )(implicit ex: ExecutionContext
     ): AhcIOClient =
     new AhcIOClient(host, port, gzipped, credentials, asyncClientConfig)
 

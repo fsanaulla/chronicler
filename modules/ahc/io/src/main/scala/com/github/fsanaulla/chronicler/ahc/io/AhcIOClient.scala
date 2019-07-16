@@ -37,10 +37,9 @@ final class AhcIOClient(
     gzipped: Boolean,
     credentials: Option[InfluxCredentials],
     asyncClientConfig: Option[AsyncHttpClientConfig]
-  )(
-    implicit ex: ExecutionContext)
-    extends InfluxAhcClient(asyncClientConfig)
-    with IOClient[Future, Response[JValue], Uri, String] {
+  )(implicit ex: ExecutionContext)
+  extends InfluxAhcClient(asyncClientConfig)
+  with IOClient[Future, Response[JValue], Uri, String] {
 
   implicit val qb: AhcQueryBuilder                   = new AhcQueryBuilder(host, port, credentials)
   implicit val re: AhcRequestExecutor                = new AhcRequestExecutor

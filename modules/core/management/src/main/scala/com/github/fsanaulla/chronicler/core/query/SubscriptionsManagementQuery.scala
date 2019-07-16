@@ -32,8 +32,7 @@ private[chronicler] trait SubscriptionsManagementQuery[U] {
       rpName: String,
       destinationType: Destination,
       addresses: Seq[String]
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U = {
 
     val addressesStr = addresses.map(str => s"\'$str\'").mkString(", ")
@@ -49,8 +48,7 @@ private[chronicler] trait SubscriptionsManagementQuery[U] {
       subsName: String,
       dbName: String,
       rpName: String
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U =
     qb.buildQuery("/query", qb.appendCredentials(s"DROP SUBSCRIPTION $subsName ON $dbName.$rpName"))
 

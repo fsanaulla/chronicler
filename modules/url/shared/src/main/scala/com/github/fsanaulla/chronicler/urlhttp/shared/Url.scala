@@ -21,7 +21,7 @@ final case class Url(
     params: List[(String, String)] = Nil,
     ssl: Boolean) {
 
-  def mkUrl: String = {
+  def make: String = {
     val protocol = if (ssl) "https" else "http"
     protocol + "://" + url
   }

@@ -13,7 +13,7 @@ libraryDependencies ++= Seq(
 Our code:
 ```
 import com.github.fsanaulla.chronicler.ahc.io.{AhcIOClient, InfluxIO}
-import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
+import com.github.fsanaulla.chronicler.macros.auto._
 import com.github.fsanaulla.chronicler.core.model.InfluxFormatter
 import com.github.fsanaulla.chronicler.ahc.io.api.Measurement
 
@@ -28,10 +28,7 @@ final case class Resume(
  @field position: String,
  @field age: Int,
  @field rate: Double,
- @timestampEpoch created: Long)
-
-// let's create serializers/deserializers 
-implicit val fmt: InfluxFormatter[Resume] = Influx.formatter[Resume]
+ @epoch @timestamp created: Long)
 
 // setup credentials if exist
 private val credentials: InfluxCredentials = InfluxCredentials("username", "password")
@@ -62,14 +59,14 @@ val resume = Resume("dasdasfsadf",
   
 // insert entity  
 measurement.write(resume).onComplete {
-  case Success(r) if r.isSuccess => println("Great new developer is coming!!")
-  case _ => // handle failure
+  case Right(respCode)  => ...
+  case Left(err)        => ...
 }
 
 // retrieve entity
 val result: Array[Resume] = measurement.read("SELECT * FROM $measurementName").onComplete {
-  case Success(qr) if qr.isSuccess => qr.queryResult
-  case _ => // handle failure
+  case Right(resumes) => ...
+  case Left(err)      => ...
 }
 
 // close client

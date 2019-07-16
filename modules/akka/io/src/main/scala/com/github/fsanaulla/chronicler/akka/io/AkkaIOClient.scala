@@ -38,11 +38,10 @@ final class AkkaIOClient(
     credentials: Option[InfluxCredentials],
     gzipped: Boolean,
     httpsContext: Option[HttpsConnectionContext]
-  )(
-    implicit ex: ExecutionContext,
+  )(implicit ex: ExecutionContext,
     system: ActorSystem)
-    extends InfluxAkkaClient(httpsContext)
-    with IOClient[Future, Response[JValue], Uri, String] {
+  extends InfluxAkkaClient(httpsContext)
+  with IOClient[Future, Response[JValue], Uri, String] {
 
   implicit val qb: AkkaQueryBuilder                  = new AkkaQueryBuilder(host, port, credentials)
   implicit val re: AkkaRequestExecutor               = new AkkaRequestExecutor

@@ -25,7 +25,7 @@ private[urlhttp] class UrlQueryBuilder(
     port: Int,
     credentials: Option[InfluxCredentials],
     ssl: Boolean)
-    extends QueryBuilder[Url](credentials) {
+  extends QueryBuilder[Url](credentials) {
 
   override def buildQuery(url: String): Url =
     Url(host + ":" + port + url, ssl = ssl)

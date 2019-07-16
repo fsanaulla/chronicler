@@ -26,14 +26,14 @@ import com.github.fsanaulla.chronicler.core.enums.{Consistency, Epoch, Precision
   */
 trait DatabaseOperationQuery[U] {
 
-  private def addPrettyQueryParam(
+  private[this] def addPrettyQueryParam(
       pretty: Boolean,
       queryParams: List[(String, String)]
     ): List[(String, String)] =
     if (!pretty) queryParams
     else ("pretty" -> pretty.toString) :: queryParams
 
-  private def addEpochQueryParam(
+  private[this] def addEpochQueryParam(
       epoch: Epoch,
       queryParams: List[(String, String)]
     ): List[(String, String)] =
@@ -45,8 +45,7 @@ trait DatabaseOperationQuery[U] {
       consistency: Consistency,
       precision: Precision,
       retentionPolicy: Option[String]
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U = {
 
     val queryParams = Nil
@@ -71,8 +70,7 @@ trait DatabaseOperationQuery[U] {
       query: String,
       epoch: Epoch,
       pretty: Boolean
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U = {
 
     val queryParams = List("q" -> query)
@@ -88,8 +86,7 @@ trait DatabaseOperationQuery[U] {
       epoch: Epoch,
       pretty: Boolean,
       chunkSize: Int
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U = {
 
     val queryParams = List(
@@ -110,8 +107,7 @@ trait DatabaseOperationQuery[U] {
       queries: Seq[String],
       epoch: Epoch,
       pretty: Boolean
-    )(
-      implicit qb: QueryBuilder[U]
+    )(implicit qb: QueryBuilder[U]
     ): U = {
     val queryParams = List("q" -> queries.mkString(";"))
     val withEpoch   = addEpochQueryParam(epoch, queryParams)

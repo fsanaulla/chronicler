@@ -54,8 +54,7 @@ final class InfluxUDPClient(host: String, port: Int) extends AutoCloseable {
       measurement: String,
       entity: T,
       charset: Charset = StandardCharsets.UTF_8
-    )(
-      implicit writer: InfluxWriter[T]
+    )(implicit writer: InfluxWriter[T]
     ): Try[Unit] = {
     BodyBuilder.stringBodyBuilder.fromT(measurement, entity) match {
       case Left(ex) => scala.util.Failure(ex)
@@ -68,8 +67,7 @@ final class InfluxUDPClient(host: String, port: Int) extends AutoCloseable {
       measurement: String,
       entities: Seq[T],
       charset: Charset = StandardCharsets.UTF_8
-    )(
-      implicit writer: InfluxWriter[T]
+    )(implicit writer: InfluxWriter[T]
     ): Try[Unit] = {
     BodyBuilder.stringBodyBuilder.fromSeqT(measurement, entities) match {
       case Left(ex) => Failure(ex)
