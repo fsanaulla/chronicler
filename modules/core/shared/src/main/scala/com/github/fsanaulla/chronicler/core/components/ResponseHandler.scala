@@ -30,9 +30,14 @@ import scala.reflect.ClassTag
   *
   * @tparam R - Backend HTTP response type, for example for Akka HTTP backend - HttpResponse
   */
-final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
+class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
 
-  def pingResult(response: R): ErrorOr[InfluxDBInfo] = {
+  /**
+    * Handling ping response
+    *
+    * @since 0.5.1
+    */
+  final def pingResult(response: R): ErrorOr[InfluxDBInfo] = {
     if (isPingCode(jsonHandler.responseCode(response))) jsonHandler.databaseInfo(response)
     else Left(errorHandler(response))
   }
@@ -43,8 +48,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @param response - backend response value
     * @return         - Result in future container
     */
-  def writeResult(response: R): ErrorOr[ResponseCode] = {
-    println(response)
+  final def writeResult(response: R): ErrorOr[ResponseCode] = {
     jsonHandler.responseCode(response) match {
       case code if isSuccessful(code) && code != 204 =>
         jsonHandler
@@ -65,7 +69,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @param response - backend response value
     * @return         - Query result of JArray in future container
     */
-  def queryResultJson(response: R): ErrorOr[Array[JArray]] = {
+  final def queryResultJson(response: R): ErrorOr[Array[JArray]] = {
     jsonHandler.responseCode(response).intValue() match {
       case code if isSuccessful(code) =>
         jsonHandler
@@ -82,7 +86,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @param response - backend response
     * @return         - grouped result
     */
-  def groupedResultJson(response: R): ErrorOr[Array[(Array[String], JArray)]] =
+  final def groupedResultJson(response: R): ErrorOr[Array[(Array[String], JArray)]] =
     jsonHandler.responseCode(response) match {
       case code if isSuccessful(code) =>
         jsonHandler
@@ -99,7 +103,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @param response - backend response value
     * @return         - Query result with multiple response values
     */
-  def bulkQueryResultJson(response: R): ErrorOr[Array[Array[JArray]]] =
+  final def bulkQueryResultJson(response: R): ErrorOr[Array[Array[JArray]]] =
     jsonHandler.responseCode(response) match {
       case code if isSuccessful(code) =>
         jsonHandler
@@ -118,7 +122,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @tparam B       - info object
     * @return         - Query result of [B] in future container
     */
-  def toComplexQueryResult[A: ClassTag: InfluxReader, B: ClassTag](
+  final def toComplexQueryResult[A: ClassTag: InfluxReader, B: ClassTag](
       response: R,
       f: (String, Array[A]) => B
     ): ErrorOr[Array[B]] = {
@@ -140,7 +144,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @tparam A - Deserializer entity type
     * @return - Query result in future container
     */
-  def queryResust[A: ClassTag](response: R)(implicit rd: InfluxReader[A]): ErrorOr[Array[A]] =
+  final def queryResult[A: ClassTag](response: R)(implicit rd: InfluxReader[A]): ErrorOr[Array[A]] =
     queryResultJson(response)
       .mapRight(_.map(rd.read))
       .mapRight(either.array)
@@ -152,7 +156,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @param response - response for extracting error message
     * @return         - InfluxException wrraped in container type
     */
-  def errorHandler(response: R): Throwable =
+  final def errorHandler(response: R): Throwable =
     jsonHandler
       .responseErrorMsg(response)
       .mapRight(InfluxException(jsonHandler.responseCode(response), _))
@@ -183,7 +187,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @param reader - implicit influx reader, predefined
     * @return - Shard info  results
     */
-  def toShardQueryResult(
+  final def toShardQueryResult(
       response: R
     )(implicit reader: InfluxReader[Shard]
     ): ErrorOr[Array[ShardInfo]] = {
@@ -200,7 +204,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @param reader - implicit influx reader, predefined
     * @return - Subscription info  results
     */
-  def toSubscriptionQueryResult(
+  final def toSubscriptionQueryResult(
       response: R
     )(implicit reader: InfluxReader[Subscription]
     ): ErrorOr[Array[SubscriptionInfo]] = {
@@ -218,7 +222,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @param reader - implicit influx reader, predefined
     * @return - Shard group info  results
     */
-  def toShardGroupQueryResult(
+  final def toShardGroupQueryResult(
       response: R
     )(implicit reader: InfluxReader[ShardGroup]
     ): ErrorOr[Array[ShardGroupsInfo]] = {
@@ -234,7 +238,7 @@ final class ResponseHandler[R](jsonHandler: JsonHandler[R]) {
     * @param code - response code
     * @return     - is it success
     */
-  def isSuccessful(code: Int): Boolean = code >= 200 && code < 300
+  final def isSuccessful(code: Int): Boolean = code >= 200 && code < 300
 
-  def isPingCode(code: Int): Boolean = code == 200 || code == 204
+  final def isPingCode(code: Int): Boolean = code == 200 || code == 204
 }

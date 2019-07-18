@@ -63,15 +63,15 @@ trait DatabaseManagement[F[_], Resp, Uri, Body] extends DataManagementQuery[Uri]
 
   /** Show measurements */
   final def showMeasurement(dbName: String): F[ErrorOr[Array[String]]] =
-    F.map(re.get(showMeasurementQuery(dbName)))(rh.queryResust[String])
+    F.map(re.get(showMeasurementQuery(dbName)))(rh.queryResult[String])
 
   /** Show database list */
   final def showDatabases(): F[ErrorOr[Array[String]]] =
-    F.map(re.get(showDatabasesQuery))(rh.queryResust[String])
+    F.map(re.get(showDatabasesQuery))(rh.queryResult[String])
 
   /** Show field tags list */
   final def showFieldKeys(dbName: String, measurementName: String): F[ErrorOr[Array[FieldInfo]]] =
-    F.map(re.get(showFieldKeysQuery(dbName, measurementName)))(rh.queryResust[FieldInfo])
+    F.map(re.get(showFieldKeysQuery(dbName, measurementName)))(rh.queryResult[FieldInfo])
 
   /** Show tags keys list */
   final def showTagKeys(
@@ -82,7 +82,7 @@ trait DatabaseManagement[F[_], Resp, Uri, Body] extends DataManagementQuery[Uri]
       offset: Option[Int] = None
     ): F[ErrorOr[Array[String]]] =
     F.map(re.get(showTagKeysQuery(dbName, measurementName, whereClause, limit, offset)))(
-      rh.queryResust[String]
+      rh.queryResult[String]
     )
 
   /** Show tag values list */
@@ -95,6 +95,6 @@ trait DatabaseManagement[F[_], Resp, Uri, Body] extends DataManagementQuery[Uri]
       offset: Option[Int] = None
     ): F[ErrorOr[Array[TagValue]]] =
     F.map(re.get(showTagValuesQuery(dbName, measurementName, withKey, whereClause, limit, offset)))(
-      rh.queryResust[TagValue]
+      rh.queryResult[TagValue]
     )
 }

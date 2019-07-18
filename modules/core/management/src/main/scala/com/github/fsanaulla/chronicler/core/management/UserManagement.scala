@@ -82,10 +82,10 @@ trait UserManagement[F[_], Resp, Uri, Body] extends UserManagementQuery[Uri] {
 
   /** Show user lists */
   final def showUsers: F[ErrorOr[Array[UserInfo]]] =
-    F.map(re.get(showUsersQuery))(rh.queryResust[UserInfo])
+    F.map(re.get(showUsersQuery))(rh.queryResult[UserInfo])
 
   /** Show user privileges */
   final def showUserPrivileges(username: String): F[ErrorOr[Array[UserPrivilegesInfo]]] =
-    F.map(re.get(showUserPrivilegesQuery(username)))(rh.queryResust[UserPrivilegesInfo])
+    F.map(re.get(showUserPrivilegesQuery(username)))(rh.queryResult[UserPrivilegesInfo])
 
 }

@@ -77,6 +77,6 @@ trait RetentionPolicyManagement[F[_], Resp, Uri, Entity]
 
   /** Show list of retention polices */
   final def showRetentionPolicies(dbName: String): F[ErrorOr[Array[RetentionPolicyInfo]]] =
-    F.map(re.get(showRPQuery(dbName)))(rh.queryResust[RetentionPolicyInfo])
+    F.map(re.get(showRPQuery(dbName)))(rh.queryResult[RetentionPolicyInfo])
 
 }
