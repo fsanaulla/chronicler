@@ -28,6 +28,7 @@ import scala.concurrent.Future
 abstract class InfluxAkkaClient(
     httpsContext: Option[HttpsConnectionContext]
   )(implicit system: ActorSystem) { self: AutoCloseable =>
+
   implicit val backend: SttpBackend[Future, Source[ByteString, Any]] =
     AkkaHttpBackend.usingActorSystem(system, customHttpsContext = httpsContext)
 

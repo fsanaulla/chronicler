@@ -112,6 +112,7 @@ lazy val akkaIO = project
   .dependsOn(coreIO, akkaShared)
   .dependsOn(akkaManagement % "test->test")
   .dependsOn(itTesting % "test->test")
+  .dependsOn(macros % "test->test")
 
 lazy val akkaShared = project
   .in(file("modules/akka/shared"))

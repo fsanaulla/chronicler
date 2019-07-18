@@ -16,7 +16,10 @@
 
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
+import akka.stream.scaladsl.Source
+import akka.util.ByteString
 import com.github.fsanaulla.chronicler.akka.shared.formats._
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.components.RequestExecutor
 import com.github.fsanaulla.chronicler.core.encoding.gzipEncoding
 import com.softwaremill.sttp.{sttp, Response, SttpBackend, Uri}
@@ -29,7 +32,8 @@ import scala.concurrent.Future
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[akka] final class AkkaRequestExecutor(implicit backend: SttpBackend[Future, Nothing])
+private[akka] final class AkkaRequestExecutor(
+  )(implicit backend: SttpBackend[Future, Source[ByteString, Any]])
   extends RequestExecutor[Future, Response[JValue], Uri, String] {
 
   /**
@@ -50,4 +54,10 @@ private[akka] final class AkkaRequestExecutor(implicit backend: SttpBackend[Futu
     val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
     maybeEncoded.send()
   }
+
+  def getStream(uri: Uri): Future[Response[Source[ErrorOr[JValue], Any]]] =
+    sttp
+      .get(uri)
+      .response(asJvSource)
+      .send()
 }

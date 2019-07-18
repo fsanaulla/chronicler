@@ -16,7 +16,11 @@
 
 package com.github.fsanaulla.chronicler.akka.shared
 
-import com.softwaremill.sttp.{asString, ResponseAs}
+import akka.stream.scaladsl.{Framing, Source}
+import akka.util.ByteString
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.jawn.RichJParser
+import com.softwaremill.sttp.{asStream, asString, ResponseAs}
 import org.typelevel.jawn.ast.{JNull, JParser, JValue}
 
 import scala.util.Success
@@ -29,6 +33,16 @@ package object formats {
       .map {
         case Success(jv) => jv
         case _           => JNull
+      }
+  }
+
+  val asJvSource: ResponseAs[Source[ErrorOr[JValue], Any], Source[ByteString, Any]] = {
+    asStream[Source[ByteString, Any]]
+      .map { src =>
+        src
+          .via(Framing.delimiter(ByteString("\n"), Int.MaxValue))
+          .map(_.utf8String)
+          .map(JParser.parseFromStringEither)
       }
   }
 }
