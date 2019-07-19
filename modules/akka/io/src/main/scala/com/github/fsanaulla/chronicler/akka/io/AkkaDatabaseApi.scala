@@ -6,13 +6,13 @@ import com.github.fsanaulla.chronicler.akka.shared.handlers.{
   AkkaRequestExecutor,
   AkkaResponseHandler
 }
-import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, JPoint}
 import com.github.fsanaulla.chronicler.core.api.DatabaseApi
 import com.github.fsanaulla.chronicler.core.components.BodyBuilder
 import com.github.fsanaulla.chronicler.core.enums.{Epoch, Epochs}
 import com.github.fsanaulla.chronicler.core.model.Functor
 import com.softwaremill.sttp.{Response, Uri}
-import org.typelevel.jawn.ast.{JArray, JValue}
+import org.typelevel.jawn.ast.JValue
 
 import scala.concurrent.Future
 
@@ -26,12 +26,22 @@ final class AkkaDatabaseApi(
     F: Functor[Future])
   extends DatabaseApi[Future, Response[JValue], Uri, String](dbName, gzipped) {
 
+  /**
+    * Read chunked data
+    *
+    * @param query     - request SQL query
+    * @param epoch     - epoch precision
+    * @param pretty    - pretty printed result
+    * @param chunkSize - number of elements in the respinse chunk
+    * @return          - streaming response of batched points
+    * @since 0.5.4
+    */
   def readChunkedJson(
       query: String,
       epoch: Epoch = Epochs.None,
       pretty: Boolean = false,
       chunkSize: Int
-    ): Future[ErrorOr[Source[ErrorOr[Array[JArray]], Any]]] = {
+    ): Future[ErrorOr[Source[ErrorOr[Array[JPoint]], Any]]] = {
     val uri = chunkedQuery(dbName, query, epoch, pretty, chunkSize)
     F.map(re.getStream(uri))(rh.queryChunkedResultJson)
   }

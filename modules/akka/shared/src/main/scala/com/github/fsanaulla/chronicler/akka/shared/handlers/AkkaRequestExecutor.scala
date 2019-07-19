@@ -22,10 +22,11 @@ import com.github.fsanaulla.chronicler.akka.shared.formats._
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.components.RequestExecutor
 import com.github.fsanaulla.chronicler.core.encoding.gzipEncoding
-import com.softwaremill.sttp.{sttp, Response, SttpBackend, Uri}
+import com.softwaremill.sttp.{sttp, Response, ResponseAs, SttpBackend, Uri}
 import org.typelevel.jawn.ast.JValue
 
 import scala.concurrent.Future
+import scala.language.higherKinds
 
 /**
   * Created by
@@ -36,6 +37,13 @@ private[akka] final class AkkaRequestExecutor(
   )(implicit backend: SttpBackend[Future, Source[ByteString, Any]])
   extends RequestExecutor[Future, Response[JValue], Uri, String] {
 
+  private[this] def executeGet[F[_], V, S](
+      uri: Uri,
+      responseAs: ResponseAs[V, S]
+    )(implicit backend: SttpBackend[F, S]
+    ): F[Response[V]] =
+    sttp.get(uri).response(responseAs).send()
+
   /**
     * Execute uri
     *
@@ -43,7 +51,7 @@ private[akka] final class AkkaRequestExecutor(
     * @return    - Return wrapper response
     */
   override def get(uri: Uri): Future[Response[JValue]] =
-    sttp.get(uri).response(asJson).send()
+    executeGet(uri, asJson)(backend)
 
   override def post(
       uri: Uri,
@@ -55,9 +63,12 @@ private[akka] final class AkkaRequestExecutor(
     maybeEncoded.send()
   }
 
+  /**
+    * Receive chunked response
+    *
+    * @param uri - request uri
+    * @since 0.5.4
+    */
   def getStream(uri: Uri): Future[Response[Source[ErrorOr[JValue], Any]]] =
-    sttp
-      .get(uri)
-      .response(asJvSource)
-      .send()
+    executeGet(uri, asJvSource)
 }
