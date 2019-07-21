@@ -17,7 +17,7 @@
 package com.github.fsanaulla.chronicler.akka.shared
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl.HttpsConnectionContext
+import akka.http.scaladsl.{Http, HttpExt, HttpsConnectionContext}
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import com.softwaremill.sttp.SttpBackend
@@ -29,8 +29,8 @@ abstract class InfluxAkkaClient(
     httpsContext: Option[HttpsConnectionContext]
   )(implicit system: ActorSystem) { self: AutoCloseable =>
 
-  implicit val backend: SttpBackend[Future, Source[ByteString, Any]] =
-    AkkaHttpBackend.usingActorSystem(system, customHttpsContext = httpsContext)
+  implicit val http: HttpExt =
+    httpsContext.fold(Http())(ctx => Http())
 
   def close(): Unit = backend.close()
 }

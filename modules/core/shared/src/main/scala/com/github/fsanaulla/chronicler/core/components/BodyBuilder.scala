@@ -38,7 +38,10 @@ trait BodyBuilder[A] {
 object BodyBuilder {
   implicit val stringBodyBuilder: BodyBuilder[String] = new BodyBuilder[String] with Appender {
     override def fromFile(file: File, enc: String): String =
-      Source.fromFile(file, enc).getLines().mkString("\n")
+      Source
+        .fromFile(file, enc)
+        .getLines()
+        .mkString("\n")
 
     override def fromStrings(strings: Seq[String]): String =
       strings.mkString("\n")

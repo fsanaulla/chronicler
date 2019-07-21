@@ -16,14 +16,14 @@
 
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
-import akka.stream.scaladsl.Source
+import akka.http.scaladsl.HttpExt
+import akka.http.scaladsl.model._
+import akka.stream.scaladsl.{Framing, Source}
 import akka.util.ByteString
-import com.github.fsanaulla.chronicler.akka.shared.formats._
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.components.RequestExecutor
-import com.github.fsanaulla.chronicler.core.encoding.gzipEncoding
-import com.softwaremill.sttp.{sttp, Response, ResponseAs, SttpBackend, Uri}
-import org.typelevel.jawn.ast.JValue
+import com.github.fsanaulla.chronicler.core.jawn._
+import org.typelevel.jawn.ast.{JParser, JValue}
 
 import scala.concurrent.Future
 import scala.language.higherKinds
@@ -33,16 +33,15 @@ import scala.language.higherKinds
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[akka] final class AkkaRequestExecutor(
-  )(implicit backend: SttpBackend[Future, Source[ByteString, Any]])
-  extends RequestExecutor[Future, Response[JValue], Uri, String] {
+private[akka] final class AkkaRequestExecutor()(implicit http: HttpExt)
+  extends RequestExecutor[Future, HttpResponse, Uri, RequestEntity] {
 
-  private[this] def executeGet[F[_], V, S](
-      uri: Uri,
-      responseAs: ResponseAs[V, S]
-    )(implicit backend: SttpBackend[F, S]
-    ): F[Response[V]] =
-    sttp.get(uri).response(responseAs).send()
+//  private[this] def executeGet[F[_], V, S](
+//      uri: Uri,
+//      responseAs: ResponseAs[V, S]
+//    )(implicit backend: SttpBackend[F, S]
+//    ): F[Response[V]] =
+//    sttp.get(uri).response(responseAs).send()
 
   /**
     * Execute uri
@@ -50,17 +49,21 @@ private[akka] final class AkkaRequestExecutor(
     * @param uri - request uri
     * @return    - Return wrapper response
     */
-  override def get(uri: Uri): Future[Response[JValue]] =
-    executeGet(uri, asJson)(backend)
+  override def get(uri: Uri): Future[HttpResponse] =
+    http.singleRequest(HttpRequest(method = HttpMethods.GET, uri))
 
   override def post(
       uri: Uri,
-      body: String,
+      body: RequestEntity,
       gzipped: Boolean
-    ): Future[Response[JValue]] = {
-    val req          = sttp.post(uri).body(body).response(asJson)
-    val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
-    maybeEncoded.send()
+    ): Future[HttpResponse] = {
+    http.singleRequest(
+      HttpRequest(
+        HttpMethods.POST,
+        uri,
+        entity = body
+      )
+    )
   }
 
   /**
@@ -69,6 +72,6 @@ private[akka] final class AkkaRequestExecutor(
     * @param uri - request uri
     * @since 0.5.4
     */
-  def getStream(uri: Uri): Future[Response[Source[ErrorOr[JValue], Any]]] =
-    executeGet(uri, asJvSource)
+  def getStream(uri: Uri): Future[HttpResponse] =
+    get(uri)
 }

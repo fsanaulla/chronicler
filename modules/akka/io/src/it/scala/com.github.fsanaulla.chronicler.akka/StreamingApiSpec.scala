@@ -1,4 +1,4 @@
-package com.github.fsanaulla.chronicler.urlhttp
+package com.github.fsanaulla.chronicler.akka
 
 import java.io.File
 
@@ -6,6 +6,7 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Sink
 import akka.testkit.TestKit
+import com.github.fsanaulla.chronicler.akka.StreamingApiSpec.Point
 import com.github.fsanaulla.chronicler.akka.io.{
   AkkaDatabaseApi,
   AkkaIOClient,
@@ -21,7 +22,6 @@ import com.github.fsanaulla.chronicler.macros.Influx
 import com.github.fsanaulla.chronicler.macros.annotations.reader.epoch
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
-import com.github.fsanaulla.chronicler.urlhttp.StreamingApiSpec.Point
 import org.scalatest.{FlatSpecLike, Matchers}
 
 import scala.concurrent.ExecutionContextExecutor
@@ -86,9 +86,10 @@ class StreamingApiSpec
       .futureValue
       .right
       .get
+      .runWith(Sink.seq)
+      .futureValue
 
-    val seq    = src.runWith(Sink.seq).futureValue
-    val resSeq = either.seq(seq).right.get
+    val resSeq = either.seq(src).right.get
 
     resSeq.size shouldEqual 1
     resSeq.flatMap(_.toSeq).size shouldEqual 3
@@ -100,12 +101,10 @@ class StreamingApiSpec
       .futureValue
       .right
       .get
-
-    val seq = src
       .runWith(Sink.seq)
       .futureValue
 
-    val resSeq = either.seq(seq).right.get
+    val resSeq = either.seq(src).right.get
 
     resSeq.size shouldEqual 3
     resSeq.flatMap(_.toSeq).size shouldEqual 3

@@ -18,6 +18,7 @@ package com.github.fsanaulla.chronicler.akka.io
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.HttpsConnectionContext
+import akka.http.scaladsl.model.{HttpResponse, Uri}
 import com.github.fsanaulla.chronicler.akka.shared.InfluxAkkaClient
 import com.github.fsanaulla.chronicler.akka.shared.handlers.{
   AkkaQueryBuilder,
@@ -28,8 +29,6 @@ import com.github.fsanaulla.chronicler.akka.shared.implicits._
 import com.github.fsanaulla.chronicler.core.IOClient
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
-import com.softwaremill.sttp.{Response, Uri}
-import org.typelevel.jawn.ast.JValue
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
@@ -43,9 +42,9 @@ final class AkkaIOClient(
   )(implicit ex: ExecutionContext,
     system: ActorSystem)
   extends InfluxAkkaClient(httpsContext)
-  with IOClient[Future, Response[JValue], Uri, String] {
+  with IOClient[Future, HttpResponse, Uri, String] {
 
-  implicit val qb: AkkaQueryBuilder    = new AkkaQueryBuilder(host, port, credentials)
+  implicit val qb: AkkaQueryBuilder    = new AkkaQueryBuilder(credentials)
   implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor()
   implicit val rh: AkkaResponseHandler = new AkkaResponseHandler(jsonHandler)
 

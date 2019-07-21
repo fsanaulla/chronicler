@@ -16,43 +16,21 @@
 
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
+import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
-import com.softwaremill.sttp.Uri
-import com.softwaremill.sttp.Uri.QueryFragment
-import com.softwaremill.sttp.Uri.QueryFragment.KeyValue
-
-import scala.annotation.tailrec
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[akka] class AkkaQueryBuilder(
-    host: String,
-    port: Int,
-    credentials: Option[InfluxCredentials])
+private[akka] class AkkaQueryBuilder(credentials: Option[InfluxCredentials])
   extends QueryBuilder[Uri](credentials) {
 
   override def buildQuery(url: String): Uri =
-    Uri(host = host, port).path(url)
+    Uri(url)
 
-  override def buildQuery(uri: String, queryParams: List[(String, String)]): Uri = {
-    val u        = Uri(host = host, port).path(uri)
-    val encoding = Uri.QueryFragmentEncoding.All
-    val kvLst = queryParams.map {
-      case (k, v) => KeyValue(k, v, valueEncoding = encoding)
-    }
-
-    @tailrec
-    def addQueryParam(u: Uri, lst: List[QueryFragment]): Uri = {
-      lst match {
-        case Nil       => u
-        case h :: tail => addQueryParam(u.queryFragment(h), tail)
-      }
-    }
-
-    addQueryParam(u, kvLst)
-  }
+  override def buildQuery(url: String, queryParams: List[(String, String)]): Uri =
+    Uri(url).withQuery(Uri.Query(queryParams: _*))
 }
