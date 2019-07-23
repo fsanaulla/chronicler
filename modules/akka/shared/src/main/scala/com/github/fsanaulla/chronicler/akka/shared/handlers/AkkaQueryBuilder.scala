@@ -25,12 +25,21 @@ import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[akka] class AkkaQueryBuilder(credentials: Option[InfluxCredentials])
+private[akka] class AkkaQueryBuilder(
+    schema: String,
+    host: String,
+    port: Int,
+    credentials: Option[InfluxCredentials])
   extends QueryBuilder[Uri](credentials) {
 
   override def buildQuery(url: String): Uri =
-    Uri(url)
+    Uri.from(
+      schema,
+      host = host,
+      port = port,
+      path = url
+    )
 
   override def buildQuery(url: String, queryParams: List[(String, String)]): Uri =
-    Uri(url).withQuery(Uri.Query(queryParams: _*))
+    buildQuery(url).withQuery(Uri.Query(queryParams: _*))
 }

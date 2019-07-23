@@ -1,6 +1,22 @@
+/*
+ * Copyright 2017-2019 Faiaz Sanaulla
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.fsanaulla.chronicler.akka.io
 
-import akka.http.scaladsl.model.{HttpResponse, Uri}
+import akka.http.scaladsl.model.{HttpResponse, RequestEntity, Uri}
 import akka.stream.scaladsl.Source
 import com.github.fsanaulla.chronicler.akka.shared.handlers.{
   AkkaQueryBuilder,
@@ -21,12 +37,16 @@ final class AkkaMeasurementApi[T: ClassTag](
     measurementName: String,
     gzipped: Boolean
   )(implicit qb: AkkaQueryBuilder,
-    bd: BodyBuilder[String],
+    bd: BodyBuilder[RequestEntity],
     re: AkkaRequestExecutor,
     rh: AkkaResponseHandler,
     F: Functor[Future],
     FA: Failable[Future])
-  extends MeasurementApi[Future, HttpResponse, Uri, String, T](dbName, measurementName, gzipped) {
+  extends MeasurementApi[Future, Future, HttpResponse, Uri, RequestEntity, T](
+    dbName,
+    measurementName,
+    gzipped
+  ) {
 
   /**
     * Read chunked data, typed
@@ -46,6 +66,6 @@ final class AkkaMeasurementApi[T: ClassTag](
     )(implicit rd: InfluxReader[T]
     ): Future[Source[ErrorOr[Array[T]], Any]] = {
     val uri = chunkedQuery(dbName, query, epoch, pretty, chunkSize)
-    F.map(re.getStream(uri))(rh.queryChunkedResult[T])
+    F.map(re.get(uri))(rh.queryChunkedResult[T])
   }
 }

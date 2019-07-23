@@ -18,15 +18,18 @@ package com.github.fsanaulla.chronicler.akka.management
 
 import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.HttpsConnectionContext
+import akka.http.scaladsl.model.{HttpResponse, RequestEntity, Uri}
+import akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.shared.InfluxAkkaClient
-import com.github.fsanaulla.chronicler.akka.shared.handlers.{AkkaQueryBuilder, AkkaRequestExecutor}
-import com.github.fsanaulla.chronicler.akka.shared.implicits._
+import com.github.fsanaulla.chronicler.akka.shared.handlers.{
+  AkkaJsonHandler,
+  AkkaQueryBuilder,
+  AkkaRequestExecutor,
+  AkkaResponseHandler
+}
 import com.github.fsanaulla.chronicler.core.ManagementClient
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
-import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.model._
-import com.softwaremill.sttp.{Response, Uri}
-import org.typelevel.jawn.ast.JValue
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,19 +37,23 @@ final class AkkaManagementClient(
     host: String,
     port: Int,
     val credentials: Option[InfluxCredentials],
-    httpsContext: Option[HttpsConnectionContext]
+    httpsContext: Option[HttpsConnectionContext],
+    terminateActorSystem: Boolean
   )(implicit val ex: ExecutionContext,
     val system: ActorSystem,
-    val F: Functor[Future])
-  extends InfluxAkkaClient(httpsContext)
-  with ManagementClient[Future, Response[JValue], Uri, String] {
+    val F: Functor[Future],
+    val FK: FunctionK[Future, Future])
+  extends InfluxAkkaClient(terminateActorSystem, httpsContext)
+  with ManagementClient[Future, Future, HttpResponse, Uri, RequestEntity] {
 
-  implicit val qb: AkkaQueryBuilder                  = new AkkaQueryBuilder(host, port, credentials)
-  implicit val re: AkkaRequestExecutor               = new AkkaRequestExecutor
-  implicit val rh: ResponseHandler[Response[JValue]] = new ResponseHandler(jsonHandler)
+  implicit val mat: ActorMaterializer  = ActorMaterializer()
+  implicit val qb: AkkaQueryBuilder    = new AkkaQueryBuilder(schema, host, port, credentials)
+  implicit val jh: AkkaJsonHandler     = new AkkaJsonHandler()
+  implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor(ctx)
+  implicit val rh: AkkaResponseHandler = new AkkaResponseHandler(jh)
 
   override def ping: Future[ErrorOr[InfluxDBInfo]] = {
     re.get(qb.buildQuery("/ping"))
-      .map(rh.pingResult)
+      .flatMap(rh.pingResult)
   }
 }

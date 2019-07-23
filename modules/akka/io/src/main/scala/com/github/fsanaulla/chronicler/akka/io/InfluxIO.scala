@@ -47,11 +47,12 @@ object InfluxIO {
       port: Int = 8086,
       credentials: Option[InfluxCredentials] = None,
       gzipped: Boolean = false,
-      httpsContext: Option[HttpsConnectionContext] = None
+      httpsContext: Option[HttpsConnectionContext] = None,
+      terminateActorSystem: Boolean = false
     )(implicit ex: ExecutionContext,
       system: ActorSystem
     ): AkkaIOClient =
-    new AkkaIOClient(host, port, credentials, gzipped, httpsContext)
+    new AkkaIOClient(host, port, credentials, gzipped, httpsContext, terminateActorSystem)
 
   /**
     * Retrieve IO InfluxDB client, without management functionality using configuration object
@@ -62,5 +63,12 @@ object InfluxIO {
     * @return            - [[AkkaIOClient]]
     */
   def apply(conf: InfluxConfig)(implicit ex: ExecutionContext, system: ActorSystem): AkkaIOClient =
-    apply(conf.host, conf.port, conf.credentials, conf.gzipped, conf.httpsContext)
+    apply(
+      conf.host,
+      conf.port,
+      conf.credentials,
+      conf.gzipped,
+      conf.httpsContext,
+      conf.terminateActorSystem
+    )
 }

@@ -46,11 +46,12 @@ object InfluxMng {
       host: String,
       port: Int = 8086,
       credentials: Option[InfluxCredentials] = None,
-      httpsContext: Option[HttpsConnectionContext] = None
+      httpsContext: Option[HttpsConnectionContext] = None,
+      terminateActorSystem: Boolean = false
     )(implicit ex: ExecutionContext,
       system: ActorSystem
     ): AkkaManagementClient =
-    new AkkaManagementClient(host, port, credentials, httpsContext)
+    new AkkaManagementClient(host, port, credentials, httpsContext, terminateActorSystem)
 
   /**
     * Retrieve management InfluxDB client, without IO functionality using configuration object

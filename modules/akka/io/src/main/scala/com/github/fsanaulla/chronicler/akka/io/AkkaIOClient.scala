@@ -18,13 +18,10 @@ package com.github.fsanaulla.chronicler.akka.io
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.HttpsConnectionContext
-import akka.http.scaladsl.model.{HttpResponse, Uri}
+import akka.http.scaladsl.model.{HttpResponse, RequestEntity, Uri}
+import akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.shared.InfluxAkkaClient
-import com.github.fsanaulla.chronicler.akka.shared.handlers.{
-  AkkaQueryBuilder,
-  AkkaRequestExecutor,
-  AkkaResponseHandler
-}
+import com.github.fsanaulla.chronicler.akka.shared.handlers._
 import com.github.fsanaulla.chronicler.akka.shared.implicits._
 import com.github.fsanaulla.chronicler.core.IOClient
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
@@ -38,15 +35,19 @@ final class AkkaIOClient(
     port: Int,
     credentials: Option[InfluxCredentials],
     gzipped: Boolean,
-    httpsContext: Option[HttpsConnectionContext]
+    httpsContext: Option[HttpsConnectionContext],
+    terminateActorSystem: Boolean
   )(implicit ex: ExecutionContext,
     system: ActorSystem)
-  extends InfluxAkkaClient(httpsContext)
-  with IOClient[Future, HttpResponse, Uri, String] {
+  extends InfluxAkkaClient(terminateActorSystem, httpsContext)
+  with IOClient[Future, Future, HttpResponse, Uri, RequestEntity] {
 
-  implicit val qb: AkkaQueryBuilder    = new AkkaQueryBuilder(credentials)
-  implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor()
-  implicit val rh: AkkaResponseHandler = new AkkaResponseHandler(jsonHandler)
+  implicit val mat: ActorMaterializer  = ActorMaterializer()
+  implicit val bb: AkkaBodyBuilder     = new AkkaBodyBuilder()
+  implicit val qb: AkkaQueryBuilder    = new AkkaQueryBuilder(schema, host, port, credentials)
+  implicit val jh: AkkaJsonHandler     = new AkkaJsonHandler()
+  implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor(ctx)
+  implicit val rh: AkkaResponseHandler = new AkkaResponseHandler(jh)
 
   override def database(dbName: String): AkkaDatabaseApi =
     new AkkaDatabaseApi(dbName, gzipped)
@@ -59,6 +60,6 @@ final class AkkaIOClient(
 
   override def ping: Future[ErrorOr[InfluxDBInfo]] = {
     re.get(qb.buildQuery("/ping", Nil))
-      .map(rh.pingResult)
+      .flatMap(rh.pingResult)
   }
 }

@@ -16,10 +16,10 @@
 
 package com.github.fsanaulla.chronicler.akka.query
 
+import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.shared.handlers.AkkaQueryBuilder
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.QueriesManagementQuery
-import com.softwaremill.sttp.Uri
 import org.scalatest.{FlatSpec, Matchers}
 
 /**
@@ -31,26 +31,26 @@ class QueriesManagementQuerySpec extends FlatSpec with Matchers with QueriesMana
 
   trait AuthEnv {
     val credentials                   = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("localhost", 8086, credentials)
+    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("http", "localhost", 8086, credentials)
   }
 
   trait NonAuthEnv {
-    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("localhost", 8086, None)
+    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("http", "localhost", 8086, None)
   }
 
   "QueryManagement" should "show query" in new AuthEnv {
-    showQuerysQuery.toString() shouldEqual queryTesterAuth("SHOW QUERIES")(credentials.get)
+    showQuerysQuery shouldEqual queryTesterAuth("SHOW QUERIES")(credentials.get)
   }
 
   it should "kill query" in new AuthEnv {
-    killQueryQuery(5).toString() shouldEqual queryTesterAuth("KILL QUERY 5")(credentials.get)
+    killQueryQuery(5) shouldEqual queryTesterAuth("KILL QUERY 5")(credentials.get)
   }
 
   it should "show query without auth" in new NonAuthEnv {
-    showQuerysQuery.toString() shouldEqual queryTester("SHOW QUERIES")
+    showQuerysQuery shouldEqual queryTester("SHOW QUERIES")
   }
 
   it should "kill query without auth" in new NonAuthEnv {
-    killQueryQuery(5).toString() shouldEqual queryTester("KILL QUERY 5")
+    killQueryQuery(5) shouldEqual queryTester("KILL QUERY 5")
   }
 }

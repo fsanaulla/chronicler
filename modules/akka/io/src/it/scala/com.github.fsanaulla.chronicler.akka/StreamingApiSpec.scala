@@ -62,8 +62,6 @@ class StreamingApiSpec
     val src = db
       .readChunkedJson(s"SELECT * FROM $measName", chunkSize = 2)
       .futureValue
-      .right
-      .get
 
     val seq = src
       .runWith(Sink.seq)
@@ -84,8 +82,6 @@ class StreamingApiSpec
         chunkSize = 3
       )
       .futureValue
-      .right
-      .get
       .runWith(Sink.seq)
       .futureValue
 
@@ -99,8 +95,6 @@ class StreamingApiSpec
     val src = db
       .readChunkedJson(s"SELECT * FROM $measName", chunkSize = 1)
       .futureValue
-      .right
-      .get
       .runWith(Sink.seq)
       .futureValue
 
