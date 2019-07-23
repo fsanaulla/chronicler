@@ -16,7 +16,7 @@
 
 package com.github.fsanaulla.chronicler.core.api
 
-import java.io.File
+import java.nio.file.Path
 
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
 import com.github.fsanaulla.chronicler.core.components._
@@ -44,7 +44,7 @@ class DatabaseApi[F[_], G[_], Resp, Uri, Body](
   extends DatabaseOperationQuery[Uri] {
 
   def writeFromFile(
-      file: File,
+      filePath: Path,
       enc: String = "UTF-8",
       consistency: Consistency = Consistencies.None,
       precision: Precision = Precisions.None,
@@ -52,7 +52,7 @@ class DatabaseApi[F[_], G[_], Resp, Uri, Body](
     ): F[ErrorOr[ResponseCode]] = {
     val uri = write(dbName, consistency, precision, retentionPolicy)
     FM.flatMap(
-      re.post(uri, bd.fromFile(file, enc), gzipped)
+      re.post(uri, bd.fromFile(filePath, enc), gzipped)
     )(resp => FK(rh.writeResult(resp)))
   }
 
