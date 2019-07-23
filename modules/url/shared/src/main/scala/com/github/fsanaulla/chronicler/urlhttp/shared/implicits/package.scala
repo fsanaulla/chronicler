@@ -31,7 +31,7 @@ import scala.util.{Failure, Success, Try}
 
 package object implicits {
   implicit val jsonHandler: JsonHandler[Id, Response] = new JsonHandler[Id, Response] {
-    private def body(response: Response, enc: String): Either[Throwable, JValue] =
+    private[this] def body(response: Response, enc: String): Either[Throwable, JValue] =
       JParser.parseFromStringEither(response.text(Charset.forName(enc)))
 
     override def responseBody(response: Response): ErrorOr[JValue] = {
