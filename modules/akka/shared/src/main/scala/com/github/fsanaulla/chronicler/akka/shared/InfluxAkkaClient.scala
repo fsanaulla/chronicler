@@ -41,7 +41,7 @@ abstract class InfluxAkkaClient(
   def closeAsync(): Future[Unit] = {
     for {
       _ <- http.shutdownAllConnectionPools()
-      _ <- if (terminateActorSystem) system.terminate().map(_ => {}) else Future.unit
+      _ <- if (terminateActorSystem) system.terminate().map(_ => {}) else Future.successful({})
     } yield {}
   }
 }
