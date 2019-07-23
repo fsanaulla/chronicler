@@ -160,7 +160,9 @@ lazy val udp = project
   .settings(name := s"$projectName-udp")
   .configure(defaultSettingsWithIt)
   .dependsOn(coreShared)
-  .dependsOn(itTesting, urlIO, urlManagement % "test->test")
+  .dependsOn(itTesting % "test->test")
+  .dependsOn(urlIO % "test->test")
+  .dependsOn(urlManagement % "test->test")
 
 //////////////////////////////////////////////////////
 ///////////////////// MACRO MODULE ///////////////////
