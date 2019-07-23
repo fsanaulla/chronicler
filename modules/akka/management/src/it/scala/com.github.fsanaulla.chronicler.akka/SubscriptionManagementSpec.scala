@@ -55,9 +55,14 @@ class SubscriptionManagementSpec
       .right
       .get shouldEqual 200
 
-    influx.showSubscriptionsInfo.futureValue.right.get.head.subscriptions shouldEqual Array(
-      subscription
-    )
+    val subscr = influx.showSubscriptionsInfo.futureValue.right.get.headOption
+      .flatMap(_.subscriptions.headOption)
+      .get
+
+    subscr.subsName shouldEqual subscription.subsName
+    subscr.addresses shouldEqual subscription.addresses
+    subscr.destType shouldEqual subscription.destType
+    subscr.addresses.toList shouldEqual subscription.addresses.toList
   }
 
   it should "drop subscription" in {
