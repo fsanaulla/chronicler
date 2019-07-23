@@ -21,23 +21,25 @@ import com.github.fsanaulla.chronicler.core.components._
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.QueriesManagementQuery
+import com.github.fsanaulla.chronicler.core.model.FunctionK.g2f
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-trait QueriesManagement[F[_], Resp, Uri, Entity] extends QueriesManagementQuery[Uri] {
+trait QueriesManagement[F[_], G[_], Resp, Uri, Entity] extends QueriesManagementQuery[Uri] {
   implicit val qb: QueryBuilder[Uri]
   implicit val re: RequestExecutor[F, Resp, Uri, Entity]
-  implicit val rh: ResponseHandler[Resp]
+  implicit val rh: ResponseHandler[G, Resp]
   implicit val F: Functor[F]
+  implicit val FK: FunctionK[G, F]
 
   /** Show list of queries */
   final def showQueries: F[ErrorOr[Array[QueryInfo]]] =
-    F.map(re.get(showQuerysQuery))(rh.queryResult[QueryInfo])
+    F.flatMap(re.get(showQuerysQuery))(rh.queryResult[QueryInfo](_))
 
   /** Kill query */
   final def killQuery(queryId: Int): F[ErrorOr[ResponseCode]] =
-    F.map(re.get(killQueryQuery(queryId)))(rh.writeResult)
+    F.flatMap(re.get(killQueryQuery(queryId)))(rh.writeResult)
 }

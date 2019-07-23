@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core
+package com.github.fsanaulla.chronicler.core.model
 
-import org.typelevel.jawn.ast.JArray
-
-package object alias {
-  type ResponseCode = Int
-  type ErrorOr[A]   = Either[Throwable, A]
-
-  // point representation in JSON array
-  type JPoint = JArray
-  type Id[X]  = X
+/**
+  * Apply typeclass
+  *
+  * @since 0.5.5
+  */
+trait Apply[F[_]] {
+  def pure[A](v: A): F[A]
 }
