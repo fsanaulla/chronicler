@@ -16,7 +16,7 @@
 
 package com.github.fsanaulla.chronicler.core.components
 
-import java.io.File
+import java.nio.file.Path
 
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.either
@@ -26,7 +26,7 @@ import com.github.fsanaulla.chronicler.core.model.{Appender, InfluxWriter, Point
 import scala.io.Source
 
 trait BodyBuilder[A] {
-  def fromFile(file: File, enc: String): A
+  def fromFile(filePath: Path, enc: String): A
   def fromString(string: String): A
   def fromStrings(strings: Seq[String]): A
   def fromPoint(point: Point): A
@@ -37,9 +37,9 @@ trait BodyBuilder[A] {
 
 object BodyBuilder {
   implicit val stringBodyBuilder: BodyBuilder[String] = new BodyBuilder[String] with Appender {
-    override def fromFile(file: File, enc: String): String =
+    override def fromFile(filePath: Path, enc: String): String =
       Source
-        .fromFile(file, enc)
+        .fromFile(filePath.toUri, enc)
         .getLines()
         .mkString("\n")
 
