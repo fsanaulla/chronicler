@@ -1,6 +1,7 @@
 package com.github.fsanaulla.chronicler.akka
 
 import java.io.File
+import java.nio.file.Paths
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
@@ -21,6 +22,7 @@ import com.github.fsanaulla.chronicler.core.model.InfluxReader
 import com.github.fsanaulla.chronicler.macros.Influx
 import com.github.fsanaulla.chronicler.macros.annotations.reader.epoch
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
+import com.github.fsanaulla.chronicler.macros.auto._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
 import org.scalatest.{FlatSpecLike, Matchers}
 
@@ -54,7 +56,7 @@ class StreamingApiSpec
   it should "read chunked json result" in {
     mng.createDatabase(testDB).futureValue.right.get shouldEqual 200
 
-    db.writeFromFile(new File(getClass.getResource("/points.txt").getPath))
+    db.writeFromFile(Paths.get(getClass.getResource("/points.txt").getPath))
       .futureValue
       .right
       .get shouldEqual 204

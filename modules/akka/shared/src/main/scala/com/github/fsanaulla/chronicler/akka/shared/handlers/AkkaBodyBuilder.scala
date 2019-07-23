@@ -16,11 +16,10 @@
 
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
-import java.io.File
+import java.nio.file.Path
 
-import akka.http.scaladsl.model.{ContentTypes, HttpEntity, RequestEntity}
-import akka.stream.scaladsl.Source
-import akka.util.ByteString
+import akka.http.scaladsl.model.{HttpEntity, MediaTypes, RequestEntity}
+import akka.stream.scaladsl.FileIO
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.components.BodyBuilder
 import com.github.fsanaulla.chronicler.core.either
@@ -28,12 +27,13 @@ import com.github.fsanaulla.chronicler.core.either.EitherOps
 import com.github.fsanaulla.chronicler.core.model.{Appender, InfluxWriter, Point}
 
 class AkkaBodyBuilder extends BodyBuilder[RequestEntity] with Appender {
-  override def fromFile(file: File, enc: String): RequestEntity =
+  override def fromFile(filePath: Path, enc: String): RequestEntity =
     HttpEntity(
-      ContentTypes.`text/plain(UTF-8)`,
-      Source.fromIterator[ByteString] { () =>
-        scala.io.Source.fromFile(file, enc).getLines().map(ByteString(_))
-      }
+      MediaTypes.`application/octet-stream`,
+      FileIO
+        .fromPath(filePath)
+//        .map(_.decodeString(enc))
+//        .map(ByteString(_))
     )
 
   override def fromString(string: String): RequestEntity =
