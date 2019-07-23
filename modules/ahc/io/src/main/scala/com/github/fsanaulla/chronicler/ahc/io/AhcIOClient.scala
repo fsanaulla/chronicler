@@ -20,9 +20,10 @@ import com.github.fsanaulla.chronicler.ahc.shared.InfluxAhcClient
 import com.github.fsanaulla.chronicler.ahc.shared.handlers.{AhcQueryBuilder, AhcRequestExecutor}
 import com.github.fsanaulla.chronicler.ahc.shared.implicits._
 import com.github.fsanaulla.chronicler.core.IOClient
-import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
 import com.github.fsanaulla.chronicler.core.api.{DatabaseApi, MeasurementApi}
 import com.github.fsanaulla.chronicler.core.components.ResponseHandler
+import com.github.fsanaulla.chronicler.core.implicits.{applyId, functorId}
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
 import com.softwaremill.sttp.{Response, Uri}
 import org.asynchttpclient.AsyncHttpClientConfig
@@ -39,13 +40,13 @@ final class AhcIOClient(
     asyncClientConfig: Option[AsyncHttpClientConfig]
   )(implicit ex: ExecutionContext)
   extends InfluxAhcClient(asyncClientConfig)
-  with IOClient[Future, Response[JValue], Uri, String] {
+  with IOClient[Future, Id, Response[JValue], Uri, String] {
 
-  implicit val qb: AhcQueryBuilder                   = new AhcQueryBuilder(host, port, credentials)
-  implicit val re: AhcRequestExecutor                = new AhcRequestExecutor
-  implicit val rh: ResponseHandler[Response[JValue]] = new ResponseHandler(jsonHandler)
+  implicit val qb: AhcQueryBuilder                       = new AhcQueryBuilder(host, port, credentials)
+  implicit val re: AhcRequestExecutor                    = new AhcRequestExecutor
+  implicit val rh: ResponseHandler[Id, Response[JValue]] = new ResponseHandler(jsonHandler)
 
-  override def database(dbName: String): Database =
+  override def database(dbName: String) =
     new DatabaseApi(dbName, gzipped)
 
   override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] =
