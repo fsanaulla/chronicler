@@ -51,8 +51,7 @@ object Library {
   // akka-http
   val akkaDep: List[ModuleID] = List(
     "com.typesafe.akka" %% "akka-stream" % Versions.Akka.akka exclude ("com.typesafe", "config"),
-    "com.typesafe"      % "config"       % "1.3.4",
-//    "com.softwaremill.sttp" %% "akka-http-backend" % Versions.sttp,
+    "com.typesafe"      % "config" % "1.3.4",
     "com.typesafe.akka" %% "akka-http" % "10.1.9",
     akkaTestKit         % Scope.test
   )

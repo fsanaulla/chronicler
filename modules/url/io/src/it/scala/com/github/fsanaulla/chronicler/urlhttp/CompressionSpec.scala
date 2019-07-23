@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
-import java.io.File
+import java.nio.file.Paths
 
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
@@ -26,7 +26,7 @@ class CompressionSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
   it should "write data from file" in {
     mng.createDatabase(testDB).get.right.get shouldEqual 200
 
-    val wr = db.writeFromFile(new File(getClass.getResource("/points.txt").getPath)).get
+    val wr = db.writeFromFile(Paths.get(getClass.getResource("/points.txt").getPath)).get
 
     wr.right.get shouldEqual 204
 

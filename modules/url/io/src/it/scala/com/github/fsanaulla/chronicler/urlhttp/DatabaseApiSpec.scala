@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
-import java.io.File
+import java.nio.file.Paths
 
 import com.github.fsanaulla.chronicler.core.enums.Epochs
 import com.github.fsanaulla.chronicler.core.jawn._
@@ -36,16 +36,12 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
   it should "write data from file" in {
     mng.createDatabase(testDB).get.right.get shouldEqual 200
 
-    db.writeFromFile(new File(getClass.getResource("/points.txt").getPath))
+    db.writeFromFile(Paths.get(getClass.getResource("/points.txt").getPath))
       .get
       .right
       .get shouldEqual 204
 
-    db.readJson("SELECT * FROM test1")
-      .get
-      .right
-      .get
-      .length shouldEqual 3
+    db.readJson("SELECT * FROM test1").get.right.get.length shouldEqual 3
   }
 
   it should "write 2 points represented entities" in {
@@ -69,7 +65,7 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
       .get
       // skip timestamp
       .map(jarr => jarr.copy(vs = jarr.vs.tail)) shouldEqual Array(
-        JArray(Array(JNum(54), JString("Martin"), JString("Odersky"), JString("Male")))
+      JArray(Array(JNum(54), JString("Martin"), JString("Odersky"), JString("Male")))
     )
 
     db.bulkWritePoints(Array(point1, point2)).get.right.get shouldEqual 204
@@ -80,19 +76,21 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
       .get
       // skip timestamp
       .map(jarr => jarr.copy(vs = jarr.vs.tail)) shouldEqual Array(
-        JArray(Array(JNum(54), JString("Martin"), JString("Odersky"), JString("Male"))),
-        JArray(Array(JNum(36), JString("Jame"), JString("Franko"), JString("Male"))),
-        JArray(Array(JNum(54), JString("Martin"), JString("Odersky"), JString("Male")))
+      JArray(Array(JNum(54), JString("Martin"), JString("Odersky"), JString("Male"))),
+      JArray(Array(JNum(36), JString("Jame"), JString("Franko"), JString("Male"))),
+      JArray(Array(JNum(54), JString("Martin"), JString("Odersky"), JString("Male")))
     )
   }
 
   it should "retrieve multiple request" in {
-    val multiQuery = db.bulkReadJson(
-      Array(
-        "SELECT * FROM test2",
-        "SELECT * FROM test2 WHERE age < 40"
+    val multiQuery = db
+      .bulkReadJson(
+        Array(
+          "SELECT * FROM test2",
+          "SELECT * FROM test2 WHERE age < 40"
+        )
       )
-    ).get
+      .get
 
     multiQuery.right.get.length shouldEqual 2
     multiQuery.right.get shouldBe a[Array[_]]
@@ -105,14 +103,14 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
     multiQuery.right.get.last shouldBe a[Array[_]]
     multiQuery.right.get.last.head shouldBe a[JArray]
 
-    multiQuery
-      .right.get
-      .map(_.map(_.arrayValue.right.get.tail)) shouldEqual largeMultiJsonEntity.map(_.map(_.arrayValue.right.get.tail))
+    multiQuery.right.get
+      .map(_.map(_.arrayValue.right.get.tail)) shouldEqual largeMultiJsonEntity.map(
+      _.map(_.arrayValue.right.get.tail)
+    )
   }
 
   it should "write native" in {
-    db
-      .writeNative("test3,sex=Male,firstName=Jame,lastName=Lannister age=48")
+    db.writeNative("test3,sex=Male,firstName=Jame,lastName=Lannister age=48")
       .get
       .right
       .get shouldEqual 204
@@ -122,37 +120,50 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
       .right
       .get
       .map(jarr => jarr.copy(vs = jarr.vs.tail)) shouldEqual Array(
-        JArray(Array(JNum(48), JString("Jame"), JString("Lannister"), JString("Male")))
+      JArray(Array(JNum(48), JString("Jame"), JString("Lannister"), JString("Male")))
     )
 
-    db
-      .bulkWriteNative(Seq("test4,sex=Male,firstName=Jon,lastName=Snow age=24", "test4,sex=Female,firstName=Deny,lastName=Targaryen age=25"))
+    db.bulkWriteNative(
+        Seq(
+          "test4,sex=Male,firstName=Jon,lastName=Snow age=24",
+          "test4,sex=Female,firstName=Deny,lastName=Targaryen age=25"
+        )
+      )
       .get
-      .right.get shouldEqual 204
+      .right
+      .get shouldEqual 204
 
     db.readJson("SELECT * FROM test4")
       .get
       .right
       .get
       .map(jarr => jarr.copy(vs = jarr.vs.tail)) shouldEqual Array(
-        JArray(Array(JNum(25), JString("Deny"), JString("Targaryen"), JString("Female"))),
-        JArray(Array(JNum(24), JString("Jon"), JString("Snow"), JString("Male")))
+      JArray(Array(JNum(25), JString("Deny"), JString("Targaryen"), JString("Female"))),
+      JArray(Array(JNum(24), JString("Jon"), JString("Snow"), JString("Male")))
     )
   }
 
   it should "return grouped result by sex and sum of ages" in {
-    db
-      .bulkWriteNative(Array("test5,sex=Male,firstName=Jon,lastName=Snow age=24", "test5,sex=Male,firstName=Rainer,lastName=Targaryen age=25"))
+    db.bulkWriteNative(
+        Array(
+          "test5,sex=Male,firstName=Jon,lastName=Snow age=24",
+          "test5,sex=Male,firstName=Rainer,lastName=Targaryen age=25"
+        )
+      )
       .get
       .right
       .get shouldEqual 204
 
-    db
-      .readGroupedJson("SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"", epoch = Epochs.Nanoseconds)
+    db.readGroupedJson(
+        "SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"",
+        epoch = Epochs.Nanoseconds
+      )
       .get
       .right
       .get
-      .map { case (k, v) => k.toSeq -> v } shouldEqual Array(Seq("Male") -> JArray(Array(JNum(0), JNum(49))))
+      .map { case (k, v) => k.toSeq -> v } shouldEqual Array(
+      Seq("Male") -> JArray(Array(JNum(0), JNum(49)))
+    )
   }
 
   it should "write escaped value" in {
