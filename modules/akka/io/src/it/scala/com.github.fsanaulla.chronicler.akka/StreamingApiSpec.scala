@@ -1,6 +1,5 @@
 package com.github.fsanaulla.chronicler.akka
 
-import java.io.File
 import java.nio.file.Paths
 
 import akka.actor.ActorSystem
@@ -22,7 +21,6 @@ import com.github.fsanaulla.chronicler.core.model.InfluxReader
 import com.github.fsanaulla.chronicler.macros.Influx
 import com.github.fsanaulla.chronicler.macros.annotations.reader.epoch
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
-import com.github.fsanaulla.chronicler.macros.auto._
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
 import org.scalatest.{FlatSpecLike, Matchers}
 
