@@ -52,7 +52,7 @@ final case class Subscription(
     rpName: String,
     subsName: String,
     destType: Destination,
-    addresses: Seq[String])
+    addresses: Array[String])
 final case class QueryInfo(
     queryId: Int,
     query: String,

@@ -16,11 +16,11 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.io
 
-import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, JPoint}
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id, JPoint}
 import com.github.fsanaulla.chronicler.core.api.DatabaseApi
 import com.github.fsanaulla.chronicler.core.components.{BodyBuilder, ResponseHandler}
 import com.github.fsanaulla.chronicler.core.enums.{Epoch, Epochs}
-import com.github.fsanaulla.chronicler.core.model.Functor
+import com.github.fsanaulla.chronicler.core.model.{FunctionK, Functor}
 import com.github.fsanaulla.chronicler.urlhttp.shared.Url
 import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlQueryBuilder, UrlRequestExecutor}
 import requests.Response
@@ -33,9 +33,10 @@ final class UrlDatabaseApi(
   )(implicit qb: UrlQueryBuilder,
     bd: BodyBuilder[String],
     re: UrlRequestExecutor,
-    rh: ResponseHandler[Response],
-    F: Functor[Try])
-  extends DatabaseApi[Try, Response, Url, String](dbName, gzipped) {
+    rh: ResponseHandler[Id, Response],
+    F: Functor[Try],
+    FK: FunctionK[Id, Try])
+  extends DatabaseApi[Try, Id, Response, Url, String](dbName, gzipped) {
 
   /**
     * Chunked query execution with json response

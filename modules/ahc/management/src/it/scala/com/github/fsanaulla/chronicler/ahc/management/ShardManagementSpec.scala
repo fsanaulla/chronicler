@@ -11,11 +11,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
-class ShardManagementSpec
-  extends FlatSpec
-    with Matchers
-    with Futures
-    with DockerizedInfluxDB {
+class ShardManagementSpec extends FlatSpec with Matchers with Futures with DockerizedInfluxDB {
 
   val testDb = "_internal"
 
@@ -29,8 +25,6 @@ class ShardManagementSpec
     val shards = influx.showShards.futureValue.right.get
 
     shards should not be Nil
-
-    shards.foreach(println)
   }
 
   it should "show shards groupe" in {
@@ -39,9 +33,9 @@ class ShardManagementSpec
 
     shardGroups should not equal Nil
 
-    shardGroups shouldBe a [Array[_]]
+    shardGroups shouldBe a[Array[_]]
 
-    shardGroups.head shouldBe a [ShardGroupsInfo]
+    shardGroups.head shouldBe a[ShardGroupsInfo]
 
     influx.close() shouldEqual {}
   }

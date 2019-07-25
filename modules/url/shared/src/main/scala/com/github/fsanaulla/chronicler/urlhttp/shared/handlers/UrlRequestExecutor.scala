@@ -16,7 +16,7 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
-import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
 import com.github.fsanaulla.chronicler.core.components.{JsonHandler, RequestExecutor}
 import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.jawn.RichJParser
@@ -27,7 +27,9 @@ import requests._
 import scala.io.Source
 import scala.util.Try
 
-private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonHandler[Response])
+private[urlhttp] final class UrlRequestExecutor(
+    ssl: Boolean,
+    jsonHandler: JsonHandler[Id, Response])
   extends RequestExecutor[Try, Response, Url, String] {
 
   /**

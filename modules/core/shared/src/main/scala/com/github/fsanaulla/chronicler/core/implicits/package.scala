@@ -16,13 +16,22 @@
 
 package com.github.fsanaulla.chronicler.core
 
-import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
 import com.github.fsanaulla.chronicler.core.enums.{Destinations, Privileges}
 import com.github.fsanaulla.chronicler.core.jawn._
 import com.github.fsanaulla.chronicler.core.model._
 import org.typelevel.jawn.ast.{JArray, JValue}
 
 package object implicits {
+
+  implicit val functorId: Functor[Id] = new Functor[Id] {
+    override def map[A, B](fa: Id[A])(f: A => B): Id[B]         = f(fa)
+    override def flatMap[A, B](fa: Id[A])(f: A => Id[B]): Id[B] = f(fa)
+  }
+
+  implicit val applyId = new Apply[Id] {
+    override def pure[A](v: A): Id[A] = v
+  }
 
   private[this] def exception(msg: String) = new ParsingException(msg)
 

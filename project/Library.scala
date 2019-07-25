@@ -8,13 +8,13 @@ import sbt._
 object Library {
 
   object Versions {
-    val sttp       = "1.6.1"
-    val netty      = "4.1.37.Final"
-    val request    = "0.2.0"
-    
+    val sttp    = "1.6.1"
+    val netty   = "4.1.37.Final"
+    val request = "0.2.0"
+
     object Akka {
       val akka     = "2.5.23"
-      val akkaHttp = "10.1.7"
+      val akkaHttp = "10.1.9"
     }
 
     object Testing {
@@ -29,37 +29,38 @@ object Library {
   val scalaCheck  = "org.scalacheck"        %% "scalacheck"   % Versions.Testing.scalaCheck
   val akkaTestKit = "com.typesafe.akka"     %% "akka-testkit" % Versions.Akka.akka
 
-  def macroDeps(scalaVersion: String): List[ModuleID] = List(
-    "org.scala-lang"       %  "scala-reflect"         % scalaVersion
-  ) ::: List(scalaTest, scalaCheck).map(_ % Scope.test)
+  def macroDeps(scalaVersion: String): List[ModuleID] =
+    List(
+      "org.scala-lang"                      % "scala-reflect" % scalaVersion
+    ) ::: List(scalaTest, scalaCheck).map(_ % Scope.test)
 
   // testing
   val testingDeps: List[ModuleID] = List(
     scalaTest,
     "org.jetbrains"      % "annotations" % "16.0.3",
-    "org.testcontainers" % "influxdb"    % "1.11.3"   exclude("org.jetbrains", "annotations") exclude("org.slf4j", "slf4j-api"),
+    "org.testcontainers" % "influxdb"    % "1.11.3" exclude ("org.jetbrains", "annotations") exclude ("org.slf4j", "slf4j-api"),
     "org.slf4j"          % "slf4j-api"   % "1.7.25"
   )
 
   // core
   val coreDep: List[ModuleID] = List(
-    "com.beachape"   %% "enumeratum" % "1.5.13",
-    "org.typelevel"  %% "jawn-ast"   % "0.14.2"
+    "com.beachape"                        %% "enumeratum" % "1.5.13",
+    "org.typelevel"                       %% "jawn-ast" % "0.14.2"
   ) ::: List(scalaTest, scalaCheck).map(_ % Scope.test)
 
   // akka-http
   val akkaDep: List[ModuleID] = List(
-    "com.typesafe.akka"     %% "akka-stream"       % Versions.Akka.akka exclude("com.typesafe", "config"),
-    "com.typesafe"          %  "config"            % "1.3.4",
-    "com.softwaremill.sttp" %% "akka-http-backend" % Versions.sttp,
-    akkaTestKit % Scope.test
+    "com.typesafe.akka" %% "akka-stream"  % Versions.Akka.akka exclude ("com.typesafe", "config"),
+    "com.typesafe"      % "config"        % "1.3.4",
+    "com.typesafe.akka" %% "akka-http"    % Versions.Akka.akkaHttp,
+    "com.typesafe.akka" %% "akka-testkit" % Versions.Akka.akka % Scope.test
   )
 
   // async-http
   val asyncDeps: List[ModuleID] = List(
-    "io.netty"              %  "netty-handler"                    % Versions.netty,
-    "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp   exclude("io.netty", "netty-handler") exclude("org.reactivestreams", "reactive-streams"),
-    "org.reactivestreams"   %  "reactive-streams"                 % "1.0.2"
+    "io.netty"              % "netty-handler"                     % Versions.netty,
+    "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp exclude ("io.netty", "netty-handler") exclude ("org.reactivestreams", "reactive-streams"),
+    "org.reactivestreams"   % "reactive-streams"                  % "1.0.2"
   )
 
   // looks like a shit, but need to keep it until spark on 2.12 will become stable

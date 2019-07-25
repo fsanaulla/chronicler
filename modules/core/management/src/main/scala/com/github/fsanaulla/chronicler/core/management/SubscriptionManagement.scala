@@ -22,17 +22,20 @@ import com.github.fsanaulla.chronicler.core.enums.Destination
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.SubscriptionsManagementQuery
+import com.github.fsanaulla.chronicler.core.model.FunctionK.g2f
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-trait SubscriptionManagement[F[_], Resp, Uri, Entity] extends SubscriptionsManagementQuery[Uri] {
+trait SubscriptionManagement[F[_], G[_], Resp, Uri, Entity]
+  extends SubscriptionsManagementQuery[Uri] {
   implicit val qb: QueryBuilder[Uri]
   implicit val re: RequestExecutor[F, Resp, Uri, Entity]
-  implicit val rh: ResponseHandler[Resp]
+  implicit val rh: ResponseHandler[G, Resp]
   implicit val F: Functor[F]
+  implicit val FK: FunctionK[G, F]
 
   /**
     * Create subscription
@@ -50,9 +53,9 @@ trait SubscriptionManagement[F[_], Resp, Uri, Entity] extends SubscriptionsManag
       destinationType: Destination,
       addresses: Seq[String]
     ): F[ErrorOr[ResponseCode]] =
-    F.map(re.get(createSubscriptionQuery(subsName, dbName, rpName, destinationType, addresses)))(
-      rh.writeResult
-    )
+    F.flatMap(
+      re.get(createSubscriptionQuery(subsName, dbName, rpName, destinationType, addresses))
+    )(rh.writeResult)
 
   /** Drop subscription */
   final def dropSubscription(
@@ -60,9 +63,13 @@ trait SubscriptionManagement[F[_], Resp, Uri, Entity] extends SubscriptionsManag
       dbName: String,
       rpName: String
     ): F[ErrorOr[ResponseCode]] =
-    F.map(re.get(dropSubscriptionQuery(subName, dbName, rpName)))(rh.writeResult)
+    F.flatMap(
+      re.get(dropSubscriptionQuery(subName, dbName, rpName))
+    )(rh.writeResult)
 
   /** Show list of subscription info */
   final def showSubscriptionsInfo: F[ErrorOr[Array[SubscriptionInfo]]] =
-    F.map(re.get(showSubscriptionsQuery))(rh.toSubscriptionQueryResult)
+    F.flatMap(
+      re.get(showSubscriptionsQuery)
+    )(rh.toSubscriptionQueryResult(_))
 }

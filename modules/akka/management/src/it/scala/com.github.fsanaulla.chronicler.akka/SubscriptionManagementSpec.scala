@@ -18,18 +18,18 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class SubscriptionManagementSpec
   extends TestKit(ActorSystem())
-    with FlatSpecLike
-    with Matchers
-    with Futures
-    with DockerizedInfluxDB {
+  with FlatSpecLike
+  with Matchers
+  with Futures
+  with DockerizedInfluxDB {
 
-  val subName = "subs"
-  val dbName = "async_subs_spec_db"
-  val rpName = "subs_rp"
-  val destType: Destination = Destinations.ANY
-  val newDestType: Destination = Destinations.ALL
-  val hosts = Seq("udp://h1.example.com:9090", "udp://h2.example.com:9090")
-  val subscription = Subscription(rpName, subName, destType, hosts)
+  val subName                       = "subs"
+  val dbName                        = "async_subs_spec_db"
+  val rpName                        = "subs_rp"
+  val destType: Destination         = Destinations.ANY
+  val newDestType: Destination      = Destinations.ALL
+  val hosts                         = Array("udp://h1.example.com:9090", "udp://h2.example.com:9090")
+  val subscription                  = Subscription(rpName, subName, destType, hosts)
   val newSubscription: Subscription = subscription.copy(destType = newDestType)
 
   val duration: String = 1.hours + 30.minutes
@@ -41,15 +41,29 @@ class SubscriptionManagementSpec
 
     influx.createDatabase(dbName).futureValue.right.get shouldEqual 200
 
-    influx.createRetentionPolicy(rpName, dbName, duration, 1, Some(duration)).futureValue.right.get shouldEqual 200
+    influx
+      .createRetentionPolicy(rpName, dbName, duration, 1, Some(duration))
+      .futureValue
+      .right
+      .get shouldEqual 200
 
     influx.showDatabases().futureValue.right.get.contains(dbName) shouldEqual true
 
-    influx.createSubscription(subName, dbName, rpName, destType, hosts).futureValue.right.get shouldEqual 200
+    influx
+      .createSubscription(subName, dbName, rpName, destType, hosts)
+      .futureValue
+      .right
+      .get shouldEqual 200
 
-    influx.showSubscriptionsInfo.futureValue.right.get.head.subscriptions shouldEqual Array(subscription)
+    val subscr = influx.showSubscriptionsInfo.futureValue.right.get.headOption
+      .flatMap(_.subscriptions.headOption)
+      .get
+
+    subscr.subsName shouldEqual subscription.subsName
+    subscr.addresses shouldEqual subscription.addresses
+    subscr.destType shouldEqual subscription.destType
+    subscr.addresses.toList shouldEqual subscription.addresses.toList
   }
-
 
   it should "drop subscription" in {
     influx.dropSubscription(subName, dbName, rpName).futureValue.right.get shouldEqual 200

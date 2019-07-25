@@ -34,7 +34,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
   type FieldInfo = (String, c.universe.Type)
 
   /** return type dealias */
-  private def getType[A: TypeTag]: c.universe.Type = typeOf[A].dealias
+  private[this] def getType[A: TypeTag]: c.universe.Type = typeOf[A].dealias
 
   private[this] val bool: c.universe.Type      = getType[Boolean]
   private[this] val int: c.universe.Type       = getType[Int]

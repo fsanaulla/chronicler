@@ -16,13 +16,13 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.io
 
-import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
 import com.github.fsanaulla.chronicler.core.api.MeasurementApi
 import com.github.fsanaulla.chronicler.core.components.{BodyBuilder, ResponseHandler}
 import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.enums.{Epoch, Epochs}
-import com.github.fsanaulla.chronicler.core.model.{Failable, Functor, InfluxReader}
+import com.github.fsanaulla.chronicler.core.model.{Failable, FunctionK, Functor, InfluxReader}
 import com.github.fsanaulla.chronicler.urlhttp.shared.Url
 import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlQueryBuilder, UrlRequestExecutor}
 import requests.Response
@@ -37,10 +37,11 @@ class UrlMeasurementApi[T: ClassTag](
   )(implicit qb: UrlQueryBuilder,
     bd: BodyBuilder[String],
     re: UrlRequestExecutor,
-    rh: ResponseHandler[Response],
+    rh: ResponseHandler[Id, Response],
     F: Functor[Try],
-    FA: Failable[Try])
-  extends MeasurementApi[Try, Response, Url, String, T](dbName, measurementName, gzipped) {
+    FA: Failable[Try],
+    FK: FunctionK[Id, Try])
+  extends MeasurementApi[Try, Id, Response, Url, String, T](dbName, measurementName, gzipped) {
 
   /**
     * Chunked query execution with typed response

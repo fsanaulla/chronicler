@@ -21,20 +21,23 @@ import com.github.fsanaulla.chronicler.core.components._
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.DataManagementQuery
+import com.github.fsanaulla.chronicler.core.model.FunctionK.g2f
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 08.08.17
   */
-trait DatabaseManagement[F[_], Resp, Uri, Body] extends DataManagementQuery[Uri] {
+trait DatabaseManagement[F[_], G[_], Resp, Uri, Body] extends DataManagementQuery[Uri] {
   implicit val qb: QueryBuilder[Uri]
   implicit val re: RequestExecutor[F, Resp, Uri, Body]
-  implicit val rh: ResponseHandler[Resp]
+  implicit val rh: ResponseHandler[G, Resp]
   implicit val F: Functor[F]
+  implicit val FK: FunctionK[G, F]
 
   /**
     * Create database
+    *
     * @param dbName        - database name
     * @param duration      - database duration
     * @param replication   - replication
@@ -49,29 +52,35 @@ trait DatabaseManagement[F[_], Resp, Uri, Body] extends DataManagementQuery[Uri]
       shardDuration: Option[String] = None,
       rpName: Option[String] = None
     ): F[ErrorOr[ResponseCode]] =
-    F.map(re.get(createDatabaseQuery(dbName, duration, replication, shardDuration, rpName)))(
-      rh.writeResult
-    )
+    F.flatMap(
+      re.get(createDatabaseQuery(dbName, duration, replication, shardDuration, rpName))
+    )(rh.writeResult)
 
   /** Drop database */
   final def dropDatabase(dbName: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.get(dropDatabaseQuery(dbName)))(rh.writeResult)
+    F.flatMap(re.get(dropDatabaseQuery(dbName)))(rh.writeResult)
 
   /** Drop measurement */
   final def dropMeasurement(dbName: String, measurementName: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.get(dropMeasurementQuery(dbName, measurementName)))(rh.writeResult)
+    F.flatMap(re.get(dropMeasurementQuery(dbName, measurementName)))(rh.writeResult)
 
   /** Show measurements */
   final def showMeasurement(dbName: String): F[ErrorOr[Array[String]]] =
-    F.map(re.get(showMeasurementQuery(dbName)))(rh.queryResust[String])
+    F.flatMap(
+      re.get(showMeasurementQuery(dbName))
+    )(rh.queryResult[String](_))
 
   /** Show database list */
   final def showDatabases(): F[ErrorOr[Array[String]]] =
-    F.map(re.get(showDatabasesQuery))(rh.queryResust[String])
+    F.flatMap(
+      re.get(showDatabasesQuery)
+    )(rh.queryResult[String](_))
 
   /** Show field tags list */
   final def showFieldKeys(dbName: String, measurementName: String): F[ErrorOr[Array[FieldInfo]]] =
-    F.map(re.get(showFieldKeysQuery(dbName, measurementName)))(rh.queryResust[FieldInfo])
+    F.flatMap(
+      re.get(showFieldKeysQuery(dbName, measurementName))
+    )(rh.queryResult[FieldInfo](_))
 
   /** Show tags keys list */
   final def showTagKeys(
@@ -81,9 +90,9 @@ trait DatabaseManagement[F[_], Resp, Uri, Body] extends DataManagementQuery[Uri]
       limit: Option[Int] = None,
       offset: Option[Int] = None
     ): F[ErrorOr[Array[String]]] =
-    F.map(re.get(showTagKeysQuery(dbName, measurementName, whereClause, limit, offset)))(
-      rh.queryResust[String]
-    )
+    F.flatMap(
+      re.get(showTagKeysQuery(dbName, measurementName, whereClause, limit, offset))
+    )(rh.queryResult[String](_))
 
   /** Show tag values list */
   final def showTagValues(
@@ -94,7 +103,7 @@ trait DatabaseManagement[F[_], Resp, Uri, Body] extends DataManagementQuery[Uri]
       limit: Option[Int] = None,
       offset: Option[Int] = None
     ): F[ErrorOr[Array[TagValue]]] =
-    F.map(re.get(showTagValuesQuery(dbName, measurementName, withKey, whereClause, limit, offset)))(
-      rh.queryResust[TagValue]
-    )
+    F.flatMap(
+      re.get(showTagValuesQuery(dbName, measurementName, withKey, whereClause, limit, offset))
+    )(rh.queryResult[TagValue](_))
 }

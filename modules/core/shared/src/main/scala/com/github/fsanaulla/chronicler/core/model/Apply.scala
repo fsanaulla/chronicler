@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.akka.shared
+package com.github.fsanaulla.chronicler.core.model
 
-import com.softwaremill.sttp.{asString, ResponseAs}
-import org.typelevel.jawn.ast.{JNull, JParser, JValue}
-
-import scala.util.Success
-
-package object formats {
-
-  val asJson: ResponseAs[JValue, Nothing] = {
-    asString
-      .map(JParser.parseFromString)
-      .map {
-        case Success(jv) => jv
-        case _           => JNull
-      }
-  }
+/**
+  * Apply typeclass
+  *
+  * @since 0.5.5
+  */
+trait Apply[F[_]] {
+  def pure[A](v: A): F[A]
 }

@@ -16,58 +16,69 @@
 
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
-import com.github.fsanaulla.chronicler.akka.shared.implicits.jsonHandler
+import akka.actor.ActorSystem
+import akka.http.scaladsl.model.HttpResponse
+import akka.stream.ActorMaterializer
+import akka.testkit.TestKit
+import com.github.fsanaulla.chronicler.akka.shared.implicits.{futureApply, futureFunctor}
 import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
-import com.softwaremill.sttp.Response
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.{FlatSpecLike, Matchers}
 import org.typelevel.jawn.ast._
+
+import scala.concurrent.ExecutionContextExecutor
 
 /**
   * Created by fayaz on 12.07.17.
   */
-class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
+class AkkaResponseHandlerSpec
+  extends TestKit(ActorSystem())
+  with FlatSpecLike
+  with ScalaFutures
+  with IntegrationPatience
+  with Matchers {
 
-  val rh = new ResponseHandler(jsonHandler)
-
-  def toResponse(str: String): Response[JValue] =
-    Response.ok(JParser.parseFromString(str).get)
+  implicit val ec: ExecutionContextExecutor = system.dispatcher
+  implicit val mat: ActorMaterializer       = ActorMaterializer()
+  val jsonHandler                           = new AkkaJsonHandler()
+  val rh                                    = new ResponseHandler(jsonHandler)
 
   it should "extract single query queryResult from response" in {
 
-    val singleHttpResponse: Response[JValue] =
-      toResponse("""
-                   |{
-                   |    "results": [
-                   |        {
-                   |            "statement_id": 0,
-                   |            "series": [
-                   |                {
-                   |                    "name": "cpu_load_short",
-                   |                    "columns": [
-                   |                        "time",
-                   |                        "value"
-                   |                    ],
-                   |                    "values": [
-                   |                        [
-                   |                            "2015-01-29T21:55:43.702900257Z",
-                   |                            2
-                   |                        ],
-                   |                        [
-                   |                            "2015-01-29T21:55:43.702900257Z",
-                   |                            0.55
-                   |                        ],
-                   |                        [
-                   |                            "2015-06-11T20:46:02Z",
-                   |                            0.64
-                   |                        ]
-                   |                    ]
-                   |                }
-                   |            ]
-                   |        }
-                   |    ]
-                   |}
+    val singleHttpResponse =
+      HttpResponse(entity = """
+                              |{
+                              |    "results": [
+                              |        {
+                              |            "statement_id": 0,
+                              |            "series": [
+                              |                {
+                              |                    "name": "cpu_load_short",
+                              |                    "columns": [
+                              |                        "time",
+                              |                        "value"
+                              |                    ],
+                              |                    "values": [
+                              |                        [
+                              |                            "2015-01-29T21:55:43.702900257Z",
+                              |                            2
+                              |                        ],
+                              |                        [
+                              |                            "2015-01-29T21:55:43.702900257Z",
+                              |                            0.55
+                              |                        ],
+                              |                        [
+                              |                            "2015-06-11T20:46:02Z",
+                              |                            0.64
+                              |                        ]
+                              |                    ]
+                              |                }
+                              |            ]
+                              |        }
+                              |    ]
+                              |}
       """.stripMargin)
 
     val result = Array(
@@ -76,64 +87,64 @@ class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
       JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
     )
 
-    rh.queryResultJson(singleHttpResponse).right.get shouldEqual result
+    rh.queryResultJson(singleHttpResponse).futureValue.right.get shouldEqual result
   }
 
   it should "extract bulk query results from response" in {
 
-    val bulkHttpResponse: Response[JValue] =
-      toResponse("""
-                   |{
-                   |    "results": [
-                   |        {
-                   |            "statement_id": 0,
-                   |            "series": [
-                   |                {
-                   |                    "name": "cpu_load_short",
-                   |                    "columns": [
-                   |                        "time",
-                   |                        "value"
-                   |                    ],
-                   |                    "values": [
-                   |                        [
-                   |                            "2015-01-29T21:55:43.702900257Z",
-                   |                            2
-                   |                        ],
-                   |                        [
-                   |                            "2015-01-29T21:55:43.702900257Z",
-                   |                            0.55
-                   |                        ],
-                   |                        [
-                   |                            "2015-06-11T20:46:02Z",
-                   |                            0.64
-                   |                        ]
-                   |                    ]
-                   |                }
-                   |            ]
-                   |        },
-                   |        {
-                   |            "statement_id": 1,
-                   |            "series": [
-                   |                {
-                   |                    "name": "cpu_load_short",
-                   |                    "columns": [
-                   |                        "time",
-                   |                        "count"
-                   |                    ],
-                   |                    "values": [
-                   |                        [
-                   |                            "1970-01-01T00:00:00Z",
-                   |                            3
-                   |                        ]
-                   |                    ]
-                   |                }
-                   |            ]
-                   |        }
-                   |    ]
-                   |}
+    val bulkHttpResponse =
+      HttpResponse(entity = """
+                              |{
+                              |    "results": [
+                              |        {
+                              |            "statement_id": 0,
+                              |            "series": [
+                              |                {
+                              |                    "name": "cpu_load_short",
+                              |                    "columns": [
+                              |                        "time",
+                              |                        "value"
+                              |                    ],
+                              |                    "values": [
+                              |                        [
+                              |                            "2015-01-29T21:55:43.702900257Z",
+                              |                            2
+                              |                        ],
+                              |                        [
+                              |                            "2015-01-29T21:55:43.702900257Z",
+                              |                            0.55
+                              |                        ],
+                              |                        [
+                              |                            "2015-06-11T20:46:02Z",
+                              |                            0.64
+                              |                        ]
+                              |                    ]
+                              |                }
+                              |            ]
+                              |        },
+                              |        {
+                              |            "statement_id": 1,
+                              |            "series": [
+                              |                {
+                              |                    "name": "cpu_load_short",
+                              |                    "columns": [
+                              |                        "time",
+                              |                        "count"
+                              |                    ],
+                              |                    "values": [
+                              |                        [
+                              |                            "1970-01-01T00:00:00Z",
+                              |                            3
+                              |                        ]
+                              |                    ]
+                              |                }
+                              |            ]
+                              |        }
+                              |    ]
+                              |}
       """.stripMargin)
 
-    rh.bulkQueryResultJson(bulkHttpResponse).right.get shouldEqual Array(
+    rh.bulkQueryResultJson(bulkHttpResponse).futureValue.right.get shouldEqual Array(
       Array(
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
@@ -147,8 +158,9 @@ class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
 
   it should "cq unpacking" in {
 
-    val cqResponse = toResponse(
-      """{
+    val cqResponse = HttpResponse(
+      entity =
+        """{
       "results": [
         {
           "statement_id": 0,
@@ -201,7 +213,7 @@ class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
   """.stripMargin
     )
 
-    val cqi = rh.toCqQueryResult(cqResponse).right.get.filter(_.queries.nonEmpty).head
+    val cqi = rh.toCqQueryResult(cqResponse).futureValue.right.get.filter(_.queries.nonEmpty).head
     cqi.dbName shouldEqual "mydb"
     cqi.queries.head shouldEqual ContinuousQuery(
       "cq",
@@ -211,25 +223,31 @@ class AkkaResponseHandlerSpec extends FlatSpec with Matchers {
 
   it should "extract optional error message" in {
 
-    val errorHttpResponse: Response[JValue] = toResponse("""
-                                                           |{
-                                                           |        "results": [
-                                                           |          {
-                                                           |            "statement_id": 0,
-                                                           |            "error": "user not found"
-                                                           |          }
-                                                           |        ]
-                                                           |}
+    val errorHttpResponse = HttpResponse(entity = """
+                                                    |{
+                                                    |        "results": [
+                                                    |          {
+                                                    |            "statement_id": 0,
+                                                    |            "error": "user not found"
+                                                    |          }
+                                                    |        ]
+                                                    |}
       """.stripMargin)
 
-    jsonHandler.responseErrorMsgOpt(errorHttpResponse).right.get shouldEqual Some("user not found")
+    jsonHandler.responseErrorMsgOpt(errorHttpResponse).futureValue.right.get shouldEqual Some(
+      "user not found"
+    )
   }
 
   it should "extract error message" in {
 
-    val errorHttpResponse: Response[JValue] =
-      toResponse("""{ "error": "user not found" }""")
+    val errorHttpResponse =
+      HttpResponse(entity = """{ "error": "user not found" }""")
 
-    jsonHandler.responseErrorMsg(errorHttpResponse).right.get shouldEqual "user not found"
+    jsonHandler
+      .responseErrorMsg(errorHttpResponse)
+      .futureValue
+      .right
+      .get shouldEqual "user not found"
   }
 }

@@ -24,4 +24,5 @@ final case class InfluxConfig(
     port: Int = 8086,
     credentials: Option[InfluxCredentials] = None,
     gzipped: Boolean = false,
-    httpsContext: Option[HttpsConnectionContext] = None)
+    httpsContext: Option[HttpsConnectionContext] = None,
+    terminateActorSystem: Boolean = false)
