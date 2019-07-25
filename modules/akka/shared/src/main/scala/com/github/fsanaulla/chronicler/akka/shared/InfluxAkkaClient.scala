@@ -28,9 +28,9 @@ abstract class InfluxAkkaClient(
   )(implicit system: ActorSystem,
     ec: ExecutionContext) { self: AutoCloseable =>
 
-  private[chronicler] implicit val http: HttpExt = Http()
+  private[akka] implicit val http: HttpExt = Http()
 
-  private[chronicler] val (ctx, schema) =
+  private[akka] val (ctx, schema) =
     httpsContext
       .map(_ -> "https")
       .getOrElse(http.defaultClientHttpsContext -> "http")

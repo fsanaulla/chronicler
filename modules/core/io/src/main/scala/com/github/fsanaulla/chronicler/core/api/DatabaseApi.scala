@@ -39,7 +39,7 @@ class DatabaseApi[F[_], G[_], Resp, Uri, Body](
     bd: BodyBuilder[Body],
     re: RequestExecutor[F, Resp, Uri, Body],
     rh: ResponseHandler[G, Resp],
-    FM: Functor[F],
+    F: Functor[F],
     FK: FunctionK[G, F])
   extends DatabaseOperationQuery[Uri] {
 
@@ -51,7 +51,7 @@ class DatabaseApi[F[_], G[_], Resp, Uri, Body](
       retentionPolicy: Option[String] = None
     ): F[ErrorOr[ResponseCode]] = {
     val uri = write(dbName, consistency, precision, retentionPolicy)
-    FM.flatMap(
+    F.flatMap(
       re.post(uri, bd.fromFile(filePath, enc), gzipped)
     )(resp => FK(rh.writeResult(resp)))
   }
@@ -63,7 +63,7 @@ class DatabaseApi[F[_], G[_], Resp, Uri, Body](
       retentionPolicy: Option[String] = None
     ): F[ErrorOr[ResponseCode]] = {
     val uri = write(dbName, consistency, precision, retentionPolicy)
-    FM.flatMap(
+    F.flatMap(
       re.post(uri, bd.fromString(point), gzipped)
     )(resp => FK(rh.writeResult(resp)))
   }
@@ -75,7 +75,7 @@ class DatabaseApi[F[_], G[_], Resp, Uri, Body](
       retentionPolicy: Option[String] = None
     ): F[ErrorOr[ResponseCode]] = {
     val uri = write(dbName, consistency, precision, retentionPolicy)
-    FM.flatMap(
+    F.flatMap(
       re.post(uri, bd.fromStrings(points), gzipped)
     )(resp => FK(rh.writeResult(resp)))
   }
@@ -87,7 +87,7 @@ class DatabaseApi[F[_], G[_], Resp, Uri, Body](
       retentionPolicy: Option[String] = None
     ): F[ErrorOr[ResponseCode]] = {
     val uri = write(dbName, consistency, precision, retentionPolicy)
-    FM.flatMap(
+    F.flatMap(
       re.post(uri, bd.fromPoint(point), gzipped)
     )(resp => FK(rh.writeResult(resp)))
   }
@@ -99,7 +99,7 @@ class DatabaseApi[F[_], G[_], Resp, Uri, Body](
       retentionPolicy: Option[String] = None
     ): F[Either[Throwable, ResponseCode]] = {
     val uri = write(dbName, consistency, precision, retentionPolicy)
-    FM.flatMap(
+    F.flatMap(
       re.post(uri, bd.fromPoints(points), gzipped)
     )(resp => FK(rh.writeResult(resp)))
   }
@@ -110,7 +110,7 @@ class DatabaseApi[F[_], G[_], Resp, Uri, Body](
       pretty: Boolean = false
     ): F[ErrorOr[Array[JArray]]] = {
     val uri = singleQuery(dbName, query, epoch, pretty)
-    FM.flatMap(re.get(uri))(resp => FK(rh.queryResultJson(resp)))
+    F.flatMap(re.get(uri))(resp => FK(rh.queryResultJson(resp)))
   }
 
   def bulkReadJson(
@@ -119,7 +119,7 @@ class DatabaseApi[F[_], G[_], Resp, Uri, Body](
       pretty: Boolean = false
     ): F[ErrorOr[Array[Array[JArray]]]] = {
     val uri = bulkQuery(dbName, queries, epoch, pretty)
-    FM.flatMap(re.get(uri))(resp => FK(rh.bulkQueryResultJson(resp)))
+    F.flatMap(re.get(uri))(resp => FK(rh.bulkQueryResultJson(resp)))
   }
 
   def readGroupedJson(
@@ -129,6 +129,6 @@ class DatabaseApi[F[_], G[_], Resp, Uri, Body](
     ): F[ErrorOr[Array[(Array[String], JArray)]]] = {
     val uri = singleQuery(dbName, query, epoch, pretty)
 
-    FM.flatMap(re.get(uri))(resp => FK(rh.groupedResultJson(resp)))
+    F.flatMap(re.get(uri))(resp => FK(rh.groupedResultJson(resp)))
   }
 }
