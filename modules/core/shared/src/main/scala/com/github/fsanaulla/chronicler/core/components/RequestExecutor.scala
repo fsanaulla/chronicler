@@ -22,7 +22,6 @@ package com.github.fsanaulla.chronicler.core.components
   */
 trait RequestExecutor[F[_], Resp, Uri, Body] {
 
-  // todo: properly request compression
   def post(
       uri: Uri,
       body: Body,
