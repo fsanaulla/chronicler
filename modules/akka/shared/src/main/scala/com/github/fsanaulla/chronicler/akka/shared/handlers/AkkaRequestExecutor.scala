@@ -16,19 +16,27 @@
 
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
+import akka.http.scaladsl.coding.Gzip
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.headers.{`Content-Encoding`, HttpEncodings}
 import akka.http.scaladsl.{HttpExt, HttpsConnectionContext}
+import akka.stream.ActorMaterializer
+import akka.util.ByteString
 import com.github.fsanaulla.chronicler.core.components.RequestExecutor
 
 import scala.concurrent.Future
-import scala.language.higherKinds
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Success
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[akka] final class AkkaRequestExecutor(ctx: HttpsConnectionContext)(implicit http: HttpExt)
+private[akka] final class AkkaRequestExecutor(
+    ctx: HttpsConnectionContext
+  )(implicit http: HttpExt,
+    mat: ActorMaterializer)
   extends RequestExecutor[Future, HttpResponse, Uri, RequestEntity] {
 
   /**
@@ -48,13 +56,13 @@ private[akka] final class AkkaRequestExecutor(ctx: HttpsConnectionContext)(impli
       body: RequestEntity,
       gzipped: Boolean
     ): Future[HttpResponse] = {
-    http.singleRequest(
-      HttpRequest(
-        HttpMethods.POST,
-        uri,
-        entity = body
-      ),
-      connectionContext = ctx
-    )
+    val headers = if (gzipped) `Content-Encoding`(HttpEncodings.gzip) :: Nil else Nil
+    val entity  = if (gzipped) body.transformDataBytes(Gzip.encoderFlow) else body
+
+    val request = HttpRequest(HttpMethods.POST, uri)
+      .withHeaders(headers)
+      .withEntity(entity)
+
+    http.singleRequest(request, connectionContext = ctx)
   }
 }
