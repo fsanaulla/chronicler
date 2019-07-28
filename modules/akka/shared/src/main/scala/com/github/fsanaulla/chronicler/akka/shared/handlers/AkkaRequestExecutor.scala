@@ -21,12 +21,9 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.{`Content-Encoding`, HttpEncodings}
 import akka.http.scaladsl.{HttpExt, HttpsConnectionContext}
 import akka.stream.ActorMaterializer
-import akka.util.ByteString
 import com.github.fsanaulla.chronicler.core.components.RequestExecutor
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.Success
 
 /**
   * Created by
