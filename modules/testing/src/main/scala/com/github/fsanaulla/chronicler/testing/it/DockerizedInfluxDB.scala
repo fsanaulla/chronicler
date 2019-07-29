@@ -7,7 +7,7 @@ import org.testcontainers.containers.output.ToStringConsumer
 
 trait DockerizedInfluxDB extends BeforeAndAfterAll { self: Suite =>
 
-  protected val version: String = sys.env.getOrElse("INFLUXDB_VERSION", "1.7.3")
+  protected def version: String = sys.env.getOrElse("INFLUXDB_VERSION", "1.7.3")
   protected val _influx: InfluxDBContainer[Nothing] = new InfluxDBContainer(version)
     .withLogConsumer(new ToStringConsumer)
 
@@ -22,13 +22,14 @@ trait DockerizedInfluxDB extends BeforeAndAfterAll { self: Suite =>
 
   def mappedPort(mappedPort: Int) = _influx.getMappedPort(mappedPort)
 
-  def beforeStartContainer(container: InfluxDBContainer[Nothing]): InfluxDBContainer[Nothing] = container
+  def beforeStartContainer(container: InfluxDBContainer[Nothing]): InfluxDBContainer[Nothing] =
+    container
 
   override def beforeAll(): Unit = {
     super.beforeAll()
     _influx.start()
     _influx.followOutput(new ToStringConsumer)
-    beforeStartContainer(_influx)/*.start()*/
+    beforeStartContainer(_influx) /*.start()*/
   }
 
   override def afterAll(): Unit = {
