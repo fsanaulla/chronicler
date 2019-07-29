@@ -18,8 +18,8 @@ package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
 import com.github.fsanaulla.chronicler.ahc.shared.formats._
 import com.github.fsanaulla.chronicler.core.components.RequestExecutor
-import com.github.fsanaulla.chronicler.core.encoding.gzipEncoding
-import com.softwaremill.sttp.{sttp, Response, SttpBackend, Uri}
+import com.github.fsanaulla.chronicler.core.gzip
+import com.softwaremill.sttp.{sttp, HeaderNames, MediaTypes, Response, SttpBackend, Uri}
 import org.typelevel.jawn.ast.JValue
 
 import scala.concurrent.Future
@@ -41,8 +41,17 @@ private[ahc] final class AhcRequestExecutor(implicit backend: SttpBackend[Future
       body: String,
       gzipped: Boolean
     ): Future[Response[JValue]] = {
-    val req          = sttp.post(uri).body(body).response(asJson)
-    val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
+    val req = sttp.post(uri).response(asJson)
+    val maybeEncoded = if (gzipped) {
+      val (length, data) = gzip.compress(body.getBytes())
+      req
+      // it fails with input stream, using byte array instead
+        .body(data)
+        .header(HeaderNames.ContentEncoding, "gzip", replaceExisting = true)
+        .contentType(MediaTypes.Binary)
+        .contentLength(length)
+    } else req
+
     maybeEncoded.send()
   }
 }
