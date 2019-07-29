@@ -50,7 +50,7 @@ private[ahc] final class AhcRequestExecutor(implicit backend: SttpBackend[Future
         .header(HeaderNames.ContentEncoding, "gzip", replaceExisting = true)
         .contentType(MediaTypes.Binary)
         .contentLength(length)
-    } else req
+    } else req.body(body)
 
     maybeEncoded.send()
   }
