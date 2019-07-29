@@ -43,7 +43,8 @@ private[urlhttp] final class UrlRequestExecutor(
     Try {
       requests.get(
         uri.make,
-        params = uri.params
+        params = uri.params,
+        headers = "Accept-Encoding" -> "gzip" :: Nil
       )
     }
   }
