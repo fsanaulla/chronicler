@@ -42,12 +42,12 @@ private[akka] final class AkkaRequestExecutor(
     * @param uri - request uri
     * @return    - Return wrapper response
     */
-  override def get(uri: Uri): Future[HttpResponse] = {
+  override def get(uri: Uri, gzipped: Boolean = false): Future[HttpResponse] = {
     val request = HttpRequest(
       method = HttpMethods.GET,
       uri = uri,
       // default headers
-      headers = `Accept-Encoding`(HttpEncodings.gzip) :: Nil
+      headers = if (gzipped) `Accept-Encoding`(HttpEncodings.gzip) :: Nil else Nil
     )
 
     http.singleRequest(

@@ -44,5 +44,5 @@ trait RequestExecutor[F[_], R, U, B] {
     *
     * @param uri - request uri
     * */
-  def get(uri: U): F[R]
+  def get(uri: U, gzipped: Boolean = false): F[R]
 }

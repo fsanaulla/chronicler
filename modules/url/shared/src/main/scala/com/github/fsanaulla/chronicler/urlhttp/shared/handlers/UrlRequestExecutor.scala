@@ -39,12 +39,12 @@ private[urlhttp] final class UrlRequestExecutor(
     * @param uri - request uri
     * @return    - Return wrapper response
     */
-  override def get(uri: Url): Try[Response] = {
+  override def get(uri: Url, gzipped: Boolean = false): Try[Response] = {
     Try {
       requests.get(
         uri.make,
         params = uri.params,
-        headers = "Accept-Encoding" -> "gzip" :: Nil
+        headers = if (gzipped) "Accept-Encoding" -> "gzip" :: Nil else Nil
       )
     }
   }
