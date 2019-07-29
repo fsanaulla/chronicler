@@ -18,7 +18,7 @@ package com.github.fsanaulla.chronicler.akka.shared.handlers
 
 import akka.http.scaladsl.coding.Gzip
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.model.headers.{`Content-Encoding`, HttpEncodings}
+import akka.http.scaladsl.model.headers.{`Accept-Encoding`, `Content-Encoding`, HttpEncodings}
 import akka.http.scaladsl.{HttpExt, HttpsConnectionContext}
 import akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.core.components.RequestExecutor
@@ -42,11 +42,19 @@ private[akka] final class AkkaRequestExecutor(
     * @param uri - request uri
     * @return    - Return wrapper response
     */
-  override def get(uri: Uri): Future[HttpResponse] =
+  override def get(uri: Uri): Future[HttpResponse] = {
+    val request = HttpRequest(
+      method = HttpMethods.GET,
+      uri = uri,
+      // default headers
+      headers = `Accept-Encoding`(HttpEncodings.gzip) :: Nil
+    )
+
     http.singleRequest(
-      HttpRequest(method = HttpMethods.GET, uri),
+      request,
       connectionContext = ctx
     )
+  }
 
   override def post(
       uri: Uri,
