@@ -19,6 +19,7 @@ package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
 import com.github.fsanaulla.chronicler.core.components.{JsonHandler, RequestExecutor}
 import com.github.fsanaulla.chronicler.core.either._
+import com.github.fsanaulla.chronicler.core.gzip
 import com.github.fsanaulla.chronicler.core.jawn.RichJParser
 import com.github.fsanaulla.chronicler.urlhttp.shared.Url
 import org.typelevel.jawn.ast.{JArray, JParser}
@@ -42,8 +43,7 @@ private[urlhttp] final class UrlRequestExecutor(
     Try {
       requests.get(
         uri.make,
-        params = uri.params,
-        verifySslCerts = ssl
+        params = uri.params
       )
     }
   }
@@ -54,14 +54,28 @@ private[urlhttp] final class UrlRequestExecutor(
       gzipped: Boolean
     ): Try[Response] = {
     Try {
-      requests.post(
+      val bts              = body.getBytes()
+      val (length, entity) = if (gzipped) gzip.compress(bts) else bts.length -> bts
+
+      val headers =
+        if (gzipped) {
+          List(
+            "Content-Length"   -> String.valueOf(length),
+            "Content-Encoding" -> "gzip"
+          )
+        } else Nil
+
+      val request = Request(
         uri.make,
         RequestAuth.Empty,
-        uri.params,
-        // todo: PR for ssl support
-        verifySslCerts = ssl,
-//        compress = if (gzipped) Compress.Gzip else Compress.None,
-        data = RequestBlob.StringRequestBlob(body)
+        params = uri.params,
+        headers = headers
+      )
+
+      requests.post(
+        request,
+        // it fails with input stream
+        data = RequestBlob.BytesRequestBlob(entity)
       )
     }
   }
