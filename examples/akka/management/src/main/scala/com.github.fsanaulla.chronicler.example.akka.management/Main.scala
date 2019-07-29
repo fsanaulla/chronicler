@@ -3,7 +3,6 @@ package com.github.fsanaulla.chronicler.example.akka.management
 import akka.actor.ActorSystem
 import com.github.fsanaulla.chronicler.akka.management.InfluxMng
 
-import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
 object Main {
@@ -21,7 +20,7 @@ object Main {
       // retrieve written record from Influx
       databases <- influx.showDatabases()
       // close
-      _ <- Future.successful(influx.close())
+      _ <- influx.closeAsync()
     } yield databases
 
     result.onComplete {
