@@ -92,7 +92,7 @@ abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
     }
 
   /**
-    * Extract influx points from JSON, representede as Arrays
+    * Extract influx points from JSON, represented as Arrays
     *
     * @param js - JSON value
     * @return - optional array of points
