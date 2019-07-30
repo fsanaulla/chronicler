@@ -66,7 +66,7 @@ trait UserManagement[F[_], G[_], Resp, Uri, Body] extends UserManagementQuery[Ur
     ): F[ErrorOr[ResponseCode]] =
     F.flatMap(re.get(setPrivilegesQuery(dbName, username, privilege)))(rh.writeResult)
 
-  /** Revoke user privilege on specified datasbase */
+  /** Revoke user privilege on specified database */
   final def revokePrivileges(
       username: String,
       dbName: String,

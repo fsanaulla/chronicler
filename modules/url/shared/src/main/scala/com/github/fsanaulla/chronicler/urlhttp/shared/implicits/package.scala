@@ -16,7 +16,7 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared
 
-import java.nio.charset.Charset
+import java.nio.charset.{Charset, StandardCharsets}
 
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
 import com.github.fsanaulla.chronicler.core.components.JsonHandler
@@ -31,13 +31,14 @@ import scala.util.{Failure, Success, Try}
 
 package object implicits {
   implicit val jsonHandler: JsonHandler[Id, Response] = new JsonHandler[Id, Response] {
-    private[this] def body(response: Response, enc: String): Either[Throwable, JValue] =
-      JParser.parseFromStringEither(response.text(Charset.forName(enc)))
+    private[this] def body(response: Response, enc: Charset): Either[Throwable, JValue] =
+      JParser.parseFromStringEither(response.text(enc))
 
     override def responseBody(response: Response): ErrorOr[JValue] = {
       response.contentType
         .flatMap(encodingFromContentType)
-        .fold(body(response, "UTF-8"))(body(response, _))
+        .map(Charset.forName)
+        .fold(body(response, StandardCharsets.UTF_8))(body(response, _))
     }
 
     override def responseHeader(response: Response): Seq[(String, String)] =
