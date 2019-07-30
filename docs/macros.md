@@ -47,8 +47,8 @@ For `InfluxReader[_]` there are four options:
 - you expect to receive timestamp in [epoch](https://en.wikipedia.org/wiki/Unix_time) format, then use `@epoch` + `@timestamp`. 
 Then the field type should be **`Long`**. For example when you specify precision in query. 
   
-  **Remember**: InfluxDB use nano precision by default.
-- you expect to receive timestamo in [utc](https://www.ietf.org/rfc/rfc3339.txt) formar, then use `@utc` + `@timestamp`.
+  **Remember**: InfluxDB uses nano precision by default.
+- you expect to receive timestamp in [utc](https://www.ietf.org/rfc/rfc3339.txt) format, then use `@utc` + `@timestamp`.
 Then field type  should be **`String`**.
 - if you expect to receive time to time epoch time to time utc timestamp, then use only `@timestamp`. 
 Supported field type: **`String`**, **`Long`**
