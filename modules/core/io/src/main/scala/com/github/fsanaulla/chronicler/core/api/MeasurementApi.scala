@@ -50,7 +50,7 @@ class MeasurementApi[F[_], G[_], Resp, Uri, Body, A](
     * @param consistency     - consistence level
     * @param precision       - time precision
     * @param retentionPolicy - retention policy type
-    * @param wr          - implicit serializer to InfluxLine format
+    * @param wr              - implicit serializer to InfluxLine format
     * @return                - Write result on backend container
     */
   final def write(
