@@ -54,7 +54,7 @@ final class AkkaMeasurementApi[T: ClassTag](
     * @param query     - request SQL query
     * @param epoch     - epoch precision
     * @param pretty    - pretty printed result
-    * @param chunkSize - number of elements in the respinse chunk
+    * @param chunkSize - number of elements in the response chunk
     * @return          - streaming response of batched items
     * @since 0.5.4
     */
