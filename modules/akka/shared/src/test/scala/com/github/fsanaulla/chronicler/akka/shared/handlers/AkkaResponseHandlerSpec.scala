@@ -42,7 +42,7 @@ class AkkaResponseHandlerSpec
 
   implicit val ec: ExecutionContextExecutor = system.dispatcher
   implicit val mat: ActorMaterializer       = ActorMaterializer()
-  val jsonHandler                           = new AkkaJsonHandler()
+  val jsonHandler                           = new AkkaJsonHandler(new AkkaBodyUnmarshaller(compressed = false))
   val rh                                    = new ResponseHandler(jsonHandler)
 
   it should "extract single query queryResult from response" in {

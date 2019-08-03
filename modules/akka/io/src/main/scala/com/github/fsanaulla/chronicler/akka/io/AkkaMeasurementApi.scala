@@ -66,6 +66,6 @@ final class AkkaMeasurementApi[T: ClassTag](
     )(implicit rd: InfluxReader[T]
     ): Future[Source[ErrorOr[Array[T]], Any]] = {
     val uri = chunkedQuery(dbName, query, epoch, pretty, chunkSize)
-    F.map(re.get(uri))(rh.queryChunkedResult[T])
+    F.map(re.get(uri, compressed = false))(rh.queryChunkedResult[T])
   }
 }

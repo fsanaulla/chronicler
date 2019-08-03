@@ -32,8 +32,6 @@ class AkkaBodyBuilder extends BodyBuilder[RequestEntity] with Appender {
       MediaTypes.`application/octet-stream`,
       FileIO
         .fromPath(filePath)
-//        .map(_.decodeString(enc))
-//        .map(ByteString(_))
     )
 
   override def fromString(string: String): RequestEntity =

@@ -16,32 +16,23 @@
 
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
-import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
-import akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
+import akka.http.scaladsl.model.HttpResponse
 import akka.stream.ActorMaterializer
-import akka.util.ByteString
 import com.github.fsanaulla.chronicler.akka.shared.implicits.futureFunctor
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.components.JsonHandler
-import com.github.fsanaulla.chronicler.core.jawn.RichJParser
-import org.typelevel.jawn.ast.{JParser, JValue}
+import org.typelevel.jawn.ast.JValue
 
 import scala.concurrent.{ExecutionContext, Future}
 
-final class AkkaJsonHandler()(implicit ex: ExecutionContext, mat: ActorMaterializer)
+final class AkkaJsonHandler(
+    unm: AkkaBodyUnmarshaller
+  )(implicit ex: ExecutionContext,
+    mat: ActorMaterializer)
   extends JsonHandler[Future, HttpResponse] {
 
-  /** Custom Unmarshaller for Jawn JSON */
-  implicit val unm: Unmarshaller[HttpEntity, ErrorOr[JValue]] = {
-    Unmarshaller.withMaterializer { implicit ex => implicit mat => entity: HttpEntity =>
-      entity.dataBytes
-        .runFold(ByteString.empty)(_ ++ _)
-        .map(db => JParser.parseFromStringEither(db.utf8String))
-    }
-  }
-
   override def responseBody(response: HttpResponse): Future[ErrorOr[JValue]] =
-    Unmarshal(response.entity).to[ErrorOr[JValue]]
+    unm(response.entity)
 
   override def responseHeader(response: HttpResponse): Seq[(String, String)] =
     response.headers.map(hd => hd.name() -> hd.value())

@@ -42,12 +42,12 @@ private[akka] final class AkkaRequestExecutor(
     * @param uri - request uri
     * @return    - Return wrapper response
     */
-  override def get(uri: Uri, gzipped: Boolean = false): Future[HttpResponse] = {
+  override def get(uri: Uri, compressed: Boolean): Future[HttpResponse] = {
     val request = HttpRequest(
       method = HttpMethods.GET,
       uri = uri,
       // default headers
-      headers = if (gzipped) `Accept-Encoding`(HttpEncodings.gzip) :: Nil else Nil
+      headers = if (compressed) `Accept-Encoding`(HttpEncodings.gzip) :: Nil else Nil
     )
 
     http.singleRequest(
@@ -59,10 +59,10 @@ private[akka] final class AkkaRequestExecutor(
   override def post(
       uri: Uri,
       body: RequestEntity,
-      gzipped: Boolean
+      compressed: Boolean
     ): Future[HttpResponse] = {
-    val headers = if (gzipped) `Content-Encoding`(HttpEncodings.gzip) :: Nil else Nil
-    val entity  = if (gzipped) body.transformDataBytes(Gzip.encoderFlow) else body
+    val headers = if (compressed) `Content-Encoding`(HttpEncodings.gzip) :: Nil else Nil
+    val entity  = if (compressed) body.transformDataBytes(Gzip.encoderFlow) else body
 
     val request = HttpRequest(HttpMethods.POST, uri)
       .withHeaders(headers)

@@ -34,7 +34,7 @@ final class AkkaIOClient(
     host: String,
     port: Int,
     credentials: Option[InfluxCredentials],
-    gzipped: Boolean,
+    compress: Boolean,
     httpsContext: Option[HttpsConnectionContext],
     terminateActorSystem: Boolean
   )(implicit ex: ExecutionContext,
@@ -45,21 +45,21 @@ final class AkkaIOClient(
   implicit val mat: ActorMaterializer  = ActorMaterializer()
   implicit val bb: AkkaBodyBuilder     = new AkkaBodyBuilder()
   implicit val qb: AkkaQueryBuilder    = new AkkaQueryBuilder(schema, host, port, credentials)
-  implicit val jh: AkkaJsonHandler     = new AkkaJsonHandler()
+  implicit val jh: AkkaJsonHandler     = new AkkaJsonHandler(new AkkaBodyUnmarshaller(compress))
   implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor(ctx)
   implicit val rh: AkkaResponseHandler = new AkkaResponseHandler(jh)
 
   override def database(dbName: String): AkkaDatabaseApi =
-    new AkkaDatabaseApi(dbName, gzipped)
+    new AkkaDatabaseApi(dbName, compress)
 
   override def measurement[A: ClassTag](
       dbName: String,
       measurementName: String
     ): AkkaMeasurementApi[A] =
-    new AkkaMeasurementApi[A](dbName, measurementName, gzipped)
+    new AkkaMeasurementApi[A](dbName, measurementName, compress)
 
   override def ping: Future[ErrorOr[InfluxDBInfo]] = {
-    re.get(qb.buildQuery("/ping", Nil))
+    re.get(qb.buildQuery("/ping", Nil), compressed = false)
       .flatMap(rh.pingResult)
   }
 }

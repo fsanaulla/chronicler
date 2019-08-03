@@ -39,12 +39,11 @@ class CompressionSpec
   it should "write data from file" in {
     mng.createDatabase(testDB).futureValue.right.get shouldEqual 200
 
-    val wr = db
-      .writeFromFile(Paths.get(getClass.getResource("/points.txt").getPath))
+    db.writeFromFile(Paths.get(getClass.getResource("/large_batch.txt").getPath))
       .futureValue
+      .right
+      .get shouldEqual 204
 
-    wr.right.get shouldEqual 204
-
-    db.readJson("SELECT * FROM test1").futureValue.right.get.length shouldEqual 3
+    db.readJson("SELECT * FROM test1").futureValue.right.get.length shouldEqual 10000
   }
 }
