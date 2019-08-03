@@ -22,18 +22,22 @@ import com.github.fsanaulla.chronicler.core.enums.Destination
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.SubscriptionsManagementQuery
-import com.github.fsanaulla.chronicler.core.model.FunctionK.g2f
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 19.08.17
+/***
+  * Provide support of subscription api
+  *
+  * @tparam F - execution effect type
+  * @tparam G - parsing effect type
+  * @tparam R - response type
+  * @tparam U - uri type
+  * @tparam E - response entity type
+  *
+  * @see      - https://docs.influxdata.com/influxdb/v1.7/administration/subscription-management/
   */
-trait SubscriptionManagement[F[_], G[_], Resp, Uri, Entity]
-  extends SubscriptionsManagementQuery[Uri] {
-  implicit val qb: QueryBuilder[Uri]
-  implicit val re: RequestExecutor[F, Resp, Uri, Entity]
-  implicit val rh: ResponseHandler[G, Resp]
+trait SubscriptionManagement[F[_], G[_], R, U, E] extends SubscriptionsManagementQuery[U] {
+  implicit val qb: QueryBuilder[U]
+  implicit val re: RequestExecutor[F, R, U, E]
+  implicit val rh: ResponseHandler[G, R]
   implicit val F: Functor[F]
   implicit val FK: FunctionK[G, F]
 
@@ -54,8 +58,11 @@ trait SubscriptionManagement[F[_], G[_], Resp, Uri, Entity]
       addresses: Seq[String]
     ): F[ErrorOr[ResponseCode]] =
     F.flatMap(
-      re.get(createSubscriptionQuery(subsName, dbName, rpName, destinationType, addresses))
-    )(rh.writeResult)
+      re.get(
+        createSubscriptionQuery(subsName, dbName, rpName, destinationType, addresses),
+        compressed = false
+      )
+    )(resp => FK(rh.writeResult(resp)))
 
   /** Drop subscription */
   final def dropSubscription(
@@ -64,12 +71,12 @@ trait SubscriptionManagement[F[_], G[_], Resp, Uri, Entity]
       rpName: String
     ): F[ErrorOr[ResponseCode]] =
     F.flatMap(
-      re.get(dropSubscriptionQuery(subName, dbName, rpName))
-    )(rh.writeResult)
+      re.get(dropSubscriptionQuery(subName, dbName, rpName), compressed = false)
+    )(resp => FK(rh.writeResult(resp)))
 
   /** Show list of subscription info */
   final def showSubscriptionsInfo: F[ErrorOr[Array[SubscriptionInfo]]] =
     F.flatMap(
-      re.get(showSubscriptionsQuery)
-    )(rh.toSubscriptionQueryResult(_))
+      re.get(showSubscriptionsQuery, compressed = false)
+    )(resp => FK(rh.toSubscriptionQueryResult(resp)))
 }

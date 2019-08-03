@@ -17,7 +17,7 @@
 package com.github.fsanaulla.chronicler.core.components
 
 /**
-  * Functionality to execute request
+  * Abstraction over request execution
   *
   * @tparam F - execution effect
   * @tparam R - response
@@ -29,20 +29,21 @@ trait RequestExecutor[F[_], R, U, B] {
   /**
     * Execute HTTP POST
     *
-    * @param uri     - request uri
-    * @param body    - request body
-    * @param gzipped - body compression flag
+    * @param uri        - request uri
+    * @param body       - request body
+    * @param compressed - body compression flag
     */
   def post(
       uri: U,
       body: B,
-      gzipped: Boolean
+      compressed: Boolean
     ): F[R]
 
   /**
     * Execute HTTP GET request
     *
-    * @param uri - request uri
+    * @param uri        - request uri
+    * @param compressed - body compression flag
     * */
-  def get(uri: U, gzipped: Boolean = false): F[R]
+  def get(uri: U, compressed: Boolean): F[R]
 }

@@ -24,10 +24,11 @@ import com.github.fsanaulla.chronicler.core.alias.Id
   * This transformation is universal, meaning that a FunctionK[List, Option] will translate all List[A] values into an Option[A]
   * value for all possible types of A. This explanation may be easier to understand if we first step back and talk about ordinary functions.
   *
-  * simplified version of - https://typelevel.org/cats/datatypes/functionk.html
+  * @see - https://typelevel.org/cats/datatypes/functionk.html
   *
   * @tparam F - result effect
   * @tparam G - incoming effect
+  *
   * @since 0.5.5
   */
 trait FunctionK[G[_], F[_]] {
@@ -42,6 +43,4 @@ object FunctionK {
   implicit def identity[F[_]]: FunctionK[F, F] = new FunctionK[F, F] {
     override def apply[A](fa: F[A]): F[A] = fa
   }
-
-  implicit def g2f[F[_], G[_], A](fa: G[A])(implicit FK: FunctionK[G, F]): F[A] = FK(fa)
 }

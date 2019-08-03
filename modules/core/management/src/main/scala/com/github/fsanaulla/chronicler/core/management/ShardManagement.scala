@@ -21,7 +21,6 @@ import com.github.fsanaulla.chronicler.core.components._
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.ShardManagementQuery
-import com.github.fsanaulla.chronicler.core.model.FunctionK.g2f
 
 /**
   * Created by
@@ -37,13 +36,17 @@ trait ShardManagement[F[_], G[_], Resp, Uri, Entity] extends ShardManagementQuer
 
   /** Drop shard */
   final def dropShard(shardId: Int): F[ErrorOr[ResponseCode]] =
-    F.flatMap(re.get(dropShardQuery(shardId)))(rh.writeResult)
+    F.flatMap(re.get(dropShardQuery(shardId), compressed = false))(resp => FK(rh.writeResult(resp)))
 
   /** Show shard groups */
   final def showShardGroups: F[ErrorOr[Array[ShardGroupsInfo]]] =
-    F.flatMap(re.get(showShardGroupsQuery))(rh.toShardGroupQueryResult(_))
+    F.flatMap(
+      re.get(showShardGroupsQuery, compressed = false)
+    )(resp => FK(rh.toShardGroupQueryResult(resp)))
 
   /** Show shards */
   final def showShards: F[ErrorOr[Array[ShardInfo]]] =
-    F.flatMap(re.get(showShardsQuery))(rh.toShardQueryResult(_))
+    F.flatMap(
+      re.get(showShardsQuery, compressed = false)
+    )(resp => FK(rh.toShardQueryResult(resp)))
 }

@@ -33,8 +33,9 @@ import org.typelevel.jawn.ast.{JArray, JValue}
 import scala.reflect.ClassTag
 
 /***
-  * Trait that define all necessary methods for handling JSON related operation
+  * JSON handler for extracting body, code, headers
   *
+  * @tparam F - parsing effect
   * @tparam R - Response type
   */
 abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
@@ -51,9 +52,14 @@ abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
 
   /***
     * Extracting JSON from Response
+    *
+    * @param response   - HTTP response
     */
   def responseBody(response: R): F[ErrorOr[JValue]]
 
+  /***
+    * Used to extract database info from ping response
+    */
   final def databaseInfo(response: R): ErrorOr[InfluxDBInfo] = {
     val headers = responseHeader(response)
     val result = for {
@@ -108,7 +114,13 @@ abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
       .mapRight(_.get("values").arrayValueOr(Array.empty))                    // get array of jValue
       .flatMapRight(arr => either.array[Throwable, JArray](arr.map(_.array))) // map to array of JArray
 
-  final def gropedResult(js: JValue): ErrorOr[Array[(Array[String], JArray)]] = {
+  /***
+    * Extract influx point grouped by some criteria
+    *
+    * @param js - JSON payload
+    * @return   - array of pairs (grouping key, grouped value)
+    */
+  final def groupedResult(js: JValue): ErrorOr[Array[(Array[String], JArray)]] = {
     js.get("results")
       .arrayValue
       .flatMapRight(_.headRight(new NoSuchElementException("results[0]")))

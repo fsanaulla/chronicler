@@ -22,10 +22,8 @@ import com.github.fsanaulla.chronicler.core.enums.Privilege
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.UserManagementQuery
-import com.github.fsanaulla.chronicler.core.model.FunctionK.g2f
 
 trait UserManagement[F[_], G[_], Resp, Uri, Body] extends UserManagementQuery[Uri] {
-
   implicit val qb: QueryBuilder[Uri]
   implicit val re: RequestExecutor[F, Resp, Uri, Body]
   implicit val rh: ResponseHandler[G, Resp]
@@ -39,7 +37,9 @@ trait UserManagement[F[_], G[_], Resp, Uri, Body] extends UserManagementQuery[Ur
     * @return         - Result of execution
     */
   final def createUser(username: String, password: String): F[ErrorOr[ResponseCode]] =
-    F.flatMap(re.get(createUserQuery(username, password)))(rh.writeResult)
+    F.flatMap(
+      re.get(createUserQuery(username, password), compressed = false)
+    )(resp => FK(rh.writeResult(resp)))
 
   /**
     * Create admin user
@@ -48,15 +48,21 @@ trait UserManagement[F[_], G[_], Resp, Uri, Body] extends UserManagementQuery[Ur
     * @return         - execution response
     */
   final def createAdmin(username: String, password: String): F[ErrorOr[ResponseCode]] =
-    F.flatMap(re.get(createAdminQuery(username, password)))(rh.writeResult)
+    F.flatMap(
+      re.get(createAdminQuery(username, password), compressed = false)
+    )(resp => FK(rh.writeResult(resp)))
 
   /** Drop user */
   final def dropUser(username: String): F[ErrorOr[ResponseCode]] =
-    F.flatMap(re.get(dropUserQuery(username)))(rh.writeResult)
+    F.flatMap(
+      re.get(dropUserQuery(username), compressed = false)
+    )(resp => FK(rh.writeResult(resp)))
 
   /** Set password for user */
   final def setUserPassword(username: String, password: String): F[ErrorOr[ResponseCode]] =
-    F.flatMap(re.get(setUserPasswordQuery(username, password)))(rh.writeResult)
+    F.flatMap(
+      re.get(setUserPasswordQuery(username, password), compressed = false)
+    )(resp => FK(rh.writeResult(resp)))
 
   /** Set user privilege on specified database */
   final def setPrivileges(
@@ -64,7 +70,9 @@ trait UserManagement[F[_], G[_], Resp, Uri, Body] extends UserManagementQuery[Ur
       dbName: String,
       privilege: Privilege
     ): F[ErrorOr[ResponseCode]] =
-    F.flatMap(re.get(setPrivilegesQuery(dbName, username, privilege)))(rh.writeResult)
+    F.flatMap(
+      re.get(setPrivilegesQuery(dbName, username, privilege), compressed = false)
+    )(resp => FK(rh.writeResult(resp)))
 
   /** Revoke user privilege on specified database */
   final def revokePrivileges(
@@ -72,22 +80,32 @@ trait UserManagement[F[_], G[_], Resp, Uri, Body] extends UserManagementQuery[Ur
       dbName: String,
       privilege: Privilege
     ): F[ErrorOr[ResponseCode]] =
-    F.flatMap(re.get(revokePrivilegesQuery(dbName, username, privilege)))(rh.writeResult)
+    F.flatMap(
+      re.get(revokePrivilegesQuery(dbName, username, privilege), compressed = false)
+    )(resp => FK(rh.writeResult(resp)))
 
   /** Grant admin rights */
   final def makeAdmin(username: String): F[ErrorOr[ResponseCode]] =
-    F.flatMap(re.get(makeAdminQuery(username)))(rh.writeResult)
+    F.flatMap(
+      re.get(makeAdminQuery(username), compressed = false)
+    )(resp => FK(rh.writeResult(resp)))
 
   /** Remove admin rights */
   final def disableAdmin(username: String): F[ErrorOr[ResponseCode]] =
-    F.flatMap(re.get(disableAdminQuery(username)))(rh.writeResult)
+    F.flatMap(
+      re.get(disableAdminQuery(username), compressed = false)
+    )(resp => FK(rh.writeResult(resp)))
 
   /** Show user lists */
   final def showUsers: F[ErrorOr[Array[UserInfo]]] =
-    F.flatMap(re.get(showUsersQuery))(rh.queryResult[UserInfo](_))
+    F.flatMap(
+      re.get(showUsersQuery, compressed = false)
+    )(resp => FK(rh.queryResult[UserInfo](resp)))
 
   /** Show user privileges */
   final def showUserPrivileges(username: String): F[ErrorOr[Array[UserPrivilegesInfo]]] =
-    F.flatMap(re.get(showUserPrivilegesQuery(username)))(rh.queryResult[UserPrivilegesInfo](_))
+    F.flatMap(
+      re.get(showUserPrivilegesQuery(username), compressed = false)
+    )(resp => FK(rh.queryResult[UserPrivilegesInfo](resp)))
 
 }

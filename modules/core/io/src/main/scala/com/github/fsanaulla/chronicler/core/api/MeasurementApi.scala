@@ -19,9 +19,8 @@ package com.github.fsanaulla.chronicler.core.api
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
 import com.github.fsanaulla.chronicler.core.components._
 import com.github.fsanaulla.chronicler.core.either
-import com.github.fsanaulla.chronicler.core.either._
+import com.github.fsanaulla.chronicler.core.either.EitherOps
 import com.github.fsanaulla.chronicler.core.enums._
-import com.github.fsanaulla.chronicler.core.model.FunctionK.g2f
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
 
@@ -67,7 +66,9 @@ class MeasurementApi[F[_], G[_], Resp, Uri, Body, A](
       case Left(ex) =>
         FA.fail(ex)
       case Right(body) =>
-        F.flatMap(re.post(uri, body, gzipped))(rh.writeResult)
+        F.flatMap(
+          re.post(uri, body, gzipped)
+        )(resp => FK(rh.writeResult(resp)))
     }
   }
 
@@ -97,7 +98,7 @@ class MeasurementApi[F[_], G[_], Resp, Uri, Body, A](
       case Right(body) =>
         F.flatMap(
           re.post(uri, body, gzipped)
-        )(rh.writeResult)
+        )(resp => FK(rh.writeResult(resp)))
     }
   }
 
@@ -109,8 +110,8 @@ class MeasurementApi[F[_], G[_], Resp, Uri, Body, A](
       clsTag: ClassTag[A]
     ): F[ErrorOr[Array[A]]] = {
     val uri = singleQuery(dbName, query, epoch, pretty)
-    F.flatMap(re.get(uri)) { resp =>
-      F.map(rh.queryResultJson(resp)) { ethResp =>
+    F.flatMap(re.get(uri, gzipped)) { resp =>
+      F.map(FK(rh.queryResultJson(resp))) { ethResp =>
         ethResp.flatMapRight { arr =>
           either.array(arr.map(rd.read))
         }

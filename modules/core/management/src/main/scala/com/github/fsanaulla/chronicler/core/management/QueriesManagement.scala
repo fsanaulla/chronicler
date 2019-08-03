@@ -21,7 +21,6 @@ import com.github.fsanaulla.chronicler.core.components._
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.QueriesManagementQuery
-import com.github.fsanaulla.chronicler.core.model.FunctionK.g2f
 
 /**
   * Created by
@@ -37,9 +36,13 @@ trait QueriesManagement[F[_], G[_], Resp, Uri, Entity] extends QueriesManagement
 
   /** Show list of queries */
   final def showQueries: F[ErrorOr[Array[QueryInfo]]] =
-    F.flatMap(re.get(showQuerysQuery))(rh.queryResult[QueryInfo](_))
+    F.flatMap(
+      re.get(showQuerysQuery, compressed = false)
+    )(resp => FK(rh.queryResult[QueryInfo](resp)))
 
   /** Kill query */
   final def killQuery(queryId: Int): F[ErrorOr[ResponseCode]] =
-    F.flatMap(re.get(killQueryQuery(queryId)))(rh.writeResult)
+    F.flatMap(
+      re.get(killQueryQuery(queryId), compressed = false)
+    )(resp => FK(rh.writeResult(resp)))
 }
