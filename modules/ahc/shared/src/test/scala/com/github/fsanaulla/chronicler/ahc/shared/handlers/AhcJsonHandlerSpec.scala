@@ -283,7 +283,7 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
                                          |}
       """.stripMargin).toOption.value
 
-    val result = jsonHandler.gropedResult(json).right.get
+    val result = jsonHandler.groupedResult(json).right.get
 
     result.length shouldEqual 2
 

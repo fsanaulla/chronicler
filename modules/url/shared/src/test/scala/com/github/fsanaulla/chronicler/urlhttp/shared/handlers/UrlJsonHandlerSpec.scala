@@ -285,7 +285,7 @@ class UrlJsonHandlerSpec extends FlatSpec with Matchers with TryValues with Opti
                                          |}
       """.stripMargin).success.value
 
-    val result = jsonHandler.gropedResult(json).right.get
+    val result = jsonHandler.groupedResult(json).right.get
     result.length shouldEqual 2
 
     result.map { case (k, v) => k.toList -> v }.toList shouldEqual List(
