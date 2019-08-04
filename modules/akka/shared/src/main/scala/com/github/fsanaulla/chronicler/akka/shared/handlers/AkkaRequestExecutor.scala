@@ -70,4 +70,21 @@ private[akka] final class AkkaRequestExecutor(
 
     http.singleRequest(request, connectionContext = ctx)
   }
+
+  /**
+    * Quite simple post operation for creating
+    *
+    * @param uri - request uri
+    */
+  override def post(uri: Uri): Future[HttpResponse] = {
+    val request = HttpRequest(
+      method = HttpMethods.GET,
+      uri = uri
+    )
+
+    http.singleRequest(
+      request,
+      connectionContext = ctx
+    )
+  }
 }
