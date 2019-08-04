@@ -52,22 +52,21 @@ trait DatabaseManagement[F[_], G[_], Resp, Uri, Body] extends DataManagementQuer
       rpName: Option[String] = None
     ): F[ErrorOr[ResponseCode]] =
     F.flatMap(
-      re.get(
-        createDatabaseQuery(dbName, duration, replication, shardDuration, rpName),
-        compressed = false
+      re.post(
+        createDatabaseQuery(dbName, duration, replication, shardDuration, rpName)
       )
     )(resp => FK(rh.writeResult(resp)))
 
   /** Drop database */
   final def dropDatabase(dbName: String): F[ErrorOr[ResponseCode]] =
     F.flatMap(
-      re.get(dropDatabaseQuery(dbName), compressed = false)
+      re.get(dropDatabaseQuery(dbName), compress = false)
     )(resp => FK(rh.writeResult(resp)))
 
   /** Drop measurement */
   final def dropMeasurement(dbName: String, measurementName: String): F[ErrorOr[ResponseCode]] =
     F.flatMap(
-      re.get(dropMeasurementQuery(dbName, measurementName), compressed = false)
+      re.get(dropMeasurementQuery(dbName, measurementName), compress = false)
     )(resp => FK(rh.writeResult(resp)))
 
   /** Show measurements */

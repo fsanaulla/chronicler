@@ -36,17 +36,17 @@ trait ShardManagement[F[_], G[_], Resp, Uri, Entity] extends ShardManagementQuer
 
   /** Drop shard */
   final def dropShard(shardId: Int): F[ErrorOr[ResponseCode]] =
-    F.flatMap(re.get(dropShardQuery(shardId), compressed = false))(resp => FK(rh.writeResult(resp)))
+    F.flatMap(re.get(dropShardQuery(shardId), compress = false))(resp => FK(rh.writeResult(resp)))
 
   /** Show shard groups */
   final def showShardGroups: F[ErrorOr[Array[ShardGroupsInfo]]] =
     F.flatMap(
-      re.get(showShardGroupsQuery, compressed = false)
+      re.get(showShardGroupsQuery, compress = false)
     )(resp => FK(rh.toShardGroupQueryResult(resp)))
 
   /** Show shards */
   final def showShards: F[ErrorOr[Array[ShardInfo]]] =
     F.flatMap(
-      re.get(showShardsQuery, compressed = false)
+      re.get(showShardsQuery, compress = false)
     )(resp => FK(rh.toShardQueryResult(resp)))
 }

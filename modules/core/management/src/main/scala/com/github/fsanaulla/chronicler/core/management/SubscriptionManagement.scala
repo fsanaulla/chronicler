@@ -60,7 +60,7 @@ trait SubscriptionManagement[F[_], G[_], R, U, E] extends SubscriptionsManagemen
     F.flatMap(
       re.get(
         createSubscriptionQuery(subsName, dbName, rpName, destinationType, addresses),
-        compressed = false
+        compress = false
       )
     )(resp => FK(rh.writeResult(resp)))
 
@@ -71,12 +71,12 @@ trait SubscriptionManagement[F[_], G[_], R, U, E] extends SubscriptionsManagemen
       rpName: String
     ): F[ErrorOr[ResponseCode]] =
     F.flatMap(
-      re.get(dropSubscriptionQuery(subName, dbName, rpName), compressed = false)
+      re.get(dropSubscriptionQuery(subName, dbName, rpName), compress = false)
     )(resp => FK(rh.writeResult(resp)))
 
   /** Show list of subscription info */
   final def showSubscriptionsInfo: F[ErrorOr[Array[SubscriptionInfo]]] =
     F.flatMap(
-      re.get(showSubscriptionsQuery, compressed = false)
+      re.get(showSubscriptionsQuery, compress = false)
     )(resp => FK(rh.toSubscriptionQueryResult(resp)))
 }

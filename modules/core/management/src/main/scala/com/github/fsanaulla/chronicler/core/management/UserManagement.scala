@@ -38,7 +38,7 @@ trait UserManagement[F[_], G[_], Resp, Uri, Body] extends UserManagementQuery[Ur
     */
   final def createUser(username: String, password: String): F[ErrorOr[ResponseCode]] =
     F.flatMap(
-      re.get(createUserQuery(username, password), compressed = false)
+      re.get(createUserQuery(username, password), compress = false)
     )(resp => FK(rh.writeResult(resp)))
 
   /**
@@ -49,19 +49,19 @@ trait UserManagement[F[_], G[_], Resp, Uri, Body] extends UserManagementQuery[Ur
     */
   final def createAdmin(username: String, password: String): F[ErrorOr[ResponseCode]] =
     F.flatMap(
-      re.get(createAdminQuery(username, password), compressed = false)
+      re.get(createAdminQuery(username, password), compress = false)
     )(resp => FK(rh.writeResult(resp)))
 
   /** Drop user */
   final def dropUser(username: String): F[ErrorOr[ResponseCode]] =
     F.flatMap(
-      re.get(dropUserQuery(username), compressed = false)
+      re.get(dropUserQuery(username), compress = false)
     )(resp => FK(rh.writeResult(resp)))
 
   /** Set password for user */
   final def setUserPassword(username: String, password: String): F[ErrorOr[ResponseCode]] =
     F.flatMap(
-      re.get(setUserPasswordQuery(username, password), compressed = false)
+      re.get(setUserPasswordQuery(username, password), compress = false)
     )(resp => FK(rh.writeResult(resp)))
 
   /** Set user privilege on specified database */
@@ -71,7 +71,7 @@ trait UserManagement[F[_], G[_], Resp, Uri, Body] extends UserManagementQuery[Ur
       privilege: Privilege
     ): F[ErrorOr[ResponseCode]] =
     F.flatMap(
-      re.get(setPrivilegesQuery(dbName, username, privilege), compressed = false)
+      re.get(setPrivilegesQuery(dbName, username, privilege), compress = false)
     )(resp => FK(rh.writeResult(resp)))
 
   /** Revoke user privilege on specified database */
@@ -81,31 +81,31 @@ trait UserManagement[F[_], G[_], Resp, Uri, Body] extends UserManagementQuery[Ur
       privilege: Privilege
     ): F[ErrorOr[ResponseCode]] =
     F.flatMap(
-      re.get(revokePrivilegesQuery(dbName, username, privilege), compressed = false)
+      re.get(revokePrivilegesQuery(dbName, username, privilege), compress = false)
     )(resp => FK(rh.writeResult(resp)))
 
   /** Grant admin rights */
   final def makeAdmin(username: String): F[ErrorOr[ResponseCode]] =
     F.flatMap(
-      re.get(makeAdminQuery(username), compressed = false)
+      re.get(makeAdminQuery(username), compress = false)
     )(resp => FK(rh.writeResult(resp)))
 
   /** Remove admin rights */
   final def disableAdmin(username: String): F[ErrorOr[ResponseCode]] =
     F.flatMap(
-      re.get(disableAdminQuery(username), compressed = false)
+      re.get(disableAdminQuery(username), compress = false)
     )(resp => FK(rh.writeResult(resp)))
 
   /** Show user lists */
   final def showUsers: F[ErrorOr[Array[UserInfo]]] =
     F.flatMap(
-      re.get(showUsersQuery, compressed = false)
+      re.get(showUsersQuery, compress = false)
     )(resp => FK(rh.queryResult[UserInfo](resp)))
 
   /** Show user privileges */
   final def showUserPrivileges(username: String): F[ErrorOr[Array[UserPrivilegesInfo]]] =
     F.flatMap(
-      re.get(showUserPrivilegesQuery(username), compressed = false)
+      re.get(showUserPrivilegesQuery(username), compress = false)
     )(resp => FK(rh.queryResult[UserPrivilegesInfo](resp)))
 
 }

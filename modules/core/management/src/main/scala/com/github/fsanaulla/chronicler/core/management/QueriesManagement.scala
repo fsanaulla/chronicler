@@ -37,12 +37,12 @@ trait QueriesManagement[F[_], G[_], Resp, Uri, Entity] extends QueriesManagement
   /** Show list of queries */
   final def showQueries: F[ErrorOr[Array[QueryInfo]]] =
     F.flatMap(
-      re.get(showQuerysQuery, compressed = false)
+      re.get(showQuerysQuery, compress = false)
     )(resp => FK(rh.queryResult[QueryInfo](resp)))
 
   /** Kill query */
   final def killQuery(queryId: Int): F[ErrorOr[ResponseCode]] =
     F.flatMap(
-      re.get(killQueryQuery(queryId), compressed = false)
+      re.get(killQueryQuery(queryId), compress = false)
     )(resp => FK(rh.writeResult(resp)))
 }

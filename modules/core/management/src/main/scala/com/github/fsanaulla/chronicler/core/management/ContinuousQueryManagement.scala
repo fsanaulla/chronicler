@@ -49,14 +49,14 @@ trait ContinuousQueryManagement[F[_], G[_], Resp, Uri, Entity] extends Continuou
     ): F[ErrorOr[ResponseCode]] = {
     require(validCQQuery(query), "Query required INTO and GROUP BY clause")
     F.flatMap(
-      re.get(createCQQuery(dbName, cqName, query), compressed = false)
+      re.get(createCQQuery(dbName, cqName, query), compress = false)
     )(resp => FK(rh.writeResult(resp)))
   }
 
   /** Show continuous query information */
   final def showCQs: F[ErrorOr[Array[ContinuousQueryInfo]]] =
     F.flatMap(
-      re.get(showCQQuery, compressed = false)
+      re.get(showCQQuery, compress = false)
     )(resp => FK(rh.toCqQueryResult(resp)))
 
   /**
@@ -68,7 +68,7 @@ trait ContinuousQueryManagement[F[_], G[_], Resp, Uri, Entity] extends Continuou
     */
   final def dropCQ(dbName: String, cqName: String): F[ErrorOr[ResponseCode]] =
     F.flatMap(
-      re.get(dropCQQuery(dbName, cqName), compressed = false)
+      re.get(dropCQQuery(dbName, cqName), compress = false)
     )(resp => FK(rh.writeResult(resp)))
 
   private[this] def validCQQuery(query: String): Boolean =

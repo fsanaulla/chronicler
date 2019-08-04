@@ -57,7 +57,7 @@ trait RetentionPolicyManagement[F[_], G[_], Resp, Uri, Entity]
     F.flatMap(
       re.get(
         createRPQuery(rpName, dbName, duration, replication, shardDuration, default),
-        compressed = false
+        compress = false
       )
     )(resp => FK(rh.writeResult(resp)))
   }
@@ -74,20 +74,20 @@ trait RetentionPolicyManagement[F[_], G[_], Resp, Uri, Entity]
     F.flatMap(
       re.get(
         updateRPQuery(rpName, dbName, duration, replication, shardDuration, default),
-        compressed = false
+        compress = false
       )
     )(resp => FK(rh.writeResult(resp)))
 
   /** Drop retention policy */
   final def dropRetentionPolicy(rpName: String, dbName: String): F[ErrorOr[ResponseCode]] =
     F.flatMap(
-      re.get(dropRPQuery(rpName, dbName), compressed = false)
+      re.get(dropRPQuery(rpName, dbName), compress = false)
     )(resp => FK(rh.writeResult(resp)))
 
   /** Show list of retention polices */
   final def showRetentionPolicies(dbName: String): F[ErrorOr[Array[RetentionPolicyInfo]]] =
     F.flatMap(
-      re.get(showRPQuery(dbName), compressed = false)
+      re.get(showRPQuery(dbName), compress = false)
     )(resp => FK(rh.queryResult[RetentionPolicyInfo](resp)))
 
 }
