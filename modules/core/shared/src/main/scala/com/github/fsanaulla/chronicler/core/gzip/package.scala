@@ -16,8 +16,8 @@
 
 package com.github.fsanaulla.chronicler.core
 
-import java.io.ByteArrayOutputStream
-import java.util.zip.GZIPOutputStream
+import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
+import java.util.zip.{GZIPInputStream, GZIPOutputStream}
 
 package object gzip {
 
@@ -36,5 +36,19 @@ package object gzip {
     val gzippedData   = bArrOut.toByteArray
     val contentLength = gzippedData.length
     contentLength -> gzippedData
+  }
+
+  def decompress(data: Array[Byte]): Array[Byte] = {
+    val gis = new GZIPInputStream(new ByteArrayInputStream(data))
+    val out = new ByteArrayOutputStream()
+    val buf = new Array[Byte](1024)
+
+    var res = 0
+    while (res >= 0) {
+      res = gis.read(buf, 0, buf.length)
+      if (res > 0) out.write(buf, 0, res)
+    }
+
+    out.toByteArray
   }
 }

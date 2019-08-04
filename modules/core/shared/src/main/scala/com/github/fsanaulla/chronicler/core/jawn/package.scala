@@ -16,6 +16,8 @@
 
 package com.github.fsanaulla.chronicler.core
 
+import java.nio.ByteBuffer
+
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import org.typelevel.jawn.ast._
 
@@ -55,6 +57,13 @@ package object jawn {
 
     def parseFromStringEither(str: String): ErrorOr[JValue] = {
       jp.parseFromString(str) match {
+        case Success(value)     => Right(value)
+        case Failure(exception) => Left(exception)
+      }
+    }
+
+    def parseFromByteBufferEither(data: ByteBuffer): ErrorOr[JValue] = {
+      jp.parseFromByteBuffer(data) match {
         case Success(value)     => Right(value)
         case Failure(exception) => Left(exception)
       }

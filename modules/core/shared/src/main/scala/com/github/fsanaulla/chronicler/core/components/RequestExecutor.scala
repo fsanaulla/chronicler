@@ -27,23 +27,30 @@ package com.github.fsanaulla.chronicler.core.components
 trait RequestExecutor[F[_], R, U, B] {
 
   /**
+    * Quite simple post operation for creating
+    *
+    * @param uri - request uri
+    */
+  def post(uri: U): F[R]
+
+  /**
     * Execute HTTP POST
     *
     * @param uri        - request uri
     * @param body       - request body
-    * @param compressed - body compression flag
+    * @param compress   - body compression flag
     */
   def post(
       uri: U,
       body: B,
-      compressed: Boolean
+      compress: Boolean
     ): F[R]
 
   /**
     * Execute HTTP GET request
     *
     * @param uri        - request uri
-    * @param compressed - body compression flag
+    * @param compress - body compression flag
     * */
-  def get(uri: U, compressed: Boolean): F[R]
+  def get(uri: U, compress: Boolean): F[R]
 }
