@@ -16,7 +16,6 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
-import com.github.fsanaulla.chronicler.urlhttp.shared.implicits.jsonHandler
 import org.scalatest.{FlatSpec, Matchers, OptionValues, TryValues}
 import org.typelevel.jawn.ast._
 import requests.{Response, ResponseBlob}
@@ -33,6 +32,7 @@ class UrlJsonHandlerSpec extends FlatSpec with Matchers with TryValues with Opti
   implicit def str2resp(str: String): Response =
     Response("", 200, "", Map.empty, new ResponseBlob(str.getBytes()), None)
 
+  val jsonHandler = new UrlJsonHandler(compressed = false)
   "UrlJsonHandler" should "extract JSON from HTTP response" in {
     val singleStrJson = """{
                       "results": [

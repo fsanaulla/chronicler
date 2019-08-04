@@ -29,14 +29,14 @@ import scala.util.Try
 
 final class UrlDatabaseApi(
     dbName: String,
-    gzipped: Boolean
+    compress: Boolean
   )(implicit qb: UrlQueryBuilder,
     bd: BodyBuilder[String],
     re: UrlRequestExecutor,
     rh: ResponseHandler[Id, Response],
     F: Functor[Try],
     FK: FunctionK[Id, Try])
-  extends DatabaseApi[Try, Id, Response, Url, String](dbName, gzipped) {
+  extends DatabaseApi[Try, Id, Response, Url, String](dbName, compress) {
 
   /**
     * Chunked query execution with json response
@@ -46,6 +46,7 @@ final class UrlDatabaseApi(
     * @param pretty    - pretty printing response
     * @param chunkSize - count points in the chunk
     * @return          - chunks iterator
+    *
     * @since           - 0.5.2
     *
     * */

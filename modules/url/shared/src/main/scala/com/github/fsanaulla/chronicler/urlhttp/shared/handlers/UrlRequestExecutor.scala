@@ -21,7 +21,7 @@ import com.github.fsanaulla.chronicler.core.components.{JsonHandler, RequestExec
 import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.gzip
 import com.github.fsanaulla.chronicler.core.jawn.RichJParser
-import com.github.fsanaulla.chronicler.urlhttp.shared.Url
+import com.github.fsanaulla.chronicler.urlhttp.shared.{ChroniclerSession, Url}
 import org.typelevel.jawn.ast.{JArray, JParser}
 import requests._
 
@@ -39,12 +39,27 @@ private[urlhttp] final class UrlRequestExecutor(
     * @param uri - request uri
     * @return    - Return wrapper response
     */
-  override def get(uri: Url, gzipped: Boolean = false): Try[Response] = {
+  override def get(uri: Url, compress: Boolean): Try[Response] = {
+    val headers =
+      if (compress) "Accept-Encoding" -> "gzip" :: Nil else Nil
+
     Try {
-      requests.get(
+      requests.get
+        .copy(sess = new ChroniclerSession)
+        .apply(
+          uri.make,
+          params = uri.params,
+          headers = headers,
+          autoDecompress = false
+        )
+    }
+  }
+
+  override def post(uri: Url): Try[Response] = {
+    Try {
+      requests.post(
         uri.make,
-        params = uri.params,
-        headers = if (gzipped) "Accept-Encoding" -> "gzip" :: Nil else Nil
+        params = uri.params
       )
     }
   }

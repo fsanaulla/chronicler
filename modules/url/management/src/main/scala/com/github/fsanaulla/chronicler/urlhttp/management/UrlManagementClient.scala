@@ -19,6 +19,7 @@ package com.github.fsanaulla.chronicler.urlhttp.management
 import com.github.fsanaulla.chronicler.core.ManagementClient
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
 import com.github.fsanaulla.chronicler.core.components.ResponseHandler
+import com.github.fsanaulla.chronicler.core.implicits.{applyId, functorId}
 import com.github.fsanaulla.chronicler.core.model.{
   FunctionK,
   Functor,
@@ -26,9 +27,11 @@ import com.github.fsanaulla.chronicler.core.model.{
   InfluxDBInfo
 }
 import com.github.fsanaulla.chronicler.urlhttp.shared.Url
-import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlQueryBuilder, UrlRequestExecutor}
-import com.github.fsanaulla.chronicler.urlhttp.shared.implicits.jsonHandler
-import com.github.fsanaulla.chronicler.core.implicits.{applyId, functorId}
+import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{
+  UrlJsonHandler,
+  UrlQueryBuilder,
+  UrlRequestExecutor
+}
 import requests.Response
 
 import scala.util.Try
@@ -42,12 +45,13 @@ final class UrlManagementClient(
     val FK: FunctionK[Id, Try])
   extends ManagementClient[Try, Id, Response, Url, String] {
 
+  val jsonHandler                                = new UrlJsonHandler(compressed = false)
   implicit val qb: UrlQueryBuilder               = new UrlQueryBuilder(host, port, credentials, ssl)
   implicit val re: UrlRequestExecutor            = new UrlRequestExecutor(ssl, jsonHandler)
   implicit val rh: ResponseHandler[Id, Response] = new ResponseHandler(jsonHandler)
 
   override def ping: Try[ErrorOr[InfluxDBInfo]] = {
-    re.get(qb.buildQuery("/ping"))
+    re.get(qb.buildQuery("/ping"), compress = false)
       .map(rh.pingResult)
   }
 
