@@ -63,4 +63,16 @@ private[ahc] final class AhcRequestExecutor(implicit backend: SttpBackend[Future
 
     maybeEncoded.send()
   }
+
+  /**
+    * Quite simple post operation for creating
+    *
+    * @param uri - request uri
+    */
+  override def post(uri: Uri): Future[Response[JValue]] = {
+    sttp
+      .post(uri)
+      .response(asJson)
+      .send()
+  }
 }
