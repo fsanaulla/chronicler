@@ -38,7 +38,7 @@ object InfluxIO {
     * @param credentials  - user credentials
     * @param httpsContext - Context for enabling HTTPS
     * @param system       - actor system, by default will create new one
-    * @param gzipped      - enable gzip compression
+    * @param compress      - enable gzip compression
     * @param ex           - implicit execution context, by default use standard one
     * @return             - [[AkkaIOClient]]
     */
@@ -46,12 +46,13 @@ object InfluxIO {
       host: String,
       port: Int = 8086,
       credentials: Option[InfluxCredentials] = None,
-      gzipped: Boolean = false,
-      httpsContext: Option[HttpsConnectionContext] = None
+      compress: Boolean = false,
+      httpsContext: Option[HttpsConnectionContext] = None,
+      terminateActorSystem: Boolean = false
     )(implicit ex: ExecutionContext,
       system: ActorSystem
     ): AkkaIOClient =
-    new AkkaIOClient(host, port, credentials, gzipped, httpsContext)
+    new AkkaIOClient(host, port, credentials, compress, httpsContext, terminateActorSystem)
 
   /**
     * Retrieve IO InfluxDB client, without management functionality using configuration object
@@ -62,5 +63,12 @@ object InfluxIO {
     * @return            - [[AkkaIOClient]]
     */
   def apply(conf: InfluxConfig)(implicit ex: ExecutionContext, system: ActorSystem): AkkaIOClient =
-    apply(conf.host, conf.port, conf.credentials, conf.gzipped, conf.httpsContext)
+    apply(
+      conf.host,
+      conf.port,
+      conf.credentials,
+      conf.compress,
+      conf.httpsContext,
+      conf.terminateActorSystem
+    )
 }

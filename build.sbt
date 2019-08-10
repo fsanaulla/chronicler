@@ -33,7 +33,6 @@ lazy val coreIO = project
   )
   .configure(defaultSettings)
   .dependsOn(coreShared)
-  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val coreManagement = project
   .in(file("modules/core/management"))
@@ -43,7 +42,6 @@ lazy val coreManagement = project
   )
   .configure(defaultSettings)
   .dependsOn(coreShared)
-  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val coreShared = project
   .in(file("modules/core/shared"))
@@ -58,7 +56,6 @@ lazy val coreShared = project
     )
   )
   .configure(defaultSettings)
-  .enablePlugins(AutomateHeaderPlugin)
 
 //////////////////////////////////////////////////////
 ////////////////// URL HTTP MODULES //////////////////
@@ -112,6 +109,7 @@ lazy val akkaIO = project
   .dependsOn(coreIO, akkaShared)
   .dependsOn(akkaManagement % "test->test")
   .dependsOn(itTesting % "test->test")
+  .dependsOn(macros % "test->test")
 
 lazy val akkaShared = project
   .in(file("modules/akka/shared"))

@@ -24,18 +24,22 @@ import scala.reflect.ClassTag
 /**
   * Define necessary methods for providing IO operations
   *
-  * @tparam F - Response type container
+  * @tparam F - request execution effect
+  * @tparam G - response parser effect
+  * @tparam R - response type
+  * @tparam U - request uri type
+  * @tparam E - request entity type
   */
-trait IOClient[F[_], Resp, Uri, Body] extends SystemManagement[F] with AutoCloseable {
+trait IOClient[F[_], G[_], R, U, E] extends SystemManagement[F] with AutoCloseable {
 
-  type Database       = DatabaseApi[F, Resp, Uri, Body]
-  type Measurement[A] = MeasurementApi[F, Resp, Uri, Body, A]
+  type Database       = DatabaseApi[F, G, R, U, E]
+  type Measurement[A] = MeasurementApi[F, G, R, U, E, A]
 
   /**
     * Get database instant
     *
     * @param dbName - database name
-    * @return       - Backend related implementation of DatabaseIO
+    * @return       - Backend related implementation of DatabaseApi
     */
   def database(dbName: String): Database
 
@@ -45,10 +49,7 @@ trait IOClient[F[_], Resp, Uri, Body] extends SystemManagement[F] with AutoClose
     * @param dbName          - on which database
     * @param measurementName - which measurement
     * @tparam A              - measurement entity type
-    * @return                - Backend related implementation of MeasurementIO
+    * @return                - Backend related implementation of MeasurementApi
     */
-  def measurement[A: ClassTag](
-      dbName: String,
-      measurementName: String
-    ): MeasurementApi[F, Resp, Uri, Body, A]
+  def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A]
 }

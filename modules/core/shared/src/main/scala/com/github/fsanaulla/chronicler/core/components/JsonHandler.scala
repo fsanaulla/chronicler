@@ -22,35 +22,45 @@ import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.headers.{buildHeader, versionHeader}
 import com.github.fsanaulla.chronicler.core.jawn._
-import com.github.fsanaulla.chronicler.core.model.{InfluxDBInfo, InfluxReader, ParsingException}
+import com.github.fsanaulla.chronicler.core.model.{
+  Functor,
+  InfluxDBInfo,
+  InfluxReader,
+  ParsingException
+}
 import org.typelevel.jawn.ast.{JArray, JValue}
 
 import scala.reflect.ClassTag
 
 /***
-  * Trait that define all necessary methods for handling JSON related operation
+  * JSON handler for extracting body, code, headers
   *
-  * @tparam A - Response type
+  * @tparam F - parsing effect
+  * @tparam R - Response type
   */
-trait JsonHandler[A] {
+abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
 
   /***
     * Extract response http code
     */
-  def responseCode(response: A): Int
+  def responseCode(response: R): Int
 
   /***
     * Extract response headers
     */
-  def responseHeader(response: A): Seq[(String, String)]
+  def responseHeader(response: R): Seq[(String, String)]
 
-  // todo: charset support
   /***
     * Extracting JSON from Response
+    *
+    * @param response   - HTTP response
     */
-  def responseBody(response: A): ErrorOr[JValue]
+  def responseBody(response: R): F[ErrorOr[JValue]]
 
-  final def databaseInfo(response: A): ErrorOr[InfluxDBInfo] = {
+  /***
+    * Used to extract database info from ping response
+    */
+  final def databaseInfo(response: R): ErrorOr[InfluxDBInfo] = {
     val headers = responseHeader(response)
     val result = for {
       build   <- headers.collectFirst { case (k, v) if k.equalsIgnoreCase(buildHeader)   => v }
@@ -66,8 +76,8 @@ trait JsonHandler[A] {
     * @param response - Response
     * @return - Error Message
     */
-  final def responseErrorMsg(response: A): ErrorOr[String] =
-    responseBody(response).mapRight(_.get("error").asString)
+  final def responseErrorMsg(response: R): F[ErrorOr[String]] =
+    F.map(responseBody(response))(_.mapRight(_.get("error").asString))
 
   /**
     * Extract optional error message from response
@@ -75,16 +85,20 @@ trait JsonHandler[A] {
     * @param response - Response JSON body
     * @return - optional error message
     */
-  final def responseErrorMsgOpt(response: A): ErrorOr[Option[String]] =
-    responseBody(response)
-      .flatMapRight(
-        _.get("results").arrayValue
-          .flatMapRight(_.headRight(new NoSuchElementException("results[0]")))
-      )
-      .mapRight(_.get("error").getString)
+  final def responseErrorMsgOpt(response: R): F[ErrorOr[Option[String]]] =
+    F.map(responseBody(response)) { bd =>
+      bd.flatMapRight { jv =>
+          jv.get("results").arrayValue.flatMapRight { jRes =>
+            jRes.headRight(new NoSuchElementException("results[0]"))
+          }
+        }
+        .mapRight { jv =>
+          jv.get("error").getString
+        }
+    }
 
   /**
-    * Extract influx points from JSON, representede as Arrays
+    * Extract influx points from JSON, represented as Arrays
     *
     * @param js - JSON value
     * @return - optional array of points
@@ -100,7 +114,13 @@ trait JsonHandler[A] {
       .mapRight(_.get("values").arrayValueOr(Array.empty))                    // get array of jValue
       .flatMapRight(arr => either.array[Throwable, JArray](arr.map(_.array))) // map to array of JArray
 
-  final def gropedResult(js: JValue): ErrorOr[Array[(Array[String], JArray)]] = {
+  /***
+    * Extract influx point grouped by some criteria
+    *
+    * @param js - JSON payload
+    * @return   - array of pairs (grouping key, grouped value)
+    */
+  final def groupedResult(js: JValue): ErrorOr[Array[(Array[String], JArray)]] = {
     js.get("results")
       .arrayValue
       .flatMapRight(_.headRight(new NoSuchElementException("results[0]")))

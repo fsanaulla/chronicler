@@ -16,11 +16,11 @@
 
 package com.github.fsanaulla.chronicler.akka.query.unit
 
+import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.shared.handlers.AkkaQueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.{Consistencies, Epochs, Precisions}
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import com.softwaremill.sttp.Uri
 import org.scalatest.{FlatSpec, Matchers}
 
 import scala.language.implicitConversions
@@ -34,17 +34,15 @@ class DatabaseOperationQuerySpec extends FlatSpec with Matchers with DatabaseOpe
 
   trait AuthEnv {
     val credentials                   = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("localhost", 8086, credentials)
+    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("http", "localhost", 8086, credentials)
   }
 
   trait NonAuthEnv {
-    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("localhost", 8086, None)
+    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("http", "localhost", 8086, None)
   }
 
   val testDB    = "db"
   val testQuery = "SELECT * FROM test"
-
-//  implicit def a2Opt[A](a: A): Option[A] = Some(a)
 
   "DatabaseOperationQuery" should "return correct write query" in new AuthEnv {
 
@@ -89,7 +87,7 @@ class DatabaseOperationQuerySpec extends FlatSpec with Matchers with DatabaseOpe
 
   it should "return correct single read query" in new AuthEnv {
 
-    val queryPrms = List(
+    val queryPrms: List[(String, String)] = List(
       "db"    -> testDB,
       "u"     -> credentials.get.username,
       "p"     -> credentials.get.password,
@@ -102,7 +100,7 @@ class DatabaseOperationQuerySpec extends FlatSpec with Matchers with DatabaseOpe
 
   it should "return correct bulk read query" in new AuthEnv {
 
-    val queryPrms = List(
+    val queryPrms: List[(String, String)] = List(
       "db"    -> testDB,
       "u"     -> credentials.get.username,
       "p"     -> credentials.get.password,
@@ -116,7 +114,7 @@ class DatabaseOperationQuerySpec extends FlatSpec with Matchers with DatabaseOpe
       pretty = false
     ).toString() shouldEqual queryTester("/query", queryPrms)
 
-    val queryPrms1 = List(
+    val queryPrms1: List[(String, String)] = List(
       "db"     -> testDB,
       "u"      -> credentials.get.username,
       "p"      -> credentials.get.password,

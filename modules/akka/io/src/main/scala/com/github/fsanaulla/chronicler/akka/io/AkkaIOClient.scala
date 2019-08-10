@@ -18,16 +18,14 @@ package com.github.fsanaulla.chronicler.akka.io
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.HttpsConnectionContext
+import akka.http.scaladsl.model.{HttpResponse, RequestEntity, Uri}
+import akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.shared.InfluxAkkaClient
-import com.github.fsanaulla.chronicler.akka.shared.handlers.{AkkaQueryBuilder, AkkaRequestExecutor}
+import com.github.fsanaulla.chronicler.akka.shared.handlers._
 import com.github.fsanaulla.chronicler.akka.shared.implicits._
 import com.github.fsanaulla.chronicler.core.IOClient
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
-import com.github.fsanaulla.chronicler.core.api.{DatabaseApi, MeasurementApi}
-import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
-import com.softwaremill.sttp.{Response, Uri}
-import org.typelevel.jawn.ast.JValue
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
@@ -36,25 +34,32 @@ final class AkkaIOClient(
     host: String,
     port: Int,
     credentials: Option[InfluxCredentials],
-    gzipped: Boolean,
-    httpsContext: Option[HttpsConnectionContext]
+    compress: Boolean,
+    httpsContext: Option[HttpsConnectionContext],
+    terminateActorSystem: Boolean
   )(implicit ex: ExecutionContext,
     system: ActorSystem)
-  extends InfluxAkkaClient(httpsContext)
-  with IOClient[Future, Response[JValue], Uri, String] {
+  extends InfluxAkkaClient(terminateActorSystem, httpsContext)
+  with IOClient[Future, Future, HttpResponse, Uri, RequestEntity] {
 
-  implicit val qb: AkkaQueryBuilder                  = new AkkaQueryBuilder(host, port, credentials)
-  implicit val re: AkkaRequestExecutor               = new AkkaRequestExecutor
-  implicit val rh: ResponseHandler[Response[JValue]] = new ResponseHandler(jsonHandler)
+  implicit val mat: ActorMaterializer  = ActorMaterializer()
+  implicit val bb: AkkaBodyBuilder     = new AkkaBodyBuilder()
+  implicit val qb: AkkaQueryBuilder    = new AkkaQueryBuilder(schema, host, port, credentials)
+  implicit val jh: AkkaJsonHandler     = new AkkaJsonHandler(new AkkaBodyUnmarshaller(compress))
+  implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor(ctx)
+  implicit val rh: AkkaResponseHandler = new AkkaResponseHandler(jh)
 
-  override def database(dbName: String): Database =
-    new DatabaseApi(dbName, gzipped)
+  override def database(dbName: String): AkkaDatabaseApi =
+    new AkkaDatabaseApi(dbName, compress)
 
-  override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] =
-    new MeasurementApi(dbName, measurementName, gzipped)
+  override def measurement[A: ClassTag](
+      dbName: String,
+      measurementName: String
+    ): AkkaMeasurementApi[A] =
+    new AkkaMeasurementApi[A](dbName, measurementName, compress)
 
   override def ping: Future[ErrorOr[InfluxDBInfo]] = {
-    re.get(qb.buildQuery("/ping", Nil))
-      .map(rh.pingResult)
+    re.get(qb.buildQuery("/ping", Nil), compressed = false)
+      .flatMap(rh.pingResult)
   }
 }

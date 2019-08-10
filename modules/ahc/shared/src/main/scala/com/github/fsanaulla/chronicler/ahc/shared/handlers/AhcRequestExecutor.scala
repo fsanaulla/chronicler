@@ -16,16 +16,22 @@
 
 package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
-import com.github.fsanaulla.chronicler.ahc.shared.formats._
 import com.github.fsanaulla.chronicler.core.components.RequestExecutor
-import com.github.fsanaulla.chronicler.core.encoding.gzipEncoding
-import com.softwaremill.sttp.{sttp, Response, SttpBackend, Uri}
-import org.typelevel.jawn.ast.JValue
+import com.github.fsanaulla.chronicler.core.gzip
+import com.softwaremill.sttp.{
+  asByteArray,
+  emptyRequest,
+  HeaderNames,
+  MediaTypes,
+  Response,
+  SttpBackend,
+  Uri
+}
 
 import scala.concurrent.Future
 
-private[ahc] final class AhcRequestExecutor(implicit backend: SttpBackend[Future, Nothing])
-  extends RequestExecutor[Future, Response[JValue], Uri, String] {
+private[ahc] final class AhcRequestExecutor()(implicit backend: SttpBackend[Future, Nothing])
+  extends RequestExecutor[Future, Response[Array[Byte]], Uri, String] {
 
   /**
     * Execute uri
@@ -33,16 +39,47 @@ private[ahc] final class AhcRequestExecutor(implicit backend: SttpBackend[Future
     * @param uri - request uri
     * @return    - Return wrapper response
     */
-  override def get(uri: Uri): Future[Response[JValue]] =
-    sttp.get(uri).response(asJson).send()
+  override def get(uri: Uri, compress: Boolean): Future[Response[Array[Byte]]] = {
+    val request = emptyRequest.get(uri)
+
+    // currently not supported
+//    val maybeEncoded =
+//      if (compress) request.acceptEncoding("gzip")
+//      else request
+
+    request
+      .response(asByteArray)
+      .send()
+  }
 
   override def post(
       uri: Uri,
       body: String,
-      gzipped: Boolean
-    ): Future[Response[JValue]] = {
-    val req          = sttp.post(uri).body(body).response(asJson)
-    val maybeEncoded = if (gzipped) req.acceptEncoding(gzipEncoding) else req
+      compress: Boolean
+    ): Future[Response[Array[Byte]]] = {
+    val req = emptyRequest.post(uri).response(asByteArray)
+    val maybeEncoded = if (compress) {
+      val (length, data) = gzip.compress(body.getBytes())
+      // it fails with input stream, using byte array instead
+      req
+        .body(data)
+        .header(HeaderNames.ContentEncoding, "gzip", replaceExisting = true)
+        .contentType(MediaTypes.Binary)
+        .contentLength(length)
+    } else req.body(body)
+
     maybeEncoded.send()
+  }
+
+  /**
+    * Quite simple post operation for creating
+    *
+    * @param uri - request uri
+    */
+  override def post(uri: Uri): Future[Response[Array[Byte]]] = {
+    emptyRequest
+      .post(uri)
+      .response(asByteArray)
+      .send()
   }
 }

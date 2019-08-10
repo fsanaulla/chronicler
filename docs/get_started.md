@@ -2,16 +2,16 @@
 Let's take a look on a simply example of usage. In this example we will use `ahc` client and `macros`.
 
 Sbt file looks like:
-```
+```sbt
 lazy val chronicler: String = "latest"
 
 libraryDependencies ++= Seq(
    "com.github.fsanaulla" %% "chronicler-ahc-io" % chronicler,
-   "com.github.fsanaulla" %% "chronicler-macros"     % chronicler
+   "com.github.fsanaulla" %% "chronicler-macros" % chronicler
 )
 ```
 Our code:
-```
+```scala
 import com.github.fsanaulla.chronicler.ahc.io.{AhcIOClient, InfluxIO}
 import com.github.fsanaulla.chronicler.macros.auto._
 import com.github.fsanaulla.chronicler.core.model.InfluxFormatter
@@ -38,8 +38,14 @@ final val host = "influx_host"
 final val port = 8086
 
 // establish connection to InfluxDB
+// because we will make only IO action
 val influx: AhcIOClient = 
-  InfluxIO(host, port, Some(credentials)) // because we will make only IO action
+  InfluxIO(
+    host,
+    port,
+    Some(credentials), 
+    gzipping = true // enable gzipping
+  )
 
 val databaseName = "test_db"
 val measurementName = "test_measurement"

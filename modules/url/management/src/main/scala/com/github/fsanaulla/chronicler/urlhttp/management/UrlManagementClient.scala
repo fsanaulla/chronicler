@@ -17,12 +17,21 @@
 package com.github.fsanaulla.chronicler.urlhttp.management
 
 import com.github.fsanaulla.chronicler.core.ManagementClient
-import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
 import com.github.fsanaulla.chronicler.core.components.ResponseHandler
-import com.github.fsanaulla.chronicler.core.model.{Functor, InfluxCredentials, InfluxDBInfo}
+import com.github.fsanaulla.chronicler.core.implicits.{applyId, functorId}
+import com.github.fsanaulla.chronicler.core.model.{
+  FunctionK,
+  Functor,
+  InfluxCredentials,
+  InfluxDBInfo
+}
 import com.github.fsanaulla.chronicler.urlhttp.shared.Url
-import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlQueryBuilder, UrlRequestExecutor}
-import com.github.fsanaulla.chronicler.urlhttp.shared.implicits.jsonHandler
+import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{
+  UrlJsonHandler,
+  UrlQueryBuilder,
+  UrlRequestExecutor
+}
 import requests.Response
 
 import scala.util.Try
@@ -32,15 +41,17 @@ final class UrlManagementClient(
     port: Int,
     credentials: Option[InfluxCredentials],
     ssl: Boolean
-  )(implicit val F: Functor[Try])
-  extends ManagementClient[Try, Response, Url, String] {
+  )(implicit val F: Functor[Try],
+    val FK: FunctionK[Id, Try])
+  extends ManagementClient[Try, Id, Response, Url, String] {
 
-  implicit val qb: UrlQueryBuilder           = new UrlQueryBuilder(host, port, credentials, ssl)
-  implicit val re: UrlRequestExecutor        = new UrlRequestExecutor(ssl, jsonHandler)
-  implicit val rh: ResponseHandler[Response] = new ResponseHandler(jsonHandler)
+  val jsonHandler                                = new UrlJsonHandler(compressed = false)
+  implicit val qb: UrlQueryBuilder               = new UrlQueryBuilder(host, port, credentials, ssl)
+  implicit val re: UrlRequestExecutor            = new UrlRequestExecutor(ssl, jsonHandler)
+  implicit val rh: ResponseHandler[Id, Response] = new ResponseHandler(jsonHandler)
 
   override def ping: Try[ErrorOr[InfluxDBInfo]] = {
-    re.get(qb.buildQuery("/ping"))
+    re.get(qb.buildQuery("/ping"), compress = false)
       .map(rh.pingResult)
   }
 

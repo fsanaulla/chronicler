@@ -19,7 +19,7 @@ package com.github.fsanaulla.chronicler.core.api
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
 import com.github.fsanaulla.chronicler.core.components._
 import com.github.fsanaulla.chronicler.core.either
-import com.github.fsanaulla.chronicler.core.either._
+import com.github.fsanaulla.chronicler.core.either.EitherOps
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
@@ -29,16 +29,17 @@ import scala.reflect.ClassTag
 /**
   * Main functionality for measurement api
   */
-class MeasurementApi[F[_], Resp, Uri, Body, A](
+class MeasurementApi[F[_], G[_], Resp, Uri, Body, A](
     dbName: String,
     measurementName: String,
     gzipped: Boolean
   )(implicit qb: QueryBuilder[Uri],
     bd: BodyBuilder[Body],
     re: RequestExecutor[F, Resp, Uri, Body],
-    rh: ResponseHandler[Resp],
+    rh: ResponseHandler[G, Resp],
     F: Functor[F],
-    FA: Failable[F])
+    FA: Failable[F],
+    FK: FunctionK[G, F])
   extends DatabaseOperationQuery[Uri] {
 
   /**
@@ -48,7 +49,7 @@ class MeasurementApi[F[_], Resp, Uri, Body, A](
     * @param consistency     - consistence level
     * @param precision       - time precision
     * @param retentionPolicy - retention policy type
-    * @param wr          - implicit serializer to InfluxLine format
+    * @param wr              - implicit serializer to InfluxLine format
     * @return                - Write result on backend container
     */
   final def write(
@@ -65,7 +66,9 @@ class MeasurementApi[F[_], Resp, Uri, Body, A](
       case Left(ex) =>
         FA.fail(ex)
       case Right(body) =>
-        F.map(re.post(uri, body, gzipped))(rh.writeResult)
+        F.flatMap(
+          re.post(uri, body, gzipped)
+        )(resp => FK(rh.writeResult(resp)))
     }
   }
 
@@ -93,7 +96,9 @@ class MeasurementApi[F[_], Resp, Uri, Body, A](
       case Left(ex) =>
         FA.fail(ex)
       case Right(body) =>
-        F.map(re.post(uri, body, gzipped))(rh.writeResult)
+        F.flatMap(
+          re.post(uri, body, gzipped)
+        )(resp => FK(rh.writeResult(resp)))
     }
   }
 
@@ -105,11 +110,11 @@ class MeasurementApi[F[_], Resp, Uri, Body, A](
       clsTag: ClassTag[A]
     ): F[ErrorOr[Array[A]]] = {
     val uri = singleQuery(dbName, query, epoch, pretty)
-    F.map(
-      F.map(re.get(uri))(rh.queryResultJson)
-    ) { resp =>
-      resp.flatMapRight { arr =>
-        either.array[Throwable, A](arr.map(rd.read))
+    F.flatMap(re.get(uri, gzipped)) { resp =>
+      F.map(FK(rh.queryResultJson(resp))) { ethResp =>
+        ethResp.flatMapRight { arr =>
+          either.array(arr.map(rd.read))
+        }
       }
     }
   }

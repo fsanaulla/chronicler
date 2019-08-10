@@ -17,19 +17,31 @@
 package com.github.fsanaulla.chronicler.akka.shared
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl.HttpsConnectionContext
-import akka.stream.scaladsl.Source
-import akka.util.ByteString
-import com.softwaremill.sttp.SttpBackend
-import com.softwaremill.sttp.akkahttp.AkkaHttpBackend
+import akka.http.scaladsl.{Http, HttpExt, HttpsConnectionContext}
 
-import scala.concurrent.Future
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 abstract class InfluxAkkaClient(
+    terminateActorSystem: Boolean,
     httpsContext: Option[HttpsConnectionContext]
-  )(implicit system: ActorSystem) { self: AutoCloseable =>
-  implicit val backend: SttpBackend[Future, Source[ByteString, Any]] =
-    AkkaHttpBackend.usingActorSystem(system, customHttpsContext = httpsContext)
+  )(implicit system: ActorSystem,
+    ec: ExecutionContext) { self: AutoCloseable =>
 
-  def close(): Unit = backend.close()
+  private[akka] implicit val http: HttpExt = Http()
+
+  private[akka] val (ctx, schema) =
+    httpsContext
+      .map(_ -> "https")
+      .getOrElse(http.defaultClientHttpsContext -> "http")
+
+  def close(): Unit =
+    Await.ready(closeAsync(), Duration.Inf)
+
+  def closeAsync(): Future[Unit] = {
+    for {
+      _ <- http.shutdownAllConnectionPools()
+      _ <- if (terminateActorSystem) system.terminate().map(_ => {}) else Future.successful({})
+    } yield {}
+  }
 }

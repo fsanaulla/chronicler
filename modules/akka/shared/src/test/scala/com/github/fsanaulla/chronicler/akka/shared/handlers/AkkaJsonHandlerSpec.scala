@@ -16,15 +16,29 @@
 
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
+import akka.actor.ActorSystem
+import akka.http.scaladsl.model.HttpResponse
+import akka.stream.ActorMaterializer
+import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.shared.handlers.AkkaJsonHandlerSpec._
-import com.github.fsanaulla.chronicler.akka.shared.implicits.jsonHandler
-import com.softwaremill.sttp.Response
 import org.scalatest._
+import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.typelevel.jawn.ast._
 
+import scala.concurrent.ExecutionContextExecutor
 import scala.util.{Failure, Success, Try}
 
-class AkkaJsonHandlerSpec extends FlatSpec with Matchers {
+class AkkaJsonHandlerSpec
+  extends TestKit(ActorSystem())
+  with FlatSpecLike
+  with ScalaFutures
+  with IntegrationPatience
+  with Matchers {
+
+  implicit val ec: ExecutionContextExecutor = system.dispatcher
+  implicit val mat: ActorMaterializer       = ActorMaterializer()
+
+  val jsonHandler = new AkkaJsonHandler(new AkkaBodyUnmarshaller(compressed = false))
 
   it should "extract js object from HTTP response" in {
     val singleStrJson = """{
@@ -58,11 +72,11 @@ class AkkaJsonHandlerSpec extends FlatSpec with Matchers {
                       ]
                   }"""
 
-    val resp: Response[JValue] = Response.ok(JParser.parseFromString(singleStrJson).get)
+    val resp = HttpResponse(entity = singleStrJson)
 
     val result: JValue = JParser.parseFromString(singleStrJson).get
 
-    jsonHandler.responseBody(resp).right.get shouldEqual result
+    jsonHandler.responseBody(resp).futureValue.right.get shouldEqual result
   }
 
   it should "extract single query result from JSON" in {
@@ -280,7 +294,7 @@ class AkkaJsonHandlerSpec extends FlatSpec with Matchers {
                                          |}
       """.stripMargin).either.right.get
 
-    val eitherResult = jsonHandler.gropedResult(json)
+    val eitherResult = jsonHandler.groupedResult(json)
 
     eitherResult should not be None
 

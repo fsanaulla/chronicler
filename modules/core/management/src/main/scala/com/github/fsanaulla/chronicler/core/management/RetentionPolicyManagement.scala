@@ -27,12 +27,13 @@ import com.github.fsanaulla.chronicler.core.query.RetentionPolicyManagementQuery
   * Author: fayaz.sanaulla@gmail.com
   * Date: 08.08.17
   */
-trait RetentionPolicyManagement[F[_], Resp, Uri, Entity]
+trait RetentionPolicyManagement[F[_], G[_], Resp, Uri, Entity]
   extends RetentionPolicyManagementQuery[Uri] {
   implicit val qb: QueryBuilder[Uri]
   implicit val re: RequestExecutor[F, Resp, Uri, Entity]
-  implicit val rh: ResponseHandler[Resp]
+  implicit val rh: ResponseHandler[G, Resp]
   implicit val F: Functor[F]
+  implicit val FK: FunctionK[G, F]
 
   /**
     * Create retention policy for specified database
@@ -53,9 +54,12 @@ trait RetentionPolicyManagement[F[_], Resp, Uri, Entity]
       default: Boolean = false
     ): F[ErrorOr[ResponseCode]] = {
     require(replication > 0, "Replication must greater that 0")
-    F.map(re.get(createRPQuery(rpName, dbName, duration, replication, shardDuration, default)))(
-      rh.writeResult
-    )
+    F.flatMap(
+      re.get(
+        createRPQuery(rpName, dbName, duration, replication, shardDuration, default),
+        compress = false
+      )
+    )(resp => FK(rh.writeResult(resp)))
   }
 
   /** Update retention policy */
@@ -67,16 +71,23 @@ trait RetentionPolicyManagement[F[_], Resp, Uri, Entity]
       shardDuration: Option[String] = None,
       default: Boolean = false
     ): F[ErrorOr[ResponseCode]] =
-    F.map(re.get(updateRPQuery(rpName, dbName, duration, replication, shardDuration, default)))(
-      rh.writeResult
-    )
+    F.flatMap(
+      re.get(
+        updateRPQuery(rpName, dbName, duration, replication, shardDuration, default),
+        compress = false
+      )
+    )(resp => FK(rh.writeResult(resp)))
 
   /** Drop retention policy */
   final def dropRetentionPolicy(rpName: String, dbName: String): F[ErrorOr[ResponseCode]] =
-    F.map(re.get(dropRPQuery(rpName, dbName)))(rh.writeResult)
+    F.flatMap(
+      re.get(dropRPQuery(rpName, dbName), compress = false)
+    )(resp => FK(rh.writeResult(resp)))
 
   /** Show list of retention polices */
   final def showRetentionPolicies(dbName: String): F[ErrorOr[Array[RetentionPolicyInfo]]] =
-    F.map(re.get(showRPQuery(dbName)))(rh.queryResust[RetentionPolicyInfo])
+    F.flatMap(
+      re.get(showRPQuery(dbName), compress = false)
+    )(resp => FK(rh.queryResult[RetentionPolicyInfo](resp)))
 
 }

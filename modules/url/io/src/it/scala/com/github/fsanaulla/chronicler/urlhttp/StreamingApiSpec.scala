@@ -1,6 +1,7 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
 import java.io.File
+import java.nio.file.Paths
 
 import com.github.fsanaulla.chronicler.core.enums.Epochs
 import com.github.fsanaulla.chronicler.core.model.InfluxReader
@@ -9,7 +10,12 @@ import com.github.fsanaulla.chronicler.macros.annotations.reader.epoch
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.urlhttp.StreamingApiSpec._
-import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlDatabaseApi, UrlIOClient, UrlMeasurementApi}
+import com.github.fsanaulla.chronicler.urlhttp.io.{
+  InfluxIO,
+  UrlDatabaseApi,
+  UrlIOClient,
+  UrlMeasurementApi
+}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
 import org.scalatest.{FlatSpec, Matchers}
@@ -19,7 +25,7 @@ import scala.collection.mutable.ArrayBuffer
 
 class StreamingApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 
-  val testDB = "db"
+  val testDB   = "db"
   val measName = "test1"
 
   lazy val influxConf =
@@ -31,13 +37,13 @@ class StreamingApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
   lazy val io: UrlIOClient =
     InfluxIO(influxConf)
 
-  lazy val db: UrlDatabaseApi = io.database(testDB)
+  lazy val db: UrlDatabaseApi             = io.database(testDB)
   lazy val meas: UrlMeasurementApi[Point] = io.measurement[Point](testDB, measName)
 
   it should "read chunked json result" in {
     mng.createDatabase(testDB).get.right.get shouldEqual 200
 
-    db.writeFromFile(new File(getClass.getResource("/points.txt").getPath))
+    db.writeFromFile(Paths.get(getClass.getResource("/points.txt").getPath))
       .get
       .right
       .get shouldEqual 204
@@ -51,7 +57,7 @@ class StreamingApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 
       nxt match {
         case Right(vl) => vl.foreach(arr += _)
-        case _ => fail()
+        case _         => fail()
       }
     }
 
@@ -90,7 +96,7 @@ class StreamingApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
     val nxt = iter.next()
     nxt match {
       case Right(vl) => vl.foreach(arr += _)
-      case _ => fail()
+      case _         => fail()
     }
 
     arr.size shouldEqual 3
@@ -99,11 +105,12 @@ class StreamingApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 }
 
 object StreamingApiSpec {
-  final case class Point(@tag direction: Option[String],
-                         @tag host: String,
-                         @tag region: Option[String],
-                         @field value: Double,
-                         @epoch @timestamp time: Long)
+  final case class Point(
+      @tag direction: Option[String],
+      @tag host: String,
+      @tag region: Option[String],
+      @field value: Double,
+      @epoch @timestamp time: Long)
 
   implicit val rd: InfluxReader[Point] = Influx.reader
 }

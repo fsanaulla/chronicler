@@ -27,22 +27,26 @@ import com.github.fsanaulla.chronicler.core.query.ShardManagementQuery
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-private[chronicler] trait ShardManagement[F[_], Resp, Uri, Entity]
-  extends ShardManagementQuery[Uri] {
+trait ShardManagement[F[_], G[_], Resp, Uri, Entity] extends ShardManagementQuery[Uri] {
   implicit val qb: QueryBuilder[Uri]
   implicit val re: RequestExecutor[F, Resp, Uri, Entity]
-  implicit val rh: ResponseHandler[Resp]
+  implicit val rh: ResponseHandler[G, Resp]
   implicit val F: Functor[F]
+  implicit val FK: FunctionK[G, F]
 
   /** Drop shard */
   final def dropShard(shardId: Int): F[ErrorOr[ResponseCode]] =
-    F.map(re.get(dropShardQuery(shardId)))(rh.writeResult)
+    F.flatMap(re.get(dropShardQuery(shardId), compress = false))(resp => FK(rh.writeResult(resp)))
 
   /** Show shard groups */
   final def showShardGroups: F[ErrorOr[Array[ShardGroupsInfo]]] =
-    F.map(re.get(showShardGroupsQuery))(rh.toShardGroupQueryResult)
+    F.flatMap(
+      re.get(showShardGroupsQuery, compress = false)
+    )(resp => FK(rh.toShardGroupQueryResult(resp)))
 
   /** Show shards */
   final def showShards: F[ErrorOr[Array[ShardInfo]]] =
-    F.map(re.get(showShardsQuery))(rh.toShardQueryResult)
+    F.flatMap(
+      re.get(showShardsQuery, compress = false)
+    )(resp => FK(rh.toShardQueryResult(resp)))
 }

@@ -30,7 +30,7 @@ object InfluxIO {
     * @param host              - hostname
     * @param port              - port value
     * @param credentials       - user credentials
-    * @param gzipped           - enable gzip compression
+    * @param compress           - enable gzip compression
     * @param asyncClientConfig - custom configuration
     * @param ex                - implicit execution context, by default use standard one
     * @return                  - [[AhcIOClient]]
@@ -39,11 +39,11 @@ object InfluxIO {
       host: String,
       port: Int = 8086,
       credentials: Option[InfluxCredentials] = None,
-      gzipped: Boolean = false,
+      compress: Boolean = false,
       asyncClientConfig: Option[AsyncHttpClientConfig] = None
     )(implicit ex: ExecutionContext
     ): AhcIOClient =
-    new AhcIOClient(host, port, gzipped, credentials, asyncClientConfig)
+    new AhcIOClient(host, port, compress, credentials, asyncClientConfig)
 
   /**
     * Retrieve IO InfluxDB client, without management functionality using configuration object
@@ -53,5 +53,5 @@ object InfluxIO {
     * @return     - [[AhcIOClient]]
     */
   def apply(conf: InfluxConfig)(implicit ex: ExecutionContext): AhcIOClient =
-    apply(conf.host, conf.port, conf.credentials, conf.gzipped, conf.asyncClientConfig)
+    apply(conf.host, conf.port, conf.credentials, conf.compress, conf.asyncClientConfig)
 }

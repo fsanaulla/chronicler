@@ -16,18 +16,21 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
-import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
 import com.github.fsanaulla.chronicler.core.components.{JsonHandler, RequestExecutor}
 import com.github.fsanaulla.chronicler.core.either._
+import com.github.fsanaulla.chronicler.core.gzip
 import com.github.fsanaulla.chronicler.core.jawn.RichJParser
-import com.github.fsanaulla.chronicler.urlhttp.shared.Url
+import com.github.fsanaulla.chronicler.urlhttp.shared.{ChroniclerSession, Url}
 import org.typelevel.jawn.ast.{JArray, JParser}
 import requests._
 
 import scala.io.Source
 import scala.util.Try
 
-private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonHandler[Response])
+private[urlhttp] final class UrlRequestExecutor(
+    ssl: Boolean,
+    jsonHandler: JsonHandler[Id, Response])
   extends RequestExecutor[Try, Response, Url, String] {
 
   /**
@@ -36,12 +39,27 @@ private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonH
     * @param uri - request uri
     * @return    - Return wrapper response
     */
-  override def get(uri: Url): Try[Response] = {
+  override def get(uri: Url, compress: Boolean): Try[Response] = {
+    val headers =
+      if (compress) "Accept-Encoding" -> "gzip" :: Nil else Nil
+
     Try {
-      requests.get(
+      requests.get
+        .copy(sess = new ChroniclerSession)
+        .apply(
+          uri.make,
+          params = uri.params,
+          headers = headers,
+          autoDecompress = false
+        )
+    }
+  }
+
+  override def post(uri: Url): Try[Response] = {
+    Try {
+      requests.post(
         uri.make,
-        params = uri.params,
-        verifySslCerts = ssl
+        params = uri.params
       )
     }
   }
@@ -52,14 +70,28 @@ private[urlhttp] final class UrlRequestExecutor(ssl: Boolean, jsonHandler: JsonH
       gzipped: Boolean
     ): Try[Response] = {
     Try {
-      requests.post(
+      val bts              = body.getBytes()
+      val (length, entity) = if (gzipped) gzip.compress(bts) else bts.length -> bts
+
+      val headers =
+        if (gzipped) {
+          List(
+            "Content-Length"   -> String.valueOf(length),
+            "Content-Encoding" -> "gzip"
+          )
+        } else Nil
+
+      val request = Request(
         uri.make,
         RequestAuth.Empty,
-        uri.params,
-        // todo: PR for ssl support
-        verifySslCerts = ssl,
-//        compress = if (gzipped) Compress.Gzip else Compress.None,
-        data = RequestBlob.StringRequestBlob(body)
+        params = uri.params,
+        headers = headers
+      )
+
+      requests.post(
+        request,
+        // it fails with input stream
+        data = RequestBlob.BytesRequestBlob(entity)
       )
     }
   }
