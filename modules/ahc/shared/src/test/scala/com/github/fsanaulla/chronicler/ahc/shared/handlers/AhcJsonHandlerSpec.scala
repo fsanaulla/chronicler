@@ -16,7 +16,6 @@
 
 package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
-import com.github.fsanaulla.chronicler.ahc.shared.implicits.jsonHandler
 import com.softwaremill.sttp.Response
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpec, Matchers, OptionValues}
@@ -29,6 +28,7 @@ import org.typelevel.jawn.ast._
   */
 class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with OptionValues {
 
+  val jsonHandler   = new AhcJsonHandler(compress = false)
   val singleStrJson = """{
                       "results": [
                           {
@@ -60,12 +60,15 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
                       ]
                   }"""
 
-  val resp: Response[JValue] = Response.ok(JParser.parseFromString(singleStrJson).get)
+  val resp: Response[Array[Byte]] = Response.ok(singleStrJson.getBytes())
 
   val result: JValue = JParser.parseFromString(singleStrJson).get
 
   it should "extract JSON from HTTP response" in {
-    jsonHandler.responseBody(resp).right.get shouldEqual result
+    jsonHandler
+      .responseBody(resp)
+      .right
+      .get shouldEqual result
   }
 
   it should "extract single query result from JSON" in {

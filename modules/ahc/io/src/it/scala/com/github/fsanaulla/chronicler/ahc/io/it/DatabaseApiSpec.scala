@@ -1,6 +1,5 @@
 package com.github.fsanaulla.chronicler.ahc.io.it
 
-import java.io.File
 import java.nio.file.Paths
 
 import com.github.fsanaulla.chronicler.ahc.io.{AhcIOClient, InfluxIO}
@@ -25,7 +24,7 @@ class DatabaseApiSpec extends FlatSpec with Matchers with Futures with Dockerize
   val testDB = "db"
 
   lazy val influxConf =
-    InfluxConfig(host, port, credentials = Some(creds), gzipped = false, None)
+    InfluxConfig(host, port, credentials = Some(creds), compress = false, None)
 
   lazy val mng: AhcManagementClient =
     InfluxMng(host, port, credentials = Some(creds))

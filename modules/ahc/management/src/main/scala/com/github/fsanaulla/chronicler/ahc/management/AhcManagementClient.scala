@@ -17,8 +17,11 @@
 package com.github.fsanaulla.chronicler.ahc.management
 
 import com.github.fsanaulla.chronicler.ahc.shared.InfluxAhcClient
-import com.github.fsanaulla.chronicler.ahc.shared.handlers.{AhcQueryBuilder, AhcRequestExecutor}
-import com.github.fsanaulla.chronicler.ahc.shared.implicits._
+import com.github.fsanaulla.chronicler.ahc.shared.handlers.{
+  AhcJsonHandler,
+  AhcQueryBuilder,
+  AhcRequestExecutor
+}
 import com.github.fsanaulla.chronicler.core.ManagementClient
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
 import com.github.fsanaulla.chronicler.core.components.ResponseHandler
@@ -31,7 +34,6 @@ import com.github.fsanaulla.chronicler.core.model.{
 }
 import com.softwaremill.sttp.{Response, Uri}
 import org.asynchttpclient.AsyncHttpClientConfig
-import org.typelevel.jawn.ast.JValue
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,14 +46,15 @@ final class AhcManagementClient(
     val F: Functor[Future],
     val FK: FunctionK[Id, Future])
   extends InfluxAhcClient(asyncClientConfig)
-  with ManagementClient[Future, Id, Response[JValue], Uri, String] {
+  with ManagementClient[Future, Id, Response[Array[Byte]], Uri, String] {
 
-  implicit val qb: AhcQueryBuilder                       = new AhcQueryBuilder(host, port, credentials)
-  implicit val re: AhcRequestExecutor                    = new AhcRequestExecutor
-  implicit val rh: ResponseHandler[Id, Response[JValue]] = new ResponseHandler(jsonHandler)
+  val jsonHandler: AhcJsonHandler                             = new AhcJsonHandler(compress = false)
+  implicit val qb: AhcQueryBuilder                            = new AhcQueryBuilder(host, port, credentials)
+  implicit val re: AhcRequestExecutor                         = new AhcRequestExecutor
+  implicit val rh: ResponseHandler[Id, Response[Array[Byte]]] = new ResponseHandler(jsonHandler)
 
   override def ping: Future[ErrorOr[InfluxDBInfo]] = {
-    re.get(qb.buildQuery("/ping"))
+    re.get(qb.buildQuery("/ping"), compress = false)
       .map(rh.pingResult)
   }
 }

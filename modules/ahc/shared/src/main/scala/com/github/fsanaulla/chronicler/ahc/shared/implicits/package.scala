@@ -16,32 +16,12 @@
 
 package com.github.fsanaulla.chronicler.ahc.shared
 
-import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
-import com.github.fsanaulla.chronicler.core.components.JsonHandler
-import com.github.fsanaulla.chronicler.core.implicits.functorId
-import com.github.fsanaulla.chronicler.core.jawn.RichJParser
+import com.github.fsanaulla.chronicler.core.alias.Id
 import com.github.fsanaulla.chronicler.core.model.{Apply, Failable, FunctionK, Functor}
-import com.softwaremill.sttp.Response
-import org.typelevel.jawn.ast.{JParser, JValue}
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Success, Try}
 
 package object implicits {
-
-  implicit val jsonHandler: JsonHandler[Id, Response[JValue]] =
-    new JsonHandler[Id, Response[JValue]] {
-
-      def responseBody(response: Response[JValue]): ErrorOr[JValue] =
-        response.body.left.flatMap(JParser.parseFromStringEither)
-
-      def responseHeader(response: Response[JValue]): Seq[(String, String)] =
-        response.headers
-
-      def responseCode(response: Response[JValue]): Int =
-        response.code
-    }
-
   implicit def futureFunctor(implicit ec: ExecutionContext): Functor[Future] = new Functor[Future] {
     override def map[A, B](fa: Future[A])(f: A => B): Future[B] = fa.map(f)
 

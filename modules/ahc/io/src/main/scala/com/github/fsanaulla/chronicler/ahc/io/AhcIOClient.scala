@@ -17,7 +17,11 @@
 package com.github.fsanaulla.chronicler.ahc.io
 
 import com.github.fsanaulla.chronicler.ahc.shared.InfluxAhcClient
-import com.github.fsanaulla.chronicler.ahc.shared.handlers.{AhcQueryBuilder, AhcRequestExecutor}
+import com.github.fsanaulla.chronicler.ahc.shared.handlers.{
+  AhcJsonHandler,
+  AhcQueryBuilder,
+  AhcRequestExecutor
+}
 import com.github.fsanaulla.chronicler.ahc.shared.implicits._
 import com.github.fsanaulla.chronicler.core.IOClient
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
@@ -27,7 +31,6 @@ import com.github.fsanaulla.chronicler.core.implicits.{applyId, functorId}
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
 import com.softwaremill.sttp.{Response, Uri}
 import org.asynchttpclient.AsyncHttpClientConfig
-import org.typelevel.jawn.ast.JValue
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
@@ -35,25 +38,26 @@ import scala.reflect.ClassTag
 final class AhcIOClient(
     host: String,
     port: Int,
-    gzipped: Boolean,
+    compress: Boolean,
     credentials: Option[InfluxCredentials],
     asyncClientConfig: Option[AsyncHttpClientConfig]
   )(implicit ex: ExecutionContext)
   extends InfluxAhcClient(asyncClientConfig)
-  with IOClient[Future, Id, Response[JValue], Uri, String] {
+  with IOClient[Future, Id, Response[Array[Byte]], Uri, String] {
 
-  implicit val qb: AhcQueryBuilder                       = new AhcQueryBuilder(host, port, credentials)
-  implicit val re: AhcRequestExecutor                    = new AhcRequestExecutor
-  implicit val rh: ResponseHandler[Id, Response[JValue]] = new ResponseHandler(jsonHandler)
+  val jsonHandler: AhcJsonHandler                             = new AhcJsonHandler(compress)
+  implicit val qb: AhcQueryBuilder                            = new AhcQueryBuilder(host, port, credentials)
+  implicit val re: AhcRequestExecutor                         = new AhcRequestExecutor
+  implicit val rh: ResponseHandler[Id, Response[Array[Byte]]] = new ResponseHandler(jsonHandler)
 
   override def database(dbName: String) =
-    new DatabaseApi(dbName, gzipped)
+    new DatabaseApi(dbName, compress)
 
   override def measurement[A: ClassTag](dbName: String, measurementName: String): Measurement[A] =
-    new MeasurementApi(dbName, measurementName, gzipped)
+    new MeasurementApi(dbName, measurementName, compress)
 
   override def ping: Future[ErrorOr[InfluxDBInfo]] =
-    re.get(qb.buildQuery("/ping"))
+    re.get(qb.buildQuery("/ping"), compress = false)
       .map(rh.pingResult)
 
 }
