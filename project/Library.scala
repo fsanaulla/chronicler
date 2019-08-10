@@ -8,12 +8,12 @@ import sbt._
 object Library {
 
   object Versions {
-    val sttp    = "1.6.1"
+    val sttp    = "1.6.4"
     val netty   = "4.1.37.Final"
     val request = "0.2.0"
 
     object Akka {
-      val akka     = "2.5.23"
+      val akka     = "2.5.24"
       val akkaHttp = "10.1.9"
     }
 

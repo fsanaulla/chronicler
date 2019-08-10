@@ -10,7 +10,7 @@ email, or any other method with the owners of this repository before making a ch
 Depending on which version (or sometimes module) you want to work on, you should target a specific branch as explained below:
 
 * `master` – publish/deployment branch, target for upcoming `release-v.v.v` branches.
-* `release-v.v.v` – maintenance branch of Akka 2.5.x
+* `release-v.v.v` – release iteration branch
 
 ## Pull Request Process
 

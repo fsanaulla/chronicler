@@ -38,7 +38,7 @@ class AkkaJsonHandlerSpec
   implicit val ec: ExecutionContextExecutor = system.dispatcher
   implicit val mat: ActorMaterializer       = ActorMaterializer()
 
-  val jsonHandler = new AkkaJsonHandler()
+  val jsonHandler = new AkkaJsonHandler(new AkkaBodyUnmarshaller(compressed = false))
 
   it should "extract js object from HTTP response" in {
     val singleStrJson = """{
@@ -294,7 +294,7 @@ class AkkaJsonHandlerSpec
                                          |}
       """.stripMargin).either.right.get
 
-    val eitherResult = jsonHandler.gropedResult(json)
+    val eitherResult = jsonHandler.groupedResult(json)
 
     eitherResult should not be None
 

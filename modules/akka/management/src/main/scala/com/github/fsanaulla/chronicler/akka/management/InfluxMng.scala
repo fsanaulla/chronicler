@@ -66,5 +66,11 @@ object InfluxMng {
     )(implicit ex: ExecutionContext,
       system: ActorSystem
     ): AkkaManagementClient =
-    apply(conf.host, conf.port, conf.credentials, conf.httpsContext, conf.terminateActorSystem)
+    apply(
+      conf.host,
+      conf.port,
+      conf.credentials,
+      conf.httpsContext,
+      conf.terminateActorSystem
+    )
 }

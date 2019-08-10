@@ -67,7 +67,7 @@ class ResponseHandler[G[_], R](
   }
 
   /**
-    * Method for handling HTTP responses with body, with on fly deserialization into JArray value
+    * Handling HTTP responses with on fly body deserialization into JArray value
     *
     * @param response - backend response value
     * @return         - Query result of JArray in future container
@@ -93,7 +93,7 @@ class ResponseHandler[G[_], R](
     jsonHandler.responseCode(response) match {
       case code if isSuccessful(code) =>
         F.map(jsonHandler.responseBody(response)) { ethRes =>
-          ethRes.flatMapRight(jsonHandler.gropedResult)
+          ethRes.flatMapRight(jsonHandler.groupedResult)
         }
       case _ =>
         F.map(errorHandler(response))(Left(_))
@@ -253,5 +253,10 @@ class ResponseHandler[G[_], R](
     */
   final def isSuccessful(code: Int): Boolean = code >= 200 && code < 300
 
+  /***
+    * Check for ping response status code
+    *
+    * @param code - response code
+    */
   final def isPingCode(code: Int): Boolean = code == 200 || code == 204
 }

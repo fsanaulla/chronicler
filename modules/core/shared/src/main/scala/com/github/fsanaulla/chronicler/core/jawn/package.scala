@@ -16,17 +16,23 @@
 
 package com.github.fsanaulla.chronicler.core
 
+import java.nio.ByteBuffer
+
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import org.typelevel.jawn.ast._
 
 import scala.util.{Failure, Success}
 
 package object jawn {
-  implicit def jv2Int(jv: JValue): Int         = jv.asInt
-  implicit def jv2Long(jv: JValue): Long       = jv.asLong
-  implicit def jv2Double(jv: JValue): Double   = jv.asDouble
+  implicit def jv2Int(jv: JValue): Int = jv.asInt
+
+  implicit def jv2Long(jv: JValue): Long = jv.asLong
+
+  implicit def jv2Double(jv: JValue): Double = jv.asDouble
+
   implicit def jv2Boolean(jv: JValue): Boolean = jv.asBoolean
-  implicit def jv2String(jv: JValue): String   = jv.asString
+
+  implicit def jv2String(jv: JValue): String = jv.asString
 
   /** Extension to simplify parsing JAWN AST */
   implicit final class RichJValue(private val jv: JValue) extends AnyVal {
@@ -59,5 +65,18 @@ package object jawn {
         case Failure(exception) => Left(exception)
       }
     }
+
+    def parseFromByteBufferEither(data: ByteBuffer): ErrorOr[JValue] = {
+      jp.parseFromByteBuffer(data) match {
+        case Success(value)     => Right(value)
+        case Failure(exception) => Left(exception)
+      }
+    }
+
+    def parseFromStringOrNull(str: String): JValue = jp.parseFromString(str) match {
+      case Success(value) => value
+      case _              => JNull
+    }
   }
+
 }

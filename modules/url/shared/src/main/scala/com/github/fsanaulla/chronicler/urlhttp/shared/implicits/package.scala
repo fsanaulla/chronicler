@@ -16,38 +16,12 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared
 
-import java.nio.charset.{Charset, StandardCharsets}
-
-import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
-import com.github.fsanaulla.chronicler.core.components.JsonHandler
-import com.github.fsanaulla.chronicler.core.encoding.encodingFromContentType
-import com.github.fsanaulla.chronicler.core.implicits.functorId
-import com.github.fsanaulla.chronicler.core.jawn.RichJParser
+import com.github.fsanaulla.chronicler.core.alias.Id
 import com.github.fsanaulla.chronicler.core.model.{Failable, FunctionK, Functor}
-import org.typelevel.jawn.ast.{JParser, JValue}
-import requests.Response
 
 import scala.util.{Failure, Success, Try}
 
 package object implicits {
-  implicit val jsonHandler: JsonHandler[Id, Response] = new JsonHandler[Id, Response] {
-    private[this] def body(response: Response, enc: Charset): Either[Throwable, JValue] =
-      JParser.parseFromStringEither(response.text(enc))
-
-    override def responseBody(response: Response): ErrorOr[JValue] = {
-      response.contentType
-        .flatMap(encodingFromContentType)
-        .map(Charset.forName)
-        .fold(body(response, StandardCharsets.UTF_8))(body(response, _))
-    }
-
-    override def responseHeader(response: Response): Seq[(String, String)] =
-      response.headers.mapValues(_.head).toList
-
-    override def responseCode(response: Response): Int =
-      response.statusCode
-  }
-
   implicit val tryFunctor: Functor[Try] = new Functor[Try] {
     override def map[A, B](fa: Try[A])(f: A => B): Try[B] = fa.map(f)
 

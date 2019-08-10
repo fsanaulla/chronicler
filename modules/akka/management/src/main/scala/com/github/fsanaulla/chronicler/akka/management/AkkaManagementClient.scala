@@ -21,12 +21,7 @@ import _root_.akka.http.scaladsl.HttpsConnectionContext
 import akka.http.scaladsl.model.{HttpResponse, RequestEntity, Uri}
 import akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.akka.shared.InfluxAkkaClient
-import com.github.fsanaulla.chronicler.akka.shared.handlers.{
-  AkkaJsonHandler,
-  AkkaQueryBuilder,
-  AkkaRequestExecutor,
-  AkkaResponseHandler
-}
+import com.github.fsanaulla.chronicler.akka.shared.handlers._
 import com.github.fsanaulla.chronicler.core.ManagementClient
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.model._
@@ -36,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 final class AkkaManagementClient(
     host: String,
     port: Int,
-    val credentials: Option[InfluxCredentials],
+    credentials: Option[InfluxCredentials],
     httpsContext: Option[HttpsConnectionContext],
     terminateActorSystem: Boolean
   )(implicit val ex: ExecutionContext,
@@ -48,12 +43,12 @@ final class AkkaManagementClient(
 
   implicit val mat: ActorMaterializer  = ActorMaterializer()
   implicit val qb: AkkaQueryBuilder    = new AkkaQueryBuilder(schema, host, port, credentials)
-  implicit val jh: AkkaJsonHandler     = new AkkaJsonHandler()
+  implicit val jh: AkkaJsonHandler     = new AkkaJsonHandler(new AkkaBodyUnmarshaller(false))
   implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor(ctx)
   implicit val rh: AkkaResponseHandler = new AkkaResponseHandler(jh)
 
   override def ping: Future[ErrorOr[InfluxDBInfo]] = {
-    re.get(qb.buildQuery("/ping"))
+    re.get(qb.buildQuery("/ping"), compressed = false)
       .flatMap(rh.pingResult)
   }
 }

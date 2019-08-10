@@ -13,17 +13,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 28.09.17
   */
-class MeasurementApiSpec
-  extends FlatSpec
-    with Matchers
-    with Futures
-    with DockerizedInfluxDB {
+class MeasurementApiSpec extends FlatSpec with Matchers with Futures with DockerizedInfluxDB {
 
-  val db = "db"
+  val db       = "db"
   val measName = "meas"
 
   lazy val influxConf =
-    InfluxConfig(host, port, credentials = Some(creds), gzipped = false, None)
+    InfluxConfig(host, port, credentials = Some(creds), compress = false, None)
 
   lazy val mng: AhcManagementClient =
     InfluxMng(host, port, credentials = Some(creds))
@@ -37,20 +33,13 @@ class MeasurementApiSpec
 
     meas.write(singleEntity).futureValue.right.get shouldEqual 204
 
-    meas.read(s"SELECT * FROM $measName")
-      .futureValue
-      .right
-      .get shouldEqual Seq(singleEntity)
+    meas.read(s"SELECT * FROM $measName").futureValue.right.get shouldEqual Seq(singleEntity)
   }
 
   it should "bulk write" in {
     meas.bulkWrite(multiEntitys).futureValue.right.get shouldEqual 204
 
-    meas.read(s"SELECT * FROM $measName")
-      .futureValue
-      .right
-      .get
-      .length shouldEqual 3
+    meas.read(s"SELECT * FROM $measName").futureValue.right.get.length shouldEqual 3
 
     mng.close() shouldEqual {}
     io.close() shouldEqual {}

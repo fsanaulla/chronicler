@@ -19,7 +19,6 @@ package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
-import com.github.fsanaulla.chronicler.urlhttp.shared.implicits.jsonHandler
 import org.scalatest.{FlatSpec, Matchers, TryValues}
 import org.typelevel.jawn.ast._
 import requests.{Response, ResponseBlob}
@@ -34,6 +33,7 @@ import scala.language.implicitConversions
 class UrlResponseHandlerSpec extends FlatSpec with Matchers with TryValues {
 
   implicit val p: JParser.type = JParser
+  val jsonHandler              = new UrlJsonHandler(compressed = false)
   val respHandler              = new ResponseHandler(jsonHandler)
 
   implicit def str2resp(str: String): Response =

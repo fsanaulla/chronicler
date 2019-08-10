@@ -19,12 +19,16 @@ package com.github.fsanaulla.chronicler.urlhttp.io
 import com.github.fsanaulla.chronicler.core.IOClient
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
 import com.github.fsanaulla.chronicler.core.components.ResponseHandler
+import com.github.fsanaulla.chronicler.core.implicits.{applyId, functorId}
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
 import com.github.fsanaulla.chronicler.urlhttp.shared.Url
-import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlQueryBuilder, UrlRequestExecutor}
+import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{
+  UrlJsonHandler,
+  UrlQueryBuilder,
+  UrlRequestExecutor
+}
 import com.github.fsanaulla.chronicler.urlhttp.shared.implicits._
 import requests.Response
-import com.github.fsanaulla.chronicler.core.implicits.{applyId, functorId}
 
 import scala.reflect.ClassTag
 import scala.util.Try
@@ -33,25 +37,26 @@ final class UrlIOClient(
     host: String,
     port: Int,
     credentials: Option[InfluxCredentials],
-    gzipped: Boolean,
+    compress: Boolean,
     ssl: Boolean)
   extends IOClient[Try, Id, Response, Url, String] {
 
+  val jsonHandler                                = new UrlJsonHandler(compress)
   implicit val qb: UrlQueryBuilder               = new UrlQueryBuilder(host, port, credentials, ssl)
   implicit val re: UrlRequestExecutor            = new UrlRequestExecutor(ssl, jsonHandler)
   implicit val rh: ResponseHandler[Id, Response] = new ResponseHandler(jsonHandler)
 
   override def database(dbName: String): UrlDatabaseApi =
-    new UrlDatabaseApi(dbName, gzipped)
+    new UrlDatabaseApi(dbName, compress)
 
   override def measurement[A: ClassTag](
       dbName: String,
       measurementName: String
     ): UrlMeasurementApi[A] =
-    new UrlMeasurementApi(dbName, measurementName, gzipped)
+    new UrlMeasurementApi(dbName, measurementName, compress)
 
   override def ping: Try[ErrorOr[InfluxDBInfo]] = {
-    re.get(qb.buildQuery("/ping"))
+    re.get(qb.buildQuery("/ping"), compress = false)
       .map(rh.pingResult)
   }
 

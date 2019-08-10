@@ -33,14 +33,14 @@ import scala.concurrent.Future
 
 final class AkkaDatabaseApi(
     dbName: String,
-    gzipped: Boolean
+    compressed: Boolean
   )(implicit qb: AkkaQueryBuilder,
     bd: BodyBuilder[RequestEntity],
     re: AkkaRequestExecutor,
     rh: AkkaResponseHandler,
     F: Functor[Future],
     FK: FunctionK[Future, Future])
-  extends DatabaseApi[Future, Future, HttpResponse, Uri, RequestEntity](dbName, gzipped) {
+  extends DatabaseApi[Future, Future, HttpResponse, Uri, RequestEntity](dbName, compressed) {
 
   /**
     * Read chunked data
@@ -59,6 +59,6 @@ final class AkkaDatabaseApi(
       chunkSize: Int
     ): Future[Source[ErrorOr[Array[JPoint]], Any]] = {
     val uri = chunkedQuery(dbName, query, epoch, pretty, chunkSize)
-    F.map(re.get(uri))(rh.queryChunkedResultJson)
+    F.map(re.get(uri, compressed))(rh.queryChunkedResultJson)
   }
 }

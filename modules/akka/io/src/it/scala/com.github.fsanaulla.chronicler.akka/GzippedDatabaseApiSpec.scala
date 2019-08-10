@@ -1,6 +1,5 @@
 package com.github.fsanaulla.chronicler.akka
 
-import java.io.File
 import java.nio.file.Paths
 
 import _root_.akka.actor.ActorSystem
@@ -29,7 +28,7 @@ class GzippedDatabaseApiSpec
   val testDB = "db"
 
   lazy val influxConf =
-    InfluxConfig(host, port, credentials = Some(creds), gzipped = true, None)
+    InfluxConfig(host, port, credentials = Some(creds), compress = true, None)
 
   lazy val mng: AkkaManagementClient =
     InfluxMng(host, port, credentials = Some(creds))

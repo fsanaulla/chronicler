@@ -16,19 +16,24 @@
 
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
+import akka.http.scaladsl.coding.Gzip
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.headers.{`Accept-Encoding`, `Content-Encoding`, HttpEncodings}
 import akka.http.scaladsl.{HttpExt, HttpsConnectionContext}
+import akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.core.components.RequestExecutor
 
 import scala.concurrent.Future
-import scala.language.higherKinds
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[akka] final class AkkaRequestExecutor(ctx: HttpsConnectionContext)(implicit http: HttpExt)
+private[akka] final class AkkaRequestExecutor(
+    ctx: HttpsConnectionContext
+  )(implicit http: HttpExt,
+    mat: ActorMaterializer)
   extends RequestExecutor[Future, HttpResponse, Uri, RequestEntity] {
 
   /**
@@ -37,23 +42,48 @@ private[akka] final class AkkaRequestExecutor(ctx: HttpsConnectionContext)(impli
     * @param uri - request uri
     * @return    - Return wrapper response
     */
-  override def get(uri: Uri): Future[HttpResponse] =
+  override def get(uri: Uri, compressed: Boolean): Future[HttpResponse] = {
+    val request = HttpRequest(
+      method = HttpMethods.GET,
+      uri = uri,
+      // default headers
+      headers = if (compressed) `Accept-Encoding`(HttpEncodings.gzip) :: Nil else Nil
+    )
+
     http.singleRequest(
-      HttpRequest(method = HttpMethods.GET, uri),
+      request,
       connectionContext = ctx
     )
+  }
 
   override def post(
       uri: Uri,
       body: RequestEntity,
-      gzipped: Boolean
+      compressed: Boolean
     ): Future[HttpResponse] = {
+    val headers = if (compressed) `Content-Encoding`(HttpEncodings.gzip) :: Nil else Nil
+    val entity  = if (compressed) body.transformDataBytes(Gzip.encoderFlow) else body
+
+    val request = HttpRequest(HttpMethods.POST, uri)
+      .withHeaders(headers)
+      .withEntity(entity)
+
+    http.singleRequest(request, connectionContext = ctx)
+  }
+
+  /**
+    * Quite simple post operation for creating
+    *
+    * @param uri - request uri
+    */
+  override def post(uri: Uri): Future[HttpResponse] = {
+    val request = HttpRequest(
+      method = HttpMethods.GET,
+      uri = uri
+    )
+
     http.singleRequest(
-      HttpRequest(
-        HttpMethods.POST,
-        uri,
-        entity = body
-      ),
+      request,
       connectionContext = ctx
     )
   }
