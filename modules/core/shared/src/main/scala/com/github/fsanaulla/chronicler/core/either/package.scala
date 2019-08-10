@@ -42,8 +42,14 @@ package object either {
     def mapRight[C](f: B => C): Either[A, C] =
       either.right.map(f)
 
+    def mapLeft[C](f: A => C): Either[C, B] =
+      either.left.map(f)
+
     def flatMapRight[C](f: B => Either[A, C]): Either[A, C] =
       either.right.flatMap(f)
+
+    def flatMapLeft[C](f: A => Either[C, B]): Either[C, B] =
+      either.left.flatMap(f)
 
     def getOrElseRight[B1 >: B](or: => B1): B1 =
       either.right.getOrElse(or)
