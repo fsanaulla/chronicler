@@ -32,7 +32,7 @@ class DatabaseApiSpec
   val testDB = "db"
 
   lazy val influxConf =
-    InfluxConfig(host, port, credentials = Some(creds), gzipped = false, None)
+    InfluxConfig(host, port, credentials = Some(creds), compress = false, None)
 
   lazy val mng: AkkaManagementClient =
     InfluxMng(host, port, credentials = Some(creds))

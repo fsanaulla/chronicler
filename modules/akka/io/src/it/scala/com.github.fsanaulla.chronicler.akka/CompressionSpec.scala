@@ -26,7 +26,7 @@ class CompressionSpec
   val testDB = "db"
 
   lazy val influxConf =
-    InfluxConfig(host, port, credentials = Some(creds), gzipped = true)
+    InfluxConfig(host, port, credentials = Some(creds), compress = true)
 
   lazy val mng =
     InfluxMng(host, port, credentials = Some(creds))

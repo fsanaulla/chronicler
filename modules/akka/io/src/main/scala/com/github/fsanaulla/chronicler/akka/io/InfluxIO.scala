@@ -67,7 +67,7 @@ object InfluxIO {
       conf.host,
       conf.port,
       conf.credentials,
-      conf.gzipped,
+      conf.compress,
       conf.httpsContext,
       conf.terminateActorSystem
     )
