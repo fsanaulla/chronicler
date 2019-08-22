@@ -33,6 +33,8 @@ import org.typelevel.jawn.ast.JArray
   * @tparam R - HTTP response
   * @tparam U - HTTP URi
   * @tparam E - Entity
+  *
+  * @since Big Bang
   */
 class DatabaseApi[F[_], G[_], R, U, E](
     dbName: String,
@@ -130,7 +132,6 @@ class DatabaseApi[F[_], G[_], R, U, E](
       pretty: Boolean = false
     ): F[ErrorOr[Array[(Array[String], JArray)]]] = {
     val uri = singleQuery(dbName, query, epoch, pretty)
-
     F.flatMap(re.get(uri, compress))(resp => FK(rh.groupedResultJson(resp)))
   }
 }
