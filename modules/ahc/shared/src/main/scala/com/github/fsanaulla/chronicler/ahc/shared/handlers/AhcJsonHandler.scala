@@ -27,7 +27,7 @@ import com.github.fsanaulla.chronicler.core.jawn.RichJParser
 import org.asynchttpclient.Response
 import org.typelevel.jawn.ast.{JParser, JValue}
 
-import scala.jdk.CollectionConverters._
+import scala.collection.JavaConverters._
 
 private[ahc] final class AhcJsonHandler(compress: Boolean) extends JsonHandler[Id, Response] {
 
