@@ -53,7 +53,6 @@ object Library {
     "com.typesafe.akka" %% "akka-http"   % Versions.Akka.akkaHttp,
     akkaTestKit                                                     % Scope.test
   )
-  
   // format: on
 
   // async-http
