@@ -22,8 +22,9 @@ import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
 import io.netty.buffer.Unpooled
+import io.netty.handler.codec.http.{DefaultHttpResponse, HttpVersion}
 import org.asynchttpclient.Response
-import org.asynchttpclient.netty.EagerResponseBodyPart
+import org.asynchttpclient.netty.{EagerResponseBodyPart, NettyResponseStatus}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Second, Seconds, Span}
 import org.scalatest.{FlatSpec, Matchers}
@@ -58,6 +59,17 @@ class AhcResponseHandlerSpec extends FlatSpec with Matchers with ScalaFutures {
       new EagerResponseBodyPart(
         Unpooled.copiedBuffer(ByteBuffer.wrap(bts)),
         true
+      )
+    )
+
+    b.accumulate(
+      new NettyResponseStatus(
+        null,
+        new DefaultHttpResponse(
+          HttpVersion.HTTP_1_0,
+          io.netty.handler.codec.http.HttpResponseStatus.OK
+        ),
+        null
       )
     )
 

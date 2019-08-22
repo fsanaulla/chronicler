@@ -19,8 +19,9 @@ package com.github.fsanaulla.chronicler.ahc.shared.handlers
 import java.nio.ByteBuffer
 
 import io.netty.buffer.Unpooled
+import io.netty.handler.codec.http.{DefaultHttpResponse, HttpVersion}
 import org.asynchttpclient.Response
-import org.asynchttpclient.netty.EagerResponseBodyPart
+import org.asynchttpclient.netty.{EagerResponseBodyPart, NettyResponseStatus}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpec, Matchers, OptionValues}
 import org.typelevel.jawn.ast._
@@ -32,45 +33,60 @@ import org.typelevel.jawn.ast._
   */
 class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with OptionValues {
 
-  val jsonHandler   = new AhcJsonHandler(compress = false)
-  val singleStrJson = """{
-                      "results": [
-                          {
-                              "statement_id": 0,
-                              "series": [
-                                 {
-                                      "name": "cpu_load_short",
-                                      "columns": [
-                                          "time",
-                                          "value"
-                                      ],
-                                      "values": [
-                                          [
-                                              "2015-01-29T21:55:43.702900257Z",
-                                              2
-                                          ],
-                                          [
-                                              "2015-01-29T21:55:43.702900257Z",
-                                              0.55
-                                          ],
-                                          [
-                                              "2015-06-11T20:46:02Z",
-                                              0.64
-                                          ]
-                                      ]
-                                  }
-                              ]
-                          }
-                      ]
-                  }"""
+  val jsonHandler = new AhcJsonHandler(compress = false)
 
-  val resp: Response = {
+  val singleStrJson: String =
+    """
+      |{
+      |  "results": [
+      |    {
+      |      "statement_id": 0,
+      |      "series": [
+      |        {
+      |          "name": "cpu_load_short",
+      |          "columns": [
+      |            "time",
+      |            "value"
+      |          ],
+      |          "values": [
+      |            [
+      |              "2015-01-29T21:55:43.702900257Z",
+      |              2
+      |            ],
+      |            [
+      |              "2015-01-29T21:55:43.702900257Z",
+      |              0.55
+      |            ],
+      |            [
+      |              "2015-06-11T20:46:02Z",
+      |              0.64
+      |            ]
+      |          ]
+      |        }
+      |      ]
+      |    }
+      |  ]
+      |}
+      |""".stripMargin
+
+  def buildResponse(bts: Array[Byte]): Response = {
     val b = new Response.ResponseBuilder()
 
     b.accumulate(
       new EagerResponseBodyPart(
-        Unpooled.copiedBuffer(ByteBuffer.wrap(singleStrJson.getBytes())),
+        Unpooled.copiedBuffer(ByteBuffer.wrap(bts)),
         true
+      )
+    )
+
+    b.accumulate(
+      new NettyResponseStatus(
+        null,
+        new DefaultHttpResponse(
+          HttpVersion.HTTP_1_0,
+          io.netty.handler.codec.http.HttpResponseStatus.OK
+        ),
+        null
       )
     )
 
@@ -81,7 +97,7 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
 
   it should "extract JSON from HTTP response" in {
     jsonHandler
-      .responseBody(resp)
+      .responseBody(buildResponse(singleStrJson.getBytes()))
       .right
       .get shouldEqual result
   }
