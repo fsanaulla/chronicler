@@ -16,10 +16,10 @@
 
 package com.github.fsanaulla.chronicler.ahc.management
 
+import com.github.fsanaulla.chronicler.ahc.shared.Uri
 import com.github.fsanaulla.chronicler.ahc.shared.handlers.AhcQueryBuilder
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.QueriesManagementQuery
-import com.softwaremill.sttp.Uri
 import org.scalatest.{FlatSpec, Matchers}
 
 /**
@@ -30,32 +30,33 @@ import org.scalatest.{FlatSpec, Matchers}
 class QueriesManagementQuerySpec extends FlatSpec with Matchers with QueriesManagementQuery[Uri] {
 
   trait Env {
-    val host = "localhost"
-    val port = 8086
+    val schema = "http"
+    val host   = "localhost"
+    val port   = 8086
   }
 
   trait AuthEnv extends Env {
     val credentials                  = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(schema, host, port, credentials)
   }
 
   trait NonAuthEnv extends Env {
-    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, None)
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(schema, host, port, None)
   }
 
   it should "show query" in new AuthEnv {
-    showQuerysQuery.toString() shouldEqual queryTesterAuth("SHOW QUERIES")(credentials.get)
+    showQuerysQuery.mkUrl shouldEqual queryTesterAuth("SHOW QUERIES")(credentials.get)
   }
 
   it should "kill query" in new AuthEnv {
-    killQueryQuery(5).toString() shouldEqual queryTesterAuth("KILL QUERY 5")(credentials.get)
+    killQueryQuery(5).mkUrl shouldEqual queryTesterAuth("KILL QUERY 5")(credentials.get)
   }
 
   it should "show query without auth" in new NonAuthEnv {
-    showQuerysQuery.toString() shouldEqual queryTester("SHOW QUERIES")
+    showQuerysQuery.mkUrl shouldEqual queryTester("SHOW QUERIES")
   }
 
   it should "kill query without auth" in new NonAuthEnv {
-    killQueryQuery(5).toString() shouldEqual queryTester("KILL QUERY 5")
+    killQueryQuery(5).mkUrl shouldEqual queryTester("KILL QUERY 5")
   }
 }

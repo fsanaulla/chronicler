@@ -16,15 +16,16 @@
 
 package com.github.fsanaulla.chronicler.ahc.shared
 
-import com.softwaremill.sttp.SttpBackend
-import com.softwaremill.sttp.asynchttpclient.future.AsyncHttpClientFutureBackend
-import org.asynchttpclient.AsyncHttpClientConfig
-
-import scala.concurrent.Future
+import org.asynchttpclient.{AsyncHttpClientConfig, DefaultAsyncHttpClient}
 
 class InfluxAhcClient(asyncClientConfig: Option[AsyncHttpClientConfig]) { self: AutoCloseable =>
-  private[ahc] implicit val backend: SttpBackend[Future, Nothing] =
-    asyncClientConfig.fold(AsyncHttpClientFutureBackend())(AsyncHttpClientFutureBackend.usingConfig)
+  private[ahc] val schema: String = asyncClientConfig
+    .map(_.isUseOpenSsl)
+    .map(if (_) "https" else "http")
+    .getOrElse("http")
 
-  override def close(): Unit = backend.close()
+  private[ahc] implicit val client: DefaultAsyncHttpClient =
+    asyncClientConfig.fold(new DefaultAsyncHttpClient())(new DefaultAsyncHttpClient(_))
+
+  override def close(): Unit = client.close()
 }

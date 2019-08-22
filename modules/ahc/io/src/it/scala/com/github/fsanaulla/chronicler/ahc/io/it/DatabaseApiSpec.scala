@@ -84,27 +84,28 @@ class DatabaseApiSpec extends FlatSpec with Matchers with Futures with Dockerize
   }
 
   it should "retrieve multiple request" in {
+    db.readJson("SELECT * FROM test2").futureValue.right.get.length shouldEqual 3
+
+    db.readJson("SELECT * FROM test2 WHERE age < 40").futureValue.right.get.length shouldEqual 1
+
     val multiQuery = db
-      .bulkReadJson(
-        Array(
-          "SELECT * FROM test2",
-          "SELECT * FROM test2 WHERE age < 40"
-        )
-      )
+      .bulkReadJson(Seq("SELECT * FROM test2", "SELECT * FROM test2 WHERE age < 40"))
       .futureValue
+      .right
+      .get
 
-    multiQuery.right.get.length shouldEqual 2
-    multiQuery.right.get shouldBe a[Array[_]]
+    multiQuery.length shouldEqual 2
+    multiQuery shouldBe a[Array[_]]
 
-    multiQuery.right.get.head.length shouldEqual 3
-    multiQuery.right.get.head shouldBe a[Array[_]]
-    multiQuery.right.get.head.head shouldBe a[JArray]
+    multiQuery.head.length shouldEqual 3
+    multiQuery.head shouldBe a[Array[_]]
+    multiQuery.head.head shouldBe a[JArray]
 
-    multiQuery.right.get.last.length shouldEqual 1
-    multiQuery.right.get.last shouldBe a[Array[_]]
-    multiQuery.right.get.last.head shouldBe a[JArray]
+    multiQuery.last.length shouldEqual 1
+    multiQuery.last shouldBe a[Array[_]]
+    multiQuery.last.head shouldBe a[JArray]
 
-    multiQuery.right.get
+    multiQuery
       .map(_.map(_.arrayValue.right.get.tail)) shouldEqual largeMultiJsonEntity.map(
       _.map(_.arrayValue.right.get.tail)
     )

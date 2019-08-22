@@ -16,7 +16,11 @@
 
 package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
-import com.softwaremill.sttp.Response
+import java.nio.ByteBuffer
+
+import io.netty.buffer.Unpooled
+import org.asynchttpclient.Response
+import org.asynchttpclient.netty.EagerResponseBodyPart
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpec, Matchers, OptionValues}
 import org.typelevel.jawn.ast._
@@ -60,7 +64,18 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
                       ]
                   }"""
 
-  val resp: Response[Array[Byte]] = Response.ok(singleStrJson.getBytes())
+  val resp: Response = {
+    val b = new Response.ResponseBuilder()
+
+    b.accumulate(
+      new EagerResponseBodyPart(
+        Unpooled.copiedBuffer(ByteBuffer.wrap(singleStrJson.getBytes())),
+        true
+      )
+    )
+
+    b.build
+  }
 
   val result: JValue = JParser.parseFromString(singleStrJson).get
 

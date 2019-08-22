@@ -26,20 +26,20 @@ package object unit {
   }
 
   def queryTesterAuth(query: String)(credentials: InfluxCredentials): String =
-    s"http://localhost:8086/query?q=${query.encode}&p=${credentials.password.encode}&u=${credentials.username.encode}"
+    s"http://localhost:8086/query?q=${query}&p=${credentials.password}&u=${credentials.username}"
 
   def queryTesterAuth(db: String, query: String)(credentials: InfluxCredentials): String =
-    s"http://localhost:8086/query?q=${query.encode}&p=${credentials.password.encode}&db=${db.encode}&u=${credentials.username.encode}"
+    s"http://localhost:8086/query?q=${query}&p=${credentials.password}&db=${db}&u=${credentials.username}"
 
   def queryTester(query: String): String =
-    s"http://localhost:8086/query?q=${query.encode}"
+    s"http://localhost:8086/query?q=${query}"
 
   def queryTester(db: String, query: String): String =
-    s"http://localhost:8086/query?q=${query.encode}&db=${db.encode}"
+    s"http://localhost:8086/query?q=${query}&db=${db}"
 
   def queryTester(path: String, mp: List[(String, String)]): String = {
     val queries = mp
-      .map { case (k, v) => s"$k=${v.encode}" }
+      .map { case (k, v) => s"$k=$v" }
       .mkString("&")
 
     s"http://localhost:8086$path?$queries"
