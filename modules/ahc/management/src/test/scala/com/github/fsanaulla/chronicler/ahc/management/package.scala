@@ -26,20 +26,20 @@ package object management {
   }
 
   def queryTesterAuth(query: String)(credentials: InfluxCredentials): String =
-    s"http://localhost:8086/query?u=${credentials.username}&p=${credentials.password}&q=${query}"
+    s"http://localhost:8086/query?u=${credentials.username.encode}&p=${credentials.password.encode}&q=${query.encode}"
 
   def queryTesterAuth(db: String, query: String)(credentials: InfluxCredentials): String =
-    s"http://localhost:8086/query?db=${db}&u=${credentials.username}&p=${credentials.password}&q=${query}"
+    s"http://localhost:8086/query?db=${db}&u=${credentials.username.encode}&p=${credentials.password.encode}&q=${query.encode}"
 
   def queryTester(query: String): String =
-    s"http://localhost:8086/query?q=${query}"
+    s"http://localhost:8086/query?q=${query.encode}"
 
   def queryTester(db: String, query: String): String =
-    s"http://localhost:8086/query?db=${db}&q=${query}"
+    s"http://localhost:8086/query?db=${db}&q=${query.encode}"
 
   def queryTester(path: String, queryPrms: List[(String, String)]): String = {
     val s = queryPrms
-      .map { case (k, v) => s"$k=$v" }
+      .map { case (k, v) => s"$k=${v.encode}" }
       .mkString("&")
 
     s"http://localhost:8086$path?$s"
