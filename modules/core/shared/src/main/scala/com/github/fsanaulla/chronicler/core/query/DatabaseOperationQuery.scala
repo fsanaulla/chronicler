@@ -40,14 +40,13 @@ trait DatabaseOperationQuery[U] {
     if (epoch.isNone) queryParams
     else ("epoch" -> epoch.toString) :: queryParams
 
+  // format: off
   private[chronicler] final def write(
       dbName: String,
       consistency: Consistency,
       precision: Precision,
       retentionPolicy: Option[String]
-    )(implicit qb: QueryBuilder[U]
-    ): U = {
-
+    )(implicit qb: QueryBuilder[U]): U = {
     val queryParams = Nil
 
     val withRP =
@@ -70,9 +69,7 @@ trait DatabaseOperationQuery[U] {
       query: String,
       epoch: Epoch,
       pretty: Boolean
-    )(implicit qb: QueryBuilder[U]
-    ): U = {
-
+    )(implicit qb: QueryBuilder[U]): U = {
     val queryParams = List("q" -> query)
     val withEpoch   = addEpochQueryParam(epoch, queryParams)
     val withPretty  = addPrettyQueryParam(pretty, withEpoch)
@@ -86,8 +83,7 @@ trait DatabaseOperationQuery[U] {
       epoch: Epoch,
       pretty: Boolean,
       chunkSize: Int
-    )(implicit qb: QueryBuilder[U]
-    ): U = {
+    )(implicit qb: QueryBuilder[U]): U = {
 
     val queryParams = List(
       "db"         -> dbName,
@@ -107,8 +103,7 @@ trait DatabaseOperationQuery[U] {
       queries: Seq[String],
       epoch: Epoch,
       pretty: Boolean
-    )(implicit qb: QueryBuilder[U]
-    ): U = {
+    )(implicit qb: QueryBuilder[U]): U = {
     val queryParams = List("q" -> queries.mkString(";"))
     val withEpoch   = addEpochQueryParam(epoch, queryParams)
     val withPretty  = addPrettyQueryParam(pretty, withEpoch)

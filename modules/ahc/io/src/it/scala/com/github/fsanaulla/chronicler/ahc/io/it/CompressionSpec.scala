@@ -4,10 +4,11 @@ import java.nio.file.Paths
 
 import com.github.fsanaulla.chronicler.ahc.io.InfluxIO
 import com.github.fsanaulla.chronicler.ahc.management.InfluxMng
+import com.github.fsanaulla.chronicler.ahc.shared.Uri
 import com.github.fsanaulla.chronicler.core.alias.Id
 import com.github.fsanaulla.chronicler.core.api.DatabaseApi
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import com.softwaremill.sttp.{Response, Uri}
+import org.asynchttpclient.Response
 import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -30,7 +31,7 @@ class CompressionSpec
   lazy val io =
     InfluxIO(host, port, Some(creds) /*, compress = true*/ )
 
-  lazy val db: DatabaseApi[Future, Id, Response[Array[Byte]], Uri, String] =
+  lazy val db: DatabaseApi[Future, Id, Response, Uri, String] =
     io.database(testDB)
 
   it should "ping database" in {

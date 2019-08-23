@@ -16,10 +16,10 @@
 
 package com.github.fsanaulla.chronicler.ahc.management
 
+import com.github.fsanaulla.chronicler.ahc.shared.Uri
 import com.github.fsanaulla.chronicler.ahc.shared.handlers.AhcQueryBuilder
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.ShardManagementQuery
-import com.softwaremill.sttp.Uri
 import org.scalatest.{FlatSpec, Matchers}
 
 /**
@@ -30,42 +30,43 @@ import org.scalatest.{FlatSpec, Matchers}
 class ShardManagementQuerySpec extends FlatSpec with Matchers with ShardManagementQuery[Uri] {
 
   trait Env {
-    val host = "localhost"
-    val port = 8086
+    val schema = "http"
+    val host   = "localhost"
+    val port   = 8086
   }
 
   trait AuthEnv extends Env {
     val credentials                  = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(schema, host, port, credentials)
   }
 
   trait NonAuthEnv extends Env {
-    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, None)
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(schema, host, port, None)
   }
 
   it should "drop shard by id" in new AuthEnv {
-    dropShardQuery(5).toString() shouldEqual queryTesterAuth("DROP SHARD 5")(credentials.get)
+    dropShardQuery(5).mkUrl shouldEqual queryTesterAuth("DROP SHARD 5")(credentials.get)
   }
 
   it should "drop shard by id without auth" in new NonAuthEnv {
-    dropShardQuery(5).toString() shouldEqual queryTester("DROP SHARD 5")
+    dropShardQuery(5).mkUrl shouldEqual queryTester("DROP SHARD 5")
   }
 
   it should "show shards" in new AuthEnv {
-    showShardsQuery.toString() shouldEqual queryTesterAuth("SHOW SHARDS")(credentials.get)
+    showShardsQuery.mkUrl shouldEqual queryTesterAuth("SHOW SHARDS")(credentials.get)
   }
 
   it should "show shards without auth" in new NonAuthEnv {
-    showShardsQuery.toString() shouldEqual queryTester("SHOW SHARDS")
+    showShardsQuery.mkUrl shouldEqual queryTester("SHOW SHARDS")
   }
 
   it should "show shard groups" in new AuthEnv {
-    showShardGroupsQuery.toString() shouldEqual queryTesterAuth("SHOW SHARD GROUPS")(
+    showShardGroupsQuery.mkUrl shouldEqual queryTesterAuth("SHOW SHARD GROUPS")(
       credentials.get
     )
   }
 
   it should "show shard groups without auth" in new NonAuthEnv {
-    showShardGroupsQuery.toString() shouldEqual queryTester("SHOW SHARD GROUPS")
+    showShardGroupsQuery.mkUrl shouldEqual queryTester("SHOW SHARD GROUPS")
   }
 }

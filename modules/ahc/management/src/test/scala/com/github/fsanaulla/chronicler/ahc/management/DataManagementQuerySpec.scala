@@ -16,10 +16,10 @@
 
 package com.github.fsanaulla.chronicler.ahc.management
 
+import com.github.fsanaulla.chronicler.ahc.shared.Uri
 import com.github.fsanaulla.chronicler.ahc.shared.handlers.AhcQueryBuilder
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.DataManagementQuery
-import com.softwaremill.sttp.Uri
 import org.scalatest.{FlatSpec, Matchers}
 
 /**
@@ -30,17 +30,18 @@ import org.scalatest.{FlatSpec, Matchers}
 class DataManagementQuerySpec extends FlatSpec with Matchers with DataManagementQuery[Uri] {
 
   trait Env {
-    val host = "localhost"
-    val port = 8086
+    val schema = "http"
+    val host   = "localhost"
+    val port   = 8086
   }
 
   trait AuthEnv extends Env {
     val credentials                  = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(schema, host, port, credentials)
   }
 
   trait NonAuthEnv extends Env {
-    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, None)
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(schema, host, port, None)
   }
 
   val testDb: String          = "testDb"
@@ -52,58 +53,56 @@ class DataManagementQuerySpec extends FlatSpec with Matchers with DataManagement
   val testOffset              = Some(3)
 
   it should "generate correct 'create database' query" in new AuthEnv {
-    createDatabaseQuery(testDb, None, None, None, None).toString() shouldEqual
+    createDatabaseQuery(testDb, None, None, None, None).mkUrl shouldEqual
       queryTesterAuth(s"CREATE DATABASE $testDb")(credentials.get)
-    createDatabaseQuery(testDb, None, Some(2), None, None).toString() shouldEqual
+    createDatabaseQuery(testDb, None, Some(2), None, None).mkUrl shouldEqual
       queryTesterAuth(s"CREATE DATABASE $testDb WITH REPLICATION 2")(credentials.get)
   }
 
   it should "generate correct 'drop database' query" in new AuthEnv {
-    dropDatabaseQuery(testDb).toString() shouldEqual
+    dropDatabaseQuery(testDb).mkUrl shouldEqual
       queryTesterAuth(s"DROP DATABASE $testDb")(credentials.get)
   }
 
   it should "generate correct 'drop series' query" in new AuthEnv {
-    dropSeriesQuery(testDb, testSeries).toString() shouldEqual
+    dropSeriesQuery(testDb, testSeries).mkUrl shouldEqual
       queryTesterAuth(testDb, s"DROP SERIES FROM $testSeries")(credentials.get)
   }
 
   it should "generate  correct 'drop measurement' query" in new AuthEnv {
-    dropMeasurementQuery(testDb, testMeasurement).toString() shouldEqual
+    dropMeasurementQuery(testDb, testMeasurement).mkUrl shouldEqual
       queryTesterAuth(testDb, s"DROP MEASUREMENT $testMeasurement")(credentials.get)
   }
 
   it should "generate correct 'drop all series' query" in new AuthEnv {
-    deleteAllSeriesQuery(testDb, testSeries).toString() shouldEqual
+    deleteAllSeriesQuery(testDb, testSeries).mkUrl shouldEqual
       queryTesterAuth(testDb, s"DELETE FROM $testSeries")(credentials.get)
   }
 
   it should "generate correct 'show measurement' query" in new AuthEnv {
-    showMeasurementQuery(testDb).toString() shouldEqual
+    showMeasurementQuery(testDb).mkUrl shouldEqual
       queryTesterAuth(testDb, "SHOW MEASUREMENTS")(credentials.get)
   }
 
   it should "generate correct 'show database' query" in new AuthEnv {
-    showDatabasesQuery.toString() shouldEqual
+    showDatabasesQuery.mkUrl shouldEqual
       queryTesterAuth(s"SHOW DATABASES")(credentials.get)
   }
 
   it should "generate correct 'show tag-key' query" in new AuthEnv {
-    showTagKeysQuery(testDb, testMeasurement, testWhereClause, testLimit, testOffset)
-      .toString() shouldEqual
+    showTagKeysQuery(testDb, testMeasurement, testWhereClause, testLimit, testOffset).mkUrl shouldEqual
       queryTesterAuth(
         s"SHOW TAG KEYS ON $testDb FROM $testMeasurement WHERE ${testWhereClause.get} LIMIT ${testLimit.get} OFFSET ${testOffset.get}"
       )(credentials.get)
 
-    showTagKeysQuery(testDb, testMeasurement, testWhereClause, None, None).toString() shouldEqual
+    showTagKeysQuery(testDb, testMeasurement, testWhereClause, None, None).mkUrl shouldEqual
       queryTesterAuth(
         s"SHOW TAG KEYS ON $testDb FROM $testMeasurement WHERE ${testWhereClause.get}"
       )(credentials.get)
   }
 
   it should "generate correct 'show tag-value' query" in new AuthEnv {
-    showTagValuesQuery(testDb, testMeasurement, Seq("key"), testWhereClause, testLimit, testOffset)
-      .toString() shouldEqual
+    showTagValuesQuery(testDb, testMeasurement, Seq("key"), testWhereClause, testLimit, testOffset).mkUrl shouldEqual
       queryTesterAuth(
         s"SHOW TAG VALUES ON $testDb FROM $testMeasurement WITH KEY = key WHERE ${testWhereClause.get} LIMIT ${testLimit.get} OFFSET ${testOffset.get}"
       )(credentials.get)
@@ -114,14 +113,14 @@ class DataManagementQuerySpec extends FlatSpec with Matchers with DataManagement
       testWhereClause,
       testLimit,
       testOffset
-    ).toString() shouldEqual
+    ).mkUrl shouldEqual
       queryTesterAuth(
         s"SHOW TAG VALUES ON $testDb FROM $testMeasurement WITH KEY IN (key,key1) WHERE ${testWhereClause.get} LIMIT ${testLimit.get} OFFSET ${testOffset.get}"
       )(credentials.get)
   }
 
   it should "generate correct 'show field-key' query" in new AuthEnv {
-    showFieldKeysQuery(testDb, testMeasurement).toString() shouldEqual
+    showFieldKeysQuery(testDb, testMeasurement).mkUrl shouldEqual
       queryTesterAuth(s"SHOW FIELD KEYS ON $testDb FROM $testMeasurement")(credentials.get)
   }
 
@@ -132,7 +131,7 @@ class DataManagementQuerySpec extends FlatSpec with Matchers with DataManagement
       None,
       None,
       None
-    ).toString() shouldEqual queryTester(s"CREATE DATABASE $testDb WITH DURATION 3d")
+    ).mkUrl shouldEqual queryTester(s"CREATE DATABASE $testDb WITH DURATION 3d")
 
     createDatabaseQuery(
       testDb,
@@ -140,36 +139,40 @@ class DataManagementQuerySpec extends FlatSpec with Matchers with DataManagement
       Some(2),
       Some("1d"),
       Some("testName")
-    ).toString() shouldEqual queryTester(
+    ).mkUrl shouldEqual queryTester(
       s"CREATE DATABASE $testDb WITH DURATION 3d REPLICATION 2 SHARD DURATION 1d NAME testName"
     )
   }
 
   it should "generate correct 'drop database' query without auth" in new NonAuthEnv {
-    dropDatabaseQuery(testDb).toString() shouldEqual queryTester(s"DROP DATABASE $testDb")
+    dropDatabaseQuery(testDb).mkUrl shouldEqual queryTester(s"DROP DATABASE $testDb")
   }
 
   it should "generate correct 'drop series' query without auth" in new NonAuthEnv {
-    dropSeriesQuery(testDb, testSeries)
-      .toString() shouldEqual queryTester(testDb, s"DROP SERIES FROM $testSeries")
+    dropSeriesQuery(testDb, testSeries).mkUrl shouldEqual queryTester(
+      testDb,
+      s"DROP SERIES FROM $testSeries"
+    )
   }
 
   it should "generate auth correct 'drop measurement' query without auth" in new NonAuthEnv {
-    dropMeasurementQuery(testDb, testMeasurement).toString() shouldEqual
+    dropMeasurementQuery(testDb, testMeasurement).mkUrl shouldEqual
       queryTester(testDb, s"DROP MEASUREMENT $testMeasurement")
   }
 
   it should "generate correct auth 'drop all series' query without auth" in new NonAuthEnv {
-    deleteAllSeriesQuery(testDb, testSeries)
-      .toString() shouldEqual queryTester(testDb, s"DELETE FROM $testSeries")
+    deleteAllSeriesQuery(testDb, testSeries).mkUrl shouldEqual queryTester(
+      testDb,
+      s"DELETE FROM $testSeries"
+    )
   }
 
   it should "generate correct auth 'show measurement' query without auth" in new NonAuthEnv {
-    showMeasurementQuery(testDb).toString() shouldEqual queryTester(testDb, "SHOW MEASUREMENTS")
+    showMeasurementQuery(testDb).mkUrl shouldEqual queryTester(testDb, "SHOW MEASUREMENTS")
   }
 
   it should "generate correct 'show database' query without auth" in new NonAuthEnv {
-    showDatabasesQuery.toString() shouldEqual queryTester(s"SHOW DATABASES")
+    showDatabasesQuery.mkUrl shouldEqual queryTester(s"SHOW DATABASES")
   }
 
   it should "generate correct 'show tag-key' query without auth" in new NonAuthEnv {
@@ -179,7 +182,7 @@ class DataManagementQuerySpec extends FlatSpec with Matchers with DataManagement
       None,
       None,
       None
-    ).toString() shouldEqual queryTester(s"SHOW TAG KEYS ON $testDb FROM $testMeasurement")
+    ).mkUrl shouldEqual queryTester(s"SHOW TAG KEYS ON $testDb FROM $testMeasurement")
 
     showTagKeysQuery(
       testDb,
@@ -187,24 +190,22 @@ class DataManagementQuerySpec extends FlatSpec with Matchers with DataManagement
       testWhereClause,
       testLimit,
       None
-    ).toString() shouldEqual queryTester(
+    ).mkUrl shouldEqual queryTester(
       s"SHOW TAG KEYS ON $testDb FROM $testMeasurement WHERE ${testWhereClause.get} LIMIT ${testLimit.get}"
     )
   }
 
   it should "generate correct 'show tag-value' query without auth" in new NonAuthEnv {
-    showTagValuesQuery(testDb, testMeasurement, Seq("key"), None, None, None)
-      .toString() shouldEqual queryTester(
+    showTagValuesQuery(testDb, testMeasurement, Seq("key"), None, None, None).mkUrl shouldEqual queryTester(
       s"SHOW TAG VALUES ON $testDb FROM $testMeasurement WITH KEY = key"
     )
-    showTagValuesQuery(testDb, testMeasurement, Seq("key", "key1"), testWhereClause, None, None)
-      .toString() shouldEqual queryTester(
+    showTagValuesQuery(testDb, testMeasurement, Seq("key", "key1"), testWhereClause, None, None).mkUrl shouldEqual queryTester(
       s"SHOW TAG VALUES ON $testDb FROM $testMeasurement WITH KEY IN (key,key1) WHERE ${testWhereClause.get}"
     )
   }
 
   it should "generate correct 'show field-key' query without auth" in new NonAuthEnv {
-    showFieldKeysQuery(testDb, testMeasurement).toString() shouldEqual
+    showFieldKeysQuery(testDb, testMeasurement).mkUrl shouldEqual
       queryTester(s"SHOW FIELD KEYS ON $testDb FROM $testMeasurement")
   }
 }

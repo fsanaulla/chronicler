@@ -16,11 +16,11 @@
 
 package com.github.fsanaulla.chronicler.ahc.io.unit
 
+import com.github.fsanaulla.chronicler.ahc.shared.Uri
 import com.github.fsanaulla.chronicler.ahc.shared.handlers.AhcQueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.{Consistencies, Epochs, Precisions}
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import com.softwaremill.sttp.Uri
 import org.scalatest.{FlatSpec, Matchers}
 
 import scala.language.implicitConversions
@@ -31,32 +31,30 @@ import scala.language.implicitConversions
   * Date: 27.07.17
   */
 class DatabaseApiOperationQuerySpec
-    extends FlatSpec
-    with Matchers
-    with DatabaseOperationQuery[Uri] {
+  extends FlatSpec
+  with Matchers
+  with DatabaseOperationQuery[Uri] {
 
   trait Env {
-    val host = "localhost"
-    val port = 8086
+    val schema = "http"
+    val host   = "localhost"
+    val port   = 8086
   }
 
   trait AuthEnv extends Env {
     val credentials                  = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(schema, host, port, credentials)
   }
 
   trait NonAuthEnv extends Env {
-    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, None)
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(schema, host, port, None)
   }
 
   val testDB    = "db"
   val testQuery = "SELECT * FROM test"
 
-  implicit def a2Opt[A](a: A): Option[A] = Some(a)
-
   it should "return correct write query" in new AuthEnv {
-    write(testDB, Consistencies.One, Precisions.Nanoseconds, None)
-      .toString() shouldEqual queryTester(
+    write(testDB, Consistencies.One, Precisions.Nanoseconds, None).mkUrl shouldEqual queryTester(
       "/write",
       List(
         "db"          -> testDB,
@@ -67,8 +65,7 @@ class DatabaseApiOperationQuerySpec
       )
     )
 
-    write(testDB, Consistencies.All, Precisions.Nanoseconds, None)
-      .toString() shouldEqual queryTester(
+    write(testDB, Consistencies.All, Precisions.Nanoseconds, None).mkUrl shouldEqual queryTester(
       "/write",
       List(
         "db"          -> testDB,
@@ -81,23 +78,23 @@ class DatabaseApiOperationQuerySpec
   }
 
   it should "return correct write query without auth " in new NonAuthEnv {
-    write(testDB, Consistencies.One, Precisions.Nanoseconds, None).toString() shouldEqual
+    write(testDB, Consistencies.One, Precisions.Nanoseconds, None).mkUrl shouldEqual
       queryTester("/write", List("db" -> testDB, "consistency" -> "one", "precision" -> "ns"))
 
-    write(testDB, Consistencies.One, Precisions.Microseconds, None).toString() shouldEqual
+    write(testDB, Consistencies.One, Precisions.Microseconds, None).mkUrl shouldEqual
       queryTester("/write", List("db" -> testDB, "consistency" -> "one", "precision" -> "u"))
   }
 
   it should "return correct single read query" in new AuthEnv {
 
-    val queryPrms = List(
+    val queryPrms: List[(String, String)] = List(
       "db"    -> testDB,
       "u"     -> credentials.get.username,
       "p"     -> credentials.get.password,
       "epoch" -> "ns",
       "q"     -> "SELECT * FROM test"
     )
-    singleQuery(testDB, testQuery, Epochs.Nanoseconds, pretty = false).toString() shouldEqual
+    singleQuery(testDB, testQuery, Epochs.Nanoseconds, pretty = false).mkUrl shouldEqual
       queryTester("/query", queryPrms)
   }
 
@@ -116,7 +113,7 @@ class DatabaseApiOperationQuerySpec
       Seq("SELECT * FROM test", "SELECT * FROM test1"),
       Epochs.Nanoseconds,
       pretty = false
-    ).toString() shouldEqual
+    ).mkUrl shouldEqual
       queryTester("/query", queryPrms)
 
     val queryPrms1: List[(String, String)] = List(
@@ -132,7 +129,7 @@ class DatabaseApiOperationQuerySpec
       Seq("SELECT * FROM test", "SELECT * FROM test1"),
       Epochs.Nanoseconds,
       pretty = true
-    ).toString() shouldEqual
+    ).mkUrl shouldEqual
       queryTester("/query", queryPrms1)
   }
 }

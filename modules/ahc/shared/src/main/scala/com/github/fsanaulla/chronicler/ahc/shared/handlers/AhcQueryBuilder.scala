@@ -16,38 +16,35 @@
 
 package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
+import com.github.fsanaulla.chronicler.ahc.shared.Uri
 import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
-import com.softwaremill.sttp.Uri.QueryFragment
-import com.softwaremill.sttp.Uri.QueryFragment.KeyValue
-import com.softwaremill.sttp._
+import org.asynchttpclient.Param
 
 import scala.annotation.tailrec
 
 private[ahc] class AhcQueryBuilder(
+    schema: String,
     host: String,
     port: Int,
     credentials: Option[InfluxCredentials])
   extends QueryBuilder[Uri](credentials) {
 
-  override def buildQuery(url: String): Uri =
-    Uri(host = host, port).path(url)
+  override def buildQuery(query: String): Uri =
+    Uri(schema, host, port, query)
 
-  override def buildQuery(uri: String, queryParams: List[(String, String)]): Uri = {
-    val u        = Uri(host = host, port).path(uri)
-    val encoding = Uri.QueryFragmentEncoding.All
-    val kvLst = queryParams.map {
-      case (k, v) => KeyValue(k, v, valueEncoding = encoding)
-    }
+  override def buildQuery(query: String, queryParams: List[(String, String)]): Uri = {
+    val u      = buildQuery(query)
+    val params = queryParams.map { case (k, v) => new Param(k, v) }
 
     @tailrec
-    def addQueryParam(u: Uri, lst: Seq[QueryFragment]): Uri = {
+    def addQueryParam(u: Uri, lst: List[Param]): Uri = {
       lst match {
         case Nil       => u
-        case h :: tail => addQueryParam(u.queryFragment(h), tail)
+        case h :: tail => addQueryParam(u.addParam(h), tail)
       }
     }
 
-    addQueryParam(u, kvLst)
+    addQueryParam(u, params)
   }
 }

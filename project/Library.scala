@@ -8,12 +8,10 @@ import sbt._
 object Library {
 
   object Versions {
-    val sttp    = "1.6.4"
-    val netty   = "4.1.37.Final"
     val request = "0.2.0"
 
     object Akka {
-      val akka     = "2.5.24"
+      val akka     = "2.5.25"
       val akkaHttp = "10.1.9"
     }
 
@@ -24,15 +22,14 @@ object Library {
     }
   }
 
-  val sttp        = "com.softwaremill.sttp" %% "core"         % Versions.sttp
-  val scalaTest   = "org.scalatest"         %% "scalatest"    % Versions.Testing.scalaTest
-  val scalaCheck  = "org.scalacheck"        %% "scalacheck"   % Versions.Testing.scalaCheck
-  val akkaTestKit = "com.typesafe.akka"     %% "akka-testkit" % Versions.Akka.akka
+  val scalaTest   = "org.scalatest"     %% "scalatest"    % Versions.Testing.scalaTest
+  val scalaCheck  = "org.scalacheck"    %% "scalacheck"   % Versions.Testing.scalaCheck
+  val akkaTestKit = "com.typesafe.akka" %% "akka-testkit" % Versions.Akka.akka
 
   def macroDeps(scalaVersion: String): List[ModuleID] =
-    List(
-      "org.scala-lang"                      % "scala-reflect" % scalaVersion
-    ) ::: List(scalaTest, scalaCheck).map(_ % Scope.test)
+    "org.scala-lang" % "scala-reflect" % scalaVersion :: List(scalaTest, scalaCheck).map(
+      _ % Scope.test
+    )
 
   // testing
   val testingDeps: List[ModuleID] = List(
@@ -49,18 +46,19 @@ object Library {
   ) ::: List(scalaTest, scalaCheck).map(_ % Scope.test)
 
   // akka-http
+  // format: off
   val akkaDep: List[ModuleID] = List(
-    "com.typesafe.akka" %% "akka-stream"  % Versions.Akka.akka exclude ("com.typesafe", "config"),
-    "com.typesafe"      % "config"        % "1.3.4",
-    "com.typesafe.akka" %% "akka-http"    % Versions.Akka.akkaHttp,
-    "com.typesafe.akka" %% "akka-testkit" % Versions.Akka.akka % Scope.test
+    "com.typesafe.akka" %% "akka-stream" % Versions.Akka.akka exclude ("com.typesafe", "config"),
+    "com.typesafe"      % "config"       % "1.3.4",
+    "com.typesafe.akka" %% "akka-http"   % Versions.Akka.akkaHttp,
+    akkaTestKit                                                     % Scope.test
   )
+  // format: on
 
   // async-http
   val asyncDeps: List[ModuleID] = List(
-    "io.netty"              % "netty-handler"                     % Versions.netty,
-    "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp exclude ("io.netty", "netty-handler") exclude ("org.reactivestreams", "reactive-streams"),
-    "org.reactivestreams"   % "reactive-streams"                  % "1.0.2"
+    "org.asynchttpclient"    % "async-http-client"   % "2.10.1",
+    "org.scala-lang.modules" %% "scala-java8-compat" % "0.9.0"
   )
 
   // looks like a shit, but need to keep it until spark on 2.12 will become stable
