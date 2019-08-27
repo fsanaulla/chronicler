@@ -21,7 +21,6 @@ import java.nio.charset.{Charset, StandardCharsets}
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
 import com.github.fsanaulla.chronicler.core.components.JsonHandler
 import com.github.fsanaulla.chronicler.core.encoding.encodingFromContentType
-import com.github.fsanaulla.chronicler.core.gzip
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.jawn.RichJParser
 import org.asynchttpclient.Response
@@ -31,15 +30,20 @@ import scala.collection.JavaConverters._
 
 private[ahc] final class AhcJsonHandler(compress: Boolean) extends JsonHandler[Id, Response] {
 
+  /***
+    * Extract response body
+    *
+    * @see - [https://groups.google.com/forum/#!searchin/asynchttpclient/compression%7Csort:date/asynchttpclient/TAq33OWXeKU/sBm3v4EWAwAJ],
+    *        netty automatically decompress gzipped request
+    */
   def responseBody(response: Response): ErrorOr[JValue] = {
-    val bodyBts           = response.getResponseBodyAsBytes
-    val maybeDecompressed = if (compress) gzip.decompress(bodyBts) else bodyBts
+    val bodyBts = response.getResponseBodyAsBytes
     val encoding: Charset = Option(response.getContentType)
       .flatMap(encodingFromContentType)
       .map(Charset.forName)
       .getOrElse(StandardCharsets.UTF_8)
 
-    val bodyStr = new String(maybeDecompressed, encoding)
+    val bodyStr = new String(bodyBts, encoding)
 
     JParser.parseFromStringEither(bodyStr)
   }

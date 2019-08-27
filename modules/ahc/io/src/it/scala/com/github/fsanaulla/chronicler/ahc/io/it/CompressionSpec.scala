@@ -29,7 +29,7 @@ class CompressionSpec
     InfluxMng(host, port, Some(creds), None)
 
   lazy val io =
-    InfluxIO(host, port, Some(creds) /*, compress = true*/ )
+    InfluxIO(host, port, Some(creds), compress = true)
 
   lazy val db: DatabaseApi[Future, Id, Response, Uri, String] =
     io.database(testDB)
