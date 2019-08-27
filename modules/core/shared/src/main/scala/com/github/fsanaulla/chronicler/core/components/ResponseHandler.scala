@@ -72,7 +72,7 @@ class ResponseHandler[G[_], R](
     * @param response - backend response value
     * @return         - Query result of JArray in future container
     */
-  final def queryResultJson(response: R): G[ErrorOr[Array[JArray]]] = {
+  final def queryResultJson(response: R): G[ErrorOr[Array[JArray]]] =
     jsonHandler.responseCode(response).intValue() match {
       case code if isSuccessful(code) =>
         F.map(jsonHandler.responseBody(response)) { ethRes =>
@@ -81,7 +81,6 @@ class ResponseHandler[G[_], R](
       case _ =>
         F.map(errorHandler(response))(Left(_))
     }
-  }
 
   /**
     * Handling HTTP response with GROUP BY clause in the query
