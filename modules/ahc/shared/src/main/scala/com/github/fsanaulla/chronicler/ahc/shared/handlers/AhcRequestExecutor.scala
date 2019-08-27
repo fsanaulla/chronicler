@@ -19,6 +19,7 @@ package com.github.fsanaulla.chronicler.ahc.shared.handlers
 import com.github.fsanaulla.chronicler.ahc.shared.Uri
 import com.github.fsanaulla.chronicler.core.components.RequestExecutor
 import com.github.fsanaulla.chronicler.core.gzip
+import io.netty.handler.codec.http.HttpHeaderValues.GZIP_DEFLATE
 import org.asynchttpclient.{AsyncHttpClient, Response}
 
 import scala.compat.java8.FutureConverters._
@@ -34,7 +35,10 @@ private[ahc] final class AhcRequestExecutor()(implicit client: AsyncHttpClient)
     * @return    - Return wrapper response
     */
   override def get(uri: Uri, compress: Boolean): Future[Response] = {
-    client.prepareGet(uri.mkUrl).execute.toCompletableFuture.toScala
+    val req             = client.prepareGet(uri.mkUrl)
+    val maybeCompressed = if (compress) req.setHeader("Accept-Encoding", GZIP_DEFLATE) else req
+
+    maybeCompressed.execute.toCompletableFuture.toScala
   }
 
   override def post(
