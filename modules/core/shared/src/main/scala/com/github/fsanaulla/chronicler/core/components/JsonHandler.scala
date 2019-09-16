@@ -106,13 +106,16 @@ abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
   final def queryResult(js: JValue): ErrorOr[Array[JArray]] =
     js.get("results")
       .arrayValue
-      .flatMapRight(_.headRight(new NoSuchElementException("results[0]"))) // get head of 'results' field
-      .flatMapRight(
-        _.get("series").arrayValue
-          .flatMapRight(_.headRight(new NoSuchElementException("series[0]")))
-      )                                                                       // get head of 'series' field
-      .mapRight(_.get("values").arrayValueOr(Array.empty))                    // get array of jValue
-      .flatMapRight(arr => either.array[Throwable, JArray](arr.map(_.array))) // map to array of JArray
+      .flatMapRight(_.headRight(new NoSuchElementException("results[0]")))
+      .flatMapRight { json =>
+        val arr = json
+          .get("series")
+          .arrayValueOr(Array.empty)
+          .headOption
+          .fold(Array.empty[JValue])(_.get("values").arrayValueOr(Array.empty[JValue]))
+
+        either.array[Throwable, JArray](arr.map(_.array))
+      }
 
   /***
     * Extract influx point grouped by some criteria

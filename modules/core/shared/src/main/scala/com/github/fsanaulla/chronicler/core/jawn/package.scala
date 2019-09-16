@@ -48,12 +48,12 @@ package object jawn {
 
     def array: ErrorOr[JArray] = jv match {
       case ja: JArray => Right(ja)
-      case other      => Left(new WrongValueException("array", other.toString()))
+      case other      => Left(new WrongValueException("Json array", other.toString()))
     }
 
     def obj: ErrorOr[JObject] = jv match {
       case jo: JObject => Right(jo)
-      case other       => Left(new WrongValueException("object", other.toString()))
+      case other       => Left(new WrongValueException("Json object", other.toString()))
     }
   }
 
