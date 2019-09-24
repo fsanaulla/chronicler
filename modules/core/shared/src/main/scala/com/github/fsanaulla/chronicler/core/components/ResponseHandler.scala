@@ -75,8 +75,13 @@ class ResponseHandler[G[_], R](
   final def queryResultJson(response: R): G[ErrorOr[Array[JArray]]] = {
     jsonHandler.responseCode(response).intValue() match {
       case code if isSuccessful(code) =>
-        F.map(jsonHandler.responseBody(response)) { ethRes =>
-          ethRes.flatMapRight(jsonHandler.queryResult)
+        F.map(jsonHandler.responseBody(response)) { body =>
+          body.mapRight { json =>
+            jsonHandler.queryResult(json) match {
+              case Some(arr) => arr
+              case _         => Array.empty[JArray]
+            }
+          }
         }
       case _ =>
         F.map(errorHandler(response))(Left(_))
@@ -93,7 +98,9 @@ class ResponseHandler[G[_], R](
     jsonHandler.responseCode(response) match {
       case code if isSuccessful(code) =>
         F.map(jsonHandler.responseBody(response)) { ethRes =>
-          ethRes.flatMapRight(jsonHandler.groupedResult)
+          ethRes.flatMapRight(
+            jv => jsonHandler.groupedResult(jv).toRight(new IllegalArgumentException(""))
+          )
         }
       case _ =>
         F.map(errorHandler(response))(Left(_))
@@ -111,7 +118,12 @@ class ResponseHandler[G[_], R](
     jsonHandler.responseCode(response) match {
       case code if isSuccessful(code) =>
         F.map(jsonHandler.responseBody(response)) { ethRes =>
-          ethRes.flatMapRight(jsonHandler.bulkResult)
+          ethRes.flatMapRight(
+            resp =>
+              jsonHandler
+                .bulkResult(resp)
+                .toRight(new ParsingException("Can't extract bulk query response"))
+          )
         }
       case _ =>
         F.map(errorHandler(response))(Left(_))
@@ -132,8 +144,8 @@ class ResponseHandler[G[_], R](
     ): G[ErrorOr[Array[B]]] = {
     jsonHandler.responseCode(response) match {
       case code if isSuccessful(code) =>
-        F.map(jsonHandler.responseBody(response)) { ethRes =>
-          ethRes
+        F.map(jsonHandler.responseBody(response)) { body =>
+          body
             .flatMapRight(jsonHandler.groupedSystemInfo[A])
             .mapRight { arr =>
               arr.map { case (dbName, queries) => f(dbName, queries) }
