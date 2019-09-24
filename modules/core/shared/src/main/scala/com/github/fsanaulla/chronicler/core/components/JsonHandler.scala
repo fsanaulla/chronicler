@@ -27,7 +27,7 @@ import com.github.fsanaulla.chronicler.core.model.{
   InfluxReader,
   ParsingException
 }
-import org.typelevel.jawn.ast.{JArray, JObject, JValue}
+import org.typelevel.jawn.ast.{JArray, JValue}
 
 import scala.reflect.ClassTag
 
@@ -100,7 +100,7 @@ abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
     js.firstResult.flatMap { json =>
       json.firstSeries
         .flatMap(_.valuesArray)
-        .map(_.flatMap[JArray](_.array))
+        .map(_.flatMap(_.array))
     }
 
   /***
@@ -112,9 +112,9 @@ abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
   final def groupedResult(js: JValue): Option[Array[(Array[String], JArray)]] =
     js.firstResult
       .flatMap(_.seriesArray)
-      .map(_.flatMap[JObject](_.obj))
+      .map(_.flatMap(_.obj))
       .map { arr =>
-        arr.flatMap[(Array[String], JArray)] { obj =>
+        arr.flatMap { obj =>
           val tags   = obj.tags.obj.map(_.vs.values.map(_.asString).toArray.sorted)
           val values = obj.firstValue.flatMap(_.array)
 
@@ -133,9 +133,9 @@ abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
     */
   final def bulkResult(js: JValue): Option[Array[Array[JArray]]] = {
     js.resultsArray
-      .map(_.flatMap[JValue](_.firstSeries))
-      .map(_.flatMap[Array[JValue]](_.valuesArray))
-      .map(_.map(_.flatMap[JArray](_.array)))
+      .map(_.flatMap(_.firstSeries))
+      .map(_.flatMap(_.valuesArray))
+      .map(_.map(_.flatMap(_.array)))
   }
 
   /**
@@ -147,9 +147,9 @@ abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
   final def groupedSystemInfoJs(js: JValue): Option[Array[(String, Array[JArray])]] = {
     js.firstResult
       .flatMap(_.seriesArray)
-      .map(_.flatMap[JObject](_.obj))
+      .map(_.flatMap(_.obj))
       .map { arr =>
-        arr.flatMap[(String, Array[JArray])] { obj =>
+        arr.flatMap { obj =>
           val measurement = obj.get("name").asString
           val cqInfo      = obj.valuesArray.map(_.flatMap[JArray](_.array))
 
