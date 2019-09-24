@@ -21,6 +21,7 @@ import com.github.fsanaulla.chronicler.core.components.{JsonHandler, RequestExec
 import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.gzip
 import com.github.fsanaulla.chronicler.core.jawn.RichJParser
+import com.github.fsanaulla.chronicler.core.model.ParsingException
 import com.github.fsanaulla.chronicler.urlhttp.shared.{ChroniclerSession, Url}
 import org.typelevel.jawn.ast.{JArray, JParser}
 import requests._
@@ -106,6 +107,12 @@ private[urlhttp] final class UrlRequestExecutor(
 
     iterator
       .map(JParser.parseFromStringEither(_))
-      .map(_.flatMapRight(jsonHandler.queryResult))
+      .map(
+        _.flatMapRight(
+          jsonHandler
+            .queryResult(_)
+            .toRight(new ParsingException("Can't extract query result from response"))
+        )
+      )
   }
 }
