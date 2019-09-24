@@ -151,7 +151,7 @@ abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
       .map { arr =>
         arr.flatMap { obj =>
           val measurement = obj.get("name").asString
-          val cqInfo      = obj.valuesArray.map(_.flatMap[JArray](_.array))
+          val cqInfo      = obj.valuesArray.map(_.flatMap(_.array))
 
           cqInfo.map(measurement -> _)
         }
