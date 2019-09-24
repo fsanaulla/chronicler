@@ -86,8 +86,8 @@ abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
     */
   final def responseErrorMsgOpt(response: R): F[ErrorOr[Option[String]]] =
     F.map(responseBody(response)) { bd =>
-      bd.map(_.firstResult)
-        .map(_.flatMap(_.get("error").getString))
+      bd.mapRight(_.firstResult)
+        .mapRight(_.flatMap(_.get("error").getString))
     }
 
   /**
