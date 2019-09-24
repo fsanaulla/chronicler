@@ -35,16 +35,16 @@ class ShardManagementSpec
     shards should not be Nil
   }
 
-  it should "show shards groupe" in {
-
-    val shardGroups = influx.showShardGroups.futureValue.right.get
-
-    shardGroups should not equal Nil
-
-    shardGroups shouldBe a[Array[_]]
-
-    shardGroups.head shouldBe a[ShardGroupsInfo]
-
-    influx.close() shouldEqual {}
-  }
+//  it should "show shards groupe" in {
+//
+//    val shardGroups = influx.showShardGroups.futureValue.right.get
+//
+//    shardGroups should not equal Nil
+//
+//    shardGroups shouldBe a[Array[_]]
+//
+//    shardGroups.head shouldBe a[ShardGroupsInfo]
+//
+//    influx.close() shouldEqual {}
+//  }
 }
