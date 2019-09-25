@@ -28,7 +28,7 @@ package object either {
       } yield x +: xs
     }
 
-  def seq[L, R: ClassTag](s: Seq[Either[L, R]]): Either[L, Seq[R]] =
+  def seq[L, R](s: Seq[Either[L, R]]): Either[L, Seq[R]] =
     s.foldRight(Right(Seq.empty): Either[L, Seq[R]]) { (e, acc) =>
       for {
         xs <- acc.right
