@@ -17,7 +17,6 @@
 package com.github.fsanaulla.chronicler.core
 
 package object encoding {
-  val gzipEncoding = "gzip"
 
   // extract encoding from content type
   def encodingFromContentType(ct: String): Option[String] =

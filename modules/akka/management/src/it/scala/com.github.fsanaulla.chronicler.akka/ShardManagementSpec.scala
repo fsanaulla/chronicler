@@ -3,7 +3,6 @@ package com.github.fsanaulla.chronicler.akka
 import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, InfluxMng}
-import com.github.fsanaulla.chronicler.core.model.ShardGroupsInfo
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
 import org.scalatest.{FlatSpecLike, Matchers}
 
@@ -21,6 +20,11 @@ class ShardManagementSpec
   with Futures
   with DockerizedInfluxDB {
 
+  override def afterAll(): Unit = {
+    super.afterAll()
+    TestKit.shutdownActorSystem(system)
+  }
+
   val testDb = "_internal"
 
   lazy val influx: AkkaManagementClient =
@@ -35,16 +39,16 @@ class ShardManagementSpec
     shards should not be Nil
   }
 
-  it should "show shards groupe" in {
-
-    val shardGroups = influx.showShardGroups.futureValue.right.get
-
-    shardGroups should not equal Nil
-
-    shardGroups shouldBe a[Array[_]]
-
-    shardGroups.head shouldBe a[ShardGroupsInfo]
-
-    influx.close() shouldEqual {}
-  }
+//  it should "show shards groupe" in {
+//
+//    val shardGroups = influx.showShardGroups.futureValue.right.get
+//
+//    shardGroups should not equal Nil
+//
+//    shardGroups shouldBe a[Array[_]]
+//
+//    shardGroups.head shouldBe a[ShardGroupsInfo]
+//
+//    influx.close() shouldEqual {}
+//  }
 }

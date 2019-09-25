@@ -43,18 +43,50 @@ package object jawn {
         Left(new WrongValueException("array", other.toString()))
     }
 
-    def arrayValueOr(default: => Array[JValue]): Array[JValue] =
-      arrayValue.right.getOrElse(default)
-
-    def array: ErrorOr[JArray] = jv match {
-      case ja: JArray => Right(ja)
-      case other      => Left(new WrongValueException("array", other.toString()))
+    def firstResult: Option[JValue] = results match {
+      case JArray(vs) => vs.headOption
+      case _          => None
     }
 
-    def obj: ErrorOr[JObject] = jv match {
-      case jo: JObject => Right(jo)
-      case other       => Left(new WrongValueException("object", other.toString()))
+    def firstValue: Option[JValue] = values match {
+      case JArray(vs) => vs.headOption
+      case _          => None
     }
+
+    def valuesArray: Option[Array[JValue]] = values match {
+      case JArray(vs) => Some(vs)
+      case _          => None
+    }
+
+    def seriesArray: Option[Array[JValue]] = series match {
+      case JArray(vs) => Some(vs)
+      case _          => None
+    }
+
+    def resultsArray: Option[Array[JValue]] = results match {
+      case JArray(vs) => Some(vs)
+      case _          => None
+    }
+
+    def firstSeries: Option[JValue] = series match {
+      case JArray(vs) => vs.headOption
+      case _          => None
+    }
+
+    def array: Option[JArray] = jv match {
+      case ja: JArray => Some(ja)
+      case _          => None
+    }
+
+    def obj: Option[JObject] = jv match {
+      case jo: JObject => Some(jo)
+      case _           => None
+    }
+
+    def series: JValue  = jv.get("series")
+    def results: JValue = jv.get("results")
+    def values: JValue  = jv.get("values")
+    def tags: JValue    = jv.get("tags")
   }
 
   implicit final class RichJParser(private val jp: JParser.type) extends AnyVal {

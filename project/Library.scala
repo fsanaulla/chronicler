@@ -8,13 +8,13 @@ import sbt._
 object Library {
 
   object Versions {
-    val sttp    = "1.6.4"
-    val netty   = "4.1.37.Final"
+    val sttp    = "1.6.7"
+    val netty   = "4.1.42.Final"
     val request = "0.2.0"
 
     object Akka {
-      val akka     = "2.5.24"
-      val akkaHttp = "10.1.9"
+      val akka     = "2.5.25"
+      val akkaHttp = "10.1.10"
     }
 
     object Testing {
@@ -38,7 +38,7 @@ object Library {
   val testingDeps: List[ModuleID] = List(
     scalaTest,
     "org.jetbrains"      % "annotations" % "16.0.3",
-    "org.testcontainers" % "influxdb"    % "1.11.3" exclude ("org.jetbrains", "annotations") exclude ("org.slf4j", "slf4j-api"),
+    "org.testcontainers" % "influxdb"    % "1.12.1" exclude ("org.jetbrains", "annotations") exclude ("org.slf4j", "slf4j-api"),
     "org.slf4j"          % "slf4j-api"   % "1.7.25"
   )
 
@@ -60,7 +60,7 @@ object Library {
   val asyncDeps: List[ModuleID] = List(
     "io.netty"              % "netty-handler"                     % Versions.netty,
     "com.softwaremill.sttp" %% "async-http-client-backend-future" % Versions.sttp exclude ("io.netty", "netty-handler") exclude ("org.reactivestreams", "reactive-streams"),
-    "org.reactivestreams"   % "reactive-streams"                  % "1.0.2"
+    "org.reactivestreams"   % "reactive-streams"                  % "1.0.3"
   )
 
   // looks like a shit, but need to keep it until spark on 2.12 will become stable

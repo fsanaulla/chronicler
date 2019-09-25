@@ -15,10 +15,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class SystemManagementSpec
   extends TestKit(ActorSystem())
-    with FlatSpecLike
-    with Matchers
-    with Futures
-    with DockerizedInfluxDB {
+  with FlatSpecLike
+  with Matchers
+  with Futures
+  with DockerizedInfluxDB {
+
+  override def afterAll(): Unit = {
+    super.afterAll()
+    TestKit.shutdownActorSystem(system)
+  }
 
   lazy val influx: AkkaIOClient =
     InfluxIO(host, port, Some(creds))
