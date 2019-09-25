@@ -25,7 +25,7 @@ import com.github.fsanaulla.chronicler.core.components.{JsonHandler, ResponseHan
 import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either.EitherOps
 import com.github.fsanaulla.chronicler.core.jawn.RichJParser
-import com.github.fsanaulla.chronicler.core.model.InfluxReader
+import com.github.fsanaulla.chronicler.core.model.{InfluxReader, ParsingException}
 import org.typelevel.jawn.ast.{JArray, JParser}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -41,7 +41,14 @@ class AkkaResponseHandler(
       .via(Framing.delimiter(ByteString("\n"), Int.MaxValue))
       .map(_.utf8String)
       .map(JParser.parseFromStringEither)
-      .map(_.flatMapRight(jsonHandler.queryResult))
+      .map(
+        _.flatMapRight(
+          jv =>
+            jsonHandler
+              .queryResult(jv)
+              .toRight[Throwable](new ParsingException("Can't extract query result from response"))
+        )
+      )
   }
 
   final def queryChunkedResult[T: ClassTag](

@@ -29,6 +29,11 @@ class DatabaseApiSpec
   with Futures
   with DockerizedInfluxDB {
 
+  override def afterAll(): Unit = {
+    super.afterAll()
+    TestKit.shutdownActorSystem(system)
+  }
+
   val testDB = "db"
 
   lazy val influxConf =
@@ -183,6 +188,10 @@ class DatabaseApiSpec
     db.writePoint(p).futureValue.right.get shouldEqual 204
 
     db.readJson("SELECT * FROM test6").futureValue.right.get.length shouldEqual 1
+  }
+
+  it should "validate empty response" in {
+    db.readJson("SELECT * FROM test7").futureValue.right.get.length shouldEqual 0
 
     mng.close() shouldEqual {}
     io.close() shouldEqual {}

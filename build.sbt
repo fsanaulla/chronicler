@@ -228,6 +228,7 @@ lazy val benchmark = project
     libraryDependencies += "org.openjdk.jmh" % "jmh-generator-annprocess" % "1.21" % Test
   )
   .dependsOn(macros % "test->test")
+  .dependsOn(coreShared)
   .enablePlugins(JmhPlugin)
 
 //////////////////////////////////////////////////////

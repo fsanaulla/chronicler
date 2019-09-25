@@ -25,7 +25,7 @@ import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatest.{FlatSpecLike, Matchers}
+import org.scalatest.{BeforeAndAfterAll, FlatSpecLike, Matchers}
 import org.typelevel.jawn.ast._
 
 import scala.concurrent.ExecutionContextExecutor
@@ -38,7 +38,14 @@ class AkkaResponseHandlerSpec
   with FlatSpecLike
   with ScalaFutures
   with IntegrationPatience
-  with Matchers {
+  with Matchers
+  with BeforeAndAfterAll {
+
+  override def afterAll(): Unit = {
+    super.afterAll()
+    mat.shutdown()
+    TestKit.shutdownActorSystem(system)
+  }
 
   implicit val ec: ExecutionContextExecutor = system.dispatcher
   implicit val mat: ActorMaterializer       = ActorMaterializer()

@@ -174,6 +174,10 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
     db.writePoint(p).get.right.get shouldEqual 204
 
     db.readJson("SELECT * FROM test6").get.right.get.length shouldEqual 1
+  }
+
+  it should "validate empty response" in {
+    db.readJson("SELECT * FROM test7").get.right.get.length shouldEqual 0
 
     mng.close() shouldEqual {}
     io.close() shouldEqual {}
