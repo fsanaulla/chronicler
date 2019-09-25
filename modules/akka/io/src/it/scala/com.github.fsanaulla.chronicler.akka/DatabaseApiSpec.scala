@@ -29,6 +29,11 @@ class DatabaseApiSpec
   with Futures
   with DockerizedInfluxDB {
 
+  override def afterAll(): Unit = {
+    super.afterAll()
+    TestKit.shutdownActorSystem(system)
+  }
+
   val testDB = "db"
 
   lazy val influxConf =

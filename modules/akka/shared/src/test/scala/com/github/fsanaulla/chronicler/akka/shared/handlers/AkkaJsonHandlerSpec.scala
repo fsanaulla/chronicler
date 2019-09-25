@@ -31,7 +31,14 @@ class AkkaJsonHandlerSpec
   with WordSpecLike
   with ScalaFutures
   with IntegrationPatience
-  with Matchers {
+  with Matchers
+  with BeforeAndAfterAll {
+
+  override def afterAll(): Unit = {
+    super.afterAll()
+    mat.shutdown()
+    TestKit.shutdownActorSystem(system)
+  }
 
   implicit val ec: ExecutionContextExecutor = system.dispatcher
   implicit val mat: ActorMaterializer       = ActorMaterializer()

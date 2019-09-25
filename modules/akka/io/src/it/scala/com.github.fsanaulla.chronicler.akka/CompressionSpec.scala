@@ -21,6 +21,11 @@ class CompressionSpec
   with ScalaFutures
   with IntegrationPatience {
 
+  override def afterAll(): Unit = {
+    super.afterAll()
+    TestKit.shutdownActorSystem(system)
+  }
+
   implicit val ec: ExecutionContextExecutor = system.dispatcher
 
   val testDB = "db"

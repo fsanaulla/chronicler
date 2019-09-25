@@ -3,7 +3,6 @@ package com.github.fsanaulla.chronicler.akka
 import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, InfluxMng}
-import com.github.fsanaulla.chronicler.core.model.ShardGroupsInfo
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
 import org.scalatest.{FlatSpecLike, Matchers}
 
@@ -20,6 +19,11 @@ class ShardManagementSpec
   with Matchers
   with Futures
   with DockerizedInfluxDB {
+
+  override def afterAll(): Unit = {
+    super.afterAll()
+    TestKit.shutdownActorSystem(system)
+  }
 
   val testDb = "_internal"
 
