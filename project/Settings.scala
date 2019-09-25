@@ -24,7 +24,7 @@ object Settings extends LibraryManagementSyntax {
   }
 
   val common = Seq(
-    scalaVersion := "2.13.0",
+    scalaVersion := "2.13.1",
     organization := "com.github.fsanaulla",
     scalacOptions ++= Scalac.options(scalaVersion.value),
     crossScalaVersions := Seq("2.11.8", "2.12.8", scalaVersion.value),
