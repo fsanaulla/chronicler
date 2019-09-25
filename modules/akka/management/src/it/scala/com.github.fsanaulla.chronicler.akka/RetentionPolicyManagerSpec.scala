@@ -18,10 +18,15 @@ import scala.language.postfixOps
   */
 class RetentionPolicyManagerSpec
   extends TestKit(ActorSystem())
-    with FlatSpecLike
-    with Matchers
-    with Futures
-    with DockerizedInfluxDB {
+  with FlatSpecLike
+  with Matchers
+  with Futures
+  with DockerizedInfluxDB {
+
+  override def afterAll(): Unit = {
+    super.afterAll()
+    TestKit.shutdownActorSystem(system)
+  }
 
   val rpDB = "db"
 
@@ -33,22 +38,35 @@ class RetentionPolicyManagerSpec
 
     influx.showDatabases().futureValue.right.get.contains(rpDB) shouldEqual true
 
-    influx.createRetentionPolicy("test", rpDB, 2 hours, 2, Some(2 hours), default = true).futureValue.right.get shouldEqual 200
+    influx
+      .createRetentionPolicy("test", rpDB, 2 hours, 2, Some(2 hours), default = true)
+      .futureValue
+      .right
+      .get shouldEqual 200
 
-    influx.showRetentionPolicies(rpDB).futureValue.right.get.contains(RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true)) shouldEqual true
+    influx
+      .showRetentionPolicies(rpDB)
+      .futureValue
+      .right
+      .get
+      .contains(RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true)) shouldEqual true
 
   }
 
   it should "drop retention policy" in {
     influx.dropRetentionPolicy("autogen", rpDB).futureValue.right.get shouldEqual 200
 
-    influx.showRetentionPolicies(rpDB).futureValue.right.get shouldEqual Seq(RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true))
+    influx.showRetentionPolicies(rpDB).futureValue.right.get shouldEqual Seq(
+      RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true)
+    )
   }
 
   it should "update retention policy" in {
     influx.updateRetentionPolicy("test", rpDB, Some(3 hours)).futureValue.right.get shouldEqual 200
 
-    influx.showRetentionPolicies(rpDB).futureValue.right.get shouldEqual Seq(RetentionPolicyInfo("test", "3h0m0s", "2h0m0s", 2, default = true))
+    influx.showRetentionPolicies(rpDB).futureValue.right.get shouldEqual Seq(
+      RetentionPolicyInfo("test", "3h0m0s", "2h0m0s", 2, default = true)
+    )
   }
 
   it should "clean up everything" in {

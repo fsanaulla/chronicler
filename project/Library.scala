@@ -12,7 +12,7 @@ object Library {
 
     object Akka {
       val akka     = "2.5.25"
-      val akkaHttp = "10.1.9"
+      val akkaHttp = "10.1.10"
     }
 
     object Testing {
@@ -35,7 +35,7 @@ object Library {
   val testingDeps: List[ModuleID] = List(
     scalaTest,
     "org.jetbrains"      % "annotations" % "16.0.3",
-    "org.testcontainers" % "influxdb"    % "1.11.3" exclude ("org.jetbrains", "annotations") exclude ("org.slf4j", "slf4j-api"),
+    "org.testcontainers" % "influxdb"    % "1.12.1" exclude ("org.jetbrains", "annotations") exclude ("org.slf4j", "slf4j-api"),
     "org.slf4j"          % "slf4j-api"   % "1.7.25"
   )
 
@@ -49,7 +49,7 @@ object Library {
   // format: off
   val akkaDep: List[ModuleID] = List(
     "com.typesafe.akka" %% "akka-stream" % Versions.Akka.akka exclude ("com.typesafe", "config"),
-    "com.typesafe"      % "config"       % "1.3.4",
+    "com.typesafe"      %  "config"       % "1.3.4",
     "com.typesafe.akka" %% "akka-http"   % Versions.Akka.akkaHttp,
     akkaTestKit                                                     % Scope.test
   )

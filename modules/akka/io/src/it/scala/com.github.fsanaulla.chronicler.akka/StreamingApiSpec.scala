@@ -33,6 +33,11 @@ class StreamingApiSpec
   with Matchers
   with DockerizedInfluxDB {
 
+  override def afterAll(): Unit = {
+    super.afterAll()
+    TestKit.shutdownActorSystem(system)
+  }
+
   val testDB   = "db"
   val measName = "test1"
 

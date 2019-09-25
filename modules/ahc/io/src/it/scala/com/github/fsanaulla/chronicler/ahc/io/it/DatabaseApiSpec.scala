@@ -176,6 +176,10 @@ class DatabaseApiSpec extends FlatSpec with Matchers with Futures with Dockerize
     db.writePoint(p).futureValue.right.get shouldEqual 204
 
     db.readJson("SELECT * FROM test6").futureValue.right.get.length shouldEqual 1
+  }
+
+  it should "validate empty response" in {
+    db.readJson("SELECT * FROM test7").futureValue.right.get.length shouldEqual 0
 
     mng.close() shouldEqual {}
     io.close() shouldEqual {}

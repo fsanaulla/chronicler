@@ -23,6 +23,11 @@ class SubscriptionManagementSpec
   with Futures
   with DockerizedInfluxDB {
 
+  override def afterAll(): Unit = {
+    super.afterAll()
+    TestKit.shutdownActorSystem(system)
+  }
+
   val subName                       = "subs"
   val dbName                        = "async_subs_spec_db"
   val rpName                        = "subs_rp"

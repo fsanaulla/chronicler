@@ -17,7 +17,6 @@
 package com.github.fsanaulla.chronicler.core.components
 
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
-import com.github.fsanaulla.chronicler.core.components.JsonHandler._
 import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.headers.{buildHeader, versionHeader}
@@ -87,14 +86,8 @@ abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
     */
   final def responseErrorMsgOpt(response: R): F[ErrorOr[Option[String]]] =
     F.map(responseBody(response)) { bd =>
-      bd.flatMapRight { jv =>
-          jv.get("results").arrayValue.flatMapRight { jRes =>
-            jRes.headRight(new NoSuchElementException("results[0]"))
-          }
-        }
-        .mapRight { jv =>
-          jv.get("error").getString
-        }
+      bd.mapRight(_.firstResult)
+        .mapRight(_.flatMap(_.get("error").getString))
     }
 
   /**
@@ -103,16 +96,12 @@ abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
     * @param js - JSON value
     * @return - optional array of points
     */
-  final def queryResult(js: JValue): ErrorOr[Array[JArray]] =
-    js.get("results")
-      .arrayValue
-      .flatMapRight(_.headRight(new NoSuchElementException("results[0]"))) // get head of 'results' field
-      .flatMapRight(
-        _.get("series").arrayValue
-          .flatMapRight(_.headRight(new NoSuchElementException("series[0]")))
-      )                                                                       // get head of 'series' field
-      .mapRight(_.get("values").arrayValueOr(Array.empty))                    // get array of jValue
-      .flatMapRight(arr => either.array[Throwable, JArray](arr.map(_.array))) // map to array of JArray
+  final def queryResult(js: JValue): Option[Array[JArray]] =
+    js.firstResult.flatMap { json =>
+      json.firstSeries
+        .flatMap(_.valuesArray)
+        .map(_.flatMap(_.array))
+    }
 
   /***
     * Extract influx point grouped by some criteria
@@ -120,25 +109,21 @@ abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
     * @param js - JSON payload
     * @return   - array of pairs (grouping key, grouped value)
     */
-  final def groupedResult(js: JValue): ErrorOr[Array[(Array[String], JArray)]] = {
-    js.get("results")
-      .arrayValue
-      .flatMapRight(_.headRight(new NoSuchElementException("results[0]")))
-      .flatMapRight(_.get("series").arrayValue)
-      .mapRight(_.map(_.obj))
-      .mapRight(either.array)
-      .joinRight
-      .mapRight(_.map { obj =>
-        val tags = obj.get("tags").obj.mapRight(_.vs.values.map(_.asString).toArray.sorted)
-        val values = obj
-          .get("values")
-          .arrayValue
-          .flatMapRight(_.headRight(new NoSuchElementException("values[0]")))
-          .flatMapRight(_.array)
+  final def groupedResult(js: JValue): Option[Array[(Array[String], JArray)]] =
+    js.firstResult
+      .flatMap(_.seriesArray)
+      .map(_.flatMap(_.obj))
+      .map { arr =>
+        arr.flatMap { obj =>
+          val tags   = obj.tags.obj.map(_.vs.values.map(_.asString).toArray.sorted)
+          val values = obj.firstValue.flatMap(_.array)
 
-        tags.getOrElseRight(Array.empty[String]) -> values.getOrElseRight(JArray.empty)
-      })
-  }
+          for {
+            tg <- tags
+            vl <- values
+          } yield tg -> vl
+        }
+      }
 
   /**
     * Extract bulk result from JSON
@@ -146,24 +131,11 @@ abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
     * @param js - JSON value
     * @return - Array of points
     */
-  final def bulkResult(js: JValue): ErrorOr[Array[Array[JArray]]] = {
-    js.get("results")
-      .arrayValue // get array from 'results' field
-      .mapRight(
-        _.map(
-          _.get("series").arrayValue
-            .flatMapRight(_.headRight(new NoSuchElementException("series[0]")))
-        )
-      ) // get head of 'series' field
-      .mapRight(either.array)
-      .joinRight
-      .mapRight(_.map(_.get("values").arrayValue))
-      .mapRight(either.array)
-      .joinRight
-      .mapRight(_.map(_.map(_.array)))
-      .mapRight(_.map(either.array))
-      .mapRight(either.array)
-      .joinRight
+  final def bulkResult(js: JValue): Option[Array[Array[JArray]]] = {
+    js.resultsArray
+      .map(_.flatMap(_.firstSeries))
+      .map(_.flatMap(_.valuesArray))
+      .map(_.map(_.flatMap(_.array)))
   }
 
   /**
@@ -172,25 +144,18 @@ abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
     * @param js - JSON value
     * @return - array of meas name -> meas points
     */
-  final def groupedSystemInfoJs(js: JValue): ErrorOr[Array[(String, Array[JArray])]] = {
-    js.get("results")
-      .arrayValue
-      .flatMapRight(_.headRight(new NoSuchElementException("results[0]")))
-      .mapRight(_.get("series").arrayValueOr(Array.empty))
-      .mapRight(_.map(_.obj))
-      .mapRight(either.array)
-      .joinRight
-      .mapRight(_.map { obj =>
-        val measurement = obj.get("name").asString
-        val cqInfo = obj
-          .get("values")
-          .arrayValueOr(Array.empty)
-          .map(_.array)
+  final def groupedSystemInfoJs(js: JValue): Option[Array[(String, Array[JArray])]] = {
+    js.firstResult
+      .flatMap(_.seriesArray)
+      .map(_.flatMap(_.obj))
+      .map { arr =>
+        arr.flatMap { obj =>
+          val measurement = obj.get("name").asString
+          val cqInfo      = obj.valuesArray.map(_.flatMap(_.array))
 
-        either.array(cqInfo).mapRight(measurement -> _)
-      })
-      .mapRight(either.array)
-      .joinRight
+          cqInfo.map(measurement -> _)
+        }
+      }
   }
 
   /**
@@ -203,20 +168,14 @@ abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
       js: JValue
     )(implicit rd: InfluxReader[T]
     ): ErrorOr[Array[(String, Array[T])]] = {
-    groupedSystemInfoJs(js)
-      .mapRight { arr =>
-        arr.map {
+    groupedSystemInfoJs(js) match {
+      case Some(arr) =>
+        either.array(arr.map {
           case (k, v) =>
             either.array[Throwable, T](v.map(rd.read)).mapRight(k -> _)
-        }
-      }
-      .mapRight(either.array)
-      .joinRight
-  }
-}
-
-object JsonHandler {
-  implicit final class ArrayOps[A](private val arr: Array[A]) extends AnyVal {
-    def headRight(left: => Throwable): ErrorOr[A] = arr.headOption.toRight(left)
+        })
+      case _ =>
+        Right(Array.empty)
+    }
   }
 }

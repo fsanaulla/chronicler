@@ -23,6 +23,11 @@ class MeasurementApiSpec
   with Futures
   with DockerizedInfluxDB {
 
+  override def afterAll(): Unit = {
+    super.afterAll()
+    TestKit.shutdownActorSystem(system)
+  }
+
   val db       = "db"
   val measName = "meas"
 

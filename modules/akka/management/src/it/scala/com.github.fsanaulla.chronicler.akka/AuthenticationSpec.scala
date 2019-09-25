@@ -17,17 +17,22 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class AuthenticationSpec
   extends TestKit(ActorSystem())
-    with FlatSpecLike
-    with Matchers
-    with Futures
-    with DockerizedInfluxDB {
+  with FlatSpecLike
+  with Matchers
+  with Futures
+  with DockerizedInfluxDB {
 
-  val userDB = "db"
-  val userName = "some_user"
-  val userPass = "some_user_pass"
+  override def afterAll(): Unit = {
+    super.afterAll()
+    TestKit.shutdownActorSystem(system)
+  }
+
+  val userDB    = "db"
+  val userName  = "some_user"
+  val userPass  = "some_user_pass"
   val userNPass = "some_new_user_pass"
 
-  val admin = "admin"
+  val admin     = "admin"
   val adminPass = "admin"
 
   lazy val influx: AkkaManagementClient =
@@ -36,14 +41,14 @@ class AuthenticationSpec
   lazy val authInflux: AkkaManagementClient =
     InfluxMng(host = host, port = port, credentials = Some(creds))
 
-  "AuthenticationUserManagement" should  "create admin user " in {
+  "AuthenticationUserManagement" should "create admin user " in {
     influx.showUsers.futureValue.left.get shouldBe a[InfluxException]
   }
 
   it should "create database" in {
     authInflux.createDatabase(userDB).futureValue.right.get shouldEqual 200
   }
-  
+
   it should "create user" in {
     authInflux.createUser(userName, userPass).futureValue.right.get shouldEqual 200
     authInflux.showUsers.futureValue.right.get.exists(_.username == userName) shouldEqual true
@@ -54,7 +59,11 @@ class AuthenticationSpec
   }
 
   it should "set user privileges" in {
-    authInflux.setPrivileges(userName, userDB, Privileges.READ).futureValue.right.get shouldEqual 200
+    authInflux
+      .setPrivileges(userName, userDB, Privileges.READ)
+      .futureValue
+      .right
+      .get shouldEqual 200
   }
 
   it should "get user privileges" in {
@@ -67,8 +76,14 @@ class AuthenticationSpec
   }
 
   it should "revoke user privileges" in {
-    authInflux.revokePrivileges(userName, userDB, Privileges.READ).futureValue.right.get shouldEqual 200
-    authInflux.showUserPrivileges(userName).futureValue.right.get shouldEqual Array(UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES))
+    authInflux
+      .revokePrivileges(userName, userDB, Privileges.READ)
+      .futureValue
+      .right
+      .get shouldEqual 200
+    authInflux.showUserPrivileges(userName).futureValue.right.get shouldEqual Array(
+      UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES)
+    )
   }
 
   it should "drop user" in {

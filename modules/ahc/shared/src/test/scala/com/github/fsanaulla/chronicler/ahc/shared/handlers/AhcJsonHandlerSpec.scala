@@ -31,81 +31,55 @@ import org.typelevel.jawn.ast._
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with OptionValues {
+class AhcJsonHandlerSpec extends WordSpec with Matchers with ScalaFutures with OptionValues {
 
   val jsonHandler = new AhcJsonHandler(compress = false)
 
-  val singleStrJson: String =
-    """
-      |{
-      |  "results": [
-      |    {
-      |      "statement_id": 0,
-      |      "series": [
-      |        {
-      |          "name": "cpu_load_short",
-      |          "columns": [
-      |            "time",
-      |            "value"
-      |          ],
-      |          "values": [
-      |            [
-      |              "2015-01-29T21:55:43.702900257Z",
-      |              2
-      |            ],
-      |            [
-      |              "2015-01-29T21:55:43.702900257Z",
-      |              0.55
-      |            ],
-      |            [
-      |              "2015-06-11T20:46:02Z",
-      |              0.64
-      |            ]
-      |          ]
-      |        }
-      |      ]
-      |    }
-      |  ]
-      |}
-      |""".stripMargin
+  "JsonHandler" should {
+    "extract" should {
+      "body from HTTP response" in {
+        val singleStrJson =
+          """{
+            |                      "results": [
+            |                          {
+            |                              "statement_id": 0,
+            |                              "series": [
+            |                                 {
+            |                                      "name": "cpu_load_short",
+            |                                      "columns": [
+            |                                          "time",
+            |                                          "value"
+            |                                      ],
+            |                                      "values": [
+            |                                          [
+            |                                              "2015-01-29T21:55:43.702900257Z",
+            |                                              2
+            |                                          ],
+            |                                          [
+            |                                              "2015-01-29T21:55:43.702900257Z",
+            |                                              0.55
+            |                                          ],
+            |                                          [
+            |                                              "2015-06-11T20:46:02Z",
+            |                                              0.64
+            |                                          ]
+            |                                      ]
+            |                                  }
+            |                              ]
+            |                          }
+            |                      ]
+            |                  }""".stripMargin
 
-  def buildResponse(bts: Array[Byte]): Response = {
-    val b = new Response.ResponseBuilder()
+        val resp: Response[Array[Byte]] = Response.ok(singleStrJson.getBytes())
 
-    b.accumulate(
-      new EagerResponseBodyPart(
-        Unpooled.copiedBuffer(ByteBuffer.wrap(bts)),
-        true
-      )
-    )
+        val result: JValue = JParser.parseFromString(singleStrJson).get
 
-    b.accumulate(
-      new NettyResponseStatus(
-        null,
-        new DefaultHttpResponse(
-          HttpVersion.HTTP_1_0,
-          io.netty.handler.codec.http.HttpResponseStatus.OK
-        ),
-        null
-      )
-    )
+        jsonHandler.responseBody(resp).right.get shouldEqual result
+      }
 
-    b.build
-  }
-
-  val result: JValue = JParser.parseFromString(singleStrJson).get
-
-  it should "extract JSON from HTTP response" in {
-    jsonHandler
-      .responseBody(buildResponse(singleStrJson.getBytes()))
-      .right
-      .get shouldEqual result
-  }
-
-  it should "extract single query result from JSON" in {
-
-    val json =
-      JParser.parseFromString("""
+      "query result from JSON" in {
+        val json =
+          JParser.parseUnsafe("""
                                 |{
                                 |    "results": [
                                 |        {
@@ -140,20 +114,26 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
                                 |        }
                                 |    ]
                                 |}
-      """.stripMargin).toOption.value
+      """.stripMargin)
 
-    val result = Array(
-      JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JString("Fz"), JNum(2))),
-      JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JString("Rz"), JNum(0.55))),
-      JArray(Array(JString("2015-06-11T20:46:02Z"), JNull, JNum(0.64)))
-    )
+        val result = Array(
+          JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JString("Fz"), JNum(2))),
+          JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JString("Rz"), JNum(0.55))),
+          JArray(Array(JString("2015-06-11T20:46:02Z"), JNull, JNum(0.64)))
+        )
 
-    jsonHandler.queryResult(json).right.get shouldEqual result
-  }
+        jsonHandler.queryResult(json).get shouldEqual result
+      }
 
-  it should "extract bulk query result from JSON" in {
-    val json =
-      JParser.parseFromString("""
+      "query result from empty JSON" in {
+        val json = JParser.parseUnsafe("""{"results":[{"statement_id":0}]}""")
+
+        jsonHandler.queryResult(json) shouldEqual None
+      }
+
+      "bulk query result from JSON" in {
+        val json =
+          JParser.parseUnsafe("""
                                 |{
                                 |    "results": [
                                 |        {
@@ -202,25 +182,80 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
                                 |        }
                                 |    ]
                                 |}
-      """.stripMargin).toOption.value
+      """.stripMargin)
 
-    val result = Array(
-      Array(
-        JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
-        JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
-        JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
-      ),
-      Array(
-        JArray(Array(JString("1970-01-01T00:00:00Z"), JNum(3)))
-      )
-    )
+        val result = Array(
+          Array(
+            JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
+            JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
+            JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
+          ),
+          Array(
+            JArray(Array(JString("1970-01-01T00:00:00Z"), JNum(3)))
+          )
+        )
 
-    jsonHandler.bulkResult(json).right.get shouldEqual result
-  }
+        jsonHandler.bulkResult(json).get shouldEqual result
+      }
 
-  it should "extract influx information from JSON" in {
-    val json =
-      JParser.parseFromString("""
+      "bulk query result partially empty from JSON" in {
+        val json =
+          JParser.parseUnsafe("""
+                                |{
+                                |    "results": [
+                                |        {
+                                |            "statement_id": 0,
+                                |            "series": [
+                                |                {
+                                |                    "name": "cpu_load_short",
+                                |                    "columns": [
+                                |                        "time",
+                                |                        "value"
+                                |                    ],
+                                |                    "values": [
+                                |                        [
+                                |                            "2015-01-29T21:55:43.702900257Z",
+                                |                            2
+                                |                        ],
+                                |                        [
+                                |                            "2015-01-29T21:55:43.702900257Z",
+                                |                            0.55
+                                |                        ],
+                                |                        [
+                                |                            "2015-06-11T20:46:02Z",
+                                |                            0.64
+                                |                        ]
+                                |                    ]
+                                |                }
+                                |            ]
+                                |        },
+                                |        {"statement_id": 1}
+                                |    ]
+                                |}""".stripMargin)
+
+        val result = Array(
+          Array(
+            JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
+            JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
+            JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
+          )
+        )
+
+        jsonHandler.bulkResult(json).get shouldEqual result
+      }
+
+      "empty bulk query result from JSON" in {
+        val json =
+          JParser.parseUnsafe(
+            """{"results": [{"statement_id": 0},{"statement_id": 1}] }""".stripMargin
+          )
+
+        jsonHandler.bulkResult(json).get shouldEqual Array.empty[Array[JArray]]
+      }
+
+      "grouped system query result from JSON" in {
+        val json =
+          JParser.parseUnsafe("""
                                 |{
                                 |    "results": [
                                 |        {
@@ -251,27 +286,27 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
                                 |        }
                                 |    ]
                                 |}
-      """.stripMargin).toOption.value
+      """.stripMargin)
 
-    val result = Array(
-      "cpu_load_short" -> Array(
-        JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
-        JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
-        JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
-      )
-    )
+        val result = Array(
+          "cpu_load_short" -> Array(
+            JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
+            JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
+            JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
+          )
+        )
 
-    val res = jsonHandler.groupedSystemInfoJs(json).right.get
+        val res = jsonHandler.groupedSystemInfoJs(json).get
 
-    res.length shouldEqual 1
-    val (measurament, points) = res.head
+        res.length shouldEqual 1
+        val (measurament, points) = res.head
 
-    measurament shouldEqual "cpu_load_short"
-    points shouldEqual result.head._2
-  }
+        measurament shouldEqual "cpu_load_short"
+        points shouldEqual result.head._2
+      }
 
-  it should "extract grouped result" in {
-    val json = JParser.parseFromString("""
+      "grouped query result from JSON" in {
+        val json = JParser.parseUnsafe("""
                                          |{
                                          |   "results": [
                                          |     {
@@ -315,15 +350,20 @@ class AhcJsonHandlerSpec extends FlatSpec with Matchers with ScalaFutures with O
                                          |     }
                                          |   ]
                                          |}
-      """.stripMargin).toOption.value
+      """.stripMargin)
 
-    val result = jsonHandler.groupedResult(json).right.get
+        val groupedResult = jsonHandler.groupedResult(json)
 
-    result.length shouldEqual 2
+        groupedResult should not be None
 
-    result.map { case (k, v) => k.toList -> v }.toList shouldEqual List(
-      List("server01", "us-west") -> JArray(Array(JString("1970-01-01T00:00:00Z"), JNum(0.69))),
-      List("server02", "us-west") -> JArray(Array(JString("1970-01-01T00:00:00Z"), JNum(0.73)))
-    )
+        val result = groupedResult.get
+        result.length shouldEqual 2
+
+        result.map { case (k, v) => k.toList -> v }.toList shouldEqual List(
+          List("server01", "us-west") -> JArray(Array(JString("1970-01-01T00:00:00Z"), JNum(0.69))),
+          List("server02", "us-west") -> JArray(Array(JString("1970-01-01T00:00:00Z"), JNum(0.73)))
+        )
+      }
+    }
   }
 }
