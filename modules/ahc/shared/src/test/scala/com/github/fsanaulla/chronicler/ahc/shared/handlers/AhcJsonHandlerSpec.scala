@@ -23,7 +23,7 @@ import io.netty.handler.codec.http.{DefaultHttpResponse, HttpVersion}
 import org.asynchttpclient.Response
 import org.asynchttpclient.netty.{EagerResponseBodyPart, NettyResponseStatus}
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{FlatSpec, Matchers, OptionValues}
+import org.scalatest.{Matchers, OptionValues, WordSpec}
 import org.typelevel.jawn.ast._
 
 /**
@@ -34,6 +34,30 @@ import org.typelevel.jawn.ast._
 class AhcJsonHandlerSpec extends WordSpec with Matchers with ScalaFutures with OptionValues {
 
   val jsonHandler = new AhcJsonHandler(compress = false)
+
+  def buildResponse(bts: Array[Byte]): Response = {
+    val b = new Response.ResponseBuilder()
+
+    b.accumulate(
+      new EagerResponseBodyPart(
+        Unpooled.copiedBuffer(ByteBuffer.wrap(bts)),
+        true
+      )
+    )
+
+    b.accumulate(
+      new NettyResponseStatus(
+        null,
+        new DefaultHttpResponse(
+          HttpVersion.HTTP_1_0,
+          io.netty.handler.codec.http.HttpResponseStatus.OK
+        ),
+        null
+      )
+    )
+
+    b.build
+  }
 
   "JsonHandler" should {
     "extract" should {
@@ -70,7 +94,7 @@ class AhcJsonHandlerSpec extends WordSpec with Matchers with ScalaFutures with O
             |                      ]
             |                  }""".stripMargin
 
-        val resp: Response[Array[Byte]] = Response.ok(singleStrJson.getBytes())
+        val resp = buildResponse(singleStrJson.getBytes())
 
         val result: JValue = JParser.parseFromString(singleStrJson).get
 
