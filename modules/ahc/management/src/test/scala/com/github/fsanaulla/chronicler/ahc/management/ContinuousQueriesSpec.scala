@@ -16,10 +16,10 @@
 
 package com.github.fsanaulla.chronicler.ahc.management
 
+import com.github.fsanaulla.chronicler.ahc.shared.Uri
 import com.github.fsanaulla.chronicler.ahc.shared.handlers.AhcQueryBuilder
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.ContinuousQueries
-import com.softwaremill.sttp.Uri
 import org.scalatest.{FlatSpec, Matchers}
 
 /**
@@ -30,17 +30,18 @@ import org.scalatest.{FlatSpec, Matchers}
 class ContinuousQueriesSpec extends FlatSpec with Matchers with ContinuousQueries[Uri] {
 
   trait Env {
-    val host = "localhost"
-    val port = 8086
+    val schema = "http"
+    val host   = "localhost"
+    val port   = 8086
   }
 
   trait AuthEnv extends Env {
     val credentials                  = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, credentials)
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(schema, host, port, credentials)
   }
 
   trait NonAuthEnv extends Env {
-    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(host, port, None)
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(schema, host, port, None)
   }
 
   val db    = "mydb"
@@ -48,31 +49,31 @@ class ContinuousQueriesSpec extends FlatSpec with Matchers with ContinuousQuerie
   val query = "SELECT mean(bees) AS mean_bees INTO aggregate_bees FROM farm GROUP BY time(30m)"
 
   "ContinuousQuerys operation" should "generate correct show query" in new AuthEnv {
-    showCQQuery.toString() shouldEqual queryTesterAuth("SHOW CONTINUOUS QUERIES")(credentials.get)
+    showCQQuery.mkUrl shouldEqual queryTesterAuth("SHOW CONTINUOUS QUERIES")(credentials.get)
   }
 
   it should "generate correct drop query" in new AuthEnv {
-    dropCQQuery(db, cq).toString() shouldEqual queryTesterAuth(s"DROP CONTINUOUS QUERY $cq ON $db")(
+    dropCQQuery(db, cq).mkUrl shouldEqual queryTesterAuth(s"DROP CONTINUOUS QUERY $cq ON $db")(
       credentials.get
     )
   }
 
   it should "generate correct create query" in new AuthEnv {
-    createCQQuery(db, cq, query).toString() shouldEqual queryTesterAuth(
+    createCQQuery(db, cq, query).mkUrl shouldEqual queryTesterAuth(
       s"CREATE CONTINUOUS QUERY $cq ON $db BEGIN $query END"
     )(credentials.get)
   }
 
   it should "generate correct show query without auth" in new NonAuthEnv {
-    showCQQuery.toString() shouldEqual queryTester("SHOW CONTINUOUS QUERIES")
+    showCQQuery.mkUrl shouldEqual queryTester("SHOW CONTINUOUS QUERIES")
   }
 
   it should "generate correct drop query without auth" in new NonAuthEnv {
-    dropCQQuery(db, cq).toString() shouldEqual queryTester(s"DROP CONTINUOUS QUERY $cq ON $db")
+    dropCQQuery(db, cq).mkUrl shouldEqual queryTester(s"DROP CONTINUOUS QUERY $cq ON $db")
   }
 
   it should "generate correct create query without auth" in new NonAuthEnv {
-    createCQQuery(db, cq, query).toString() shouldEqual queryTester(
+    createCQQuery(db, cq, query).mkUrl shouldEqual queryTester(
       s"CREATE CONTINUOUS QUERY $cq ON $db BEGIN $query END"
     )
   }

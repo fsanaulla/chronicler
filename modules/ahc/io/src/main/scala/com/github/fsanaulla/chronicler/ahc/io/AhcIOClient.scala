@@ -16,21 +16,20 @@
 
 package com.github.fsanaulla.chronicler.ahc.io
 
-import com.github.fsanaulla.chronicler.ahc.shared.InfluxAhcClient
 import com.github.fsanaulla.chronicler.ahc.shared.handlers.{
   AhcJsonHandler,
   AhcQueryBuilder,
   AhcRequestExecutor
 }
-import com.github.fsanaulla.chronicler.ahc.shared.implicits._
+import com.github.fsanaulla.chronicler.ahc.shared.implicits.{fkId, futureFailable, futureFunctor}
+import com.github.fsanaulla.chronicler.ahc.shared.{InfluxAhcClient, Uri}
 import com.github.fsanaulla.chronicler.core.IOClient
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
 import com.github.fsanaulla.chronicler.core.api.{DatabaseApi, MeasurementApi}
 import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.implicits.{applyId, functorId}
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
-import com.softwaremill.sttp.{Response, Uri}
-import org.asynchttpclient.AsyncHttpClientConfig
+import org.asynchttpclient.{AsyncHttpClientConfig, Response}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
@@ -43,12 +42,12 @@ final class AhcIOClient(
     asyncClientConfig: Option[AsyncHttpClientConfig]
   )(implicit ex: ExecutionContext)
   extends InfluxAhcClient(asyncClientConfig)
-  with IOClient[Future, Id, Response[Array[Byte]], Uri, String] {
+  with IOClient[Future, Id, Response, Uri, String] {
 
-  val jsonHandler: AhcJsonHandler                             = new AhcJsonHandler(compress)
-  implicit val qb: AhcQueryBuilder                            = new AhcQueryBuilder(host, port, credentials)
-  implicit val re: AhcRequestExecutor                         = new AhcRequestExecutor
-  implicit val rh: ResponseHandler[Id, Response[Array[Byte]]] = new ResponseHandler(jsonHandler)
+  val jsonHandler: AhcJsonHandler                = new AhcJsonHandler(compress)
+  implicit val qb: AhcQueryBuilder               = new AhcQueryBuilder(schema, host, port, credentials)
+  implicit val re: AhcRequestExecutor            = new AhcRequestExecutor
+  implicit val rh: ResponseHandler[Id, Response] = new ResponseHandler(jsonHandler)
 
   override def database(dbName: String) =
     new DatabaseApi(dbName, compress)

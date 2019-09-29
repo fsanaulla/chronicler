@@ -23,7 +23,7 @@ class AhcQueryBuilderSpec extends FlatSpec with Matchers {
   val host = "localhost"
   val port = 8080
 
-  val qb = new AhcQueryBuilder(host, port, None)
+  val qb = new AhcQueryBuilder("http", host, port, None)
 
   it should "properly generate URI" in {
     val queryMap = List(
@@ -31,7 +31,7 @@ class AhcQueryBuilderSpec extends FlatSpec with Matchers {
     )
     val res = s"http://$host:$port/query?q=FirstQuery%3BSecondQuery"
 
-    qb.buildQuery("/query", qb.appendCredentials(queryMap)).toString() shouldEqual res
+    qb.buildQuery("/query", qb.appendCredentials(queryMap)).mkUrl shouldEqual res
   }
 
 }

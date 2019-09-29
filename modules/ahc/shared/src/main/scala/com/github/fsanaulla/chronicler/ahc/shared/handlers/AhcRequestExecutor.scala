@@ -16,22 +16,17 @@
 
 package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
+import com.github.fsanaulla.chronicler.ahc.shared.Uri
 import com.github.fsanaulla.chronicler.core.components.RequestExecutor
 import com.github.fsanaulla.chronicler.core.gzip
-import com.softwaremill.sttp.{
-  asByteArray,
-  emptyRequest,
-  HeaderNames,
-  MediaTypes,
-  Response,
-  SttpBackend,
-  Uri
-}
+import io.netty.handler.codec.http.HttpHeaderValues.GZIP_DEFLATE
+import org.asynchttpclient.{AsyncHttpClient, Response}
 
+import scala.compat.java8.FutureConverters._
 import scala.concurrent.Future
 
-private[ahc] final class AhcRequestExecutor()(implicit backend: SttpBackend[Future, Nothing])
-  extends RequestExecutor[Future, Response[Array[Byte]], Uri, String] {
+private[ahc] final class AhcRequestExecutor()(implicit client: AsyncHttpClient)
+  extends RequestExecutor[Future, Response, Uri, String] {
 
   /**
     * Execute uri
@@ -39,36 +34,33 @@ private[ahc] final class AhcRequestExecutor()(implicit backend: SttpBackend[Futu
     * @param uri - request uri
     * @return    - Return wrapper response
     */
-  override def get(uri: Uri, compress: Boolean): Future[Response[Array[Byte]]] = {
-    val request = emptyRequest.get(uri)
+  override def get(uri: Uri, compress: Boolean): Future[Response] = {
+    val req             = client.prepareGet(uri.mkUrl)
+    val maybeCompressed = if (compress) req.setHeader("Accept-Encoding", GZIP_DEFLATE) else req
 
-    // currently not supported
-//    val maybeEncoded =
-//      if (compress) request.acceptEncoding("gzip")
-//      else request
-
-    request
-      .response(asByteArray)
-      .send()
+    maybeCompressed.execute.toCompletableFuture.toScala
   }
 
   override def post(
       uri: Uri,
       body: String,
       compress: Boolean
-    ): Future[Response[Array[Byte]]] = {
-    val req = emptyRequest.post(uri).response(asByteArray)
+    ): Future[Response] = {
+    val req = client.preparePost(uri.mkUrl)
     val maybeEncoded = if (compress) {
       val (length, data) = gzip.compress(body.getBytes())
       // it fails with input stream, using byte array instead
       req
-        .body(data)
-        .header(HeaderNames.ContentEncoding, "gzip", replaceExisting = true)
-        .contentType(MediaTypes.Binary)
-        .contentLength(length)
-    } else req.body(body)
+        .setBody(data)
+        .setHeader("Content-Encoding", "gzip")
+        .setHeader("Content-Type", "application/octet-stream")
+        .setHeader("Content-Length", length)
+    } else req.setBody(body.getBytes())
 
-    maybeEncoded.send()
+    maybeEncoded
+      .execute()
+      .toCompletableFuture
+      .toScala
   }
 
   /**
@@ -76,10 +68,11 @@ private[ahc] final class AhcRequestExecutor()(implicit backend: SttpBackend[Futu
     *
     * @param uri - request uri
     */
-  override def post(uri: Uri): Future[Response[Array[Byte]]] = {
-    emptyRequest
-      .post(uri)
-      .response(asByteArray)
-      .send()
+  override def post(uri: Uri): Future[Response] = {
+    client
+      .preparePost(uri.mkUrl)
+      .execute()
+      .toCompletableFuture
+      .toScala
   }
 }

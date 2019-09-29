@@ -32,7 +32,7 @@ object InfluxIO {
     * @param credentials       - user credentials
     * @param compress           - enable gzip compression
     * @param asyncClientConfig - custom configuration
-    * @param ex                - implicit execution context, by default use standard one
+    * @param ec                - implicit execution context, by default use standard one
     * @return                  - [[AhcIOClient]]
     */
   def apply(
@@ -41,7 +41,7 @@ object InfluxIO {
       credentials: Option[InfluxCredentials] = None,
       compress: Boolean = false,
       asyncClientConfig: Option[AsyncHttpClientConfig] = None
-    )(implicit ex: ExecutionContext
+    )(implicit ec: ExecutionContext
     ): AhcIOClient =
     new AhcIOClient(host, port, compress, credentials, asyncClientConfig)
 
