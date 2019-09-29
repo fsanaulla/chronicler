@@ -1,0 +1,22 @@
+name: master
+
+on: [push]
+
+jobs:
+  test:
+    name: Test on scala ${{ matrix.scala }} for os ${{ matrix.os }} with java ${{ matrix.java }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        scala: [ '2.11.8', '2.12.8', '2.13.1' ]
+        java: [ '1.8', '9.0.x', '11.0.4' ]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: Run a one-line script
+      run: echo Hello, world!
+    - name: Run a multi-line script
+      run: |
+        echo Add other actions to build,
+        echo test, and deploy your project.
