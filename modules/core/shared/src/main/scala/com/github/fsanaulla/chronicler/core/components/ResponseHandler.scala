@@ -16,7 +16,7 @@
 
 package com.github.fsanaulla.chronicler.core.components
 
-import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode, Tags, Values}
 import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.model._
@@ -93,12 +93,16 @@ class ResponseHandler[G[_], R](
     * @param response - backend response
     * @return         - grouped result
     */
-  final def groupedResultJson(response: R): G[ErrorOr[Array[(Array[String], JArray)]]] =
+  final def groupedResultJson(response: R): G[ErrorOr[Array[(Tags, Values)]]] =
     jsonHandler.responseCode(response) match {
       case code if isSuccessful(code) =>
         F.map(jsonHandler.responseBody(response)) { ethRes =>
-          ethRes.flatMapRight(
-            jv => jsonHandler.groupedResult(jv).toRight(new IllegalArgumentException(""))
+          ethRes.mapRight(
+            jv =>
+              jsonHandler.groupedResult(jv) match {
+                case Some(arr) => arr
+                case _         => Array.empty
+              }
           )
         }
       case _ =>
@@ -117,11 +121,12 @@ class ResponseHandler[G[_], R](
     jsonHandler.responseCode(response) match {
       case code if isSuccessful(code) =>
         F.map(jsonHandler.responseBody(response)) { ethRes =>
-          ethRes.flatMapRight(
+          ethRes.mapRight(
             resp =>
-              jsonHandler
-                .bulkResult(resp)
-                .toRight(new ParsingException("Can't extract bulk query response"))
+              jsonHandler.bulkResult(resp) match {
+                case Some(arr) => arr
+                case _         => Array.empty
+              }
           )
         }
       case _ =>
