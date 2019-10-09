@@ -40,7 +40,7 @@ class GroupedApiSpec extends WordSpec with Matchers with Futures with Dockerized
         db = io.database(dbName)
 
         data = Source
-          .fromResource("h2feet_sample.txt")
+          .fromInputStream(getClass.getResourceAsStream("h2feet_sample.txt"))
           .getLines()
           .sliding(500, 500)
 
@@ -52,7 +52,7 @@ class GroupedApiSpec extends WordSpec with Matchers with Futures with Dockerized
         count <- db.readJson("SELECT * FROM h2o_feet")
       } yield {
         wr.mapRight(_.forall(_ == 204)) shouldEqual Right(true)
-        count.map(_.length > 0) shouldEqual Right(true)
+        count.mapRight(_.length > 0) shouldEqual Right(true)
       }).futureValue
     }
 

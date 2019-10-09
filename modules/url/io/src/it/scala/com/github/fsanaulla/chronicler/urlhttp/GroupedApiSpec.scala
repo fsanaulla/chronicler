@@ -11,7 +11,7 @@ import org.scalatest.{Matchers, WordSpec}
 import org.typelevel.jawn.ast.{JArray, JNum, JString}
 
 import scala.io.Source
-import scala.util.Success
+import scala.util.{Failure, Success}
 
 // https://github.com/fsanaulla/chronicler/issues/193
 class GroupedApiSpec extends WordSpec with Matchers with Futures with DockerizedInfluxDB {
@@ -39,7 +39,7 @@ class GroupedApiSpec extends WordSpec with Matchers with Futures with Dockerized
         db = io.database(dbName)
 
         data = Source
-          .fromResource("h2feet_sample.txt")
+          .fromInputStream(getClass.getResourceAsStream("h2feet_sample.txt"))
           .getLines()
           .sliding(500, 500)
 
@@ -49,13 +49,15 @@ class GroupedApiSpec extends WordSpec with Matchers with Futures with Dockerized
               .map(db.bulkWriteNative(_, precision = Precisions.Seconds))
               .flatMap(_.toOption)
               .toSeq
-          )
-          .toTry
+          ) match {
+          case Right(b) => Success(b)
+          case Left(a)  => Failure(a)
+        }
 
         count <- db.readJson("SELECT * FROM h2o_feet")
       } yield {
         wr.forall(_ == 204) shouldEqual true
-        count.map(_.length > 0) shouldEqual Right(true)
+        count.mapRight(_.length > 0) shouldEqual Right(true)
       }
     }
 
