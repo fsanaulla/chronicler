@@ -3,7 +3,6 @@ package com.github.fsanaulla.chronicler.urlhttp
 import java.nio.file.Paths
 
 import com.github.fsanaulla.chronicler.core.enums.Epochs
-import com.github.fsanaulla.chronicler.core.jawn._
 import com.github.fsanaulla.chronicler.core.model.Point
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.urlhttp.SampleEntitys._
@@ -11,7 +10,7 @@ import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
 import org.scalatest.{FlatSpec, Matchers}
-import org.typelevel.jawn.ast.{JArray, JNum, JString}
+import org.typelevel.jawn.ast.{JArray, JNum, JString, JValue}
 
 /**
   * Created by
@@ -19,6 +18,8 @@ import org.typelevel.jawn.ast.{JArray, JNum, JString}
   * Date: 02.03.18
   */
 class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
+
+  import DatabaseApiSpec._
 
   val testDB = "db"
 
@@ -104,8 +105,8 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
     multiQuery.right.get.last.head shouldBe a[JArray]
 
     multiQuery.right.get
-      .map(_.map(_.arrayValue.right.get.tail)) shouldEqual largeMultiJsonEntity.map(
-      _.map(_.arrayValue.right.get.tail)
+      .map(_.map(_.arrayValue.get.tail)) shouldEqual largeMultiJsonEntity.map(
+      _.map(_.arrayValue.get.tail)
     )
   }
 
@@ -143,29 +144,6 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
     )
   }
 
-  it should "return grouped result by sex and sum of ages" in {
-    db.bulkWriteNative(
-        Array(
-          "test5,sex=Male,firstName=Jon,lastName=Snow age=24",
-          "test5,sex=Male,firstName=Rainer,lastName=Targaryen age=25"
-        )
-      )
-      .get
-      .right
-      .get shouldEqual 204
-
-    db.readGroupedJson(
-        "SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"",
-        epoch = Epochs.Nanoseconds
-      )
-      .get
-      .right
-      .get
-      .map { case (k, v) => k.toSeq -> v } shouldEqual Array(
-      Seq("Male") -> JArray(Array(JNum(0), JNum(49)))
-    )
-  }
-
   it should "write escaped value" in {
     val p = Point("test6")
       .addTag("key,", "value,")
@@ -181,5 +159,15 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 
     mng.close() shouldEqual {}
     io.close() shouldEqual {}
+  }
+}
+
+object DatabaseApiSpec {
+  implicit final class JawnOps(private val jv: JValue) {
+
+    def arrayValue: Option[Array[JValue]] = jv match {
+      case JArray(arr) => Some(arr)
+      case _           => None
+    }
   }
 }

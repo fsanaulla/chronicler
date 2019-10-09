@@ -369,9 +369,13 @@ class AkkaJsonHandlerSpec
         val result = groupedResult.get
         result.length shouldEqual 2
 
-        result.map { case (k, v) => k.toList -> v }.toList shouldEqual List(
-          List("server01", "us-west") -> JArray(Array(JString("1970-01-01T00:00:00Z"), JNum(0.69))),
-          List("server02", "us-west") -> JArray(Array(JString("1970-01-01T00:00:00Z"), JNum(0.73)))
+        result.map { case (k, v) => k.toList -> v.toList }.toList shouldEqual List(
+          List("server01", "us-west") -> List(
+            JArray(Array(JString("1970-01-01T00:00:00Z"), JNum(0.69)))
+          ),
+          List("server02", "us-west") -> List(
+            JArray(Array(JString("1970-01-01T00:00:00Z"), JNum(0.73)))
+          )
         )
       }
     }

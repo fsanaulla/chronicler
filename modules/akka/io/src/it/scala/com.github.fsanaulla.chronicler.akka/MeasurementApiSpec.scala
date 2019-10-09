@@ -24,8 +24,10 @@ class MeasurementApiSpec
   with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
-    super.afterAll()
+    mng.close()
+    io.close()
     TestKit.shutdownActorSystem(system)
+    super.afterAll()
   }
 
   val db       = "db"
