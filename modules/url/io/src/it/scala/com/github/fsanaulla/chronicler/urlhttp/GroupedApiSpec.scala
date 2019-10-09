@@ -39,7 +39,7 @@ class GroupedApiSpec extends WordSpec with Matchers with Futures with Dockerized
         db = io.database(dbName)
 
         data = Source
-          .fromInputStream(getClass.getResourceAsStream("h2feet_sample.txt"))
+          .fromInputStream(getClass.getResourceAsStream("/h2feet_sample.txt"))
           .getLines()
           .sliding(500, 500)
 

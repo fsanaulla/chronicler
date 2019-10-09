@@ -48,7 +48,7 @@ class GroupedApiSpec
         db = io.database(dbName)
 
         data = Source
-          .fromInputStream(getClass.getResourceAsStream("h2feet_sample.txt"))
+          .fromInputStream(getClass.getResourceAsStream("/h2feet_sample.txt"))
           .getLines()
           .sliding(500, 500)
 
