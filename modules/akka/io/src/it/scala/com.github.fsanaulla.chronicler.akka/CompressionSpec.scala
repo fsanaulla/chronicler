@@ -22,8 +22,10 @@ class CompressionSpec
   with IntegrationPatience {
 
   override def afterAll(): Unit = {
-    super.afterAll()
+    mng.close()
+    io.close()
     TestKit.shutdownActorSystem(system)
+    super.afterAll()
   }
 
   implicit val ec: ExecutionContextExecutor = system.dispatcher

@@ -23,8 +23,6 @@ import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
 import org.scalatest.{FlatSpec, Matchers}
 
-import scala.language.implicitConversions
-
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com

@@ -23,8 +23,10 @@ class AuthenticationSpec
   with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
-    super.afterAll()
+    influx.close()
+    authInflux.close()
     TestKit.shutdownActorSystem(system)
+    super.afterAll()
   }
 
   val userDB    = "db"

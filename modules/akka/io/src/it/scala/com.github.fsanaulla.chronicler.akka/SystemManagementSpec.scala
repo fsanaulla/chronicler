@@ -21,15 +21,16 @@ class SystemManagementSpec
   with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
-    super.afterAll()
+    io.close()
     TestKit.shutdownActorSystem(system)
+    super.afterAll()
   }
 
-  lazy val influx: AkkaIOClient =
+  lazy val io: AkkaIOClient =
     InfluxIO(host, port, Some(creds))
 
   it should "ping InfluxDB" in {
-    val result = influx.ping.futureValue.right.get
+    val result = io.ping.futureValue.right.get
     result.build shouldEqual "OSS"
     result.version shouldEqual version
   }

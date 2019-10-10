@@ -6,11 +6,10 @@ import com.github.fsanaulla.chronicler.ahc.io.{AhcIOClient, InfluxIO}
 import com.github.fsanaulla.chronicler.ahc.management.{AhcManagementClient, InfluxMng}
 import com.github.fsanaulla.chronicler.ahc.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.core.enums.Epochs
-import com.github.fsanaulla.chronicler.core.jawn._
 import com.github.fsanaulla.chronicler.core.model.Point
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
 import org.scalatest.{FlatSpec, Matchers}
-import org.typelevel.jawn.ast.{JArray, JNum, JString}
+import org.typelevel.jawn.ast.{JArray, JNum, JString, JValue}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -20,6 +19,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Date: 02.03.18
   */
 class DatabaseApiSpec extends FlatSpec with Matchers with Futures with DockerizedInfluxDB {
+
+  import DatabaseApiSpec._
 
   val testDB = "db"
 
@@ -106,8 +107,8 @@ class DatabaseApiSpec extends FlatSpec with Matchers with Futures with Dockerize
     multiQuery.last.head shouldBe a[JArray]
 
     multiQuery
-      .map(_.map(_.arrayValue.right.get.tail)) shouldEqual largeMultiJsonEntity.map(
-      _.map(_.arrayValue.right.get.tail)
+      .map(_.map(_.arrayValue.get.tail)) shouldEqual largeMultiJsonEntity.map(
+      _.map(_.arrayValue.get.tail)
     )
   }
 
@@ -145,29 +146,6 @@ class DatabaseApiSpec extends FlatSpec with Matchers with Futures with Dockerize
     )
   }
 
-  it should "return grouped result by sex and sum of ages" in {
-    db.bulkWriteNative(
-        Array(
-          "test5,sex=Male,firstName=Jon,lastName=Snow age=24",
-          "test5,sex=Male,firstName=Rainer,lastName=Targaryen age=25"
-        )
-      )
-      .futureValue
-      .right
-      .get shouldEqual 204
-
-    db.readGroupedJson(
-        "SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"",
-        epoch = Epochs.Nanoseconds
-      )
-      .futureValue
-      .right
-      .get
-      .map { case (k, v) => k.toSeq -> v } shouldEqual Array(
-      Seq("Male") -> JArray(Array(JNum(0), JNum(49)))
-    )
-  }
-
   it should "write escaped value" in {
     val p = Point("test6")
       .addTag("key,", "value,")
@@ -183,5 +161,15 @@ class DatabaseApiSpec extends FlatSpec with Matchers with Futures with Dockerize
 
     mng.close() shouldEqual {}
     io.close() shouldEqual {}
+  }
+}
+
+object DatabaseApiSpec {
+  implicit final class JawnOps(private val jv: JValue) {
+
+    def arrayValue: Option[Array[JValue]] = jv match {
+      case JArray(arr) => Some(arr)
+      case _           => None
+    }
   }
 }

@@ -25,4 +25,7 @@ package object alias {
   // point representation in JSON array
   type JPoint = JArray
   type Id[X]  = X
+
+  type Tags   = Array[String]
+  type Values = Array[JArray]
 }

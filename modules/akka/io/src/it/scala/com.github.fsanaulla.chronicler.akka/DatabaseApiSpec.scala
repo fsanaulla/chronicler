@@ -4,16 +4,17 @@ import java.nio.file.Paths
 
 import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
+import com.github.fsanaulla.chronicler.akka.DatabaseApiSpec._
 import com.github.fsanaulla.chronicler.akka.SampleEntitys._
 import com.github.fsanaulla.chronicler.akka.io.{AkkaIOClient, InfluxIO}
 import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, InfluxMng}
 import com.github.fsanaulla.chronicler.akka.shared.InfluxConfig
+import com.github.fsanaulla.chronicler.core.either.EitherOps
 import com.github.fsanaulla.chronicler.core.enums.Epochs
-import com.github.fsanaulla.chronicler.core.jawn._
 import com.github.fsanaulla.chronicler.core.model.Point
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
 import org.scalatest.{FlatSpecLike, Matchers}
-import org.typelevel.jawn.ast.{JArray, JNum, JString}
+import org.typelevel.jawn.ast.{JArray, JNum, JString, JValue}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -30,8 +31,10 @@ class DatabaseApiSpec
   with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
-    super.afterAll()
+    mng.close()
+    io.close()
     TestKit.shutdownActorSystem(system)
+    super.afterAll()
   }
 
   val testDB = "db"
@@ -48,14 +51,12 @@ class DatabaseApiSpec
   lazy val db: io.Database = io.database(testDB)
 
   it should "write data from file" in {
-    mng.createDatabase(testDB).futureValue.right.get shouldEqual 200
+    mng.createDatabase(testDB).futureValue shouldEqual Right(200)
 
     db.writeFromFile(Paths.get(getClass.getResource("/points.txt").getPath))
-      .futureValue
-      .right
-      .get shouldEqual 204
+      .futureValue shouldEqual Right(204)
 
-    db.readJson("SELECT * FROM test1").futureValue.right.get.length shouldEqual 3
+    db.readJson("SELECT * FROM test1").futureValue.mapRight(_.length) shouldEqual Right(3)
   }
 
   it should "write 2 points represented entities" in {
@@ -71,18 +72,17 @@ class DatabaseApiSpec
       .addTag("lastName", "Franko")
       .addField("age", 36)
 
-    db.writePoint(point1).futureValue.right.get shouldEqual 204
+    db.writePoint(point1).futureValue shouldEqual Right(204)
 
     db.readJson("SELECT * FROM test2", epoch = Epochs.Nanoseconds)
       .futureValue
-      .right
-      .get
-      // skip timestamp
-      .map(jarr => jarr.copy(vs = jarr.vs.tail)) shouldEqual Array(
-      JArray(Array(JNum(54), JString("Martin"), JString("Odersky"), JString("Male")))
+      .mapRight(_.map(arr => arr.copy(vs = arr.vs.tail)).toList) shouldEqual Right(
+      List(
+        JArray(Array(JNum(54), JString("Martin"), JString("Odersky"), JString("Male")))
+      )
     )
 
-    db.bulkWritePoints(Array(point1, point2)).futureValue.right.get shouldEqual 204
+    db.bulkWritePoints(Array(point1, point2)).futureValue shouldEqual Right(204)
 
     db.readJson("SELECT * FROM test2", epoch = Epochs.Nanoseconds)
       .futureValue
@@ -97,7 +97,7 @@ class DatabaseApiSpec
   }
 
   it should "retrieve multiple request" in {
-    val multiQuery = db
+    val Right(multiQuery) = db
       .bulkReadJson(
         Array(
           "SELECT * FROM test2",
@@ -105,22 +105,22 @@ class DatabaseApiSpec
         )
       )
       .futureValue
+      .mapRight(_.map(_.toList).toList)
 
-    multiQuery.right.get.length shouldEqual 2
-    multiQuery.right.get shouldBe a[Array[_]]
+    multiQuery.length shouldEqual 2
+    multiQuery shouldBe a[List[_]]
 
-    multiQuery.right.get.head.length shouldEqual 3
-    multiQuery.right.get.head shouldBe a[Array[_]]
-    multiQuery.right.get.head.head shouldBe a[JArray]
+    multiQuery.headOption.map(_.length) shouldEqual Some(3)
+    multiQuery.headOption.map(_ shouldBe a[List[_]]) shouldEqual Some(succeed)
+    multiQuery.headOption.flatMap(_.headOption).map(_ shouldBe a[JArray]) shouldEqual Some(succeed)
 
-    multiQuery.right.get.last.length shouldEqual 1
-    multiQuery.right.get.last shouldBe a[Array[_]]
-    multiQuery.right.get.last.head shouldBe a[JArray]
+    multiQuery.last.length shouldEqual 1
+    multiQuery.last shouldBe a[List[_]]
+    multiQuery.last.head shouldBe a[JArray]
 
-    multiQuery.right.get
-      .map(_.map(_.arrayValue.right.get.tail)) shouldEqual largeMultiJsonEntity.map(
-      _.map(_.arrayValue.right.get.tail)
-    )
+    multiQuery
+      .map(_.flatMap(_.arrayValue.map(_.tail.toList)))
+      .shouldEqual(largeMultiJsonEntity.map(_.flatMap(_.arrayValue.map(_.tail.toList)).toList))
   }
 
   it should "write native" in {
@@ -157,29 +157,6 @@ class DatabaseApiSpec
     )
   }
 
-  it should "return grouped result by sex and sum of ages" in {
-    db.bulkWriteNative(
-        Array(
-          "test5,sex=Male,firstName=Jon,lastName=Snow age=24",
-          "test5,sex=Male,firstName=Rainer,lastName=Targaryen age=25"
-        )
-      )
-      .futureValue
-      .right
-      .get shouldEqual 204
-
-    db.readGroupedJson(
-        "SELECT SUM(\"age\") FROM \"test5\" GROUP BY \"sex\"",
-        epoch = Epochs.Nanoseconds
-      )
-      .futureValue
-      .right
-      .get
-      .map { case (k, v) => k.toSeq -> v } shouldEqual Array(
-      Seq("Male") -> JArray(Array(JNum(0), JNum(49)))
-    )
-  }
-
   it should "write escaped value" in {
     val p = Point("test6")
       .addTag("key,", "value,")
@@ -192,8 +169,15 @@ class DatabaseApiSpec
 
   it should "validate empty response" in {
     db.readJson("SELECT * FROM test7").futureValue.right.get.length shouldEqual 0
+  }
+}
 
-    mng.close() shouldEqual {}
-    io.close() shouldEqual {}
+object DatabaseApiSpec {
+  implicit final class JawnOps(private val jv: JValue) {
+
+    def arrayValue: Option[Array[JValue]] = jv match {
+      case JArray(arr) => Some(arr)
+      case _           => None
+    }
   }
 }

@@ -11,24 +11,25 @@ import sun.security.provider.PolicyParser.ParsingException
 
 trait InfluxFormat {
 
-  case class Test(@tag name: String,
-                  @tag surname: Option[String],
-                  @field age: Int,
-                  @field schooler: Boolean,
-                  @field city: String,
-                  @epoch @timestamp time: Long)
+  case class Test(
+      @tag name: String,
+      @tag surname: Option[String],
+      @field age: Int,
+      @field schooler: Boolean,
+      @field city: String,
+      @epoch @timestamp time: Long)
 
   val rd: InfluxReader[Test] = InfluxReader[Test]
   val wr: InfluxWriter[Test] = InfluxWriter[Test]
 
   implicit val gen: Arbitrary[Test] = Arbitrary {
     for {
-      name <- Arbitrary.arbString.arbitrary
-      surname <- Arbitrary.arbOption(Arbitrary.arbString).arbitrary
-      age <- Arbitrary.arbInt.arbitrary
+      name     <- Arbitrary.arbString.arbitrary
+      surname  <- Arbitrary.arbOption(Arbitrary.arbString).arbitrary
+      age      <- Arbitrary.arbInt.arbitrary
       schooler <- Arbitrary.arbBool.arbitrary
-      city <- Arbitrary.arbString.arbitrary
-      time <- Arbitrary.arbLong.arbitrary
+      city     <- Arbitrary.arbString.arbitrary
+      time     <- Arbitrary.arbLong.arbitrary
     } yield {
       Test(name, surname, age, schooler, city, time)
     }
@@ -51,11 +52,10 @@ trait InfluxFormat {
     }
   }
 
-
   final def influxWrite(t: Test): ErrorOr[String] = {
     if (t.name.isEmpty) Left(new IllegalArgumentException("Can't be empty string"))
     else {
-      val sb = StringBuilder.newBuilder
+      val sb = new StringBuilder()
 
       sb.append(s"name=")
         .append(t.name)

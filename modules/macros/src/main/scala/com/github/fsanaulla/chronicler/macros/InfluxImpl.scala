@@ -439,7 +439,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     }
 
     q"""def write(obj: $tpe): com.github.fsanaulla.chronicler.core.alias.ErrorOr[String] = {
-          val sb = StringBuilder.newBuilder
+          val sb = new StringBuilder()
           $tagString
           sb.append(" ")
           $fieldString

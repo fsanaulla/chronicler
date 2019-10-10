@@ -16,7 +16,7 @@
 
 package com.github.fsanaulla.chronicler.core.components
 
-import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Tags, Values}
 import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.headers.{buildHeader, versionHeader}
@@ -109,14 +109,14 @@ abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
     * @param js - JSON payload
     * @return   - array of pairs (grouping key, grouped value)
     */
-  final def groupedResult(js: JValue): Option[Array[(Array[String], JArray)]] =
+  final def groupedResult(js: JValue): Option[Array[(Tags, Values)]] =
     js.firstResult
       .flatMap(_.seriesArray)
       .map(_.flatMap(_.obj))
       .map { arr =>
         arr.flatMap { obj =>
           val tags   = obj.tags.obj.map(_.vs.values.map(_.asString).toArray.sorted)
-          val values = obj.firstValue.flatMap(_.array)
+          val values = obj.valuesArray.map(_.flatMap(_.array))
 
           for {
             tg <- tags

@@ -18,7 +18,7 @@ package com.github.fsanaulla.chronicler.core.api
 
 import java.nio.file.Path
 
-import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode, Tags, Values}
 import com.github.fsanaulla.chronicler.core.components._
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
@@ -130,8 +130,10 @@ class DatabaseApi[F[_], G[_], R, U, E](
       query: String,
       epoch: Epoch = Epochs.None,
       pretty: Boolean = false
-    ): F[ErrorOr[Array[(Array[String], JArray)]]] = {
+    ): F[ErrorOr[Array[(Tags, Values)]]] = {
     val uri = singleQuery(dbName, query, epoch, pretty)
-    F.flatMap(re.get(uri, compress))(resp => FK(rh.groupedResultJson(resp)))
+    F.flatMap(
+      re.get(uri, compress)
+    )(resp => FK(rh.groupedResultJson(resp)))
   }
 }
