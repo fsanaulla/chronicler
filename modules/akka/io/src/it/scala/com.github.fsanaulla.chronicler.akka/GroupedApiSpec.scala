@@ -34,7 +34,7 @@ class GroupedApiSpec
   val dbName                                = "mydb"
 
   lazy val influxConf =
-    InfluxConfig(host, port, credentials = Some(creds), compress = false, None)
+    InfluxConfig(host, port, credentials = Some(creds), compress = true, None)
   lazy val mng: AkkaManagementClient =
     InfluxMng(host, port, credentials = Some(creds))
   lazy val io: AkkaIOClient =
