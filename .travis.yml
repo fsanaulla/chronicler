@@ -31,7 +31,7 @@ jobs:
   - stage: release
     script: chmod 777 scripts/release.sh && ./scripts/release.sh
     env: INFLUXDB_VERSION=1.7.3
-    scala: 2.12.8
+    scala: 2.12.7
   - stage: publish_core_2.11
     script:
     - chmod 777 scripts/publish/core.sh
@@ -120,8 +120,6 @@ jobs:
     scala: 2.13.0
 stages:
 - name: test
-- name: release
-  if: branch = master AND type != pull_request
 - name: publish_core_2.11
   if: branch = master AND type != pull_request
 - name: publish_ahc_2.11
@@ -151,6 +149,8 @@ stages:
 - name: publish_url_2.13
   if: branch = master AND type != pull_request
 - name: publish_other_2.13
+  if: branch = master AND type != pull_request
+- name: release
   if: branch = master AND type != pull_request
 env:
   matrix:
