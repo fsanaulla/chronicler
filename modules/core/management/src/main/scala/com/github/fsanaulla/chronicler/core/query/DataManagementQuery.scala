@@ -32,7 +32,7 @@ private[chronicler] trait DataManagementQuery[U] {
     )(implicit qb: QueryBuilder[U]
     ): U = {
 
-    val sb = StringBuilder.newBuilder
+    val sb = new StringBuilder()
 
     sb.append(s"CREATE DATABASE $dbName")
 
@@ -119,7 +119,7 @@ private[chronicler] trait DataManagementQuery[U] {
       offset: Option[Int]
     )(implicit qb: QueryBuilder[U]
     ): U = {
-    val sb = StringBuilder.newBuilder
+    val sb = new StringBuilder()
 
     sb.append("SHOW TAG KEYS ON ")
       .append(dbName)
@@ -152,7 +152,7 @@ private[chronicler] trait DataManagementQuery[U] {
     ): U = {
     require(withKey.nonEmpty, "Keys can't be empty")
 
-    val sb = StringBuilder.newBuilder
+    val sb = new StringBuilder()
 
     sb.append("SHOW TAG VALUES ON ")
       .append(dbName)

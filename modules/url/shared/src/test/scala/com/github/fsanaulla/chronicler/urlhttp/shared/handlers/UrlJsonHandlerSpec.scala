@@ -20,8 +20,6 @@ import org.scalatest.{Matchers, OptionValues, TryValues, WordSpec}
 import org.typelevel.jawn.ast._
 import requests.{Response, ResponseBlob}
 
-import scala.language.implicitConversions
-
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
