@@ -20,7 +20,6 @@ import akka.http.scaladsl.coding.Gzip
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.{`Accept-Encoding`, `Content-Encoding`, HttpEncodings}
 import akka.http.scaladsl.{HttpExt, HttpsConnectionContext}
-import akka.stream.ActorMaterializer
 import com.github.fsanaulla.chronicler.core.components.RequestExecutor
 
 import scala.concurrent.Future
@@ -30,10 +29,7 @@ import scala.concurrent.Future
   * Author: fayaz.sanaulla@gmail.com
   * Date: 15.03.18
   */
-private[akka] final class AkkaRequestExecutor(
-    ctx: HttpsConnectionContext
-  )(implicit http: HttpExt,
-    mat: ActorMaterializer)
+private[akka] final class AkkaRequestExecutor(ctx: HttpsConnectionContext)(implicit http: HttpExt)
   extends RequestExecutor[Future, HttpResponse, Uri, RequestEntity] {
 
   /**

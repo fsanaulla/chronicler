@@ -37,12 +37,6 @@ package object jawn {
   /** Extension to simplify parsing JAWN AST */
   implicit final class RichJValue(private val jv: JValue) extends AnyVal {
 
-    def arrayValue: ErrorOr[Array[JValue]] = jv match {
-      case JArray(arr) => Right(arr)
-      case other =>
-        Left(new WrongValueException("array", other.toString()))
-    }
-
     def firstResult: Option[JValue] = results match {
       case JArray(vs) => vs.headOption
       case _          => None

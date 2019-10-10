@@ -21,8 +21,9 @@ class ShardManagementSpec
   with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
-    super.afterAll()
+    influx.close()
     TestKit.shutdownActorSystem(system)
+    super.afterAll()
   }
 
   val testDb = "_internal"

@@ -4,6 +4,7 @@ val projectName = "chronicler"
 lazy val chronicler = project
   .in(file("."))
   .settings(Settings.common: _*)
+  .settings(Settings.publish: _*)
   .settings(parallelExecution in Compile := false)
 //  .aggregate(
 //    coreIO,

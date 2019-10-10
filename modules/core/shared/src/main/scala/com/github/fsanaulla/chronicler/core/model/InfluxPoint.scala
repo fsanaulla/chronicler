@@ -90,7 +90,7 @@ final case class Point(
   }
 
   def serialize: String = {
-    val sb = StringBuilder.newBuilder
+    val sb = new StringBuilder()
 
     sb.append(measurement.escapeMeas).append(",")
     sb.append(tags.map(tag => tag.key.escapeKey + "=" + tag.value.escapeKey).mkString(","))

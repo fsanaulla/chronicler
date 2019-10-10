@@ -21,8 +21,9 @@ class SystemManagementSpec
   with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
-    super.afterAll()
+    influx.close()
     TestKit.shutdownActorSystem(system)
+    super.afterAll()
   }
 
   lazy val influx: AkkaManagementClient =

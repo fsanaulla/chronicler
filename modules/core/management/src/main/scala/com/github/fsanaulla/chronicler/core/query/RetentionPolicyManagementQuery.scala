@@ -29,7 +29,7 @@ private[chronicler] trait RetentionPolicyManagementQuery[U] {
       default: Boolean = false
     )(implicit qb: QueryBuilder[U]
     ): U = {
-    val sb = StringBuilder.newBuilder
+    val sb = new StringBuilder()
 
     sb.append("CREATE RETENTION POLICY ")
       .append(rpName)
@@ -65,7 +65,7 @@ private[chronicler] trait RetentionPolicyManagementQuery[U] {
       default: Boolean = false
     )(implicit qb: QueryBuilder[U]
     ): U = {
-    val sb = StringBuilder.newBuilder
+    val sb = new StringBuilder()
 
     sb.append("ALTER RETENTION POLICY ")
       .append(rpName)

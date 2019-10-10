@@ -32,7 +32,6 @@ import org.typelevel.jawn.ast._
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
-import scala.language.implicitConversions
 
 /**
   * Created by

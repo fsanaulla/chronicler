@@ -27,7 +27,7 @@ object Settings extends LibraryManagementSyntax {
     scalaVersion := "2.13.1",
     organization := "com.github.fsanaulla",
     scalacOptions ++= Scalac.options(scalaVersion.value),
-    crossScalaVersions := Seq("2.11.8", "2.12.8", scalaVersion.value),
+    crossScalaVersions := Seq("2.11.12", "2.12.10", scalaVersion.value),
     homepage := Some(url("https://github.com/fsanaulla/chronicler")),
     licenses += "Apache-2.0" -> url(apacheUrl),
     developers += Developer(
