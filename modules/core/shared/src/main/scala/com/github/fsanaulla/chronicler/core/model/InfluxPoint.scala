@@ -94,12 +94,14 @@ final case class Point(
 
     sb.append(measurement.escapeMeas)
 
-    tags match {
-      case _ :: _ => sb.append(",")
-      case _ =>
+    if (tags.nonEmpty) {
+      sb.append(
+        "," + tags
+          .map(tag => tag.key.escapeKey + "=" + tag.value.escapeKey)
+          .mkString(",")
+      )
     }
 
-    sb.append(tags.map(tag => tag.key.escapeKey + "=" + tag.value.escapeKey).mkString(","))
     sb.append(" ")
     sb.append(fields.map(_.toString).mkString(","))
 

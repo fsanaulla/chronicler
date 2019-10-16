@@ -51,4 +51,26 @@ class PointSpec extends FlatSpec with Matchers {
 
     p.serialize shouldEqual "test\\,\\ meas,tag\\,\\ \\=key=tag\\=\\ \\,value field\\=\\,\\ space=1i"
   }
+
+  it should "generate tags" in {
+    val p = Point("foo")
+      .addTag("bar", "baz")
+      .addField("field", 1)
+
+    p.serialize shouldEqual "foo,bar=baz field=1i"
+  }
+
+  it should "generate a valid statement with empty tag list" in {
+    val p = Point(measurement = "foo", tags = List())
+    .addField("bar", 1)
+
+    p.serialize shouldEqual "foo bar=1i"
+  }
+
+  it should "generate a valid statement with no defined tag list" in {
+    val p = Point("foo")
+      .addField("bar", 1)
+
+    p.serialize shouldEqual "foo bar=1i"
+  }
 }
