@@ -1,6 +1,5 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
-import java.io.File
 import java.nio.file.Paths
 
 import com.github.fsanaulla.chronicler.core.enums.Epochs
@@ -24,6 +23,12 @@ import org.typelevel.jawn.ast.JValue
 import scala.collection.mutable.ArrayBuffer
 
 class StreamingApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
+
+  override def afterAll(): Unit = {
+    mng.close()
+    io.close()
+    super.afterAll()
+  }
 
   val testDB   = "db"
   val measName = "test1"

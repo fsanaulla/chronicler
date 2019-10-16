@@ -23,6 +23,12 @@ class CompressionSpec
   with Eventually
   with IntegrationPatience {
 
+  override def afterAll(): Unit = {
+    mng.close()
+    io.close()
+    super.afterAll()
+  }
+
   val testDB = "db"
 
   lazy val mng =

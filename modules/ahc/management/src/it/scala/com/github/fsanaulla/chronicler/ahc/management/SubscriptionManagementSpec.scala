@@ -19,6 +19,11 @@ class SubscriptionManagementSpec
   with Futures
   with DockerizedInfluxDB {
 
+  override def afterAll(): Unit = {
+    influx.close()
+    super.afterAll()
+  }
+
   val subName                       = "subs"
   val dbName                        = "async_subs_spec_db"
   val rpName                        = "subs_rp"
@@ -69,7 +74,5 @@ class SubscriptionManagementSpec
     influx.dropRetentionPolicy(rpName, dbName).futureValue.right.get shouldEqual 200
 
     influx.dropDatabase(dbName).futureValue.right.get shouldEqual 200
-
-    influx.close() shouldEqual {}
   }
 }

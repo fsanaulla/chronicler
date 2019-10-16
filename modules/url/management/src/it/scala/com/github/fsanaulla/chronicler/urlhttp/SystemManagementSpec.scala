@@ -9,11 +9,12 @@ import org.scalatest.{FlatSpec, Matchers}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 07.09.17
   */
-class SystemManagementSpec
-  extends FlatSpec
-    with Matchers
-    with Futures
-    with DockerizedInfluxDB {
+class SystemManagementSpec extends FlatSpec with Matchers with Futures with DockerizedInfluxDB {
+
+  override def afterAll(): Unit = {
+    influx.close()
+    super.afterAll()
+  }
 
   lazy val influx: UrlManagementClient =
     InfluxMng(host, port, Some(creds))

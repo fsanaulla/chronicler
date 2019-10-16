@@ -20,6 +20,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class DatabaseApiSpec extends FlatSpec with Matchers with Futures with DockerizedInfluxDB {
 
+  override def afterAll(): Unit = {
+    mng.close()
+    io.close()
+    super.afterAll()
+  }
+
   import DatabaseApiSpec._
 
   val testDB = "db"
@@ -158,9 +164,6 @@ class DatabaseApiSpec extends FlatSpec with Matchers with Futures with Dockerize
 
   it should "validate empty response" in {
     db.readJson("SELECT * FROM test7").futureValue.right.get.length shouldEqual 0
-
-    mng.close() shouldEqual {}
-    io.close() shouldEqual {}
   }
 }
 

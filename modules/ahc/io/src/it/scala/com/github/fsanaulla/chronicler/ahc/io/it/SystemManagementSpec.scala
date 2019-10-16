@@ -11,11 +11,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 07.09.17
   */
-class SystemManagementSpec
-  extends FlatSpec
-    with Matchers
-    with Futures
-    with DockerizedInfluxDB {
+class SystemManagementSpec extends FlatSpec with Matchers with Futures with DockerizedInfluxDB {
+
+  override def afterAll(): Unit = {
+    influx.close()
+    super.afterAll()
+  }
 
   lazy val influx: AhcIOClient =
     InfluxIO(host, port, Some(creds))
