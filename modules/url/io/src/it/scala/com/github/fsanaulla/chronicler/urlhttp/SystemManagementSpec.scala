@@ -11,6 +11,11 @@ import org.scalatest.{FlatSpec, Matchers}
   */
 class SystemManagementSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 
+  override def afterAll(): Unit = {
+    influx.close()
+    super.afterAll()
+  }
+
   lazy val influx: UrlIOClient = InfluxIO(host, port, Some(creds))
 
   it should "ping InfluxDB" in {

@@ -12,13 +12,15 @@ import org.scalatest.{FlatSpec, Matchers}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 28.09.17
   */
-class MeasurementApiSpec
-  extends FlatSpec
-    with Matchers
-    with Futures
-    with DockerizedInfluxDB {
+class MeasurementApiSpec extends FlatSpec with Matchers with Futures with DockerizedInfluxDB {
 
-  val db = "db"
+  override def afterAll(): Unit = {
+    mng.close()
+    io.close()
+    super.afterAll()
+  }
+
+  val db       = "db"
   val measName = "meas"
 
   lazy val influxConf =
@@ -36,22 +38,12 @@ class MeasurementApiSpec
 
     meas.write(singleEntity).get.right.get shouldEqual 204
 
-    meas.read(s"SELECT * FROM $measName")
-      .get
-      .right
-      .get shouldEqual Seq(singleEntity)
+    meas.read(s"SELECT * FROM $measName").get.right.get shouldEqual Seq(singleEntity)
   }
 
   it should "bulk write" in {
     meas.bulkWrite(multiEntitys).get.right.get shouldEqual 204
 
-    meas.read(s"SELECT * FROM $measName")
-      .get
-      .right
-      .get
-      .length shouldEqual 3
-
-    mng.close() shouldEqual {}
-    io.close() shouldEqual {}
+    meas.read(s"SELECT * FROM $measName").get.right.get.length shouldEqual 3
   }
 }

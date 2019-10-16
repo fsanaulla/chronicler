@@ -15,6 +15,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class MeasurementApiSpec extends FlatSpec with Matchers with Futures with DockerizedInfluxDB {
 
+  override def afterAll(): Unit = {
+    mng.close()
+    io.close()
+    super.afterAll()
+  }
+
   val db       = "db"
   val measName = "meas"
 
@@ -40,8 +46,5 @@ class MeasurementApiSpec extends FlatSpec with Matchers with Futures with Docker
     meas.bulkWrite(multiEntitys).futureValue.right.get shouldEqual 204
 
     meas.read(s"SELECT * FROM $measName").futureValue.right.get.length shouldEqual 3
-
-    mng.close() shouldEqual {}
-    io.close() shouldEqual {}
   }
 }

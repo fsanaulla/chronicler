@@ -11,18 +11,19 @@ import org.scalatest.{FlatSpec, Matchers}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 17.08.17
   */
-class AuthenticationSpec
-  extends FlatSpec
-    with Matchers
-    with Futures
-    with DockerizedInfluxDB {
+class AuthenticationSpec extends FlatSpec with Matchers with Futures with DockerizedInfluxDB {
 
-  val userDB = "db"
-  val userName = "some_user"
-  val userPass = "some_user_pass"
+  override def afterAll(): Unit = {
+    influx.close()
+    super.afterAll()
+  }
+
+  val userDB    = "db"
+  val userName  = "some_user"
+  val userPass  = "some_user_pass"
   val userNPass = "some_new_user_pass"
 
-  val admin = "admin"
+  val admin     = "admin"
   val adminPass = "admin"
 
   lazy val influx: UrlManagementClient =
@@ -31,14 +32,14 @@ class AuthenticationSpec
   lazy val authInflux: UrlManagementClient =
     InfluxMng(host = host, port = port, credentials = Some(creds))
 
-  "Authenticated User Management API" should  "create admin user " in {
+  "Authenticated User Management API" should "create admin user " in {
     influx.showUsers.get.left.get shouldBe a[InfluxException]
   }
 
   it should "create database" in {
     authInflux.createDatabase(userDB).get.right.get shouldEqual 200
   }
-  
+
   it should "create user" in {
     authInflux.createUser(userName, userPass).get.right.get shouldEqual 200
     authInflux.showUsers.get.right.get.exists(_.username == userName) shouldEqual true
@@ -63,14 +64,13 @@ class AuthenticationSpec
 
   it should "revoke user privileges" in {
     authInflux.revokePrivileges(userName, userDB, Privileges.READ).get.right.get shouldEqual 200
-    authInflux.showUserPrivileges(userName).get.right.get shouldEqual Array(UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES))
+    authInflux.showUserPrivileges(userName).get.right.get shouldEqual Array(
+      UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES)
+    )
   }
 
   it should "drop user" in {
     authInflux.dropUser(userName).get.right.get shouldEqual 200
     authInflux.dropUser(admin).get.right.get shouldEqual 200
-
-    authInflux.close() shouldEqual {}
-    influx.close() shouldEqual {}
   }
 }

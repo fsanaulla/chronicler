@@ -12,6 +12,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class ShardManagementSpec extends FlatSpec with Matchers with Futures with DockerizedInfluxDB {
 
+  override def afterAll(): Unit = {
+    influx.close()
+    super.afterAll()
+  }
+
   val testDb = "_internal"
 
   lazy val influx: AhcManagementClient =

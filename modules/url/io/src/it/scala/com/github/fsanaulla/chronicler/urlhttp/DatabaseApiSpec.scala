@@ -19,6 +19,12 @@ import org.typelevel.jawn.ast.{JArray, JNum, JString, JValue}
   */
 class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 
+  override def afterAll(): Unit = {
+    mng.close()
+    io.close()
+    super.afterAll()
+  }
+
   import DatabaseApiSpec._
 
   val testDB = "db"
@@ -156,9 +162,6 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 
   it should "validate empty response" in {
     db.readJson("SELECT * FROM test7").get.right.get.length shouldEqual 0
-
-    mng.close() shouldEqual {}
-    io.close() shouldEqual {}
   }
 }
 

@@ -11,6 +11,11 @@ import org.scalatest.{Matchers, WordSpec}
   */
 class ShardManagementSpec extends WordSpec with Matchers with Futures with DockerizedInfluxDB {
 
+  override def afterAll(): Unit = {
+    influx.close()
+    super.afterAll()
+  }
+
   val testDb = "_internal"
 
   lazy val influx: UrlManagementClient =

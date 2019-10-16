@@ -11,18 +11,19 @@ import org.scalatest.{FlatSpec, Matchers}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UserManagementSpec
-  extends FlatSpec
-    with Matchers
-    with Futures
-    with DockerizedInfluxDB {
+class UserManagementSpec extends FlatSpec with Matchers with Futures with DockerizedInfluxDB {
 
-  val userDB = "db"
-  val userName = "Martin"
-  val userPass = "pass"
+  override def afterAll(): Unit = {
+    influx.close()
+    super.afterAll()
+  }
+
+  val userDB    = "db"
+  val userName  = "Martin"
+  val userPass  = "pass"
   val userNPass = "new_pass"
 
-  val admin = "Admin"
+  val admin     = "Admin"
   val adminPass = "admin_pass"
 
   lazy val influx: UrlManagementClient =
@@ -50,14 +51,23 @@ class UserManagementSpec
 
   it should "set privileges" in {
     influx.setPrivileges(userName, userDB, Privileges.READ).get.right.get shouldEqual 200
-    influx.setPrivileges("unknown", userDB, Privileges.READ).get.left.get.getMessage shouldEqual "user not found"
+    influx
+      .setPrivileges("unknown", userDB, Privileges.READ)
+      .get
+      .left
+      .get
+      .getMessage shouldEqual "user not found"
 
-    influx.showUserPrivileges(userName).get.right.get shouldEqual Array(UserPrivilegesInfo(userDB, Privileges.READ))
+    influx.showUserPrivileges(userName).get.right.get shouldEqual Array(
+      UserPrivilegesInfo(userDB, Privileges.READ)
+    )
   }
 
   it should "revoke privileges" in {
     influx.revokePrivileges(userName, userDB, Privileges.READ).get.right.get shouldEqual 200
-    influx.showUserPrivileges(userName).get.right.get shouldEqual Array(UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES))
+    influx.showUserPrivileges(userName).get.right.get shouldEqual Array(
+      UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES)
+    )
   }
 
   it should "disable admin" in {
@@ -73,7 +83,5 @@ class UserManagementSpec
   it should "drop users" in {
     influx.dropUser(userName).get.right.get shouldEqual 200
     influx.dropUser(admin).get.right.get shouldEqual 200
-
-    influx.close() shouldEqual {}
   }
 }
