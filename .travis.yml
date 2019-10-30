@@ -3,8 +3,6 @@ sudo: required
 jdk:
 - openjdk8
 scala:
-- 2.11.12
-- 2.12.8
 - 2.13.1
 services:
 - docker
@@ -14,6 +12,8 @@ cache:
   - "$HOME/.ivy2/cache"
   - "$HOME/.sbt/boot"
   - "$HOME/.m2"
+  - "$HOME/.coursier"
+  - "$HOME/.cache"
 ignore:
 - changelog/*
 - scripts/*
@@ -31,13 +31,11 @@ jobs:
   - stage: release
     script: chmod 777 scripts/release.sh && ./scripts/release.sh
     env: INFLUXDB_VERSION=1.7.3
-    scala: 2.13.1
   - stage: publish
     script:
     - chmod 777 scripts/publish.sh
     - ./scripts/publish.sh
     env: INFLUXDB_VERSION=1.7.3
-    scala: 2.13.1
 stages:
 - name: test
 - name: publish

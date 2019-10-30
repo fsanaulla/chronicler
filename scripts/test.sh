@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-sbt "; ++${TRAVIS_SCALA_VERSION} test; it:test"
+sbt "; + test; + it:test"
