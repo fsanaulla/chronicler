@@ -34,7 +34,7 @@ class GroupedApiSpec
   val dbName                                = "mydb"
 
   lazy val influxConf =
-    InfluxConfig(host, port, credentials = Some(creds), compress = true, None)
+    InfluxConfig(host, port, credentials = Some(creds), compress = false, None)
   lazy val mng: AkkaManagementClient =
     InfluxMng(host, port, credentials = Some(creds))
   lazy val io: AkkaIOClient =
@@ -60,7 +60,7 @@ class GroupedApiSpec
         count <- db.readJson("SELECT * FROM h2o_feet")
       } yield {
         wr.mapRight(_.forall(_ == 204)) shouldEqual Right(true)
-        count.mapRight(_.length > 0) shouldEqual Right(true)
+        count.mapRight(_.length == 15258) shouldEqual Right(true)
       }).futureValue
     }
 
