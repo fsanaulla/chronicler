@@ -1,9 +1,10 @@
-import com.typesafe.sbt.SbtPgp.autoImportImpl.{pgpPassphrase, pgpPublicRing, pgpSecretRing, useGpg}
+import com.jsuereth.sbtpgp.SbtPgp.autoImport._
 import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.headerLicense
 import de.heikoseeberger.sbtheader.License
 import sbt.Keys.{publishArtifact, _}
+import sbt._
 import sbt.librarymanagement.{Configurations, LibraryManagementSyntax}
-import sbt.{config, file, inConfig, url, Def, Defaults, Developer, Opts, ScmInfo}
+import xerial.sbt.Sonatype.autoImport._
 
 /** Basic sbt settings */
 object Settings extends LibraryManagementSyntax {
@@ -42,7 +43,6 @@ object Settings extends LibraryManagementSyntax {
   )
 
   val publish = Seq(
-    useGpg := false,
     scmInfo := Some(
       ScmInfo(
         url("https://github.com/fsanaulla/chronicler"),
@@ -50,12 +50,8 @@ object Settings extends LibraryManagementSyntax {
       )
     ),
     pomIncludeRepository := (_ => false),
-    publishTo := Some(
-      if (isSnapshot.value)
-        Opts.resolver.sonatypeSnapshots
-      else
-        Opts.resolver.sonatypeStaging
-    ),
+    publishTo := sonatypePublishToBundle.value,
+    sonatypeBundleDirectory := (ThisBuild / baseDirectory).value / "target" / "sonatype-staging" / s"${version.value}",
     publishArtifact in Test := false,
     pgpPublicRing := file("pubring.asc"),
     pgpSecretRing := file("secring.asc"),

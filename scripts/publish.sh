@@ -1,0 +1,1 @@
+sbt "; + publishSigned; sonatypeBundleRelease"
