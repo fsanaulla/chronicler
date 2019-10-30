@@ -7,7 +7,7 @@ import com.github.fsanaulla.chronicler.core.model.{InfluxReader, InfluxWriter, P
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import org.scalatest.concurrent.{Eventually, IntegrationPatience}
-import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers, TryValues}
+import org.scalatest._
 import org.testcontainers.containers.DockerComposeContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.typelevel.jawn.ast.{JArray, JNum, JString}
@@ -17,6 +17,7 @@ import org.typelevel.jawn.ast.{JArray, JNum, JString}
   * Author: fayaz.sanaulla@gmail.comØ
   * Date: 24.02.18
   */
+@Ignore
 class UdpClientSpec
   extends FlatSpec
   with Matchers
