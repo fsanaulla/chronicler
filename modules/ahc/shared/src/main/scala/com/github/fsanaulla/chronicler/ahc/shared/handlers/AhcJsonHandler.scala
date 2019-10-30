@@ -28,7 +28,7 @@ import org.typelevel.jawn.ast.{JParser, JValue}
 
 import scala.collection.JavaConverters._
 
-private[ahc] final class AhcJsonHandler(compress: Boolean) extends JsonHandler[Id, Response] {
+private[ahc] final class AhcJsonHandler extends JsonHandler[Id, Response] {
 
   /***
     * Extract response body

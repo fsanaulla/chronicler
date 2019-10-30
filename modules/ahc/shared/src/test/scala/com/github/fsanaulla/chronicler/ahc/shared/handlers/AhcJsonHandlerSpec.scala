@@ -33,7 +33,7 @@ import org.typelevel.jawn.ast._
   */
 class AhcJsonHandlerSpec extends WordSpec with Matchers with ScalaFutures with OptionValues {
 
-  val jsonHandler = new AhcJsonHandler(compress = false)
+  val jsonHandler = new AhcJsonHandler
 
   def buildResponse(bts: Array[Byte]): Response = {
     val b = new Response.ResponseBuilder()

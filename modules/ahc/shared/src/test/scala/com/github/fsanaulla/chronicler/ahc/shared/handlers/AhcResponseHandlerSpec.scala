@@ -40,7 +40,7 @@ import scala.concurrent.duration._
   */
 class AhcResponseHandlerSpec extends FlatSpec with Matchers with ScalaFutures {
 
-  val jsonHandler                 = new AhcJsonHandler(compress = false)
+  val jsonHandler                 = new AhcJsonHandler
   implicit val pc: PatienceConfig = PatienceConfig(Span(20, Seconds), Span(1, Second))
 
   implicit val ex: ExecutionContext = ExecutionContext.Implicits.global
