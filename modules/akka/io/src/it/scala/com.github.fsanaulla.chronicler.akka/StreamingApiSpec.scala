@@ -36,6 +36,7 @@ class StreamingApiSpec
   override def afterAll(): Unit = {
     mng.close()
     io.close()
+    mat.shutdown()
     TestKit.shutdownActorSystem(system)
     super.afterAll()
   }
