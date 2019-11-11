@@ -7,7 +7,7 @@ Chronicler is a open-source library that provide toolchain for [InfluxDB](https:
 [![Join the chat at https://gitter.im/chronicler/Lobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/chronicler-scala/Lobby/?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # Features
-- Multiple backend
+- Multiple backend(see [modules]($modules))
 - Flexible API
 - Code generation with macros
 - High modularity
@@ -15,6 +15,9 @@ Chronicler is a open-source library that provide toolchain for [InfluxDB](https:
 - Data compression
 - Spark support (located [here](https://github.com/fsanaulla/chronicler-spark))
 - Kafka sink (in-progress)
+
+# Modules
+TBD
 
 # Getting started
 Chronicler is currently available for Scala 2.11, 2.12, 2.13.0. Add the following to your `build.sbt`:
