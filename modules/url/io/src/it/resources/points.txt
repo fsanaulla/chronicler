@@ -1,3 +1,0 @@
-test1,host=server02 value=0.67
-test1,host=server02,region=us-west value=0.55 1422568543702900257
-test1,direction=in,host=server01,region=us-west value=2.0 1422568543702900257
