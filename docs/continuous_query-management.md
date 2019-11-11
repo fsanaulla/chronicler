@@ -5,7 +5,7 @@ To create Continuously Query(further CQ). Where query params look's like `SELECT
 influx.createCQ("dbName", "cqName", "query")
 res0: Future[Result]
 ```
-Droping Continuously Query:
+Dropping Continuously Query:
 ```
 influx.dropCQ("dbName", "cqName")
 res0: Future[Result]

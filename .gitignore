@@ -2,6 +2,7 @@
 /.idea
 target
 /project/project
+.DS_Store
 
 # WebPage section
 .sass-cache/

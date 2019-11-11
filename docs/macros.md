@@ -1,39 +1,67 @@
 # Macros
-This module it's optional extension to simplify code generation, in case of `InfluxReader[T]`, `InfluxWriter[T]`, `InfluxFormatter[T]`.
+This module it's optional extension to automatically generation of `InfluxReader[T]`, `InfluxWriter[T]`.
 
-## Installation
-To use it, add to your `build.sbt`:
+## Quick start
+Add to your `build.sbt`:
 ```
 libraryDependencies += "com.github.fsanaulla" %% "chronicler-macros" % <version>
 ```
-## Usage
-Feel the power of Macros.
-Let's start from reader example:
+Annotate your case class:
 ```
-case class Entity(@tag name: String, @field age: Int)
+final case class Test(@escape @tag name: String, @field age: Int, @timestamp time: Long)
+```
+Generate your writer/reader manually:
+```
+implicit val wr: InfluxWriter[Test] = Influx.writer[Test]
+implicit val rd: InfluxReader[Test] = Influx.reader[Test]
+```
+or 
+```
+import com.github.fsanaulla.chronicler.macros.auto._
+```
+# Glossary of terms
+## Tag
+All [tag](https://docs.influxdata.com/influxdb/v1.7/concepts/glossary/#tag)'s field must be marked with `@tag`. 
 
-// that's all, after compilation, at this place will apper valid InfluxReader[T]
-implicit val rd: InfluxReader[Entity] = Macros.reader[Entity]
+Supported types: 
+- **`String`** 
+- **`Option[String]`**
 
-// it's required for using type method, such
-```
-For writer it's little bit differ, because you need specify [tag](https://docs.influxdata.com/influxdb/v1.5/concepts/key_concepts/#tag-key) and [field](https://docs.influxdata.com/influxdb/v1.5/concepts/key_concepts/#field-value). It can be done by simply annotating:
-```
-case class Entity(@tag name: String, @field age: Int)
+Can be combined with additional `@escape` annotation for escaping [special character](https://docs.influxdata.com/influxdb/v1.7/write_protocols/line_protocol_tutorial/#special-characters-and-keywords).
 
-// that's all, after compilation, at this place will apper valid InfluxWriter[T]
-implicit val wr: InfluxWriter[Entity] = Macros.writer[Entity]
+## Field
+All [field](https://docs.influxdata.com/influxdb/v1.7/concepts/glossary/#field)'s must be market with `@field` annotation. It can't be optional.
 
-// it's required for using type method, such
-meas.write[Entity](Entity("Martin", 54)
-```
-You can add both of them in the scope by using:
-```
-implicit val fmt = Macros.format[Entity]
+Supported types: 
+- **`Int`**
+- **`Long`**
+- **`Double`**
+- **`Boolean`**
+- **`String`**
 
-meas.write[Entity](Entity("Martin", 54)
-db.read[Entity]("SELECT * FROM some_meas")
-```
-In short it's look like:
-1. Mark tags(`@tag`) and fields(`@field`).
-2. Generate reader/writer/formatter.
+## Timestamp
+It has different behavior for `InfluxReader[_]` and `InfluxWriter[_]`.
+
+For `InfluxReader[_]` there are four options:
+
+- you expect to receive timestamp in [epoch](https://en.wikipedia.org/wiki/Unix_time) format, then use `@epoch` + `@timestamp`. 
+Then the field type should be **`Long`**. For example when you specify precision in query. 
+  
+  **Remember**: InfluxDB uses nano precision by default.
+- you expect to receive timestamp in [utc](https://www.ietf.org/rfc/rfc3339.txt) format, then use `@utc` + `@timestamp`.
+Then field type  should be **`String`**.
+- if you expect to receive time to time epoch time to time utc timestamp, then use only `@timestamp`. 
+Supported field type: **`String`**, **`Long`**
+- if you won't receive timestamp, then not use any annotations at all.
+
+Additional annotations will speed up your `InfluxReader[_]`.
+
+For `InfluxWriter[_]` there are two options:
+- if you want to pass custom timestamp mark related field with `@timestamp`, supported type: **`Long`**.
+- if you don't care about timestamp, not use annotation then. 
+
+## Escape
+Special character should be [escaped](https://docs.influxdata.com/influxdb/v1.7/write_protocols/line_protocol_tutorial/#special-characters).
+If you want to enable escaping on the field mark it with `@escape` annotation.
+Rules: 
+- if applied on `@tag` field, it will automatically escape tag key and tag value.
