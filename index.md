@@ -1,5 +1,3 @@
-<div align="center">
-
 # Overview
 Chronicler is a open-source library that provide toolchain for [InfluxDB](https://www.influxdata.com/) for [Scala programming language](https://www.scala-lang.org/).
 
@@ -7,7 +5,6 @@ Chronicler is a open-source library that provide toolchain for [InfluxDB](https:
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/19207668eaf6496485a66d2e2c7701c1)](https://www.codacy.com/app/fsanaulla/chronicler?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=fsanaulla/chronicler&amp;utm_campaign=Badge_Grade)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.fsanaulla/chronicler-core-shared_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.fsanaulla/chronicler-core-shared_2.11)
 [![Join the chat at https://gitter.im/chronicler/Lobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/chronicler-scala/Lobby/?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-</div>
 
 # Features
 - Multiple backend
