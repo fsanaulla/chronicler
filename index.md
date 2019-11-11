@@ -17,12 +17,39 @@ Chronicler is a open-source library that provide toolchain for [InfluxDB](https:
 - Kafka sink (in-progress)
 
 # Modules
-TBD
+There are several modules. We can split them into three group:
+- http
+- udp
+- utils
+
+## Http
+There are several backend-specific modules:
+- akka, based on [akka-http](https://github.com/akka/akka-http)
+- async-http-client, based on [this](https://github.com/AsyncHttpClient/async-http-client)
+- java url-connection, based on standard java IO api
+
+They in turn can be divided by functionality into: 
+- IO operations, like `read`, `write`
+- Management operation, like `createUser`, `revokeUser`
+
+So final module list looks like:
+- `chronicler-akka-io`
+- `chronicler-akka-management`
+- `chronicler-ahc-io`
+- `chronicler-ahc-management`
+- `chronicler-url-io`
+- `chronicler-url-management`
+
+## Udp
+Writing using UDP protocol support located in `chronicler-udp`.
+
+## Utils
+Automatic derivation of `InfluxReader[_]` and `InfluxWriter[_]` located in `chronicler-macros`.
 
 # Getting started
 Chronicler is currently available for Scala 2.11, 2.12, 2.13.0. Add the following to your `build.sbt`:
 ```
-libraryDependencies += "com.github.fsanaulla" %% "chronicler-akka-io" % <version>
+libraryDependencies += "com.github.fsanaulla" %% <module-name> % <version>
 ``` 
 
 
