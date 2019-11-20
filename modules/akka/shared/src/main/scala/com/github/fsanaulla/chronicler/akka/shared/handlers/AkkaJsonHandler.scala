@@ -18,6 +18,7 @@ package com.github.fsanaulla.chronicler.akka.shared.handlers
 
 import akka.http.scaladsl.model.HttpResponse
 import akka.stream.ActorMaterializer
+import akka.stream.scaladsl.Sink
 import com.github.fsanaulla.chronicler.akka.shared.implicits.futureFunctor
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.components.JsonHandler
@@ -39,4 +40,9 @@ final class AkkaJsonHandler(
 
   override def responseCode(response: HttpResponse): Int =
     response.status.intValue()
+
+  override def emptyResponse[A](response: => HttpResponse, result: A): Future[A] =
+    response.entity.dataBytes
+      .runWith(Sink.ignore)
+      .map(_ => result)
 }

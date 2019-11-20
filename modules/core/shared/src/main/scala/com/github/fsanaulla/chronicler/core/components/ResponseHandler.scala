@@ -59,8 +59,8 @@ class ResponseHandler[G[_], R](
             err.fold[ErrorOr[ResponseCode]](Right(code))(str => Left(InfluxException(code, str)))
           }
         }
-      case 204 =>
-        A.pure(Right(204))
+      case cd @ 204 =>
+        jsonHandler.emptyResponse(response, Right(cd))
       case _ =>
         F.map(errorHandler(response))(Left(_))
     }

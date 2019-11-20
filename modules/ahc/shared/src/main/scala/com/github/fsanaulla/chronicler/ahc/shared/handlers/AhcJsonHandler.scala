@@ -36,7 +36,7 @@ private[ahc] final class AhcJsonHandler extends JsonHandler[Id, Response] {
     * @see - [https://groups.google.com/forum/#!searchin/asynchttpclient/compression%7Csort:date/asynchttpclient/TAq33OWXeKU/sBm3v4EWAwAJ],
     *        netty automatically decompress gzipped request
     */
-  def responseBody(response: Response): ErrorOr[JValue] = {
+  override def responseBody(response: Response): ErrorOr[JValue] = {
     val bodyBts = response.getResponseBodyAsBytes
     val encoding: Charset = Option(response.getContentType)
       .flatMap(encodingFromContentType)
@@ -48,13 +48,15 @@ private[ahc] final class AhcJsonHandler extends JsonHandler[Id, Response] {
     JParser.parseFromStringEither(bodyStr)
   }
 
-  def responseHeader(response: Response): List[(String, String)] =
+  override def responseHeader(response: Response): List[(String, String)] =
     response.getHeaders
       .entries()
       .asScala
       .toList
       .map(e => e.getKey -> e.getValue)
 
-  def responseCode(response: Response): Int =
+  override def responseCode(response: Response): Int =
     response.getStatusCode
+
+  override def emptyResponse[A](response: => Response, result: A): Id[A] = result
 }

@@ -21,12 +21,7 @@ import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.headers.{buildHeader, versionHeader}
 import com.github.fsanaulla.chronicler.core.jawn._
-import com.github.fsanaulla.chronicler.core.model.{
-  Functor,
-  InfluxDBInfo,
-  InfluxReader,
-  ParsingException
-}
+import com.github.fsanaulla.chronicler.core.model.{Functor, InfluxDBInfo, InfluxReader, ParsingException}
 import org.typelevel.jawn.ast.{JArray, JValue}
 
 import scala.reflect.ClassTag
@@ -55,6 +50,8 @@ abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
     * @param response   - HTTP response
     */
   def responseBody(response: R): F[ErrorOr[JValue]]
+
+  def emptyResponse[A](response: => R, result: A): F[A]
 
   /***
     * Used to extract database info from ping response

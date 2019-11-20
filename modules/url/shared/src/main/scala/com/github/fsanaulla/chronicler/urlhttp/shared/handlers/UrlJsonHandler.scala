@@ -27,12 +27,6 @@ import org.typelevel.jawn.ast.{JParser, JValue}
 import requests.Response
 
 final class UrlJsonHandler(compressed: Boolean) extends JsonHandler[Id, Response] {
-//  private[this] def body(response: Response): Either[Throwable, JValue] = {
-//    val bts  = response.contents
-//    val data = if (compressed) gzip.decompress(bts) else bts
-//    JParser.parseFromByteBufferEither(ByteBuffer.wrap(data))
-//  }
-
   override def responseBody(response: Response): ErrorOr[JValue] = {
     val bts  = response.contents
     val data = if (compressed) gzip.decompress(bts) else bts
@@ -44,4 +38,6 @@ final class UrlJsonHandler(compressed: Boolean) extends JsonHandler[Id, Response
 
   override def responseCode(response: Response): Int =
     response.statusCode
+
+  override def emptyResponse[A](response: => Response, result: A): A = result
 }

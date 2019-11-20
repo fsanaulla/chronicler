@@ -41,6 +41,7 @@ class GroupedApiSpec
     InfluxIO(influxConf)
 
   "Grouped Api" should {
+
     "prepare data for testing" in {
       (for {
         _ <- mng.createDatabase(dbName)
