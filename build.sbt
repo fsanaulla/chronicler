@@ -6,7 +6,7 @@ lazy val chronicler = project
   .settings(Settings.common: _*)
   .settings(Settings.publish: _*)
   .settings(skip in publish := true)
-  .settings(parallelExecution in Compile := false)
+  .settings(parallelExecution in IntegrationTest := false)
   .aggregate(
     coreIO,
     coreManagement,
