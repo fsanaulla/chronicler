@@ -17,7 +17,6 @@ import org.typelevel.jawn.ast.{JArray, JNum, JString}
   * Author: fayaz.sanaulla@gmail.comØ
   * Date: 24.02.18
   */
-@Ignore
 class UdpClientSpec
   extends FlatSpec
   with Matchers
@@ -43,13 +42,16 @@ class UdpClientSpec
   }
 
   override def beforeAll(): Unit = {
-    super.beforeAll()
     container.start()
+    super.beforeAll()
   }
 
   override def afterAll(): Unit = {
-    super.afterAll()
+    influxHttpIO.close()
+    influxHttpMng.close()
+    influxUdp.close()
     container.stop()
+    super.afterAll()
   }
 
   val udpPort = 8089
