@@ -97,7 +97,5 @@ class UserManagementSpec
   it should "drop users" in {
     influx.dropUser(userName).futureValue.right.get shouldEqual 200
     influx.dropUser(admin).futureValue.right.get shouldEqual 200
-
-    influx.close() shouldEqual {}
   }
 }

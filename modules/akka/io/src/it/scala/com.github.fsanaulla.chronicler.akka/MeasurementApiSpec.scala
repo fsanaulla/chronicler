@@ -55,8 +55,5 @@ class MeasurementApiSpec
     meas.bulkWrite(multiEntitys).futureValue.right.get shouldEqual 204
 
     meas.read(s"SELECT * FROM $measName").futureValue.right.get.length shouldEqual 3
-
-    mng.close() shouldEqual {}
-    io.close() shouldEqual {}
   }
 }

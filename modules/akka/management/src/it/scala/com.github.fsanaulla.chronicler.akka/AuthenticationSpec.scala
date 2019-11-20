@@ -91,8 +91,5 @@ class AuthenticationSpec
   it should "drop user" in {
     authInflux.dropUser(userName).futureValue.right.get shouldEqual 200
     authInflux.dropUser(admin).futureValue.right.get shouldEqual 200
-
-    authInflux.close() shouldEqual {}
-    influx.close() shouldEqual {}
   }
 }

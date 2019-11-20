@@ -79,7 +79,5 @@ class SubscriptionManagementSpec
     influx.dropRetentionPolicy(rpName, dbName).futureValue.right.get shouldEqual 200
 
     influx.dropDatabase(dbName).futureValue.right.get shouldEqual 200
-
-    influx.close() shouldEqual {}
   }
 }
