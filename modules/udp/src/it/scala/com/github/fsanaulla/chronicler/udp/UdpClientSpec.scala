@@ -6,8 +6,8 @@ import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.model.{InfluxReader, InfluxWriter, Point}
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
-import org.scalatest.concurrent.{Eventually, IntegrationPatience}
 import org.scalatest._
+import org.scalatest.concurrent.{Eventually, IntegrationPatience}
 import org.testcontainers.containers.DockerComposeContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.typelevel.jawn.ast.{JArray, JNum, JString}
@@ -31,7 +31,7 @@ class UdpClientSpec
   val service     = "influxdb"
   val servicePort = 8086
 
-  val container: DockerComposeContainer[Nothing] = {
+  lazy val container: DockerComposeContainer[Nothing] = {
     val cont = new DockerComposeContainer(
       new File(getClass.getResource("/docker-compose.yml").getPath)
     )
