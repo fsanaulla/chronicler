@@ -35,7 +35,7 @@ object Library {
   val testingDeps: List[ModuleID] = List(
     scalaTest,
     "org.jetbrains"      % "annotations" % "16.0.3",
-    "org.testcontainers" % "influxdb"    % "1.12.1" exclude ("org.jetbrains", "annotations") exclude ("org.slf4j", "slf4j-api"),
+    "org.testcontainers" % "influxdb"    % "1.12.3" exclude ("org.jetbrains", "annotations") exclude ("org.slf4j", "slf4j-api"),
     "org.slf4j"          % "slf4j-api"   % "1.7.25"
   )
 

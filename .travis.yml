@@ -1,50 +1,54 @@
 language: scala
 sudo: required
 jdk:
-- openjdk8
+  - openjdk8
 scala:
-- 2.13.1
+  - 2.13.1
 services:
-- docker
+  - docker
 script: "./scripts/test.sh"
 cache:
   directories:
-  - "$HOME/.ivy2/cache"
-  - "$HOME/.sbt/boot"
-  - "$HOME/.m2"
-  - "$HOME/.coursier"
-  - "$HOME/.cache"
+    - "$HOME/.ivy2/cache"
+    - "$HOME/.sbt/boot"
+    - "$HOME/.m2"
+    - "$HOME/.coursier"
+    - "$HOME/.cache"
 ignore:
-- changelog/*
-- scripts/*
-- benchmark/*
-- examples/*
-- docs/*
+  - changelog/*
+  - scripts/*
+  - benchmark/*
+  - examples/*
+  - docs/*
 before_install:
-- |
-  if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
-    openssl aes-256-cbc -K $encrypted_aaa7ed714ca2_key -iv $encrypted_aaa7ed714ca2_iv -in secrets.tar.enc -out secrets.tar -d
-    tar xvf secrets.tar
-  fi
+  - |
+    if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
+      openssl aes-256-cbc -K $encrypted_aaa7ed714ca2_key -iv $encrypted_aaa7ed714ca2_iv -in secrets.tar.enc -out secrets.tar -d
+      tar xvf secrets.tar
+    fi
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/1.25/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
 jobs:
   include:
-  - stage: release
-    script: chmod 777 scripts/release.sh && ./scripts/release.sh
-    env: INFLUXDB_VERSION=1.7.3
-  - stage: publish
-    script:
-    - chmod 777 scripts/publish.sh
-    - ./scripts/publish.sh
-    env: INFLUXDB_VERSION=1.7.3
+    - stage: release
+      script: chmod 777 scripts/release.sh && ./scripts/release.sh
+      env: INFLUXDB_VERSION=1.7.3
+    - stage: publish
+      script:
+        - chmod 777 scripts/publish.sh
+        - ./scripts/publish.sh
+      env: INFLUXDB_VERSION=1.7.3
 stages:
-- name: test
-- name: publish
-  if: branch = master AND type != pull_request
-- name: release
-  if: branch = master AND type != pull_request
+  - name: test
+  - name: publish
+    if: branch = master AND type != pull_request
+  - name: release
+    if: branch = master AND type != pull_request
 env:
   matrix:
-  - INFLUXDB_VERSION=1.4.3
-  - INFLUXDB_VERSION=1.5.3
-  - INFLUXDB_VERSION=1.6.5
-  - INFLUXDB_VERSION=1.7.3
+    - INFLUXDB_VERSION=1.4.3
+    - INFLUXDB_VERSION=1.5.3
+    - INFLUXDB_VERSION=1.6.5
+    - INFLUXDB_VERSION=1.7.3
