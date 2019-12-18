@@ -49,7 +49,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
   private[this] val tagsTypes =
     Seq(getType[Option[String]], getType[String])
   private[this] val fieldTypes =
-    Seq(getType[Boolean], getType[Int], getType[Double], getType[String], getType[Float])
+    Seq(getType[Boolean], getType[Int], getType[Double], getType[String], getType[Float], getType[Long])
 
   private[this] def illegalArgExc(name: String): c.universe.Tree = {
     val msg = s"Tag value can 't be empty string for tag: $name"
@@ -302,7 +302,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
       }
     }
 
-    final class IntField(val key: Name, val value: Tree) extends Field {
+    final class IntOrLongField(val key: Name, val value: Tree) extends Field {
       override def unquoted(head: Boolean): c.universe.Tree = {
         val str =
           if (head)
@@ -341,7 +341,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     def isOption(tpe: c.universe.Type): Boolean =
       tpe.typeConstructor =:= typeOf[Option[_]].typeConstructor
     def isString(tpe: c.universe.Type): Boolean = tpe =:= string
-    def isInt(tpe: c.universe.Type): Boolean    = tpe =:= int
+    def isIntOrLong(tpe: c.universe.Type): Boolean = tpe =:= int || tpe =:= long
 
     /** Is it valid tag type */
     def isTagType(tpe: c.universe.Type): Boolean =
@@ -424,8 +424,8 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     val fields: List[Field] = fieldMethods map {
       case m: MethodSymbol if isString(m.returnType) =>
         new StringField(m.name, q"obj.${m.name}")
-      case m: MethodSymbol if isInt(m.returnType) =>
-        new IntField(m.name, q"obj.${m.name}")
+      case m: MethodSymbol if isIntOrLong(m.returnType) =>
+        new IntOrLongField(m.name, q"obj.${m.name}")
       case m: MethodSymbol =>
         new OtherField(m.name, q"obj.${m.name}")
     }
