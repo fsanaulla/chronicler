@@ -20,8 +20,8 @@ lazy val chronicler = project
     urlIO,
     urlManagement,
     urlShared,
-    macros,
-    udp
+    macros/*,
+    udp*/
   )
 
 //////////////////////////////////////////////////////
