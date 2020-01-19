@@ -239,7 +239,7 @@ def defaultSettings: Project => Project =
   _.settings(Settings.common: _*)
     .settings(Settings.publish: _*)
     .settings(Settings.header)
-    .enablePlugins(AutomateHeaderPlugin, ScalafmtPlugin)
+    .enablePlugins(AutomateHeaderPlugin)
 
 def defaultSettingsWithIt: Project => Project =
   _.configs(Settings.CompileTimeIntegrationTest)
