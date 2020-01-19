@@ -33,10 +33,9 @@ object InfluxMng {
   def apply(
       host: String,
       port: Int = 8086,
-      credentials: Option[InfluxCredentials] = None,
-      ssl: Boolean = false
+      credentials: Option[InfluxCredentials] = None
     ): UrlManagementClient =
-    new UrlManagementClient(host, port, credentials, ssl)
+    new UrlManagementClient(host, port, credentials)
 
   /**
     * Retrieve management InfluxDB client, without IO functionality using [[InfluxConfig]]
@@ -45,5 +44,5 @@ object InfluxMng {
     * @return     - [[UrlManagementClient]]
     */
   def apply(conf: InfluxConfig): UrlManagementClient =
-    apply(conf.host, conf.port, conf.credentials, conf.ssl)
+    apply(conf.host, conf.port, conf.credentials)
 }

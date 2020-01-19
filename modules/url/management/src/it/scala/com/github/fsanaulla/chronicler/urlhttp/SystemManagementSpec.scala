@@ -17,7 +17,7 @@ class SystemManagementSpec extends FlatSpec with Matchers with Futures with Dock
   }
 
   lazy val influx: UrlManagementClient =
-    InfluxMng(host, port, Some(creds))
+    InfluxMng(s"http://$host", port, Some(creds))
 
   "System Management API" should "ping InfluxDB" in {
     val result = influx.ping.get.right.get

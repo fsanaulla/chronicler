@@ -27,7 +27,7 @@ class UserManagementSpec extends FlatSpec with Matchers with Futures with Docker
   val adminPass = "admin_pass"
 
   lazy val influx: UrlManagementClient =
-    InfluxMng(host, port, Some(creds))
+    InfluxMng(s"http://$host", port, Some(creds))
 
   "User Management API" should "create user" in {
     influx.createDatabase(userDB).get.right.get shouldEqual 200

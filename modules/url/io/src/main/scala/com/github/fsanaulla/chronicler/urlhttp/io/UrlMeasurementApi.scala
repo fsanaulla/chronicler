@@ -61,9 +61,9 @@ class UrlMeasurementApi[T: ClassTag](
       pretty: Boolean = false,
       chunkSize: Int = 10000
     )(implicit rd: InfluxReader[T]
-    ): Iterator[ErrorOr[Array[T]]] = {
+    ): Try[Iterator[ErrorOr[Array[T]]]] = {
     val uri = chunkedQuery(dbName, query, epoch, pretty, chunkSize)
     re.getStream(uri)
-      .map(_.flatMapRight(arr => either.array[Throwable, T](arr.map(rd.read))))
+      .map(_.map(_.flatMapRight(arr => either.array[Throwable, T](arr.map(rd.read)))))
   }
 }

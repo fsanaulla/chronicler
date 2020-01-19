@@ -24,10 +24,10 @@ class CompressionSpec
   val testDB = "db"
 
   lazy val mng: UrlManagementClient =
-    InfluxMng(host, port, Some(creds))
+    InfluxMng(s"http://$host", port, Some(creds))
 
   lazy val io: UrlIOClient =
-    InfluxIO(host, port, Some(creds), compress = true)
+    InfluxIO(s"http://$host", port, Some(creds), compress = true)
 
   lazy val db: io.Database = io.database(testDB)
 

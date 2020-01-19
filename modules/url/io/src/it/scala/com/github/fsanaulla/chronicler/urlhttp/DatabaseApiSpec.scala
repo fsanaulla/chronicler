@@ -30,10 +30,10 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
   val testDB = "db"
 
   lazy val influxConf =
-    InfluxConfig(host, port, credentials = Some(creds))
+    InfluxConfig(s"http://$host", port, Some(creds))
 
   lazy val mng: UrlManagementClient =
-    InfluxMng(host, port, credentials = Some(creds))
+    InfluxMng(influxConf)
 
   lazy val io: UrlIOClient =
     InfluxIO(influxConf)
