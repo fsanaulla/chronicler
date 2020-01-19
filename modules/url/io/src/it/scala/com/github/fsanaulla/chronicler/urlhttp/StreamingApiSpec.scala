@@ -9,18 +9,14 @@ import com.github.fsanaulla.chronicler.macros.annotations.reader.epoch
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.urlhttp.StreamingApiSpec._
-import com.github.fsanaulla.chronicler.urlhttp.io.{
-  InfluxIO,
-  UrlDatabaseApi,
-  UrlIOClient,
-  UrlMeasurementApi
-}
+import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlDatabaseApi, UrlIOClient, UrlMeasurementApi}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
 import org.scalatest.{FlatSpec, Matchers}
 import org.typelevel.jawn.ast.JValue
 
 import scala.collection.mutable.ArrayBuffer
+import scala.util.Success
 
 class StreamingApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 
@@ -33,8 +29,8 @@ class StreamingApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
   val testDB   = "db"
   val measName = "test1"
 
-  lazy val influxConf =
-    InfluxConfig(host, port, credentials = Some(creds))
+  lazy val influxConf: InfluxConfig =
+    InfluxConfig(s"http://$host", port, Some(creds))
 
   lazy val mng: UrlManagementClient =
     InfluxMng(influxConf)
@@ -55,7 +51,7 @@ class StreamingApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 
     val arr = new ArrayBuffer[JValue](3)
 
-    val iter = db.readChunkedJson(s"SELECT * FROM $measName", chunkSize = 2)
+    val Success(iter) = db.readChunkedJson(s"SELECT * FROM $measName", chunkSize = 2)
 
     while (iter.hasNext) {
       val nxt = iter.next()
@@ -73,7 +69,7 @@ class StreamingApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 
     val arr = new ArrayBuffer[Point](3)
 
-    val iterator = meas.readChunked(
+    val Success(iterator) = meas.readChunked(
       s"SELECT * FROM $measName",
       epoch = Epochs.Milliseconds,
       chunkSize = 3
@@ -96,7 +92,7 @@ class StreamingApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
   it should "read chunked json as one batch" in {
     val arr = new ArrayBuffer[JValue](3)
 
-    val iter = db.readChunkedJson(s"SELECT * FROM $measName")
+    val Success(iter) = db.readChunkedJson(s"SELECT * FROM $measName")
 
     val nxt = iter.next()
     nxt match {

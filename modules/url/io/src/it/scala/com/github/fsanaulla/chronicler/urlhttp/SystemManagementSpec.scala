@@ -16,7 +16,7 @@ class SystemManagementSpec extends FlatSpec with Matchers with DockerizedInfluxD
     super.afterAll()
   }
 
-  lazy val influx: UrlIOClient = InfluxIO(host, port, Some(creds))
+  lazy val influx: UrlIOClient = InfluxIO(s"http://$host", port, Some(creds))
 
   it should "ping InfluxDB" in {
     val result = influx.ping.get.right.get

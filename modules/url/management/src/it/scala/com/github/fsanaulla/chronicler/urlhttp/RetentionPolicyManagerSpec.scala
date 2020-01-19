@@ -25,7 +25,7 @@ class RetentionPolicyManagerSpec
   val rpDB = "db"
 
   lazy val influx: UrlManagementClient =
-    InfluxMng(host, port, Some(creds))
+    InfluxMng(s"http://$host", port, Some(creds))
 
   "Retention policy API" should "create retention policy" in {
     influx.createDatabase(rpDB).get.right.get shouldEqual 200

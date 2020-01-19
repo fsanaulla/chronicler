@@ -16,13 +16,12 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared
 
-final case class Url(
-    url: String,
-    params: List[(String, String)] = Nil,
-    ssl: Boolean) {
+import java.net.URI
 
-  def make: String = {
-    val protocol = if (ssl) "https" else "http"
-    protocol + "://" + url
-  }
+import scala.util.Try
+
+final case class Url(uri: String, params: List[(String, String)] = Nil) {
+
+  def make: Try[String] =
+    Try(URI.create(uri).toURL.toString)
 }

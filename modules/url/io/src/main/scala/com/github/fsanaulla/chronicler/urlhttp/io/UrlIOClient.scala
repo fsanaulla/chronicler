@@ -22,11 +22,7 @@ import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.implicits.{applyId, functorId}
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
 import com.github.fsanaulla.chronicler.urlhttp.shared.Url
-import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{
-  UrlJsonHandler,
-  UrlQueryBuilder,
-  UrlRequestExecutor
-}
+import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlJsonHandler, UrlQueryBuilder, UrlRequestExecutor}
 import com.github.fsanaulla.chronicler.urlhttp.shared.implicits._
 import requests.Response
 
@@ -37,13 +33,12 @@ final class UrlIOClient(
     host: String,
     port: Int,
     credentials: Option[InfluxCredentials],
-    compress: Boolean,
-    ssl: Boolean)
+    compress: Boolean)
   extends IOClient[Try, Id, Response, Url, String] {
 
   val jsonHandler                                = new UrlJsonHandler(compress)
-  implicit val qb: UrlQueryBuilder               = new UrlQueryBuilder(host, port, credentials, ssl)
-  implicit val re: UrlRequestExecutor            = new UrlRequestExecutor(ssl, jsonHandler)
+  implicit val qb: UrlQueryBuilder               = new UrlQueryBuilder(host, port, credentials)
+  implicit val re: UrlRequestExecutor            = new UrlRequestExecutor(jsonHandler)
   implicit val rh: ResponseHandler[Id, Response] = new ResponseHandler(jsonHandler)
 
   override def database(dbName: String): UrlDatabaseApi =
