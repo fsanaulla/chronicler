@@ -23,14 +23,13 @@ import com.github.fsanaulla.chronicler.urlhttp.shared.Url
 private[urlhttp] class UrlQueryBuilder(
     host: String,
     port: Int,
-    credentials: Option[InfluxCredentials],
-    ssl: Boolean)
+    credentials: Option[InfluxCredentials])
   extends QueryBuilder[Url](credentials) {
 
   override def buildQuery(url: String): Url =
-    Url(host + ":" + port + url, ssl = ssl)
+    Url(host + ":" + port + url)
 
   // used as a stub class to collect all request information
   override def buildQuery(uri: String, queryParams: List[(String, String)]): Url =
-    Url(host + ":" + port + uri, queryParams, ssl)
+    Url(host + ":" + port + uri, queryParams)
 }

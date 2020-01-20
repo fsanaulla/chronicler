@@ -35,7 +35,7 @@ class SubscriptionManagementSpec
   val duration: String = 1.hours + 30.minutes
 
   lazy val influx: UrlManagementClient =
-    InfluxMng(host, port, Some(creds))
+    InfluxMng(s"http://$host", port, Some(creds))
 
   "Subscription API" should "create subscription" in {
 

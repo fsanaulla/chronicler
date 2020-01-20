@@ -26,11 +26,12 @@ class AuthenticationSpec extends FlatSpec with Matchers with Futures with Docker
   val admin     = "admin"
   val adminPass = "admin"
 
-  lazy val influx: UrlManagementClient =
-    InfluxMng(host, port)
+  lazy val influx: UrlManagementClient = {
+    InfluxMng(s"http://$host", port)
+  }
 
   lazy val authInflux: UrlManagementClient =
-    InfluxMng(host = host, port = port, credentials = Some(creds))
+    InfluxMng(s"http://$host", port, Some(creds))
 
   "Authenticated User Management API" should "create admin user " in {
     influx.showUsers.get.left.get shouldBe a[InfluxException]

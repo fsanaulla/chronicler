@@ -35,10 +35,9 @@ object InfluxIO {
       host: String,
       port: Int = 8086,
       credentials: Option[InfluxCredentials] = None,
-      compress: Boolean = false,
-      ssl: Boolean = false
+      compress: Boolean = false
     ): UrlIOClient =
-    new UrlIOClient(host, port, credentials, compress, ssl)
+    new UrlIOClient(host, port, credentials, compress)
 
   /**
     * Retrieve IO InfluxDB client, without management functionality using configuration object
@@ -47,6 +46,6 @@ object InfluxIO {
     * @return     - [[UrlIOClient]]
     */
   def apply(conf: InfluxConfig): UrlIOClient =
-    apply(conf.host, conf.port, conf.credentials, conf.compress, conf.ssl)
+    apply(conf.host, conf.port, conf.credentials, conf.compress)
 
 }

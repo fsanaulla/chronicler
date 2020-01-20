@@ -29,39 +29,41 @@ import requests._
 import scala.io.Source
 import scala.util.Try
 
-private[urlhttp] final class UrlRequestExecutor(
-    ssl: Boolean,
-    jsonHandler: JsonHandler[Id, Response])
+private[urlhttp] final class UrlRequestExecutor(jsonHandler: JsonHandler[Id, Response])
   extends RequestExecutor[Try, Response, Url, String] {
 
   /**
     * Execute uri
     *
-    * @param uri - request uri
+    * @param url - request uri
     * @return    - Return wrapper response
     */
-  override def get(uri: Url, compress: Boolean): Try[Response] = {
+  override def get(url: Url, compress: Boolean): Try[Response] = {
     val headers =
       if (compress) "Accept-Encoding" -> "gzip" :: Nil else Nil
 
-    Try {
-      requests.get
-        .copy(sess = new ChroniclerSession)
-        .apply(
-          uri.make,
-          params = uri.params,
-          headers = headers,
-          autoDecompress = false
-        )
+    url.make.flatMap { address =>
+      Try {
+        requests.get
+          .copy(sess = new ChroniclerSession)
+          .apply(
+            address,
+            params = url.params,
+            headers = headers,
+            autoDecompress = false
+          )
+      }
     }
   }
 
-  override def post(uri: Url): Try[Response] = {
-    Try {
-      requests.post(
-        uri.make,
-        params = uri.params
-      )
+  override def post(url: Url): Try[Response] = {
+    url.make.flatMap { address =>
+      Try {
+        requests.post(
+          address,
+          params = url.params
+        )
+      }
     }
   }
 
@@ -70,49 +72,53 @@ private[urlhttp] final class UrlRequestExecutor(
       body: String,
       gzipped: Boolean
     ): Try[Response] = {
-    Try {
-      val bts              = body.getBytes()
-      val (length, entity) = if (gzipped) gzip.compress(bts) else bts.length -> bts
+    uri.make.flatMap { address =>
+      Try {
+        val bts              = body.getBytes()
+        val (length, entity) = if (gzipped) gzip.compress(bts) else bts.length -> bts
 
-      val headers =
-        if (gzipped) {
-          List(
-            "Content-Length"   -> String.valueOf(length),
-            "Content-Encoding" -> "gzip"
-          )
-        } else Nil
+        val headers =
+          if (gzipped) {
+            List(
+              "Content-Length"   -> String.valueOf(length),
+              "Content-Encoding" -> "gzip"
+            )
+          } else Nil
 
-      val request = Request(
-        uri.make,
-        RequestAuth.Empty,
-        params = uri.params,
-        headers = headers
-      )
+        val request = Request(
+          address,
+          RequestAuth.Empty,
+          params = uri.params,
+          headers = headers
+        )
 
-      requests.post(
-        request,
-        // it fails with input stream
-        data = RequestBlob.BytesRequestBlob(entity)
-      )
+        requests.post(
+          request,
+          // it fails with input stream
+          data = RequestBlob.BytesRequestBlob(entity)
+        )
+      }
     }
   }
 
-  def getStream(url: Url): Iterator[ErrorOr[Array[JArray]]] = {
-    var iterator: Iterator[String] = null
+  def getStream(url: Url): Try[Iterator[ErrorOr[Array[JArray]]]] = {
+    url.make.map { address =>
+      var iterator: Iterator[String] = null
 
-    requests.get.stream(
-      url.make,
-      params = url.params
-    )(onDownload = in => iterator = Source.fromInputStream(in).getLines())
+      requests.get.stream(
+        address,
+        params = url.params
+      )(onDownload = in => iterator = Source.fromInputStream(in).getLines())
 
-    iterator
-      .map(JParser.parseFromStringEither(_))
-      .map(
-        _.flatMapRight(
-          jsonHandler
-            .queryResult(_)
-            .toRight(new ParsingException("Can't extract query result from response"))
+      iterator
+        .map(JParser.parseFromStringEither(_))
+        .map(
+          _.flatMapRight(
+            jsonHandler
+              .queryResult(_)
+              .toRight(new ParsingException("Can't extract query result from response"))
+          )
         )
-      )
+    }
   }
 }

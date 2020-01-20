@@ -4,8 +4,8 @@ import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either.EitherOps
 import com.github.fsanaulla.chronicler.core.enums.Precisions
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
-import com.github.fsanaulla.chronicler.urlhttp.io.InfluxIO
-import com.github.fsanaulla.chronicler.urlhttp.management.InfluxMng
+import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
+import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
 import org.scalatest.{Matchers, WordSpec}
 import org.typelevel.jawn.ast.{JArray, JNum, JString}
@@ -24,11 +24,11 @@ class GroupedApiSpec extends WordSpec with Matchers with Futures with Dockerized
 
   val dbName = "mydb"
 
-  lazy val influxConf =
-    InfluxConfig(host, port, credentials = Some(creds))
-  lazy val mng =
-    InfluxMng(host, port, credentials = Some(creds))
-  lazy val io =
+  lazy val influxConf: InfluxConfig =
+    InfluxConfig(s"http://$host", port, Some(creds))
+  lazy val mng: UrlManagementClient =
+    InfluxMng(influxConf)
+  lazy val io: UrlIOClient =
     InfluxIO(influxConf)
 
   "Grouped Api" should {

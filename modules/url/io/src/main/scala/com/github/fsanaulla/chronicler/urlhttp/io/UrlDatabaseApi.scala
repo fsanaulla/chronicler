@@ -55,7 +55,7 @@ final class UrlDatabaseApi(
       epoch: Epoch = Epochs.None,
       pretty: Boolean = false,
       chunkSize: Int = 10000
-    ): Iterator[ErrorOr[Array[JPoint]]] = {
+    ): Try[Iterator[ErrorOr[Array[JPoint]]]] = {
     val uri = chunkedQuery(dbName, query, epoch, pretty, chunkSize)
     re.getStream(uri)
   }

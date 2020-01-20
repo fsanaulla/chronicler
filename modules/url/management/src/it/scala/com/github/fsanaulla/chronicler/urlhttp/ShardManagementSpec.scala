@@ -19,7 +19,7 @@ class ShardManagementSpec extends WordSpec with Matchers with Futures with Docke
   val testDb = "_internal"
 
   lazy val influx: UrlManagementClient =
-    InfluxMng(host, port, Some(creds))
+    InfluxMng(s"http://$host", port, Some(creds))
 
   "Shard Management API" should {
     "show" should {
