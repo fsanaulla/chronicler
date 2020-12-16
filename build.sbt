@@ -82,7 +82,7 @@ lazy val urlShared = project
   .settings(
     name := s"$projectName-url-shared",
     libraryDependencies ++=
-      Library.scalaTest :: Library.requestScala(scalaVersion.value) :: Nil
+      Library.scalaTest % Test :: Library.requestScala(scalaVersion.value) :: Nil
   )
   .configure(defaultSettings)
   .dependsOn(coreShared)
@@ -94,7 +94,7 @@ lazy val akkaManagement = project
   .in(file("modules/akka/management"))
   .settings(
     name := s"$projectName-akka-management",
-    libraryDependencies += Library.akkaTestKit % Scope.test
+    libraryDependencies += Library.akkaTestKit % Test
   )
   .configure(defaultSettingsWithIt)
   .dependsOn(coreManagement, akkaShared)
@@ -104,7 +104,7 @@ lazy val akkaIO = project
   .in(file("modules/akka/io"))
   .settings(
     name := s"$projectName-akka-io",
-    libraryDependencies += Library.akkaTestKit % Scope.test
+    libraryDependencies += Library.akkaTestKit % Test
   )
   .configure(defaultSettingsWithIt)
   .dependsOn(coreIO, akkaShared)
@@ -117,7 +117,7 @@ lazy val akkaShared = project
   .settings(
     name := s"$projectName-akka-shared",
     libraryDependencies ++=
-      Library.scalaTest :: Library.akkaDep
+      Library.scalaTest % Test :: Library.akkaDep
   )
   .configure(defaultSettings)
   .dependsOn(coreShared)
@@ -145,7 +145,7 @@ lazy val ahcShared = project
   .settings(
     name := s"$projectName-ahc-shared",
     libraryDependencies ++=
-      Library.scalaTest :: Library.asyncDeps
+      Library.scalaTest % Test :: Library.asyncDeps
   )
   .configure(defaultSettings)
   .dependsOn(coreShared)
