@@ -37,7 +37,7 @@ object Library {
     "org.jetbrains"      % "annotations" % "16.0.3",
     "org.testcontainers" % "influxdb"    % "1.15.1" exclude ("org.jetbrains", "annotations") exclude ("org.slf4j", "slf4j-api"),
     "org.slf4j"          % "slf4j-api"   % "1.7.25"
-  )
+  ).map(_ % Scope.test)
 
   // core
   val coreDep: List[ModuleID] = List(
@@ -53,7 +53,7 @@ object Library {
     "com.typesafe.akka" %% "akka-stream" % Versions.Akka.akka exclude ("com.typesafe", "config"),
     "com.typesafe"      %  "config"       % "1.4.1",
     "com.typesafe.akka" %% "akka-http"   % Versions.Akka.akkaHttp,
-    akkaTestKit                                                     % Scope.test
+    akkaTestKit % Scope.test
   )
   // format: on
 
