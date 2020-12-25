@@ -29,19 +29,11 @@ lazy val chronicler = project
 //////////////////////////////////////////////////////
 lazy val coreIO = project
   .in(file("modules/core/io"))
-  .settings(
-    name := s"$projectName-core-io",
-    scalacOptions += "-language:higherKinds"
-  )
   .configure(defaultSettings)
   .dependsOn(coreShared)
 
 lazy val coreManagement = project
   .in(file("modules/core/management"))
-  .settings(
-    name := s"$projectName-core-management",
-    scalacOptions += "-language:higherKinds"
-  )
   .configure(defaultSettings)
   .dependsOn(coreShared)
 
@@ -72,11 +64,6 @@ lazy val urlIO = project
 
 lazy val urlShared = project
   .in(file("modules/url/shared"))
-  .settings(
-    name := s"$projectName-url-shared",
-    libraryDependencies ++=
-      Library.scalaTest % Test :: Library.requestScala(scalaVersion.value) :: Nil
-  )
   .configure(defaultSettings)
   .dependsOn(coreShared)
 
@@ -99,11 +86,6 @@ lazy val akkaIO = project
 
 lazy val akkaShared = project
   .in(file("modules/akka/shared"))
-  .settings(
-    name := s"$projectName-akka-shared",
-    libraryDependencies ++=
-      Library.scalaTest % Test :: Library.akkaDep
-  )
   .configure(defaultSettings)
   .dependsOn(coreShared)
 
@@ -126,11 +108,6 @@ lazy val ahcIO = project
 
 lazy val ahcShared = project
   .in(file("modules/ahc/shared"))
-  .settings(
-    name := s"$projectName-ahc-shared",
-    libraryDependencies ++=
-      Library.scalaTest % Test :: Library.asyncDeps
-  )
   .configure(defaultSettings)
   .dependsOn(coreShared)
 
