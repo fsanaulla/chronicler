@@ -3,18 +3,27 @@ package com.github.fsanaulla.chronicler.urlhttp
 import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either.EitherOps
 import com.github.fsanaulla.chronicler.core.enums.Precisions
-import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
+import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.{EitherValues, TryValues}
 import org.typelevel.jawn.ast.{JArray, JNum, JString}
 
 import scala.io.Source
 import scala.util.{Failure, Success}
 
 // https://github.com/fsanaulla/chronicler/issues/193
-class GroupedApiSpec extends WordSpec with Matchers with Futures with DockerizedInfluxDB {
+class GroupedApiSpec
+    extends AnyWordSpec
+    with Matchers
+    with ScalaFutures
+    with EitherValues
+    with TryValues
+    with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
     mng.close()

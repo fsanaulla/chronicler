@@ -25,7 +25,9 @@ import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatest.{BeforeAndAfterAll, FlatSpecLike, Matchers}
+import org.scalatest.flatspec.AnyFlatSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.{BeforeAndAfterAll, EitherValues}
 import org.typelevel.jawn.ast._
 
 import scala.concurrent.ExecutionContextExecutor
@@ -34,12 +36,13 @@ import scala.concurrent.ExecutionContextExecutor
   * Created by fayaz on 12.07.17.
   */
 class AkkaResponseHandlerSpec
-  extends TestKit(ActorSystem())
-  with FlatSpecLike
-  with ScalaFutures
-  with IntegrationPatience
-  with Matchers
-  with BeforeAndAfterAll {
+    extends TestKit(ActorSystem())
+    with AnyFlatSpecLike
+    with ScalaFutures
+    with IntegrationPatience
+    with Matchers
+    with EitherValues
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     super.afterAll()
@@ -94,7 +97,7 @@ class AkkaResponseHandlerSpec
       JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
     )
 
-    rh.queryResultJson(singleHttpResponse).futureValue.right.get shouldEqual result
+    rh.queryResultJson(singleHttpResponse).futureValue.value shouldEqual result
   }
 
   it should "extract bulk query results from response" in {
@@ -151,7 +154,7 @@ class AkkaResponseHandlerSpec
                               |}
       """.stripMargin)
 
-    rh.bulkQueryResultJson(bulkHttpResponse).futureValue.right.get shouldEqual Array(
+    rh.bulkQueryResultJson(bulkHttpResponse).futureValue.value shouldEqual Array(
       Array(
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
@@ -220,7 +223,7 @@ class AkkaResponseHandlerSpec
   """.stripMargin
     )
 
-    val cqi = rh.toCqQueryResult(cqResponse).futureValue.right.get.filter(_.queries.nonEmpty).head
+    val cqi = rh.toCqQueryResult(cqResponse).futureValue.value.filter(_.queries.nonEmpty).head
     cqi.dbName shouldEqual "mydb"
     cqi.queries.head shouldEqual ContinuousQuery(
       "cq",
@@ -241,7 +244,7 @@ class AkkaResponseHandlerSpec
                                                     |}
       """.stripMargin)
 
-    jsonHandler.responseErrorMsgOpt(errorHttpResponse).futureValue.right.get shouldEqual Some(
+    jsonHandler.responseErrorMsgOpt(errorHttpResponse).futureValue.value shouldEqual Some(
       "user not found"
     )
   }

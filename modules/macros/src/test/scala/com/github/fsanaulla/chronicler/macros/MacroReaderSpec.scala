@@ -19,39 +19,37 @@ package com.github.fsanaulla.chronicler.macros
 import com.github.fsanaulla.chronicler.core.model.InfluxReader
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
 import com.github.fsanaulla.chronicler.macros.auto._
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.EitherValues
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import org.typelevel.jawn.ast._
 
-class MacroReaderSpec extends WordSpec with Matchers {
+class MacroReaderSpec extends AnyWordSpec with Matchers with EitherValues {
   "InfluxReader" should {
     "read" should {
-      case class Test(
-          @tag name: String,
-          @tag surname: Option[String],
-          @field age: Int)
+      case class Test(@tag name: String, @tag surname: Option[String], @field age: Int)
       val rd: InfluxReader[Test] = InfluxReader[Test]
 
       "with None ignoring time" in {
         rd.read(
             JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull))
           )
-          .right
-          .get shouldEqual Test("Fz", None, 4)
+          .value shouldEqual Test("Fz", None, 4)
       }
 
       "with Some and ignore time" in {
         rd.read(
             JArray(Array(JString("2015-08-04T19:05:14Z"), JNum(4), JString("Fz"), JString("Sr")))
           )
-          .right
-          .get shouldEqual Test("Fz", Some("Sr"), 4)
+          .value shouldEqual Test("Fz", Some("Sr"), 4)
       }
 
       case class Test1(
           @tag name: String,
           @tag surname: Option[String],
           @field age: Int,
-          @timestamp time: Long)
+          @timestamp time: Long
+      )
       val rd1: InfluxReader[Test1] = InfluxReader[Test1]
 
       "with timestamp" in {
@@ -59,21 +57,16 @@ class MacroReaderSpec extends WordSpec with Matchers {
           .read(
             JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull))
           )
-          .right
-          .get shouldEqual Test1("Fz", None, 4, 1438715114318570484L)
+          .value shouldEqual Test1("Fz", None, 4, 1438715114318570484L)
 
         rd1
           .read(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
-          .right
-          .get shouldEqual Test1("Fz", None, 4, 1438715114318570484L)
+          .value shouldEqual Test1("Fz", None, 4, 1438715114318570484L)
       }
     }
 
     "readUnsafe" should {
-      case class Test(
-          @tag name: String,
-          @tag surname: Option[String],
-          @field age: Int)
+      case class Test(@tag name: String, @tag surname: Option[String], @field age: Int)
       val rd: InfluxReader[Test] = InfluxReader[Test]
 
       "with None ignoring time" in {
@@ -94,7 +87,8 @@ class MacroReaderSpec extends WordSpec with Matchers {
           @tag name: String,
           @tag surname: Option[String],
           @field age: Int,
-          @timestamp time: Long)
+          @timestamp time: Long
+      )
       val rd1: InfluxReader[Test1] = InfluxReader[Test1]
 
       "with timestamp" in {

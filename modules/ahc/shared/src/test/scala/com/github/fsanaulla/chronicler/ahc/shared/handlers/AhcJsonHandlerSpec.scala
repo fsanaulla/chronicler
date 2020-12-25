@@ -23,7 +23,9 @@ import io.netty.handler.codec.http.{DefaultHttpResponse, HttpVersion}
 import org.asynchttpclient.Response
 import org.asynchttpclient.netty.{EagerResponseBodyPart, NettyResponseStatus}
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{Matchers, OptionValues, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.{EitherValues, OptionValues}
 import org.typelevel.jawn.ast._
 
 /**
@@ -31,7 +33,12 @@ import org.typelevel.jawn.ast._
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class AhcJsonHandlerSpec extends WordSpec with Matchers with ScalaFutures with OptionValues {
+class AhcJsonHandlerSpec
+    extends AnyWordSpec
+    with Matchers
+    with ScalaFutures
+    with OptionValues
+    with EitherValues {
 
   val jsonHandler = new AhcJsonHandler(compress = false)
 
@@ -98,7 +105,7 @@ class AhcJsonHandlerSpec extends WordSpec with Matchers with ScalaFutures with O
 
         val result: JValue = JParser.parseFromString(singleStrJson).get
 
-        jsonHandler.responseBody(resp).right.get shouldEqual result
+        jsonHandler.responseBody(resp).value shouldEqual result
       }
 
       "query result from JSON" in {

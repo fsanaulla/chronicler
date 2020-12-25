@@ -20,7 +20,7 @@ trait DockerizedInfluxDB extends BeforeAndAfterAll { self: Suite =>
   /** mapped port */
   def port: Int = _influx.getLivenessCheckPortNumbers.toArray.head.asInstanceOf[Int]
 
-  def mappedPort(mappedPort: Int) = _influx.getMappedPort(mappedPort)
+  def mappedPort(mappedPort: Int): Integer = _influx.getMappedPort(mappedPort)
 
   def beforeStartContainer(container: InfluxDBContainer[Nothing]): InfluxDBContainer[Nothing] =
     container

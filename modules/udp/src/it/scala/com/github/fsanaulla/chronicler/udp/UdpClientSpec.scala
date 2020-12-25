@@ -7,7 +7,9 @@ import com.github.fsanaulla.chronicler.core.model.{InfluxReader, InfluxWriter, P
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import org.scalatest.concurrent.{Eventually, IntegrationPatience}
-import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers, TryValues}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.{BeforeAndAfterAll, EitherValues, TryValues}
 import org.testcontainers.containers.DockerComposeContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.typelevel.jawn.ast.{JArray, JNum, JString}
@@ -18,12 +20,13 @@ import org.typelevel.jawn.ast.{JArray, JNum, JString}
   * Date: 24.02.18
   */
 class UdpClientSpec
-  extends FlatSpec
-  with Matchers
-  with TryValues
-  with Eventually
-  with IntegrationPatience
-  with BeforeAndAfterAll {
+    extends AnyFlatSpec
+    with Matchers
+    with TryValues
+    with Eventually
+    with EitherValues
+    with IntegrationPatience
+    with BeforeAndAfterAll {
 
   import UdpClientSpec._
 
@@ -69,9 +72,9 @@ class UdpClientSpec
     eventually {
       meas
         .read("SELECT * FROM cpu")
-        .get
-        .right
-        .get shouldEqual Array(t)
+        .success
+        .value
+        .value shouldEqual Array(t)
     }
   }
 
@@ -84,9 +87,9 @@ class UdpClientSpec
     eventually {
       meas
         .read("SELECT * FROM cpu1")
-        .get
-        .right
-        .get shouldEqual Array(t, t1)
+        .success
+        .value
+        .value shouldEqual Array(t, t1)
     }
   }
 
@@ -100,9 +103,9 @@ class UdpClientSpec
     eventually {
       meas
         .read("SELECT * FROM cpu2")
-        .get
-        .right
-        .get shouldEqual Array(Test("d", 2))
+        .success
+        .value
+        .value shouldEqual Array(Test("d", 2))
     }
   }
 
@@ -120,9 +123,9 @@ class UdpClientSpec
     eventually {
       meas
         .read("SELECT * FROM cpu3")
-        .get
-        .right
-        .get shouldEqual Array(Test("d", 2), Test("e", 3))
+        .success
+        .value
+        .value shouldEqual Array(Test("d", 2), Test("e", 3))
     }
   }
 
@@ -132,9 +135,9 @@ class UdpClientSpec
     eventually {
       meas
         .read("SELECT * FROM cpu4")
-        .get
-        .right
-        .get shouldEqual Array(Test("v", 3))
+        .success
+        .value
+        .value shouldEqual Array(Test("v", 3))
     }
   }
 
@@ -147,9 +150,9 @@ class UdpClientSpec
     eventually {
       meas
         .read("SELECT * FROM cpu5")
-        .get
-        .right
-        .get shouldEqual Array(Test("b", 5), Test("v", 3))
+        .success
+        .value
+        .value shouldEqual Array(Test("b", 5), Test("v", 3))
     }
   }
 
@@ -161,7 +164,7 @@ class UdpClientSpec
       .value shouldEqual {}
 
     eventually {
-      db.readJson("SELECT * FROM test1").get.right.get.length shouldEqual 3
+      db.readJson("SELECT * FROM test1").success.value.value.length shouldEqual 3
     }
   }
 }

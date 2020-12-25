@@ -12,8 +12,11 @@ import com.github.fsanaulla.chronicler.akka.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.core.either.EitherOps
 import com.github.fsanaulla.chronicler.core.enums.Epochs
 import com.github.fsanaulla.chronicler.core.model.Point
-import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
-import org.scalatest.{FlatSpecLike, Matchers}
+import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
+import org.scalatest.EitherValues
+import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.flatspec.AnyFlatSpecLike
+import org.scalatest.matchers.should.Matchers
 import org.typelevel.jawn.ast.{JArray, JNum, JString, JValue}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -24,11 +27,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Date: 02.03.18
   */
 class DatabaseApiSpec
-  extends TestKit(ActorSystem())
-  with FlatSpecLike
-  with Matchers
-  with Futures
-  with DockerizedInfluxDB {
+    extends TestKit(ActorSystem())
+    with AnyFlatSpecLike
+    with Matchers
+    with ScalaFutures
+    with IntegrationPatience
+    with EitherValues
+    with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
     mng.close()
@@ -39,7 +44,7 @@ class DatabaseApiSpec
 
   val testDB = "db"
 
-  lazy val influxConf =
+  lazy val influxConf: InfluxConfig =
     InfluxConfig(host, port, credentials = Some(creds), compress = false, None)
 
   lazy val mng: AkkaManagementClient =
@@ -86,8 +91,7 @@ class DatabaseApiSpec
 
     db.readJson("SELECT * FROM test2", epoch = Epochs.Nanoseconds)
       .futureValue
-      .right
-      .get
+      .value
       // skip timestamp
       .map(jarr => jarr.copy(vs = jarr.vs.tail)) shouldEqual Array(
       JArray(Array(JNum(54), JString("Martin"), JString("Odersky"), JString("Male"))),
@@ -126,13 +130,11 @@ class DatabaseApiSpec
   it should "write native" in {
     db.writeNative("test3,sex=Male,firstName=Jame,lastName=Lannister age=48")
       .futureValue
-      .right
-      .get shouldEqual 204
+      .value shouldEqual 204
 
     db.readJson("SELECT * FROM test3")
       .futureValue
-      .right
-      .get
+      .value
       .map(jarr => jarr.copy(vs = jarr.vs.tail)) shouldEqual Array(
       JArray(Array(JNum(48), JString("Jame"), JString("Lannister"), JString("Male")))
     )
@@ -144,13 +146,11 @@ class DatabaseApiSpec
         )
       )
       .futureValue
-      .right
-      .get shouldEqual 204
+      .value shouldEqual 204
 
     db.readJson("SELECT * FROM test4")
       .futureValue
-      .right
-      .get
+      .value
       .map(jarr => jarr.copy(vs = jarr.vs.tail)) shouldEqual Array(
       JArray(Array(JNum(25), JString("Deny"), JString("Targaryen"), JString("Female"))),
       JArray(Array(JNum(24), JString("Jon"), JString("Snow"), JString("Male")))
@@ -162,19 +162,18 @@ class DatabaseApiSpec
       .addTag("key,", "value,")
       .addField("field=key", 1)
 
-    db.writePoint(p).futureValue.right.get shouldEqual 204
+    db.writePoint(p).futureValue.value shouldEqual 204
 
-    db.readJson("SELECT * FROM test6").futureValue.right.get.length shouldEqual 1
+    db.readJson("SELECT * FROM test6").futureValue.value.length shouldEqual 1
   }
 
   it should "validate empty response" in {
-    db.readJson("SELECT * FROM test7").futureValue.right.get.length shouldEqual 0
+    db.readJson("SELECT * FROM test7").futureValue.value.length shouldEqual 0
   }
 }
 
 object DatabaseApiSpec {
   implicit final class JawnOps(private val jv: JValue) {
-
     def arrayValue: Option[Array[JValue]] = jv match {
       case JArray(arr) => Some(arr)
       case _           => None

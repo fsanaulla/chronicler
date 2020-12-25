@@ -25,9 +25,11 @@ import io.netty.buffer.Unpooled
 import io.netty.handler.codec.http.{DefaultHttpResponse, HttpVersion}
 import org.asynchttpclient.Response
 import org.asynchttpclient.netty.{EagerResponseBodyPart, NettyResponseStatus}
+import org.scalatest.EitherValues
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatest.time.{Second, Seconds, Span}
-import org.scalatest.{FlatSpec, Matchers}
 import org.typelevel.jawn.ast._
 
 import scala.concurrent.ExecutionContext
@@ -38,7 +40,7 @@ import scala.concurrent.duration._
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class AhcResponseHandlerSpec extends FlatSpec with Matchers with ScalaFutures {
+class AhcResponseHandlerSpec extends AnyFlatSpec with Matchers with ScalaFutures with EitherValues {
 
   val jsonHandler                 = new AhcJsonHandler(compress = false)
   implicit val pc: PatienceConfig = PatienceConfig(Span(20, Seconds), Span(1, Second))
@@ -117,7 +119,7 @@ class AhcResponseHandlerSpec extends FlatSpec with Matchers with ScalaFutures {
       JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
     )
 
-    rh.queryResultJson(buildResponse(singleResponse)).right.get shouldEqual result
+    rh.queryResultJson(buildResponse(singleResponse)).value shouldEqual result
   }
 
   it should "extract bulk query results from response" in {
@@ -174,7 +176,7 @@ class AhcResponseHandlerSpec extends FlatSpec with Matchers with ScalaFutures {
         |}
       """.stripMargin.getBytes()
 
-    rh.bulkQueryResultJson(buildResponse(bulkResponse)).right.get shouldEqual Array(
+    rh.bulkQueryResultJson(buildResponse(bulkResponse)).value shouldEqual Array(
       Array(
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
@@ -242,7 +244,7 @@ class AhcResponseHandlerSpec extends FlatSpec with Matchers with ScalaFutures {
   """.getBytes()
 
     val cqi =
-      rh.toCqQueryResult(buildResponse(cqStrJson)).right.get.filter(_.queries.nonEmpty).head
+      rh.toCqQueryResult(buildResponse(cqStrJson)).value.filter(_.queries.nonEmpty).head
     cqi.dbName shouldEqual "mydb"
     cqi.queries.head shouldEqual ContinuousQuery(
       "cq",
@@ -264,7 +266,7 @@ class AhcResponseHandlerSpec extends FlatSpec with Matchers with ScalaFutures {
         |}
       """.stripMargin.getBytes()
 
-    jsonHandler.responseErrorMsgOpt(buildResponse(errorResponse)).right.get shouldEqual Some(
+    jsonHandler.responseErrorMsgOpt(buildResponse(errorResponse)).value shouldEqual Some(
       "user not found"
     )
   }
@@ -276,7 +278,6 @@ class AhcResponseHandlerSpec extends FlatSpec with Matchers with ScalaFutures {
 
     jsonHandler
       .responseErrorMsg(buildResponse(errorResponse))
-      .right
-      .get shouldEqual "user not found"
+      .value shouldEqual "user not found"
   }
 }

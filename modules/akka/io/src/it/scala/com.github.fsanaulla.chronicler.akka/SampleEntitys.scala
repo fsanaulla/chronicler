@@ -8,15 +8,15 @@ object SampleEntitys {
   final val currentNanoTime: Long = System.currentTimeMillis() * 1000000
 
   // INTEGRATION SPEC ENTITYS
-  val singleEntity = FakeEntity("Male", "Martin", "Odersky", 58)
+  val singleEntity: FakeEntity = FakeEntity("Male", "Martin", "Odersky", 58)
 
-  val singleJsonEntity =
+  val singleJsonEntity: JArray =
     JArray(Array(JNum(currentNanoTime), JNum(58), JString("Martin"), JString("Odersky")))
 
-  val multiEntitys =
+  val multiEntitys: Array[FakeEntity] =
     Array(FakeEntity("Male", "Harold", "Lois", 44), FakeEntity("Male", "Harry", "Potter", 21))
 
-  val multiJsonEntity = Array(
+  val multiJsonEntity: Array[JArray] = Array(
     JArray(Array(JNum(currentNanoTime), JNum(58), JString("Martin"), JString("Odersky"))),
     JArray(Array(JNum(currentNanoTime), JNum(44), JString("Harold"), JString("Lois"))),
     JArray(Array(JNum(currentNanoTime), JNum(21), JString("Harry"), JString("Potter")))
@@ -60,7 +60,7 @@ object SampleEntitys {
     JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
   )
 
-  val bulkResult = Array(
+  val bulkResult: Array[Array[JArray]] = Array(
     Array(
       JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
       JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),

@@ -29,13 +29,13 @@ package object management {
     s"http://localhost:8086/query?u=${credentials.username.encode}&p=${credentials.password.encode}&q=${query.encode}"
 
   def queryTesterAuth(db: String, query: String)(credentials: InfluxCredentials): String =
-    s"http://localhost:8086/query?db=${db}&u=${credentials.username.encode}&p=${credentials.password.encode}&q=${query.encode}"
+    s"http://localhost:8086/query?db=$db&u=${credentials.username.encode}&p=${credentials.password.encode}&q=${query.encode}"
 
   def queryTester(query: String): String =
     s"http://localhost:8086/query?q=${query.encode}"
 
   def queryTester(db: String, query: String): String =
-    s"http://localhost:8086/query?db=${db}&q=${query.encode}"
+    s"http://localhost:8086/query?db=$db&q=${query.encode}"
 
   def queryTester(path: String, queryPrms: List[(String, String)]): String = {
     val s = queryPrms

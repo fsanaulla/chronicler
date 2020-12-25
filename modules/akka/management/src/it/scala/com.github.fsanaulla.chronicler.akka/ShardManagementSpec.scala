@@ -3,8 +3,11 @@ package com.github.fsanaulla.chronicler.akka
 import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, InfluxMng}
-import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
-import org.scalatest.{FlatSpecLike, Matchers}
+import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
+import org.scalatest.EitherValues
+import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.flatspec.AnyFlatSpecLike
+import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -14,11 +17,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Date: 20.08.17
   */
 class ShardManagementSpec
-  extends TestKit(ActorSystem())
-  with FlatSpecLike
-  with Matchers
-  with Futures
-  with DockerizedInfluxDB {
+    extends TestKit(ActorSystem())
+    with AnyFlatSpecLike
+    with Matchers
+    with ScalaFutures
+    with IntegrationPatience
+    with EitherValues
+    with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
     influx.close()
@@ -33,9 +38,9 @@ class ShardManagementSpec
 
   "shard operations" should "show shards" in {
 
-    influx.createDatabase(testDb, shardDuration = Some("1s")).futureValue.right.get shouldEqual 200
+    influx.createDatabase(testDb, shardDuration = Some("1s")).futureValue.value shouldEqual 200
 
-    val shards = influx.showShards.futureValue.right.get
+    val shards = influx.showShards.futureValue.value
 
     shards should not be Nil
   }

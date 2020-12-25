@@ -22,17 +22,20 @@ import akka.stream.ActorMaterializer
 import akka.testkit.TestKit
 import org.scalatest._
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 import org.typelevel.jawn.ast._
 
 import scala.concurrent.ExecutionContextExecutor
 
 class AkkaJsonHandlerSpec
-  extends TestKit(ActorSystem())
-  with WordSpecLike
-  with ScalaFutures
-  with IntegrationPatience
-  with Matchers
-  with BeforeAndAfterAll {
+    extends TestKit(ActorSystem())
+    with AnyWordSpecLike
+    with ScalaFutures
+    with IntegrationPatience
+    with Matchers
+    with EitherValues
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     super.afterAll()
@@ -84,7 +87,7 @@ class AkkaJsonHandlerSpec
 
         val result: JValue = JParser.parseFromString(singleStrJson).get
 
-        jsonHandler.responseBody(resp).futureValue.right.get shouldEqual result
+        jsonHandler.responseBody(resp).futureValue.value shouldEqual result
       }
 
       "query result from JSON" in {

@@ -20,31 +20,32 @@ import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.shared.handlers.AkkaQueryBuilder
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.DataManagementQuery
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class DataManagementQuerySpec extends FlatSpec with Matchers with DataManagementQuery[Uri] {
+class DataManagementQuerySpec extends AnyFlatSpec with Matchers with DataManagementQuery[Uri] {
 
   trait AuthEnv {
-    val credentials                   = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("http", "localhost", 8086, credentials)
+    val credentials: Option[InfluxCredentials] = Some(InfluxCredentials("admin", "admin"))
+    implicit val qb: AkkaQueryBuilder          = new AkkaQueryBuilder("http", "localhost", 8086, credentials)
   }
 
   trait NonAuthEnv {
     implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("http", "localhost", 8086, None)
   }
 
-  val testDb: String          = "testDb"
-  val testSeries: String      = "testSeries"
-  val testMeasurement: String = "testMeasurement"
-  val testShardId: Int        = 1
-  val testWhereClause         = Some("bag > 4")
-  val testLimit               = Some(4)
-  val testOffset              = Some(3)
+  val testDb: String                  = "testDb"
+  val testSeries: String              = "testSeries"
+  val testMeasurement: String         = "testMeasurement"
+  val testShardId: Int                = 1
+  val testWhereClause: Option[String] = Some("bag > 4")
+  val testLimit: Option[Int]          = Some(4)
+  val testOffset: Option[Int]         = Some(3)
 
   "DatabaseManagementQuerys" should "generate correct 'create database' query" in new AuthEnv {
     createDatabaseQuery(testDb, None, None, None, None) shouldEqual

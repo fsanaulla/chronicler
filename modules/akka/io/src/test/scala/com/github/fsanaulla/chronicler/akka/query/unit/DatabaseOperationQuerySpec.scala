@@ -21,18 +21,22 @@ import com.github.fsanaulla.chronicler.akka.shared.handlers.AkkaQueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.{Consistencies, Epochs, Precisions}
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 27.07.17
   */
-class DatabaseOperationQuerySpec extends FlatSpec with Matchers with DatabaseOperationQuery[Uri] {
+class DatabaseOperationQuerySpec
+    extends AnyFlatSpec
+    with Matchers
+    with DatabaseOperationQuery[Uri] {
 
   trait AuthEnv {
-    val credentials                   = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("http", "localhost", 8086, credentials)
+    val credentials: Option[InfluxCredentials] = Some(InfluxCredentials("admin", "admin"))
+    implicit val qb: AkkaQueryBuilder          = new AkkaQueryBuilder("http", "localhost", 8086, credentials)
   }
 
   trait NonAuthEnv {

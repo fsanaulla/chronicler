@@ -6,8 +6,11 @@ import com.github.fsanaulla.chronicler.akka.SampleEntitys._
 import com.github.fsanaulla.chronicler.akka.io.{AkkaIOClient, InfluxIO}
 import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, InfluxMng}
 import com.github.fsanaulla.chronicler.akka.shared.InfluxConfig
-import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity, Futures}
-import org.scalatest.{FlatSpecLike, Matchers}
+import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity}
+import org.scalatest.EitherValues
+import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.flatspec.AnyFlatSpecLike
+import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -17,11 +20,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Date: 28.09.17
   */
 class MeasurementApiSpec
-  extends TestKit(ActorSystem())
-  with FlatSpecLike
-  with Matchers
-  with Futures
-  with DockerizedInfluxDB {
+    extends TestKit(ActorSystem())
+    with AnyFlatSpecLike
+    with Matchers
+    with ScalaFutures
+    with IntegrationPatience
+    with EitherValues
+    with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
     mng.close()
@@ -33,7 +38,7 @@ class MeasurementApiSpec
   val db       = "db"
   val measName = "meas"
 
-  lazy val influxConf =
+  lazy val influxConf: InfluxConfig =
     InfluxConfig(host, port, credentials = Some(creds), compress = false, None)
 
   lazy val mng: AkkaManagementClient =
@@ -44,19 +49,16 @@ class MeasurementApiSpec
     io.measurement[FakeEntity](db, measName)
 
   it should "write single point" in {
-    mng.createDatabase(db).futureValue.right.get shouldEqual 200
+    mng.createDatabase(db).futureValue.value shouldEqual 200
 
-    meas.write(singleEntity).futureValue.right.get shouldEqual 204
+    meas.write(singleEntity).futureValue.value shouldEqual 204
 
-    meas.read(s"SELECT * FROM $measName").futureValue.right.get shouldEqual Seq(singleEntity)
+    meas.read(s"SELECT * FROM $measName").futureValue.value shouldEqual Seq(singleEntity)
   }
 
   it should "bulk write" in {
-    meas.bulkWrite(multiEntitys).futureValue.right.get shouldEqual 204
+    meas.bulkWrite(multiEntitys).futureValue.value shouldEqual 204
 
-    meas.read(s"SELECT * FROM $measName").futureValue.right.get.length shouldEqual 3
-
-    mng.close() shouldEqual {}
-    io.close() shouldEqual {}
+    meas.read(s"SELECT * FROM $measName").futureValue.value.length shouldEqual 3
   }
 }

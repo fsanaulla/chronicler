@@ -19,7 +19,9 @@ package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
-import org.scalatest.{FlatSpec, Matchers, TryValues}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.{EitherValues, TryValues}
 import org.typelevel.jawn.ast._
 import requests.{Response, ResponseBlob}
 
@@ -30,7 +32,7 @@ import scala.language.implicitConversions
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UrlResponseHandlerSpec extends FlatSpec with Matchers with TryValues {
+class UrlResponseHandlerSpec extends AnyFlatSpec with Matchers with TryValues with EitherValues {
 
   implicit val p: JParser.type = JParser
   val jsonHandler              = new UrlJsonHandler(compressed = false)
@@ -81,7 +83,7 @@ class UrlResponseHandlerSpec extends FlatSpec with Matchers with TryValues {
       JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
     )
 
-    respHandler.queryResultJson(singleResponse).right.get shouldEqual result
+    respHandler.queryResultJson(singleResponse).value shouldEqual result
   }
 
   it should "extract bulk query results from response" in {
@@ -138,7 +140,7 @@ class UrlResponseHandlerSpec extends FlatSpec with Matchers with TryValues {
         |}
       """.stripMargin
 
-    respHandler.bulkQueryResultJson(bulkResponse).right.get shouldEqual Array(
+    respHandler.bulkQueryResultJson(bulkResponse).value shouldEqual Array(
       Array(
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
@@ -205,7 +207,7 @@ class UrlResponseHandlerSpec extends FlatSpec with Matchers with TryValues {
     }
   """
 
-    val cqi = respHandler.toCqQueryResult(cqStrJson).right.get.filter(_.queries.nonEmpty).head
+    val cqi = respHandler.toCqQueryResult(cqStrJson).value.filter(_.queries.nonEmpty).head
     cqi.dbName shouldEqual "mydb"
     cqi.queries.head shouldEqual ContinuousQuery(
       "cq",
@@ -227,7 +229,7 @@ class UrlResponseHandlerSpec extends FlatSpec with Matchers with TryValues {
         |}
       """.stripMargin
 
-    jsonHandler.responseErrorMsgOpt(errorResponse).right.get shouldEqual Some("user not found")
+    jsonHandler.responseErrorMsgOpt(errorResponse).value shouldEqual Some("user not found")
   }
 
   it should "extract error message" in {
@@ -235,6 +237,6 @@ class UrlResponseHandlerSpec extends FlatSpec with Matchers with TryValues {
     val errorResponse =
       """ { "error": "user not found" } """
 
-    jsonHandler.responseErrorMsg(errorResponse).right.get shouldEqual "user not found"
+    jsonHandler.responseErrorMsg(errorResponse).value shouldEqual "user not found"
   }
 }

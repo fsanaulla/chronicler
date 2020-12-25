@@ -1,10 +1,10 @@
 package com.github.fsanaulla.chronicler.core.shared
 
 import com.github.fsanaulla.chronicler.core.duration._
-import org.scalatest.FlatSpec
+import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatestplus.scalacheck.Checkers
 
-class InfluxDurationProp extends FlatSpec with Checkers {
+class InfluxDurationProp extends AnyFlatSpec with Checkers {
 
   def toInfluxDuration[@specialized(Int, Long) T](w: T, d: T, h: T, m: T, s: T) =
     s"${w}w${d}d${h}h${m}m${s}s"

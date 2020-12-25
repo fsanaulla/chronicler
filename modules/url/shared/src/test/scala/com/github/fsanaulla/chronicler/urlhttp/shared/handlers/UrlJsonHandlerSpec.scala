@@ -16,7 +16,9 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
-import org.scalatest.{Matchers, OptionValues, TryValues, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.{EitherValues, OptionValues, TryValues}
 import org.typelevel.jawn.ast._
 import requests.{Response, ResponseBlob}
 
@@ -25,7 +27,12 @@ import requests.{Response, ResponseBlob}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UrlJsonHandlerSpec extends WordSpec with Matchers with TryValues with OptionValues {
+class UrlJsonHandlerSpec
+    extends AnyWordSpec
+    with Matchers
+    with TryValues
+    with EitherValues
+    with OptionValues {
 
   val jsonHandler = new UrlJsonHandler(compressed = false)
 
@@ -64,11 +71,11 @@ class UrlJsonHandlerSpec extends WordSpec with Matchers with TryValues with Opti
             |                      ]
             |                  }""".stripMargin
 
-        val resp =
+        val resp: Response =
           Response("", 200, "", Map.empty, new ResponseBlob(singleStrJson.getBytes()), None)
         val result: JValue = JParser.parseFromString(singleStrJson).get
 
-        jsonHandler.responseBody(resp).right.get shouldEqual result
+        jsonHandler.responseBody(resp).value shouldEqual result
       }
 
       "query result from JSON" in {

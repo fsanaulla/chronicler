@@ -20,28 +20,29 @@ import com.github.fsanaulla.chronicler.core.model.InfluxWriter
 import com.github.fsanaulla.chronicler.macros.annotations.writer.escape
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
 import com.github.fsanaulla.chronicler.macros.auto._
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.EitherValues
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class MacroWriterSpec extends WordSpec with Matchers {
+class MacroWriterSpec extends AnyWordSpec with Matchers with EitherValues {
   "InfluxWriter" should {
     "write optional" should {
       case class WithOptional(
           @tag name: String,
           @tag surname: Option[String],
           @field school: String,
-          @field age: Int)
+          @field age: Int
+      )
       val wr: InfluxWriter[WithOptional] = InfluxWriter[WithOptional]
 
       "with None" in {
         wr.write(WithOptional("nm", None, "Berkly", 65))
-          .right
-          .get shouldEqual "name=nm school=\"Berkly\",age=65i"
+          .value shouldEqual "name=nm school=\"Berkly\",age=65i"
       }
 
       "with Some" in {
         wr.write(WithOptional("nm", Some("sn"), "Berkly", 65))
-          .right
-          .get shouldEqual "name=nm,surname=sn school=\"Berkly\",age=65i"
+          .value shouldEqual "name=nm,surname=sn school=\"Berkly\",age=65i"
       }
     }
 
@@ -51,13 +52,13 @@ class MacroWriterSpec extends WordSpec with Matchers {
           @tag surname: Option[String],
           @field age: Int,
           @field school: String,
-          @timestamp time: Long)
+          @timestamp time: Long
+      )
 
       val wr1: InfluxWriter[WithTimestamp] = InfluxWriter[WithTimestamp]
       wr1
         .write(WithTimestamp("nm", Some("sn"), 65, "Berkly", 1438715114318570484L))
-        .right
-        .get shouldEqual "name=nm,surname=sn age=65i,school=\"Berkly\" 1438715114318570484"
+        .value shouldEqual "name=nm,surname=sn age=65i,school=\"Berkly\" 1438715114318570484"
     }
 
     "write and escape " should {
@@ -66,12 +67,12 @@ class MacroWriterSpec extends WordSpec with Matchers {
 
       "from ','" in {
         val t = Test("My,Name", 5)
-        wr.write(t).right.get shouldEqual "name=My\\,Name age=5i"
+        wr.write(t).value shouldEqual "name=My\\,Name age=5i"
       }
 
       "from '='" in {
         val t = Test("My=Name", 5)
-        wr.write(t).right.get shouldEqual "name=My\\=Name age=5i"
+        wr.write(t).value shouldEqual "name=My\\=Name age=5i"
       }
 
       "from ' '" in {
@@ -81,7 +82,7 @@ class MacroWriterSpec extends WordSpec with Matchers {
 
       "from all special characters" in {
         val t = Test("My ,=Name", 5)
-        wr.write(t).right.get shouldEqual "name=My\\ \\,\\=Name age=5i"
+        wr.write(t).value shouldEqual "name=My\\ \\,\\=Name age=5i"
       }
     }
   }

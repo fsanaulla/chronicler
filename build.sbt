@@ -1,6 +1,7 @@
 import sbt.Keys.{libraryDependencies, name}
 
 val projectName = "chronicler"
+
 lazy val chronicler = project
   .in(file("."))
   .settings(Settings.common: _*)
@@ -48,14 +49,6 @@ lazy val coreShared = project
   .in(file("modules/core/shared"))
   .settings(Settings.propertyTestSettings: _*)
   .configs(Settings.PropertyTest)
-  .settings(
-    name := s"$projectName-core-shared",
-    libraryDependencies ++= Library.coreDep,
-    scalacOptions ++= Seq(
-      "-language:implicitConversions",
-      "-language:higherKinds"
-    )
-  )
   .configure(defaultSettings)
 
 //////////////////////////////////////////////////////
@@ -66,16 +59,16 @@ lazy val urlManagement = project
   .settings(name := s"$projectName-url-management")
   .configure(defaultSettingsWithIt)
   .dependsOn(coreManagement, urlShared)
-  .dependsOn(itTesting % "test->test")
+  .dependsOn(testing % "it,test")
 
 lazy val urlIO = project
   .in(file("modules/url/io"))
   .settings(name := s"$projectName-url-io")
   .configure(defaultSettingsWithIt)
   .dependsOn(coreIO, urlShared)
-  .dependsOn(urlManagement % "test->test")
-  .dependsOn(macros % "test->test")
-  .dependsOn(itTesting % "test->test")
+  .dependsOn(urlManagement % "it,test")
+  .dependsOn(macros % "it,test")
+  .dependsOn(testing % "it,test")
 
 lazy val urlShared = project
   .in(file("modules/url/shared"))
@@ -92,25 +85,17 @@ lazy val urlShared = project
 //////////////////////////////////////////////////////
 lazy val akkaManagement = project
   .in(file("modules/akka/management"))
-  .settings(
-    name := s"$projectName-akka-management",
-    libraryDependencies += Library.akkaTestKit % Scope.test
-  )
   .configure(defaultSettingsWithIt)
   .dependsOn(coreManagement, akkaShared)
-  .dependsOn(itTesting % "test->test")
+  .dependsOn(testing % "test,it")
 
 lazy val akkaIO = project
   .in(file("modules/akka/io"))
-  .settings(
-    name := s"$projectName-akka-io",
-    libraryDependencies += Library.akkaTestKit % Scope.test
-  )
   .configure(defaultSettingsWithIt)
   .dependsOn(coreIO, akkaShared)
-  .dependsOn(akkaManagement % "test->test")
-  .dependsOn(itTesting % "test->test")
-  .dependsOn(macros % "test->test")
+  .dependsOn(akkaManagement % "test,it")
+  .dependsOn(testing % "test,it")
+  .dependsOn(macros % "test,it")
 
 lazy val akkaShared = project
   .in(file("modules/akka/shared"))
@@ -127,18 +112,17 @@ lazy val akkaShared = project
 //////////////////////////////////////////////////////
 lazy val ahcManagement = project
   .in(file("modules/ahc/management"))
-  .settings(name := s"$projectName-ahc-management")
   .configure(defaultSettingsWithIt)
   .dependsOn(coreManagement, ahcShared)
-  .dependsOn(itTesting % "test->test")
+  .dependsOn(testing % "it,test")
 
 lazy val ahcIO = project
   .in(file("modules/ahc/io"))
   .settings(name := s"$projectName-ahc-io")
   .configure(defaultSettingsWithIt)
   .dependsOn(coreIO, ahcShared)
-  .dependsOn(ahcManagement % "test->test")
-  .dependsOn(itTesting % "test->test")
+  .dependsOn(ahcManagement % "it,test")
+  .dependsOn(testing % "it,test")
 
 lazy val ahcShared = project
   .in(file("modules/ahc/shared"))
@@ -155,12 +139,11 @@ lazy val ahcShared = project
 //////////////////////////////////////////////////////
 lazy val udp = project
   .in(file("modules/udp"))
-  .settings(name := s"$projectName-udp")
   .configure(defaultSettingsWithIt)
   .dependsOn(coreShared)
-  .dependsOn(itTesting % "test->test")
-  .dependsOn(urlIO % "test->test")
-  .dependsOn(urlManagement % "test->test")
+  .dependsOn(testing % "it,test")
+  .dependsOn(urlIO % "it,test")
+  .dependsOn(urlManagement % "it,test")
 
 //////////////////////////////////////////////////////
 ///////////////////// MACRO MODULE ///////////////////
@@ -169,23 +152,15 @@ lazy val macros = project
   .in(file("modules/macros"))
   .settings(Settings.propertyTestSettings: _*)
   .configs(Settings.PropertyTest)
-  .settings(
-    name := s"$projectName-macros",
-    libraryDependencies ++= Library.macroDeps(scalaVersion.value)
-  )
   .configure(defaultSettings)
   .dependsOn(coreShared)
 
 //////////////////////////////////////////////////////
 /////////////////// TESTING MODULES //////////////////
 //////////////////////////////////////////////////////
-lazy val itTesting = project
+lazy val testing = project
   .in(file("modules/testing"))
   .settings(Settings.common: _*)
-  .settings(
-    name := s"$projectName-testing",
-    libraryDependencies ++= Library.testingDeps
-  )
   .dependsOn(coreShared)
 
 //////////////////////////////////////////////////////
@@ -242,7 +217,7 @@ def defaultSettings: Project => Project =
     .enablePlugins(AutomateHeaderPlugin)
 
 def defaultSettingsWithIt: Project => Project =
-  _.configs(Settings.CompileTimeIntegrationTest)
+  _.configs(Settings.IntegrationTest)
     .settings(Defaults.itSettings)
     .configure(defaultSettings)
 
@@ -250,7 +225,7 @@ def exampleModule(
     moduleName: String,
     moduleDir: String,
     dependsOn: sbt.ClasspathDep[sbt.ProjectReference]*
-  ): Project =
+): Project =
   Project(s"$projectName-$moduleName", file(s"examples/$moduleDir"))
     .settings(Settings.common: _*)
     .dependsOn(dependsOn: _*)

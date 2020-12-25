@@ -2,10 +2,10 @@ package com.github.fsanaulla.chronicler.core.shared
 
 import com.github.fsanaulla.chronicler.core.model._
 import org.scalacheck.{Arbitrary, Gen}
-import org.scalatest.FlatSpec
+import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatestplus.scalacheck.Checkers
 
-class PointProp extends FlatSpec with Checkers {
+class PointProp extends AnyFlatSpec with Checkers {
 
   implicit val nonEmptyStringArb: Arbitrary[String] =
     Arbitrary(Gen.nonEmptyListOf[Char](Gen.alphaChar).map(_.mkString))

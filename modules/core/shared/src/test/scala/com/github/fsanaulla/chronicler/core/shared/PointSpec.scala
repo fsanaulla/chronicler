@@ -17,9 +17,10 @@
 package com.github.fsanaulla.chronicler.core.shared
 
 import com.github.fsanaulla.chronicler.core.model._
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class PointSpec extends FlatSpec with Matchers {
+class PointSpec extends AnyFlatSpec with Matchers {
   "Point" should "escape spaces" in {
     val p = Point("test meas")
       .addTag("tag key", "tag value")
@@ -62,7 +63,7 @@ class PointSpec extends FlatSpec with Matchers {
 
   it should "generate a valid statement with empty tag list" in {
     val p = Point(measurement = "foo", tags = List())
-    .addField("bar", 1)
+      .addField("bar", 1)
 
     p.serialize shouldEqual "foo bar=1i"
   }
