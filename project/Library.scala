@@ -37,7 +37,7 @@ object Library {
     "org.jetbrains"      % "annotations" % "16.0.3",
     "org.testcontainers" % "influxdb"    % "1.15.1" exclude ("org.jetbrains", "annotations") exclude ("org.slf4j", "slf4j-api"),
     "org.slf4j"          % "slf4j-api"   % "1.7.25"
-  ).map(_ % Scope.test)
+  )
 
   // core
   val coreDep: List[ModuleID] = List(
