@@ -3,7 +3,7 @@ import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.headerLicense
 import de.heikoseeberger.sbtheader.License
 import sbt.Keys.{publishArtifact, _}
 import sbt.librarymanagement.{Configurations, LibraryManagementSyntax}
-import sbt.{config, file, inConfig, url, Def, Defaults, Developer, Opts, ScmInfo}
+import sbt.{Def, Defaults, Developer, Opts, ScmInfo, config, file, inConfig, url}
 
 /** Basic sbt settings */
 object Settings extends LibraryManagementSyntax {
@@ -24,7 +24,7 @@ object Settings extends LibraryManagementSyntax {
   }
 
   val common = Seq(
-    scalaVersion := "2.13.1",
+    scalaVersion := "2.13.4",
     organization := "com.github.fsanaulla",
     scalacOptions ++= Scalac.options(scalaVersion.value),
     crossScalaVersions := Seq("2.11.12", "2.12.10", scalaVersion.value),

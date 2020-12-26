@@ -2,9 +2,12 @@ package com.github.fsanaulla.chronicler.urlhttp
 
 import com.github.fsanaulla.chronicler.core.duration._
 import com.github.fsanaulla.chronicler.core.model.RetentionPolicyInfo
-import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
+import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.{EitherValues, TryValues}
 
 /**
   * Created by
@@ -12,10 +15,13 @@ import org.scalatest.{FlatSpec, Matchers}
   * Date: 27.07.17
   */
 class RetentionPolicyManagerSpec
-  extends FlatSpec
-  with Matchers
-  with Futures
-  with DockerizedInfluxDB {
+    extends AnyFlatSpec
+    with Matchers
+    with ScalaFutures
+    with IntegrationPatience
+    with EitherValues
+    with TryValues
+    with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
     influx.close()
@@ -28,48 +34,48 @@ class RetentionPolicyManagerSpec
     InfluxMng(s"http://$host", port, Some(creds))
 
   "Retention policy API" should "create retention policy" in {
-    influx.createDatabase(rpDB).get.right.get shouldEqual 200
+    influx.createDatabase(rpDB).success.value.value shouldEqual 200
 
-    influx.showDatabases().get.right.get.contains(rpDB) shouldEqual true
+    influx.showDatabases().success.value.value.contains(rpDB) shouldEqual true
 
     influx
       .createRetentionPolicy("test", rpDB, 2.hours, 2, Some(2.hours), default = true)
-      .get
-      .right
-      .get shouldEqual 200
+      .success
+      .value
+      .value shouldEqual 200
 
     influx
       .showRetentionPolicies(rpDB)
-      .get
-      .right
-      .get
+      .success
+      .value
+      .value
       .contains(RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true)) shouldEqual true
 
   }
 
   it should "drop retention policy" in {
-    influx.dropRetentionPolicy("autogen", rpDB).get.right.get shouldEqual 200
+    influx.dropRetentionPolicy("autogen", rpDB).success.value.value shouldEqual 200
 
-    influx.showRetentionPolicies(rpDB).get.right.get shouldEqual Seq(
+    influx.showRetentionPolicies(rpDB).success.value.value shouldEqual Seq(
       RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true)
     )
   }
 
   it should "update retention policy" in {
-    influx.updateRetentionPolicy("test", rpDB, Some(3.hours)).get.right.get shouldEqual 200
+    influx.updateRetentionPolicy("test", rpDB, Some(3.hours)).success.value.value shouldEqual 200
 
-    influx.showRetentionPolicies(rpDB).get.right.get shouldEqual Seq(
+    influx.showRetentionPolicies(rpDB).success.value.value shouldEqual Seq(
       RetentionPolicyInfo("test", "3h0m0s", "2h0m0s", 2, default = true)
     )
   }
 
   it should "clean up everything" in {
-    influx.dropRetentionPolicy("test", rpDB).get.right.get shouldEqual 200
+    influx.dropRetentionPolicy("test", rpDB).success.value.value shouldEqual 200
 
-    influx.showRetentionPolicies(rpDB).get.right.get.toList shouldEqual Nil
+    influx.showRetentionPolicies(rpDB).success.value.value.toList shouldEqual Nil
 
-    influx.dropDatabase(rpDB).get.right.get shouldEqual 200
+    influx.dropDatabase(rpDB).success.value.value shouldEqual 200
 
-    influx.showDatabases().get.right.get.contains(rpDB) shouldEqual false
+    influx.showDatabases().success.value.value.contains(rpDB) shouldEqual false
   }
 }

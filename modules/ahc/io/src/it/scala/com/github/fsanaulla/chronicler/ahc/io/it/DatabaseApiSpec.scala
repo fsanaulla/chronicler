@@ -7,8 +7,11 @@ import com.github.fsanaulla.chronicler.ahc.management.{AhcManagementClient, Infl
 import com.github.fsanaulla.chronicler.ahc.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.core.enums.Epochs
 import com.github.fsanaulla.chronicler.core.model.Point
-import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
-import org.scalatest.{FlatSpec, Matchers}
+import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
+import org.scalatest.EitherValues
+import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import org.typelevel.jawn.ast.{JArray, JNum, JString, JValue}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -18,7 +21,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 02.03.18
   */
-class DatabaseApiSpec extends FlatSpec with Matchers with Futures with DockerizedInfluxDB {
+class DatabaseApiSpec
+    extends AnyFlatSpec
+    with Matchers
+    with ScalaFutures
+    with EitherValues
+    with IntegrationPatience
+    with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
     mng.close()
@@ -30,7 +39,7 @@ class DatabaseApiSpec extends FlatSpec with Matchers with Futures with Dockerize
 
   val testDB = "db"
 
-  lazy val influxConf =
+  lazy val influxConf: InfluxConfig =
     InfluxConfig(host, port, credentials = Some(creds), compress = false, None)
 
   lazy val mng: AhcManagementClient =
@@ -42,14 +51,13 @@ class DatabaseApiSpec extends FlatSpec with Matchers with Futures with Dockerize
   lazy val db: io.Database = io.database(testDB)
 
   it should "write data from file" in {
-    mng.createDatabase(testDB).futureValue.right.get shouldEqual 200
+    mng.createDatabase(testDB).futureValue.value shouldEqual 200
 
     db.writeFromFile(Paths.get(getClass.getResource("/points.txt").getPath))
       .futureValue
-      .right
-      .get shouldEqual 204
+      .value shouldEqual 204
 
-    db.readJson("SELECT * FROM test1").futureValue.right.get.length shouldEqual 3
+    db.readJson("SELECT * FROM test1").futureValue.value.length shouldEqual 3
   }
 
   it should "write 2 points represented entities" in {
@@ -65,23 +73,21 @@ class DatabaseApiSpec extends FlatSpec with Matchers with Futures with Dockerize
       .addTag("lastName", "Franko")
       .addField("age", 36)
 
-    db.writePoint(point1).futureValue.right.get shouldEqual 204
+    db.writePoint(point1).futureValue.value shouldEqual 204
 
     db.readJson("SELECT * FROM test2", epoch = Epochs.Nanoseconds)
       .futureValue
-      .right
-      .get
+      .value
       // skip timestamp
       .map(jarr => jarr.copy(vs = jarr.vs.tail)) shouldEqual Array(
       JArray(Array(JNum(54), JString("Martin"), JString("Odersky"), JString("Male")))
     )
 
-    db.bulkWritePoints(Array(point1, point2)).futureValue.right.get shouldEqual 204
+    db.bulkWritePoints(Array(point1, point2)).futureValue.value shouldEqual 204
 
     db.readJson("SELECT * FROM test2", epoch = Epochs.Nanoseconds)
       .futureValue
-      .right
-      .get
+      .value
       // skip timestamp
       .map(jarr => jarr.copy(vs = jarr.vs.tail)) shouldEqual Array(
       JArray(Array(JNum(54), JString("Martin"), JString("Odersky"), JString("Male"))),
@@ -91,15 +97,14 @@ class DatabaseApiSpec extends FlatSpec with Matchers with Futures with Dockerize
   }
 
   it should "retrieve multiple request" in {
-    db.readJson("SELECT * FROM test2").futureValue.right.get.length shouldEqual 3
+    db.readJson("SELECT * FROM test2").futureValue.value.length shouldEqual 3
 
-    db.readJson("SELECT * FROM test2 WHERE age < 40").futureValue.right.get.length shouldEqual 1
+    db.readJson("SELECT * FROM test2 WHERE age < 40").futureValue.value.length shouldEqual 1
 
     val multiQuery = db
       .bulkReadJson(Seq("SELECT * FROM test2", "SELECT * FROM test2 WHERE age < 40"))
       .futureValue
-      .right
-      .get
+      .value
 
     multiQuery.length shouldEqual 2
     multiQuery shouldBe a[Array[_]]
@@ -121,13 +126,11 @@ class DatabaseApiSpec extends FlatSpec with Matchers with Futures with Dockerize
   it should "write native" in {
     db.writeNative("test3,sex=Male,firstName=Jame,lastName=Lannister age=48")
       .futureValue
-      .right
-      .get shouldEqual 204
+      .value shouldEqual 204
 
     db.readJson("SELECT * FROM test3")
       .futureValue
-      .right
-      .get
+      .value
       .map(jarr => jarr.copy(vs = jarr.vs.tail)) shouldEqual Array(
       JArray(Array(JNum(48), JString("Jame"), JString("Lannister"), JString("Male")))
     )
@@ -139,13 +142,11 @@ class DatabaseApiSpec extends FlatSpec with Matchers with Futures with Dockerize
         )
       )
       .futureValue
-      .right
-      .get shouldEqual 204
+      .value shouldEqual 204
 
     db.readJson("SELECT * FROM test4")
       .futureValue
-      .right
-      .get
+      .value
       .map(jarr => jarr.copy(vs = jarr.vs.tail)) shouldEqual Array(
       JArray(Array(JNum(25), JString("Deny"), JString("Targaryen"), JString("Female"))),
       JArray(Array(JNum(24), JString("Jon"), JString("Snow"), JString("Male")))
@@ -157,13 +158,13 @@ class DatabaseApiSpec extends FlatSpec with Matchers with Futures with Dockerize
       .addTag("key,", "value,")
       .addField("field=key", 1)
 
-    db.writePoint(p).futureValue.right.get shouldEqual 204
+    db.writePoint(p).futureValue.value shouldEqual 204
 
-    db.readJson("SELECT * FROM test6").futureValue.right.get.length shouldEqual 1
+    db.readJson("SELECT * FROM test6").futureValue.value.length shouldEqual 1
   }
 
   it should "validate empty response" in {
-    db.readJson("SELECT * FROM test7").futureValue.right.get.length shouldEqual 0
+    db.readJson("SELECT * FROM test7").futureValue.value.length shouldEqual 0
   }
 }
 

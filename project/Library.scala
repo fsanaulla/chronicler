@@ -11,20 +11,20 @@ object Library {
     val request = "0.2.0"
 
     object Akka {
-      val akka     = "2.5.25"
-      val akkaHttp = "10.1.10"
+      val akka     = "2.5.32"
+      val akkaHttp = "10.1.13"
     }
 
     object Testing {
-      val scalaTest            = "3.0.8"
+      val scalaTest            = "3.2.3"
       val scalaCheck           = "1.14.0"
       val scalaCheckGenerators = "0.2.0"
     }
   }
 
-  val scalaTest   = "org.scalatest"     %% "scalatest"    % Versions.Testing.scalaTest
-  val scalaCheck  = "org.scalacheck"    %% "scalacheck"   % Versions.Testing.scalaCheck
-  val akkaTestKit = "com.typesafe.akka" %% "akka-testkit" % Versions.Akka.akka
+  val scalaTest   = "org.scalatest"     %% "scalatest"       % Versions.Testing.scalaTest
+  val scalaCheck  = "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0"
+  val akkaTestKit = "com.typesafe.akka" %% "akka-testkit"    % Versions.Akka.akka
 
   def macroDeps(scalaVersion: String): List[ModuleID] =
     "org.scala-lang" % "scala-reflect" % scalaVersion :: List(scalaTest, scalaCheck).map(
@@ -35,21 +35,23 @@ object Library {
   val testingDeps: List[ModuleID] = List(
     scalaTest,
     "org.jetbrains"      % "annotations" % "16.0.3",
-    "org.testcontainers" % "influxdb"    % "1.12.1" exclude ("org.jetbrains", "annotations") exclude ("org.slf4j", "slf4j-api"),
+    "org.testcontainers" % "influxdb"    % "1.15.1" exclude ("org.jetbrains", "annotations") exclude ("org.slf4j", "slf4j-api"),
     "org.slf4j"          % "slf4j-api"   % "1.7.25"
-  ).map(_ % Scope.test)
+  )
 
   // core
   val coreDep: List[ModuleID] = List(
-    "com.beachape"                        %% "enumeratum" % "1.5.13",
-    "org.typelevel"                       %% "jawn-ast" % "0.14.2"
-  ) ::: List(scalaTest, scalaCheck).map(_ % Scope.test)
+    "com.beachape"  %% "enumeratum" % "1.6.1",
+    "org.typelevel" %% "jawn-ast"   % "0.14.3"
+  )
+
+  val coreTestDeps: List[ModuleID] = List(scalaTest, scalaCheck).map(_ % Scope.test)
 
   // akka-http
   // format: off
   val akkaDep: List[ModuleID] = List(
     "com.typesafe.akka" %% "akka-stream" % Versions.Akka.akka exclude ("com.typesafe", "config"),
-    "com.typesafe"      %  "config"       % "1.3.4",
+    "com.typesafe"      %  "config"       % "1.4.1",
     "com.typesafe.akka" %% "akka-http"   % Versions.Akka.akkaHttp,
     akkaTestKit % Scope.test
   )
@@ -57,8 +59,8 @@ object Library {
 
   // async-http
   val asyncDeps: List[ModuleID] = List(
-    "org.asynchttpclient"    % "async-http-client"   % "2.10.1",
-    "org.scala-lang.modules" %% "scala-java8-compat" % "0.9.0"
+    "org.asynchttpclient"    % "async-http-client"   % "2.12.1",
+    "org.scala-lang.modules" %% "scala-java8-compat" % "0.9.1"
   )
 
   // looks like a shit, but need to keep it until spark on 2.12 will become stable

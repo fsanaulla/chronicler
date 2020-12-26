@@ -1,15 +1,25 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
-import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
+import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.{EitherValues, TryValues}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
-class ShardManagementSpec extends WordSpec with Matchers with Futures with DockerizedInfluxDB {
+class ShardManagementSpec
+    extends AnyWordSpec
+    with Matchers
+    with ScalaFutures
+    with IntegrationPatience
+    with EitherValues
+    with TryValues
+    with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
     influx.close()
@@ -25,15 +35,15 @@ class ShardManagementSpec extends WordSpec with Matchers with Futures with Docke
     "show" should {
       "shards" in {
 
-        influx.createDatabase(testDb, shardDuration = Some("1s")).get.right.get shouldEqual 200
+        influx.createDatabase(testDb, shardDuration = Some("1s")).success.value.value shouldEqual 200
 
-        val shards = influx.showShards.get.right.get
+        val shards = influx.showShards.success.value.value
 
         shards should not be Nil
       }
 
 //      "shards groups" in {
-//        val shardGroups = influx.showShardGroups.get.right.get
+//        val shardGroups = influx.showShardGroups.success.value.value
 //
 //        shardGroups should not equal Array.empty
 //

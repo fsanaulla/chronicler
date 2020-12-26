@@ -5,15 +5,20 @@ import java.nio.file.Paths
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
-import org.scalatest.concurrent.{Eventually, IntegrationPatience}
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.{EitherValues, TryValues}
 
 class CompressionSpec
-  extends FlatSpec
-  with Matchers
-  with DockerizedInfluxDB
-  with Eventually
-  with IntegrationPatience {
+    extends AnyFlatSpec
+    with Matchers
+    with ScalaFutures
+    with EitherValues
+    with TryValues
+    with DockerizedInfluxDB
+    with Eventually
+    with IntegrationPatience {
 
   override def afterAll(): Unit = {
     mng.close()
@@ -33,18 +38,18 @@ class CompressionSpec
 
   it should "ping database" in {
     eventually {
-      io.ping.get.right.get.version shouldEqual version
+      io.ping.success.value.value.version shouldEqual version
     }
   }
 
   it should "write data from file" in {
-    mng.createDatabase(testDB).get.right.get shouldEqual 200
+    mng.createDatabase(testDB).success.value.value shouldEqual 200
 
     db.writeFromFile(Paths.get(getClass.getResource("/large_batch.txt").getPath))
-      .get
-      .right
-      .get shouldEqual 204
+      .success
+      .value
+      .value shouldEqual 204
 
-    db.readJson("SELECT * FROM test1").get.right.get.length shouldEqual 10000
+    db.readJson("SELECT * FROM test1").success.value.value.length shouldEqual 10000
   }
 }

@@ -21,7 +21,8 @@ import com.github.fsanaulla.chronicler.akka.shared.handlers.AkkaQueryBuilder
 import com.github.fsanaulla.chronicler.core.duration._
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.RetentionPolicyManagementQuery
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 import scala.language.postfixOps
 
@@ -31,13 +32,13 @@ import scala.language.postfixOps
   * Date: 27.07.17
   */
 class RetentionPolicyManagementQuerySpec
-  extends FlatSpec
-  with Matchers
-  with RetentionPolicyManagementQuery[Uri] {
+    extends AnyFlatSpec
+    with Matchers
+    with RetentionPolicyManagementQuery[Uri] {
 
   trait AuthEnv {
-    val credentials                   = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("http", "localhost", 8086, credentials)
+    val credentials: Option[InfluxCredentials] = Some(InfluxCredentials("admin", "admin"))
+    implicit val qb: AkkaQueryBuilder          = new AkkaQueryBuilder("http", "localhost", 8086, credentials)
   }
 
   trait NonAuthEnv {

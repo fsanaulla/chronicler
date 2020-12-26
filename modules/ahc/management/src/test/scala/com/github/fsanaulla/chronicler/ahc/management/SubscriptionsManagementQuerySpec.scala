@@ -21,7 +21,8 @@ import com.github.fsanaulla.chronicler.ahc.shared.handlers.AhcQueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.Destinations
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.SubscriptionsManagementQuery
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 /**
   * Created by
@@ -29,9 +30,9 @@ import org.scalatest.{FlatSpec, Matchers}
   * Date: 21.08.17
   */
 class SubscriptionsManagementQuerySpec
-  extends FlatSpec
-  with Matchers
-  with SubscriptionsManagementQuery[Uri] {
+    extends AnyFlatSpec
+    with Matchers
+    with SubscriptionsManagementQuery[Uri] {
 
   trait Env {
     val schema = "http"
@@ -40,8 +41,8 @@ class SubscriptionsManagementQuerySpec
   }
 
   trait AuthEnv extends Env {
-    val credentials                  = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(schema, host, port, credentials)
+    val credentials: Option[InfluxCredentials] = Some(InfluxCredentials("admin", "admin"))
+    implicit val qb: AhcQueryBuilder           = new AhcQueryBuilder(schema, host, port, credentials)
   }
 
   trait NonAuthEnv extends Env {

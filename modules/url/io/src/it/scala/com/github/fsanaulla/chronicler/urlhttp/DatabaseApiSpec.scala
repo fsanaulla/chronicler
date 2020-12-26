@@ -9,7 +9,10 @@ import com.github.fsanaulla.chronicler.urlhttp.SampleEntitys._
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.{EitherValues, TryValues}
 import org.typelevel.jawn.ast.{JArray, JNum, JString, JValue}
 
 /**
@@ -17,7 +20,13 @@ import org.typelevel.jawn.ast.{JArray, JNum, JString, JValue}
   * Author: fayaz.sanaulla@gmail.com
   * Date: 02.03.18
   */
-class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
+class DatabaseApiSpec
+    extends AnyFlatSpec
+    with Matchers
+    with ScalaFutures
+    with EitherValues
+    with TryValues
+    with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
     mng.close()
@@ -29,7 +38,7 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 
   val testDB = "db"
 
-  lazy val influxConf =
+  lazy val influxConf: InfluxConfig =
     InfluxConfig(s"http://$host", port, Some(creds))
 
   lazy val mng: UrlManagementClient =
@@ -41,14 +50,14 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
   lazy val db: io.Database = io.database(testDB)
 
   it should "write data from file" in {
-    mng.createDatabase(testDB).get.right.get shouldEqual 200
+    mng.createDatabase(testDB).success.value.value shouldEqual 200
 
     db.writeFromFile(Paths.get(getClass.getResource("/points.txt").getPath))
-      .get
-      .right
-      .get shouldEqual 204
+      .success
+      .value
+      .value shouldEqual 204
 
-    db.readJson("SELECT * FROM test1").get.right.get.length shouldEqual 3
+    db.readJson("SELECT * FROM test1").success.value.value.length shouldEqual 3
   }
 
   it should "write 2 points represented entities" in {
@@ -64,23 +73,23 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
       .addTag("lastName", "Franko")
       .addField("age", 36)
 
-    db.writePoint(point1).get.right.get shouldEqual 204
+    db.writePoint(point1).success.value.value shouldEqual 204
 
     db.readJson("SELECT * FROM test2", epoch = Epochs.Nanoseconds)
-      .get
-      .right
-      .get
+      .success
+      .value
+      .value
       // skip timestamp
       .map(jarr => jarr.copy(vs = jarr.vs.tail)) shouldEqual Array(
       JArray(Array(JNum(54), JString("Martin"), JString("Odersky"), JString("Male")))
     )
 
-    db.bulkWritePoints(Array(point1, point2)).get.right.get shouldEqual 204
+    db.bulkWritePoints(Array(point1, point2)).success.value.value shouldEqual 204
 
     db.readJson("SELECT * FROM test2", epoch = Epochs.Nanoseconds)
-      .get
-      .right
-      .get
+      .success
+      .value
+      .value
       // skip timestamp
       .map(jarr => jarr.copy(vs = jarr.vs.tail)) shouldEqual Array(
       JArray(Array(JNum(54), JString("Martin"), JString("Odersky"), JString("Male"))),
@@ -99,18 +108,18 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
       )
       .get
 
-    multiQuery.right.get.length shouldEqual 2
-    multiQuery.right.get shouldBe a[Array[_]]
+    multiQuery.value.length shouldEqual 2
+    multiQuery.value shouldBe a[Array[_]]
 
-    multiQuery.right.get.head.length shouldEqual 3
-    multiQuery.right.get.head shouldBe a[Array[_]]
-    multiQuery.right.get.head.head shouldBe a[JArray]
+    multiQuery.value.head.length shouldEqual 3
+    multiQuery.value.head shouldBe a[Array[_]]
+    multiQuery.value.head.head shouldBe a[JArray]
 
-    multiQuery.right.get.last.length shouldEqual 1
-    multiQuery.right.get.last shouldBe a[Array[_]]
-    multiQuery.right.get.last.head shouldBe a[JArray]
+    multiQuery.value.last.length shouldEqual 1
+    multiQuery.value.last shouldBe a[Array[_]]
+    multiQuery.value.last.head shouldBe a[JArray]
 
-    multiQuery.right.get
+    multiQuery.value
       .map(_.map(_.arrayValue.get.tail)) shouldEqual largeMultiJsonEntity.map(
       _.map(_.arrayValue.get.tail)
     )
@@ -118,14 +127,14 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
 
   it should "write native" in {
     db.writeNative("test3,sex=Male,firstName=Jame,lastName=Lannister age=48")
-      .get
-      .right
-      .get shouldEqual 204
+      .success
+      .value
+      .value shouldEqual 204
 
     db.readJson("SELECT * FROM test3")
-      .get
-      .right
-      .get
+      .success
+      .value
+      .value
       .map(jarr => jarr.copy(vs = jarr.vs.tail)) shouldEqual Array(
       JArray(Array(JNum(48), JString("Jame"), JString("Lannister"), JString("Male")))
     )
@@ -136,14 +145,14 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
           "test4,sex=Female,firstName=Deny,lastName=Targaryen age=25"
         )
       )
-      .get
-      .right
-      .get shouldEqual 204
+      .success
+      .value
+      .value shouldEqual 204
 
     db.readJson("SELECT * FROM test4")
-      .get
-      .right
-      .get
+      .success
+      .value
+      .value
       .map(jarr => jarr.copy(vs = jarr.vs.tail)) shouldEqual Array(
       JArray(Array(JNum(25), JString("Deny"), JString("Targaryen"), JString("Female"))),
       JArray(Array(JNum(24), JString("Jon"), JString("Snow"), JString("Male")))
@@ -155,13 +164,13 @@ class DatabaseApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
       .addTag("key,", "value,")
       .addField("field=key", 1)
 
-    db.writePoint(p).get.right.get shouldEqual 204
+    db.writePoint(p).success.value.value shouldEqual 204
 
-    db.readJson("SELECT * FROM test6").get.right.get.length shouldEqual 1
+    db.readJson("SELECT * FROM test6").success.value.value.length shouldEqual 1
   }
 
   it should "validate empty response" in {
-    db.readJson("SELECT * FROM test7").get.right.get.length shouldEqual 0
+    db.readJson("SELECT * FROM test7").success.value.value.length shouldEqual 0
   }
 }
 

@@ -1,13 +1,16 @@
 package com.github.fsanaulla.chronicler.ahc.io.it
 
-import com.github.fsanaulla.chronicler.ahc.io.InfluxIO
-import com.github.fsanaulla.chronicler.ahc.management.InfluxMng
+import com.github.fsanaulla.chronicler.ahc.io.{AhcIOClient, InfluxIO}
+import com.github.fsanaulla.chronicler.ahc.management.{AhcManagementClient, InfluxMng}
 import com.github.fsanaulla.chronicler.ahc.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either.EitherOps
 import com.github.fsanaulla.chronicler.core.enums.Precisions
-import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
-import org.scalatest.{Matchers, WordSpec}
+import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
+import org.scalatest.EitherValues
+import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import org.typelevel.jawn.ast.{JArray, JNum, JString}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -15,7 +18,13 @@ import scala.concurrent.Future
 import scala.io.Source
 
 // https://github.com/fsanaulla/chronicler/issues/193
-class GroupedApiSpec extends WordSpec with Matchers with Futures with DockerizedInfluxDB {
+class GroupedApiSpec
+    extends AnyWordSpec
+    with Matchers
+    with ScalaFutures
+    with EitherValues
+    with IntegrationPatience
+    with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
     mng.close()
@@ -25,11 +34,11 @@ class GroupedApiSpec extends WordSpec with Matchers with Futures with Dockerized
 
   val dbName = "mydb"
 
-  lazy val influxConf =
+  lazy val influxConf: InfluxConfig =
     InfluxConfig(host, port, credentials = Some(creds), compress = false, None)
-  lazy val mng =
+  lazy val mng: AhcManagementClient =
     InfluxMng(host, port, credentials = Some(creds))
-  lazy val io =
+  lazy val io: AhcIOClient =
     InfluxIO(influxConf)
 
   "Grouped Api" should {

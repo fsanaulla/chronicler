@@ -2,8 +2,11 @@ package com.github.fsanaulla.chronicler.ahc.management
 
 import com.github.fsanaulla.chronicler.core.enums.Privileges
 import com.github.fsanaulla.chronicler.core.model.{InfluxException, UserPrivilegesInfo}
-import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
-import org.scalatest.{FlatSpec, Matchers}
+import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
+import org.scalatest.EitherValues
+import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -12,7 +15,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 17.08.17
   */
-class AuthenticationSpec extends FlatSpec with Matchers with Futures with DockerizedInfluxDB {
+class AuthenticationSpec
+    extends AnyFlatSpec
+    with Matchers
+    with ScalaFutures
+    with EitherValues
+    with IntegrationPatience
+    with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
     influx.close()
@@ -35,32 +44,31 @@ class AuthenticationSpec extends FlatSpec with Matchers with Futures with Docker
     InfluxMng(host = host, port = port, credentials = Some(creds))
 
   "Authenticated User Management API" should "create admin user " in {
-    influx.showUsers.futureValue.left.get shouldBe a[InfluxException]
+    influx.showUsers.futureValue.left.value shouldBe a[InfluxException]
   }
 
   it should "create database" in {
-    authInflux.createDatabase(userDB).futureValue.right.get shouldEqual 200
+    authInflux.createDatabase(userDB).futureValue.value shouldEqual 200
   }
 
   it should "create user" in {
-    authInflux.createUser(userName, userPass).futureValue.right.get shouldEqual 200
-    authInflux.showUsers.futureValue.right.get.exists(_.username == userName) shouldEqual true
+    authInflux.createUser(userName, userPass).futureValue.value shouldEqual 200
+    authInflux.showUsers.futureValue.value.exists(_.username == userName) shouldEqual true
   }
 
   it should "set user password" in {
-    authInflux.setUserPassword(userName, userNPass).futureValue.right.get shouldEqual 200
+    authInflux.setUserPassword(userName, userNPass).futureValue.value shouldEqual 200
   }
 
   it should "set user privileges" in {
     authInflux
       .setPrivileges(userName, userDB, Privileges.READ)
       .futureValue
-      .right
-      .get shouldEqual 200
+      .value shouldEqual 200
   }
 
   it should "get user privileges" in {
-    val userPrivs = authInflux.showUserPrivileges(userName).futureValue.right.get
+    val userPrivs = authInflux.showUserPrivileges(userName).futureValue.value
 
     userPrivs.length shouldEqual 1
     userPrivs.exists { upi =>
@@ -72,15 +80,14 @@ class AuthenticationSpec extends FlatSpec with Matchers with Futures with Docker
     authInflux
       .revokePrivileges(userName, userDB, Privileges.READ)
       .futureValue
-      .right
-      .get shouldEqual 200
-    authInflux.showUserPrivileges(userName).futureValue.right.get shouldEqual Array(
+      .value shouldEqual 200
+    authInflux.showUserPrivileges(userName).futureValue.value shouldEqual Array(
       UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES)
     )
   }
 
   it should "drop user" in {
-    authInflux.dropUser(userName).futureValue.right.get shouldEqual 200
-    authInflux.dropUser(admin).futureValue.right.get shouldEqual 200
+    authInflux.dropUser(userName).futureValue.value shouldEqual 200
+    authInflux.dropUser(admin).futureValue.value shouldEqual 200
   }
 }

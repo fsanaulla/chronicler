@@ -1,18 +1,27 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
-import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity, Futures}
+import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity}
 import com.github.fsanaulla.chronicler.urlhttp.SampleEntitys._
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.{EitherValues, TryValues}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 28.09.17
   */
-class MeasurementApiSpec extends FlatSpec with Matchers with Futures with DockerizedInfluxDB {
+class MeasurementApiSpec
+    extends AnyFlatSpec
+    with Matchers
+    with ScalaFutures
+    with EitherValues
+    with TryValues
+    with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
     mng.close()
@@ -35,16 +44,16 @@ class MeasurementApiSpec extends FlatSpec with Matchers with Futures with Docker
     io.measurement[FakeEntity](db, measName)
 
   it should "write single point" in {
-    mng.createDatabase(db).get.right.get shouldEqual 200
+    mng.createDatabase(db).success.value.value shouldEqual 200
 
-    meas.write(singleEntity).get.right.get shouldEqual 204
+    meas.write(singleEntity).success.value.value shouldEqual 204
 
-    meas.read(s"SELECT * FROM $measName").get.right.get shouldEqual Seq(singleEntity)
+    meas.read(s"SELECT * FROM $measName").success.value.value shouldEqual Seq(singleEntity)
   }
 
   it should "bulk write" in {
-    meas.bulkWrite(multiEntitys).get.right.get shouldEqual 204
+    meas.bulkWrite(multiEntitys).success.value.value shouldEqual 204
 
-    meas.read(s"SELECT * FROM $measName").get.right.get.length shouldEqual 3
+    meas.read(s"SELECT * FROM $measName").success.value.value.length shouldEqual 3
   }
 }

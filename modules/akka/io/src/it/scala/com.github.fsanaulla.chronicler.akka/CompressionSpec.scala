@@ -4,22 +4,27 @@ import java.nio.file.Paths
 
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
-import com.github.fsanaulla.chronicler.akka.io.{AkkaDatabaseApi, InfluxIO}
-import com.github.fsanaulla.chronicler.akka.management.InfluxMng
+import com.github.fsanaulla.chronicler.akka.io.{AkkaDatabaseApi, AkkaIOClient, InfluxIO}
+import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, InfluxMng}
 import com.github.fsanaulla.chronicler.akka.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
+import org.scalatest.EitherValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatest.{FlatSpecLike, Matchers}
+import org.scalatest.flatspec.AnyFlatSpecLike
+import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.ExecutionContextExecutor
 
 class CompressionSpec
-  extends TestKit(ActorSystem())
-  with FlatSpecLike
-  with Matchers
-  with DockerizedInfluxDB
-  with ScalaFutures
-  with IntegrationPatience {
+    extends TestKit(ActorSystem())
+    with AnyFlatSpecLike
+    with Matchers
+    with DockerizedInfluxDB
+    with ScalaFutures
+    with EitherValues
+    with IntegrationPatience {
+
+  implicit val ec: ExecutionContextExecutor = system.dispatcher
 
   override def afterAll(): Unit = {
     mng.close()
@@ -28,29 +33,26 @@ class CompressionSpec
     super.afterAll()
   }
 
-  implicit val ec: ExecutionContextExecutor = system.dispatcher
-
   val testDB = "db"
 
-  lazy val influxConf =
+  lazy val influxConf: InfluxConfig =
     InfluxConfig(host, port, credentials = Some(creds), compress = true)
 
-  lazy val mng =
+  lazy val mng: AkkaManagementClient =
     InfluxMng(host, port, credentials = Some(creds))
 
-  lazy val io =
+  lazy val io: AkkaIOClient =
     InfluxIO(influxConf)
 
   lazy val db: AkkaDatabaseApi = io.database(testDB)
 
   it should "write data from file" in {
-    mng.createDatabase(testDB).futureValue.right.get shouldEqual 200
+    mng.createDatabase(testDB).futureValue.value shouldEqual 200
 
     db.writeFromFile(Paths.get(getClass.getResource("/large_batch.txt").getPath))
       .futureValue
-      .right
-      .get shouldEqual 204
+      .value shouldEqual 204
 
-    db.readJson("SELECT * FROM test1").futureValue.right.get.length shouldEqual 10000
+    db.readJson("SELECT * FROM test1").futureValue.value.length shouldEqual 10000
   }
 }

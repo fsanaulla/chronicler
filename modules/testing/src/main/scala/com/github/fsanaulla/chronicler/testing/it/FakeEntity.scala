@@ -5,13 +5,12 @@ import com.github.fsanaulla.chronicler.core.jawn._
 import com.github.fsanaulla.chronicler.core.model.{InfluxReader, InfluxWriter, ParsingException}
 import org.typelevel.jawn.ast.{JArray, JNum, JString}
 
-case class FakeEntity(sex: String, firstName: String, lastName: String, age: Int)
+final case class FakeEntity(sex: String, firstName: String, lastName: String, age: Int)
 
 object FakeEntity {
 
-  def apply(firstName: String,
-            lastName: String,
-            age: Int): FakeEntity = new FakeEntity(sex = "Male", firstName = firstName, lastName = lastName, age = age)
+  def apply(firstName: String, lastName: String, age: Int): FakeEntity =
+    new FakeEntity(sex = "Male", firstName = firstName, lastName = lastName, age = age)
 
   // to be compatible with scala 2.11
   implicit val rd: InfluxReader[FakeEntity] = new InfluxReader[FakeEntity] {
@@ -21,7 +20,11 @@ object FakeEntity {
       case _ =>
         Left(new ParsingException("Can't deserialize FakeEntity"))
     }
-    override def readUnsafe(js: JArray): FakeEntity = read(js).right.get
+    override def readUnsafe(js: JArray): FakeEntity = {
+      val Right(result) = read(js)
+
+      result
+    }
   }
 
   // to be compatible with scala 2.11

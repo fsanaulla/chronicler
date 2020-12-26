@@ -17,9 +17,10 @@
 package com.github.fsanaulla.chronicler.akka.shared.handlers
 
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class AkkaQueryBuilderSpec extends WordSpec with Matchers {
+class AkkaQueryBuilderSpec extends AnyWordSpec with Matchers {
 
   implicit val credentials: Option[InfluxCredentials] = None
   implicit val nonEmptyCredentials: Some[InfluxCredentials] =

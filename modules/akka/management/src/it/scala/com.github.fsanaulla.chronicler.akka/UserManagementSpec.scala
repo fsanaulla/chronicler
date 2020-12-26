@@ -5,8 +5,11 @@ import _root_.akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, InfluxMng}
 import com.github.fsanaulla.chronicler.core.enums.Privileges
 import com.github.fsanaulla.chronicler.core.model.{UserInfo, UserPrivilegesInfo}
-import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
-import org.scalatest.{FlatSpecLike, Matchers}
+import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
+import org.scalatest.EitherValues
+import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.flatspec.AnyFlatSpecLike
+import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -16,11 +19,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Date: 10.08.17
   */
 class UserManagementSpec
-  extends TestKit(ActorSystem())
-  with FlatSpecLike
-  with Matchers
-  with Futures
-  with DockerizedInfluxDB {
+    extends TestKit(ActorSystem())
+    with AnyFlatSpecLike
+    with Matchers
+    with ScalaFutures
+    with IntegrationPatience
+    with EitherValues
+    with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
     influx.close()
@@ -40,64 +45,62 @@ class UserManagementSpec
     InfluxMng(host, port, Some(creds))
 
   "User Management API" should "create user" in {
-    influx.createDatabase(userDB).futureValue.right.get shouldEqual 200
+    influx.createDatabase(userDB).futureValue.value shouldEqual 200
 
-    influx.createUser(userName, userPass).futureValue.right.get shouldEqual 200
-    influx.showUsers.futureValue.right.get
+    influx.createUser(userName, userPass).futureValue.value shouldEqual 200
+    influx.showUsers.futureValue.value
       .contains(UserInfo(userName, isAdmin = false)) shouldEqual true
   }
 
   it should "create admin" in {
-    influx.createAdmin(admin, adminPass).futureValue.right.get shouldEqual 200
-    influx.showUsers.futureValue.right.get
+    influx.createAdmin(admin, adminPass).futureValue.value shouldEqual 200
+    influx.showUsers.futureValue.value
       .contains(UserInfo(admin, isAdmin = true)) shouldEqual true
   }
 
   it should "show user privileges" in {
-    influx.showUserPrivileges(admin).futureValue.right.get shouldEqual Nil
+    influx.showUserPrivileges(admin).futureValue.value shouldEqual Nil
   }
 
   it should "set user password" in {
-    influx.setUserPassword(userName, userNPass).futureValue.right.get shouldEqual 200
+    influx.setUserPassword(userName, userNPass).futureValue.value shouldEqual 200
   }
 
   it should "set privileges" in {
-    influx.setPrivileges(userName, userDB, Privileges.READ).futureValue.right.get shouldEqual 200
+    influx.setPrivileges(userName, userDB, Privileges.READ).futureValue.value shouldEqual 200
     influx
       .setPrivileges("unknown", userDB, Privileges.READ)
       .futureValue
       .left
-      .get
+      .value
       .getMessage shouldEqual "user not found"
 
-    influx.showUserPrivileges(userName).futureValue.right.get shouldEqual Array(
+    influx.showUserPrivileges(userName).futureValue.value shouldEqual Array(
       UserPrivilegesInfo(userDB, Privileges.READ)
     )
   }
 
   it should "revoke privileges" in {
-    influx.revokePrivileges(userName, userDB, Privileges.READ).futureValue.right.get shouldEqual 200
-    influx.showUserPrivileges(userName).futureValue.right.get shouldEqual Array(
+    influx.revokePrivileges(userName, userDB, Privileges.READ).futureValue.value shouldEqual 200
+    influx.showUserPrivileges(userName).futureValue.value shouldEqual Array(
       UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES)
     )
   }
 
   it should "disable admin" in {
-    influx.disableAdmin(admin).futureValue.right.get shouldEqual 200
-    influx.showUsers.futureValue.right.get
+    influx.disableAdmin(admin).futureValue.value shouldEqual 200
+    influx.showUsers.futureValue.value
       .contains(UserInfo(admin, isAdmin = false)) shouldEqual true
   }
 
   it should "make admin" in {
-    influx.makeAdmin(admin).futureValue.right.get shouldEqual 200
-    influx.showUsers.futureValue.right.get
+    influx.makeAdmin(admin).futureValue.value shouldEqual 200
+    influx.showUsers.futureValue.value
       .contains(UserInfo(admin, isAdmin = true)) shouldEqual true
   }
 
   it should "drop users" in {
-    influx.dropUser(userName).futureValue.right.get shouldEqual 200
-    influx.dropUser(admin).futureValue.right.get shouldEqual 200
-
-    influx.close() shouldEqual {}
+    influx.dropUser(userName).futureValue.value shouldEqual 200
+    influx.dropUser(admin).futureValue.value shouldEqual 200
   }
 }

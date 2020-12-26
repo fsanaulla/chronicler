@@ -8,8 +8,10 @@ import com.github.fsanaulla.chronicler.akka.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either.EitherOps
 import com.github.fsanaulla.chronicler.core.enums.Precisions
-import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
-import org.scalatest.{Matchers, WordSpecLike}
+import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
+import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 import org.typelevel.jawn.ast.{JArray, JNum, JString}
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
@@ -17,11 +19,12 @@ import scala.io.Source
 
 // https://github.com/fsanaulla/chronicler/issues/193
 class GroupedApiSpec
-  extends TestKit(ActorSystem())
-  with WordSpecLike
-  with Matchers
-  with Futures
-  with DockerizedInfluxDB {
+    extends TestKit(ActorSystem())
+    with AnyWordSpecLike
+    with Matchers
+    with ScalaFutures
+    with IntegrationPatience
+    with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
     mng.close()
@@ -33,7 +36,7 @@ class GroupedApiSpec
   implicit val ec: ExecutionContextExecutor = system.dispatcher
   val dbName                                = "mydb"
 
-  lazy val influxConf =
+  lazy val influxConf: InfluxConfig =
     InfluxConfig(host, port, credentials = Some(creds), compress = true, None)
   lazy val mng: AkkaManagementClient =
     InfluxMng(host, port, credentials = Some(creds))
@@ -41,6 +44,7 @@ class GroupedApiSpec
     InfluxIO(influxConf)
 
   "Grouped Api" should {
+
     "prepare data for testing" in {
       (for {
         _ <- mng.createDatabase(dbName)

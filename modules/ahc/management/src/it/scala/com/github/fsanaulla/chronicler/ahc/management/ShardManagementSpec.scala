@@ -1,7 +1,10 @@
 package com.github.fsanaulla.chronicler.ahc.management
 
-import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, Futures}
-import org.scalatest.{FlatSpec, Matchers}
+import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
+import org.scalatest.EitherValues
+import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -10,7 +13,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
-class ShardManagementSpec extends FlatSpec with Matchers with Futures with DockerizedInfluxDB {
+class ShardManagementSpec
+    extends AnyFlatSpec
+    with Matchers
+    with ScalaFutures
+    with EitherValues
+    with IntegrationPatience
+    with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
     influx.close()
@@ -24,16 +33,16 @@ class ShardManagementSpec extends FlatSpec with Matchers with Futures with Docke
 
   "Shard Management API" should "show shards" in {
 
-    influx.createDatabase(testDb, shardDuration = Some("1s")).futureValue.right.get shouldEqual 200
+    influx.createDatabase(testDb, shardDuration = Some("1s")).futureValue.value shouldEqual 200
 
-    val shards = influx.showShards.futureValue.right.get
+    val shards = influx.showShards.futureValue.value
 
     shards should not be Nil
   }
 
 //  it should "show shards groupe" in {
 //
-//    val shardGroups = influx.showShardGroups.futureValue.right.get
+//    val shardGroups = influx.showShardGroups.futureValue.value
 //
 //    shardGroups should not equal Nil
 //

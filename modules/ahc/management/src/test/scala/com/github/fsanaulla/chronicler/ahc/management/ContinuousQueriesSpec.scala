@@ -20,14 +20,15 @@ import com.github.fsanaulla.chronicler.ahc.shared.Uri
 import com.github.fsanaulla.chronicler.ahc.shared.handlers.AhcQueryBuilder
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.ContinuousQueries
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class ContinuousQueriesSpec extends FlatSpec with Matchers with ContinuousQueries[Uri] {
+class ContinuousQueriesSpec extends AnyFlatSpec with Matchers with ContinuousQueries[Uri] {
 
   trait Env {
     val schema = "http"
@@ -36,8 +37,8 @@ class ContinuousQueriesSpec extends FlatSpec with Matchers with ContinuousQuerie
   }
 
   trait AuthEnv extends Env {
-    val credentials                  = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(schema, host, port, credentials)
+    val credentials: Option[InfluxCredentials] = Some(InfluxCredentials("admin", "admin"))
+    implicit val qb: AhcQueryBuilder           = new AhcQueryBuilder(schema, host, port, credentials)
   }
 
   trait NonAuthEnv extends Env {

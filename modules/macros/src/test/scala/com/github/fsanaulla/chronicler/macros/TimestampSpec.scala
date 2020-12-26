@@ -20,10 +20,12 @@ import com.github.fsanaulla.chronicler.core.model.InfluxReader
 import com.github.fsanaulla.chronicler.macros.annotations._
 import com.github.fsanaulla.chronicler.macros.annotations.reader.{epoch, utc}
 import com.github.fsanaulla.chronicler.macros.auto._
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.EitherValues
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import org.typelevel.jawn.ast._
 
-class TimestampSpec extends WordSpec with Matchers {
+class TimestampSpec extends AnyWordSpec with Matchers with EitherValues {
 
   "@timestamp" should {
 
@@ -32,7 +34,8 @@ class TimestampSpec extends WordSpec with Matchers {
           @tag name: String,
           @tag surname: Option[String],
           @field age: Int,
-          @timestamp time: Long)
+          @timestamp time: Long
+      )
       val epochRd = InfluxReader[GeneralEpochTimestamp]
 
       "epoch time" in {
@@ -40,13 +43,11 @@ class TimestampSpec extends WordSpec with Matchers {
           .read(
             JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull))
           )
-          .right
-          .get shouldEqual GeneralEpochTimestamp("Fz", None, 4, 1438715114318570484L)
+          .value shouldEqual GeneralEpochTimestamp("Fz", None, 4, 1438715114318570484L)
 
         epochRd
           .read(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
-          .right
-          .get shouldEqual GeneralEpochTimestamp("Fz", None, 4, 1438715114318570484L)
+          .value shouldEqual GeneralEpochTimestamp("Fz", None, 4, 1438715114318570484L)
 
         epochRd
           .readUnsafe(
@@ -63,21 +64,20 @@ class TimestampSpec extends WordSpec with Matchers {
           @tag name: String,
           @tag surname: Option[String],
           @field age: Int,
-          @timestamp time: String)
+          @timestamp time: String
+      )
 
       val utcRd = InfluxReader[GeneralUtcTimestamp]
       "utc time" in {
         utcRd
           .read(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
-          .right
-          .get shouldEqual GeneralUtcTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z")
+          .value shouldEqual GeneralUtcTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z")
 
         utcRd
           .read(
             JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull))
           )
-          .right
-          .get shouldEqual GeneralUtcTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z")
+          .value shouldEqual GeneralUtcTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z")
 
         utcRd
           .readUnsafe(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
@@ -98,12 +98,12 @@ class TimestampSpec extends WordSpec with Matchers {
           @tag name: String,
           @tag surname: Option[String],
           @field age: Int,
-          @epoch @timestamp time: Long)
+          @epoch @timestamp time: Long
+      )
       val rd = InfluxReader[EpochTimestamp]
 
       rd.read(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
-        .right
-        .get shouldEqual EpochTimestamp("Fz", None, 4, 1438715114318570484L)
+        .value shouldEqual EpochTimestamp("Fz", None, 4, 1438715114318570484L)
 
       rd.readUnsafe(JArray(Array(LongNum(1438715114318570484L), JNum(4), JString("Fz"), JNull)))
         .shouldEqual(EpochTimestamp("Fz", None, 4, 1438715114318570484L))
@@ -116,14 +116,14 @@ class TimestampSpec extends WordSpec with Matchers {
           @tag name: String,
           @tag surname: Option[String],
           @field age: Int,
-          @utc @timestamp time: String)
+          @utc @timestamp time: String
+      )
       val rd = InfluxReader[UTCTimestamp]
 
       rd.read(
           JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull))
         )
-        .right
-        .get shouldEqual UTCTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z")
+        .value shouldEqual UTCTimestamp("Fz", None, 4, "2015-08-04T19:05:14.318570484Z")
 
       rd.readUnsafe(
           JArray(Array(JString("2015-08-04T19:05:14.318570484Z"), JNum(4), JString("Fz"), JNull))

@@ -12,13 +12,22 @@ import com.github.fsanaulla.chronicler.urlhttp.StreamingApiSpec._
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlDatabaseApi, UrlIOClient, UrlMeasurementApi}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.{EitherValues, TryValues}
 import org.typelevel.jawn.ast.JValue
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Success
 
-class StreamingApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
+class StreamingApiSpec
+    extends AnyFlatSpec
+    with Matchers
+    with ScalaFutures
+    with EitherValues
+    with TryValues
+    with DockerizedInfluxDB {
 
   override def afterAll(): Unit = {
     mng.close()
@@ -42,12 +51,12 @@ class StreamingApiSpec extends FlatSpec with Matchers with DockerizedInfluxDB {
   lazy val meas: UrlMeasurementApi[Point] = io.measurement[Point](testDB, measName)
 
   it should "read chunked json result" in {
-    mng.createDatabase(testDB).get.right.get shouldEqual 200
+    mng.createDatabase(testDB).success.value.value shouldEqual 200
 
     db.writeFromFile(Paths.get(getClass.getResource("/points.txt").getPath))
-      .get
-      .right
-      .get shouldEqual 204
+      .success
+      .value
+      .value shouldEqual 204
 
     val arr = new ArrayBuffer[JValue](3)
 
@@ -111,7 +120,8 @@ object StreamingApiSpec {
       @tag host: String,
       @tag region: Option[String],
       @field value: Double,
-      @epoch @timestamp time: Long)
+      @epoch @timestamp time: Long
+  )
 
   implicit val rd: InfluxReader[Point] = Influx.reader
 }
