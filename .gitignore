@@ -3,4 +3,9 @@
 target
 /project/project
 .DS_Store
-/.bsp
+.bsp
+.vscode
+.metals
+.bloop
+/project/metals
+.sbt

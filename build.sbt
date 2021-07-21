@@ -1,59 +1,109 @@
 import sbt.Keys.{libraryDependencies, name}
+import xerial.sbt.Sonatype._
+import de.heikoseeberger.sbtheader.License
+import Owner._
 
-val projectName = "chronicler"
+ThisBuild / scalaVersion := "2.13.4"
+ThisBuild / organization := "com.github.fsanaulla"
+ThisBuild / description := "RDD primitive for fetching data from an HTTP source "
+ThisBuild / homepage := Some(url(s"${Owner.github}/${Owner.projectName}"))
+ThisBuild / developers += Developer(
+  id = Owner.id,
+  name = Owner.name,
+  email = Owner.email,
+  url = url(Owner.github)
+)
+
+// publish
+ThisBuild / scmInfo := Some(
+  ScmInfo(
+    url(s"${Owner.github}/${Owner.projectName}"),
+    s"scm:git@github.com:${Owner.id}/${Owner.projectName}.git"
+  )
+)
+ThisBuild / publishTo := sonatypePublishToBundle.value
+ThisBuild / sonatypeBundleDirectory := (ThisBuild / baseDirectory).value / "target" / "sonatype-staging" / s"${version.value}"
+ThisBuild / sonatypeProjectHosting := Some(
+  GitHubHosting(Owner.github, Owner.projectName, Owner.email)
+)
+ThisBuild / licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
+ThisBuild / pgpPassphrase := sys.env.get("PGP_PASSPHRASE").map(_.toCharArray)
+ThisBuild / publishMavenStyle := true
+ThisBuild / headerLicense := Some(License.ALv2("2017-2021", Owner.name))
+
+val scala213 = "2.13.6"
+val scala212 = "2.12.14"
+val scala211 = "2.11.12"
 
 lazy val chronicler = project
   .in(file("."))
-  .settings(Settings.common: _*)
-  .settings(Settings.publish: _*)
-  .settings(parallelExecution in Compile := false)
-//  .aggregate(
-//    coreIO,
-//    coreManagement,
-//    coreShared,
-//    ahcIO,
-//    ahcManagement,
-//    ahcShared,
-//    akkaIO,
-//    akkaManagement,
-//    akkaShared,
-//    urlIO,
-//    urlManagement,
-//    urlShared,
-//    macros,
-//    udp
-//  )
+  .configure(license)
+  .aggregate(
+    Seq(
+      coreIO,
+      coreManagement,
+      coreShared,
+      ahcIO,
+      ahcManagement,
+      ahcShared,
+      akkaIO,
+      akkaManagement,
+      akkaShared,
+      urlIO,
+      urlManagement,
+      urlShared,
+      macros,
+      udp
+    ).flatMap(_.projectRefs): _*
+  )
 
 //////////////////////////////////////////////////////
 //////////////////// CORE MODULES ////////////////////
 //////////////////////////////////////////////////////
-lazy val coreIO = project
+lazy val coreIO = projectMatrix
   .in(file("modules/core/io"))
+  .settings(
+    name := s"$projectName-core-io"
+  )
   .configure(defaultSettings)
   .dependsOn(coreShared)
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
-lazy val coreManagement = project
+lazy val coreManagement = projectMatrix
   .in(file("modules/core/management"))
+  .settings(
+    name := s"$projectName-core-management"
+  )
   .configure(defaultSettings)
   .dependsOn(coreShared)
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
-lazy val coreShared = project
+lazy val coreShared = projectMatrix
   .in(file("modules/core/shared"))
+  .settings(
+    name := s"$projectName-core-shared",
+    libraryDependencies ++= List(
+      "com.beachape"  %% "enumeratum" % "1.6.1",
+      "org.typelevel" %% "jawn-ast"   % "0.14.3"
+    ) ++ Library.coreTestDeps
+  )
   .settings(Settings.propertyTestSettings: _*)
   .configs(Settings.PropertyTest)
   .configure(defaultSettings)
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
 //////////////////////////////////////////////////////
 ////////////////// URL HTTP MODULES //////////////////
 //////////////////////////////////////////////////////
-lazy val urlManagement = project
+lazy val urlManagement = projectMatrix
   .in(file("modules/url/management"))
   .settings(name := s"$projectName-url-management")
   .configure(defaultSettingsWithIt)
   .dependsOn(coreManagement, urlShared)
   .dependsOn(testing % "it,test")
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
-lazy val urlIO = project
+lazy val urlIO = projectMatrix
   .in(file("modules/url/io"))
   .settings(name := s"$projectName-url-io")
   .configure(defaultSettingsWithIt)
@@ -61,141 +111,150 @@ lazy val urlIO = project
   .dependsOn(urlManagement % "it,test")
   .dependsOn(macros % "it,test")
   .dependsOn(testing % "it,test")
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
-lazy val urlShared = project
+lazy val urlShared = projectMatrix
   .in(file("modules/url/shared"))
   .configure(defaultSettings)
   .dependsOn(coreShared)
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
 //////////////////////////////////////////////////////
 ////////////////// AKKA HTTP MODULES /////////////////
 //////////////////////////////////////////////////////
-lazy val akkaManagement = project
+lazy val akkaManagement = projectMatrix
   .in(file("modules/akka/management"))
   .configure(defaultSettingsWithIt)
   .dependsOn(coreManagement, akkaShared)
   .dependsOn(testing % "test,it")
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
-lazy val akkaIO = project
+lazy val akkaIO = projectMatrix
   .in(file("modules/akka/io"))
   .configure(defaultSettingsWithIt)
   .dependsOn(coreIO, akkaShared)
   .dependsOn(akkaManagement % "test,it")
   .dependsOn(testing % "test,it")
   .dependsOn(macros % "test,it")
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
-lazy val akkaShared = project
+lazy val akkaShared = projectMatrix
   .in(file("modules/akka/shared"))
   .configure(defaultSettings)
   .dependsOn(coreShared)
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
 //////////////////////////////////////////////////////
 ///////////////// ASYNC HTTP MODULES /////////////////
 //////////////////////////////////////////////////////
-lazy val ahcManagement = project
+lazy val ahcManagement = projectMatrix
   .in(file("modules/ahc/management"))
   .configure(defaultSettingsWithIt)
   .dependsOn(coreManagement, ahcShared)
   .dependsOn(testing % "it,test")
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
-lazy val ahcIO = project
+lazy val ahcIO = projectMatrix
   .in(file("modules/ahc/io"))
   .settings(name := s"$projectName-ahc-io")
   .configure(defaultSettingsWithIt)
   .dependsOn(coreIO, ahcShared)
   .dependsOn(ahcManagement % "it,test")
   .dependsOn(testing % "it,test")
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
-lazy val ahcShared = project
+lazy val ahcShared = projectMatrix
   .in(file("modules/ahc/shared"))
   .configure(defaultSettings)
   .dependsOn(coreShared)
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
 //////////////////////////////////////////////////////
 ///////////////////// UPD MODULE /////////////////////
 //////////////////////////////////////////////////////
-lazy val udp = project
+lazy val udp = projectMatrix
   .in(file("modules/udp"))
   .configure(defaultSettingsWithIt)
   .dependsOn(coreShared)
   .dependsOn(testing % "it,test")
   .dependsOn(urlIO % "it,test")
   .dependsOn(urlManagement % "it,test")
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
 //////////////////////////////////////////////////////
 ///////////////////// MACRO MODULE ///////////////////
 //////////////////////////////////////////////////////
-lazy val macros = project
+lazy val macros = projectMatrix
   .in(file("modules/macros"))
   .settings(Settings.propertyTestSettings: _*)
   .configs(Settings.PropertyTest)
   .configure(defaultSettings)
   .dependsOn(coreShared)
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
 //////////////////////////////////////////////////////
 /////////////////// TESTING MODULES //////////////////
 //////////////////////////////////////////////////////
-lazy val testing = project
+lazy val testing = projectMatrix
   .in(file("modules/testing"))
-  .settings(Settings.common: _*)
   .dependsOn(coreShared)
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
 //////////////////////////////////////////////////////
 ////////////////////// EXAMPLES //////////////////////
 //////////////////////////////////////////////////////
 lazy val akkaIOExample =
-  exampleModule("akka-io-example", "akka/io", akkaIO, macros)
+  exampleModule("akka-io-example", "akka/io", akkaIO.jvm(scala213), macros.jvm(scala213))
 
 lazy val akkaManagementExample =
-  exampleModule("akka-management-example", "akka/management", akkaManagement)
+  exampleModule("akka-management-example", "akka/management", akkaManagement.jvm(scala213))
 
 lazy val ahcIOExample =
-  exampleModule("ahc-io-example", "ahc/io", ahcIO, macros)
+  exampleModule("ahc-io-example", "ahc/io", ahcIO.jvm(scala213), macros.jvm(scala213))
 
 lazy val ahcManagementExample =
-  exampleModule("ahc-management-example", "ahc/management", ahcManagement)
+  exampleModule("ahc-management-example", "ahc/management", ahcManagement.jvm(scala213))
 
 lazy val urlIOExample =
-  exampleModule("url-io-example", "url/io", urlIO, macros)
+  exampleModule("url-io-example", "url/io", urlIO.jvm(scala213), macros.jvm(scala213))
 
 lazy val urlManagementExample =
-  exampleModule("url-management-example", "url/management", urlManagement)
+  exampleModule("url-management-example", "url/management", urlManagement.jvm(scala213))
 
 lazy val udpExample =
-  exampleModule("udp-example", "udp", udp, macros)
+  exampleModule("udp-example", "udp", udp.jvm(scala213), macros.jvm(scala213))
 
 //////////////////////////////////////////////////////
 ///////////////////// BENCHMARKS /////////////////////
 //////////////////////////////////////////////////////
 lazy val benchmark = project
   .in(file("benchmark"))
-  .settings(Settings.common: _*)
-  .settings(name := "chronicler-benchmark")
+  .settings(name := s"$projectName-benchmark")
   .settings(
-    sourceDirectory in Jmh := (sourceDirectory in Test).value,
-    classDirectory in Jmh := (classDirectory in Test).value,
-    dependencyClasspath in Jmh := (dependencyClasspath in Test).value,
+    Jmh / sourceDirectory := (Test / sourceDirectory).value,
+    Jmh / classDirectory := (Test / classDirectory).value,
+    Jmh / dependencyClasspath := (Test / dependencyClasspath).value,
     // rewire tasks, so that 'jmh:run' automatically invokes 'jmh:compile' (otherwise a clean 'jmh:run' would fail)
-    compile in Jmh := (compile in Jmh).dependsOn(compile in Test).value,
-    run in Jmh := (run in Jmh).dependsOn(Keys.compile in Jmh).evaluated,
+    Jmh / compile := (Jmh / compile).dependsOn(Test / compile).value,
+    Jmh / run := (Jmh / run).dependsOn(Jmh / compile).evaluated,
     libraryDependencies += "org.openjdk.jmh" % "jmh-generator-annprocess" % "1.21" % Test
   )
-  .dependsOn(macros % "test->test")
-  .dependsOn(coreShared)
+  .dependsOn(macros.jvm(scala213) % "test->test")
+  .dependsOn(coreShared.jvm(scala213))
   .enablePlugins(JmhPlugin)
 
 //////////////////////////////////////////////////////
 ////////////////////// UTILS /////////////////////////
 //////////////////////////////////////////////////////
-def defaultSettings: Project => Project =
-  _.settings(Settings.common: _*)
-    .settings(Settings.publish: _*)
-    .settings(Settings.header)
-    .enablePlugins(AutomateHeaderPlugin)
+def license: Project => Project =
+  _.settings(
+    startYear := Some(2017),
+    headerLicense := Some(HeaderLicense.ALv2("2021", Owner.fullName))
+  ).enablePlugins(AutomateHeaderPlugin)
 
 def defaultSettingsWithIt: Project => Project =
-  _.configs(Settings.IntegrationTest)
-    .settings(Defaults.itSettings)
+  _.settings(Defaults.itSettings)
+    .configs(IntegrationTest)
     .configure(defaultSettings)
 
 def exampleModule(
@@ -204,5 +263,4 @@ def exampleModule(
     dependsOn: sbt.ClasspathDep[sbt.ProjectReference]*
 ): Project =
   Project(s"$projectName-$moduleName", file(s"examples/$moduleDir"))
-    .settings(Settings.common: _*)
     .dependsOn(dependsOn: _*)
