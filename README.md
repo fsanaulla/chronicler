@@ -10,6 +10,7 @@ Open-source [Scala](https://www.scala-lang.org/) toolchain for [InfluxDB](https:
 </div>
 
 ## Features
+
 - Multiple backend
 - Flexible API
 - Code generation with macros
