@@ -61,6 +61,36 @@ class MacroWriterSpec extends AnyWordSpec with Matchers with EitherValues {
         .value shouldEqual "name=nm,surname=sn age=65i,school=\"Berkly\" 1438715114318570484"
     }
 
+    "write with double" in {
+      case class WithDouble(
+          @tag name: String,
+          @tag surname: Option[String],
+          @field mark: Double,
+          @field school: String,
+          @timestamp time: Long
+      )
+
+      val wr1: InfluxWriter[WithDouble] = InfluxWriter[WithDouble]
+      wr1
+        .write(WithDouble("nm", Some("sn"), 65.4, "Berkly", 1438715114318570484L)) shouldEqual Right(
+        "name=nm,surname=sn mark=65.4,school=\"Berkly\" 1438715114318570484"
+      )
+
+      case class WithDoubleAsASecondField(
+          @tag name: String,
+          @tag surname: Option[String],
+          @field age: Int,
+          @field mark: Double,
+          @timestamp time: Long
+      )
+
+      val wr2: InfluxWriter[WithDoubleAsASecondField] = InfluxWriter[WithDoubleAsASecondField]
+      wr2
+        .write(WithDoubleAsASecondField("nm", Some("sn"), 1, 65.4, 1438715114318570484L)) shouldEqual Right(
+        "name=nm,surname=sn age=1i,mark=65.4 1438715114318570484"
+      )
+    }
+
     "write and escape " should {
       case class Test(@escape @tag name: String, @field age: Int)
       val wr: InfluxWriter[Test] = InfluxWriter[Test]
