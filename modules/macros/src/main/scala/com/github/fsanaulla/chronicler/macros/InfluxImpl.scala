@@ -330,7 +330,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
       override def unquoted(head: Boolean): c.universe.Tree = {
         val str =
           if (head)
-            q"""new String("," + $name + "=" + $value)"""
+            q"""new String($name + "=" + $value)"""
           else
             q"""new String("," + $name + "=" + $value)"""
 
