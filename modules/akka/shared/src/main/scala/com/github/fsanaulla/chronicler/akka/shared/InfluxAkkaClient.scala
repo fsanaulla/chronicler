@@ -25,8 +25,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 abstract class InfluxAkkaClient(
     terminateActorSystem: Boolean,
     httpsContext: Option[HttpsConnectionContext]
-  )(implicit system: ActorSystem,
-    ec: ExecutionContext) { self: AutoCloseable =>
+)(implicit system: ActorSystem, ec: ExecutionContext) { self: AutoCloseable =>
 
   private[akka] implicit val http: HttpExt = Http()
 
@@ -35,8 +34,10 @@ abstract class InfluxAkkaClient(
       .map(_ -> "https")
       .getOrElse(http.defaultClientHttpsContext -> "http")
 
-  def close(): Unit =
+  def close(): Unit = {
     Await.ready(closeAsync(), Duration.Inf)
+    ()
+  }
 
   def closeAsync(): Future[Unit] = {
     for {

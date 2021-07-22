@@ -28,7 +28,7 @@ object Library {
 
   def macroDeps(scalaVersion: String): List[ModuleID] =
     "org.scala-lang" % "scala-reflect" % scalaVersion :: List(scalaTest, scalaCheck).map(
-      _ % Scope.test
+      _ % Test
     )
 
   // testing
@@ -39,13 +39,7 @@ object Library {
     "org.slf4j"          % "slf4j-api"   % "1.7.25"
   )
 
-  // core
-  val coreDep: List[ModuleID] = List(
-    "com.beachape"  %% "enumeratum" % "1.6.1",
-    "org.typelevel" %% "jawn-ast"   % "0.14.3"
-  )
-
-  val coreTestDeps: List[ModuleID] = List(scalaTest, scalaCheck).map(_ % Scope.test)
+  val coreTestDeps: List[ModuleID] = List(scalaTest, scalaCheck).map(_ % Test)
 
   // akka-http
   // format: off
@@ -53,9 +47,8 @@ object Library {
     "com.typesafe.akka" %% "akka-stream" % Versions.Akka.akka exclude ("com.typesafe", "config"),
     "com.typesafe"      %  "config"       % "1.4.1",
     "com.typesafe.akka" %% "akka-http"   % Versions.Akka.akkaHttp,
-    akkaTestKit % Scope.test
+    akkaTestKit % Test
   )
-  // format: on
 
   // async-http
   val asyncDeps: List[ModuleID] = List(

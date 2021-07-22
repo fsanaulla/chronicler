@@ -1,1 +1,0 @@
-name := "chronicler-ahc-management"

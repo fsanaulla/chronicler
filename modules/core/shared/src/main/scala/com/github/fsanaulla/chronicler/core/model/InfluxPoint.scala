@@ -74,9 +74,9 @@ final case class Point(
   def addField(key: String, value: Int): Point    = copy(fields = fields :+ IntField(key, value))
   def addField(key: String, value: Long): Point   = copy(fields = fields :+ LongField(key, value))
   def addField(key: String, value: Double): Point = copy(fields = fields :+ DoubleField(key, value))
-  def addField(key: String, value: Float): Point  = copy(fields = fields :+ DoubleField(key, value))
+  def addField(key: String, value: Float): Point  = copy(fields = fields :+ DoubleField(key, value.toDouble))
 
-  def addField(key: String, value: BigDecimal): Point =
+  def addField(key: String, value: BigDecimal): Point = 
     copy(fields = fields :+ BigDecimalField(key, value))
 
   def addField(key: String, value: Boolean): Point =

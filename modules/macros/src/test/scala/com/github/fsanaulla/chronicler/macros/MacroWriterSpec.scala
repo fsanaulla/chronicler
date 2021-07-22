@@ -107,7 +107,7 @@ class MacroWriterSpec extends AnyWordSpec with Matchers with EitherValues {
 
       "from ' '" in {
         val t = Test("My Name", 5)
-        wr.write(t).right.get shouldEqual "name=My\\ Name age=5i"
+        wr.write(t) shouldEqual Right("name=My\\ Name age=5i")
       }
 
       "from all special characters" in {

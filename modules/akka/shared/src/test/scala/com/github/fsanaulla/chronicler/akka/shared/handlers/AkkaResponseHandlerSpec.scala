@@ -256,8 +256,6 @@ class AkkaResponseHandlerSpec
 
     jsonHandler
       .responseErrorMsg(errorHttpResponse)
-      .futureValue
-      .right
-      .get shouldEqual "user not found"
+      .futureValue shouldEqual Right("user not found")
   }
 }
