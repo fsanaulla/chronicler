@@ -30,7 +30,7 @@ package object query {
     )
 
   def queryTesterAuth(query: String)(credentials: InfluxCredentials): Uri =
-    urlBase(query).withQuery(
+    urlBase("/query").withQuery(
       Uri.Query("u" -> credentials.username, "p" -> credentials.username, "q" -> query)
     )
 
@@ -39,13 +39,11 @@ package object query {
       Uri.Query("db" -> db, "u" -> credentials.username, "p" -> credentials.password, "q" -> query)
     )
 
-  def queryTester(query: String): Uri = urlBase("/query").withQuery(Uri.Query("q" -> query))
+  def queryTester(query: String): Uri =
+    urlBase("/query").withQuery(Uri.Query("q" -> query))
 
   def queryTester(db: String, query: String): Uri =
     urlBase("/query").withQuery(Uri.Query("db" -> db, "q" -> query))
 
   def writeTester(mp: Map[String, String]): Uri = urlBase("/write").withQuery(Uri.Query(mp))
-
-  def queryTesterSimple(query: Map[String, String]): Uri =
-    urlBase("/query").withQuery(Uri.Query(query))
 }
