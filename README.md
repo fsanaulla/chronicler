@@ -41,5 +41,6 @@ Open-source [Scala](https://www.scala-lang.org/) toolchain for [InfluxDB](https:
 14. [Data compression](docs/gzipping.md)
 
 # Inspirations
+
 - [scala-influxdb-client](https://github.com/paulgoldbaum/scala-influxdb-client) by [Paul Goldbaum](https://github.com/paulgoldbaum)
 - [influxdb-java](https://github.com/influxdata/influxdb-java) from [influxdata](https://github.com/influxdata)

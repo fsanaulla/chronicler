@@ -37,6 +37,7 @@ val scala211 = "2.11.12"
 
 lazy val chronicler = project
   .in(file("."))
+  .settings(publish / skip := true)
   .configure(license)
   .aggregate(
     Seq(
@@ -192,7 +193,9 @@ lazy val ahcShared = projectMatrix
 //////////////////////////////////////////////////////
 lazy val udp = projectMatrix
   .in(file("modules/udp"))
-  .settings(name := s"$projectName-udp")
+  .settings(
+    name := s"$projectName-udp",
+  )
   .configure(defaultSettingsWithIt)
   .dependsOn(coreShared)
   .dependsOn(testing % "it,test")

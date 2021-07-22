@@ -13,12 +13,14 @@ import org.scalatest.{BeforeAndAfterAll, EitherValues, TryValues}
 import org.testcontainers.containers.DockerComposeContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.typelevel.jawn.ast.{JArray, JNum, JString}
+import org.scalatest.Ignore
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.comØ
   * Date: 24.02.18
   */
+@Ignore
 class UdpClientSpec
     extends AnyFlatSpec
     with Matchers
