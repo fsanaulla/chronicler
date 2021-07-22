@@ -22,7 +22,7 @@ jobs:
         java-version: 1.8
     - name: Run unit tests
       run: sbt test
-    - name: Run integration test on InfluxDB: ${{ martix.influxdb }}
+    - name: Run integration test on InfluxDB - ${{ martix.influxdb }}
       env:
         INFLUXDB_VERSION: ${{ martix.influxdb }}
       run: sbt it:test
