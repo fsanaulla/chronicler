@@ -174,7 +174,7 @@ class ResponseHandler[G[_], R](
     F.map(queryResultJson(response)) { jvRes =>
       jvRes
         .mapRight(_.map(rd.read))
-        .mapRight(either.array)
+        .mapRight(either.array[Throwable, A])
         .joinRight
     }
 

@@ -40,7 +40,7 @@ class AhcJsonHandlerSpec
     with OptionValues
     with EitherValues {
 
-  val jsonHandler = new AhcJsonHandler(compress = false)
+  val jsonHandler = new AhcJsonHandler()
 
   def buildResponse(bts: Array[Byte]): Response = {
     val b = new Response.ResponseBuilder()

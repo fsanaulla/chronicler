@@ -26,7 +26,7 @@ package object query {
       "http",
       host = "localhost",
       port = 8086,
-      path = "/query"
+      path = url
     )
 
   def queryTesterAuth(query: String)(credentials: InfluxCredentials): Uri =

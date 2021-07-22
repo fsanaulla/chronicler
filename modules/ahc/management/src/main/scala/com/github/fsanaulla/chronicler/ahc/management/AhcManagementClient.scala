@@ -47,7 +47,7 @@ final class AhcManagementClient(
   extends InfluxAhcClient(asyncClientConfig)
   with ManagementClient[Future, Id, Response, Uri, String] {
 
-  val jsonHandler: AhcJsonHandler                = new AhcJsonHandler(compress = false)
+  val jsonHandler: AhcJsonHandler                = new AhcJsonHandler
   implicit val qb: AhcQueryBuilder               = new AhcQueryBuilder(schema, host, port, credentials)
   implicit val re: AhcRequestExecutor            = new AhcRequestExecutor
   implicit val rh: ResponseHandler[Id, Response] = new ResponseHandler(jsonHandler)

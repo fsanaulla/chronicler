@@ -4,7 +4,6 @@ libraryDependencies += "com.sun.activation" % "javax.activation" % "1.2.0"
 
 addSbtPlugin("pl.project13.scala"        % "sbt-jmh"            % "0.3.4")
 addSbtPlugin("ohnosequences"             % "sbt-github-release" % "0.7.0")
-addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat"       % "0.1.15")
 addSbtPlugin("com.eed3si9n"              % "sbt-projectmatrix"  % "0.8.0")
 addSbtPlugin("ch.epfl.scala"             % "sbt-bloop"          % "1.4.8")
 addSbtPlugin("org.xerial.sbt"            % "sbt-sonatype"       % "3.9.7")

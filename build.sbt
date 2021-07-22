@@ -65,7 +65,6 @@ lazy val coreIO = projectMatrix
   .settings(
     name := s"$projectName-core-io"
   )
-  .configure(defaultSettings)
   .dependsOn(coreShared)
   .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
@@ -74,7 +73,6 @@ lazy val coreManagement = projectMatrix
   .settings(
     name := s"$projectName-core-management"
   )
-  .configure(defaultSettings)
   .dependsOn(coreShared)
   .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
@@ -89,7 +87,6 @@ lazy val coreShared = projectMatrix
   )
   .settings(Settings.propertyTestSettings: _*)
   .configs(Settings.PropertyTest)
-  .configure(defaultSettings)
   .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
 //////////////////////////////////////////////////////
@@ -115,7 +112,11 @@ lazy val urlIO = projectMatrix
 
 lazy val urlShared = projectMatrix
   .in(file("modules/url/shared"))
-  .configure(defaultSettings)
+  .settings(
+    name := s"$projectName-url-shared",
+    libraryDependencies ++=
+      Library.scalaTest % Test :: Library.requestScala(scalaVersion.value) :: Nil
+  )
   .dependsOn(coreShared)
   .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
@@ -124,6 +125,10 @@ lazy val urlShared = projectMatrix
 //////////////////////////////////////////////////////
 lazy val akkaManagement = projectMatrix
   .in(file("modules/akka/management"))
+  .settings(
+    name := s"$projectName-akka-management",
+    libraryDependencies += Library.akkaTestKit % "test,it"
+  )
   .configure(defaultSettingsWithIt)
   .dependsOn(coreManagement, akkaShared)
   .dependsOn(testing % "test,it")
@@ -131,6 +136,10 @@ lazy val akkaManagement = projectMatrix
 
 lazy val akkaIO = projectMatrix
   .in(file("modules/akka/io"))
+  .settings(
+    name := s"$projectName-akka-io",
+    libraryDependencies += Library.akkaTestKit % "test,it"
+  )
   .configure(defaultSettingsWithIt)
   .dependsOn(coreIO, akkaShared)
   .dependsOn(akkaManagement % "test,it")
@@ -140,7 +149,11 @@ lazy val akkaIO = projectMatrix
 
 lazy val akkaShared = projectMatrix
   .in(file("modules/akka/shared"))
-  .configure(defaultSettings)
+  .settings(
+    name := s"$projectName-akka-shared",
+    libraryDependencies ++=
+      Library.scalaTest % Test :: Library.akkaDep
+  )
   .dependsOn(coreShared)
   .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
@@ -149,6 +162,7 @@ lazy val akkaShared = projectMatrix
 //////////////////////////////////////////////////////
 lazy val ahcManagement = projectMatrix
   .in(file("modules/ahc/management"))
+  .settings(name := s"$projectName-ahc-management")
   .configure(defaultSettingsWithIt)
   .dependsOn(coreManagement, ahcShared)
   .dependsOn(testing % "it,test")
@@ -165,7 +179,11 @@ lazy val ahcIO = projectMatrix
 
 lazy val ahcShared = projectMatrix
   .in(file("modules/ahc/shared"))
-  .configure(defaultSettings)
+  .settings(
+    name := s"$projectName-ahc-shared",
+    libraryDependencies ++=
+      Library.scalaTest % Test :: Library.asyncDeps
+  )
   .dependsOn(coreShared)
   .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
@@ -174,6 +192,7 @@ lazy val ahcShared = projectMatrix
 //////////////////////////////////////////////////////
 lazy val udp = projectMatrix
   .in(file("modules/udp"))
+  .settings(name := s"$projectName-udp")
   .configure(defaultSettingsWithIt)
   .dependsOn(coreShared)
   .dependsOn(testing % "it,test")
@@ -186,9 +205,14 @@ lazy val udp = projectMatrix
 //////////////////////////////////////////////////////
 lazy val macros = projectMatrix
   .in(file("modules/macros"))
+  .settings(
+    name := s"$projectName-macros",
+    libraryDependencies ++= Seq(
+      "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0" % Test
+    ) ++ Library.macroDeps(scalaVersion.value)
+  )
   .settings(Settings.propertyTestSettings: _*)
   .configs(Settings.PropertyTest)
-  .configure(defaultSettings)
   .dependsOn(coreShared)
   .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
@@ -197,6 +221,10 @@ lazy val macros = projectMatrix
 //////////////////////////////////////////////////////
 lazy val testing = projectMatrix
   .in(file("modules/testing"))
+  .settings(
+    name := s"$projectName-testing",
+    libraryDependencies ++= Library.testingDeps
+  )
   .dependsOn(coreShared)
   .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
@@ -249,13 +277,12 @@ lazy val benchmark = project
 def license: Project => Project =
   _.settings(
     startYear := Some(2017),
-    headerLicense := Some(HeaderLicense.ALv2("2021", Owner.fullName))
+    headerLicense := Some(HeaderLicense.ALv2("2021", Owner.name))
   ).enablePlugins(AutomateHeaderPlugin)
 
 def defaultSettingsWithIt: Project => Project =
   _.settings(Defaults.itSettings)
     .configs(IntegrationTest)
-    .configure(defaultSettings)
 
 def exampleModule(
     moduleName: String,
