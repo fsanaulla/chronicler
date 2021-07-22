@@ -1,6 +1,7 @@
 <div align="center">
 
 ## Chronicler
+
 Open-source [Scala](https://www.scala-lang.org/) toolchain for [InfluxDB](https://www.influxdata.com/).
 
 [![Scala Testing Pipeline](https://github.com/fsanaulla/chronicler/actions/workflows/scala.yml/badge.svg)](https://github.com/fsanaulla/chronicler/actions/workflows/scala.yml)
@@ -10,6 +11,7 @@ Open-source [Scala](https://www.scala-lang.org/) toolchain for [InfluxDB](https:
 </div>
 
 ## Features
+
 - Multiple backend
 - Flexible API
 - Code generation with macros
@@ -20,6 +22,7 @@ Open-source [Scala](https://www.scala-lang.org/) toolchain for [InfluxDB](https:
 - Kafka sink (in-progress)
 
 # Documentation
+
 1. [Modules](docs/modules.md)
 1. [Get Started](docs/get_started.md)
 1. [Clients tutorial](docs/clients.md)
