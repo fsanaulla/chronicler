@@ -22,24 +22,14 @@ object Library {
     }
   }
 
-  val scalaTest   = "org.scalatest"     %% "scalatest"       % Versions.Testing.scalaTest
+  val scalaTest   = List("org.scalatest" %% "scalatest").map(_ % Versions.Testing.scalaTest)
   val scalaCheck  = "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0"
   val akkaTestKit = "com.typesafe.akka" %% "akka-testkit"    % Versions.Akka.akka
 
-  def macroDeps(scalaVersion: String): List[ModuleID] =
-    "org.scala-lang" % "scala-reflect" % scalaVersion :: List(scalaTest, scalaCheck).map(
-      _ % Test
-    )
-
   // testing
   val testingDeps: List[ModuleID] = List(
-    scalaTest,
-    "org.jetbrains"      % "annotations" % "16.0.3",
-    "org.testcontainers" % "influxdb"    % "1.15.1" exclude ("org.jetbrains", "annotations") exclude ("org.slf4j", "slf4j-api"),
-    "org.slf4j"          % "slf4j-api"   % "1.7.25"
-  )
-
-  val coreTestDeps: List[ModuleID] = List(scalaTest, scalaCheck).map(_ % Test)
+    "com.dimafeng" %% "testcontainers-scala" % "0.39.5"
+  ) ++ scalaTest
 
   // akka-http
   // format: off
