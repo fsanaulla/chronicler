@@ -1,13 +1,12 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
 import java.nio.file.Paths
-import com.github.fsanaulla.chronicler.testing.it.{BaseSpec, DockerizedInfluxDB}
+import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers
 import org.scalatest.{EitherValues, TryValues}
+import com.github.fsanaulla.chronicler.testing.BaseSpec
 import org.scalatest.BeforeAndAfterAll
 
 class CompressionSpec
