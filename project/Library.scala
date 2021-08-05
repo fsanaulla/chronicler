@@ -16,7 +16,7 @@ object Library {
     }
 
     object Testing {
-      val scalaTest            = "3.2.3"
+      val scalaTest            = "3.2.9"
       val scalaCheck           = "1.14.0"
       val scalaCheckGenerators = "0.2.0"
     }
@@ -24,7 +24,7 @@ object Library {
 
   val scalaTest   = List("org.scalatest" %% "scalatest").map(_ % Versions.Testing.scalaTest)
   val scalaCheck  = "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0"
-  val akkaTestKit = "com.typesafe.akka" %% "akka-testkit"    % Versions.Akka.akka
+  val akkaTestKit = "com.typesafe.akka" %% "akka-testkit" % Versions.Akka.akka
 
   // testing
   val testingDeps: List[ModuleID] = List(
