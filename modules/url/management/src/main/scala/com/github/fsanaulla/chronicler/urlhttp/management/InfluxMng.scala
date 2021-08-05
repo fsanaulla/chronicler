@@ -18,7 +18,7 @@ package com.github.fsanaulla.chronicler.urlhttp.management
 
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
-import com.github.fsanaulla.chronicler.urlhttp.shared.implicits.{tryFunctor, urlFk}
+import com.github.fsanaulla.chronicler.urlhttp.shared.{tryFunctor, urlFk}
 
 object InfluxMng {
 
@@ -34,7 +34,7 @@ object InfluxMng {
       host: String,
       port: Int = 8086,
       credentials: Option[InfluxCredentials] = None
-    ): UrlManagementClient =
+  ): UrlManagementClient =
     new UrlManagementClient(host, port, credentials)
 
   /**
