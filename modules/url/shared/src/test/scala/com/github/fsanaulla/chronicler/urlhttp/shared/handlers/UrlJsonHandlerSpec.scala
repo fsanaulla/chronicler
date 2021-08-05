@@ -16,11 +16,12 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
+import com.github.fsanaulla.chronicler.urlhttp.shared.UrlJsonHandler
+import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{EitherValues, OptionValues, TryValues}
 import org.typelevel.jawn.ast._
-import requests.{Response, ResponseBlob}
+import sttp.client3.Response
 
 /**
   * Created by
@@ -28,164 +29,47 @@ import requests.{Response, ResponseBlob}
   * Date: 10.08.17
   */
 class UrlJsonHandlerSpec
-    extends AnyWordSpec
+    extends AnyFreeSpec
     with Matchers
     with TryValues
     with EitherValues
     with OptionValues {
 
-  val jsonHandler = new UrlJsonHandler(compressed = false)
+  "Json handler" - {
 
-  "JsonHandler" should {
-    "extract" should {
-      "body from HTTP response" in {
-        val singleStrJson =
-          """{
-            |                      "results": [
-            |                          {
-            |                              "statement_id": 0,
-            |                              "series": [
-            |                                 {
-            |                                      "name": "cpu_load_short",
-            |                                      "columns": [
-            |                                          "time",
-            |                                          "value"
-            |                                      ],
-            |                                      "values": [
-            |                                          [
-            |                                              "2015-01-29T21:55:43.702900257Z",
-            |                                              2
-            |                                          ],
-            |                                          [
-            |                                              "2015-01-29T21:55:43.702900257Z",
-            |                                              0.55
-            |                                          ],
-            |                                          [
-            |                                              "2015-06-11T20:46:02Z",
-            |                                              0.64
-            |                                          ]
-            |                                      ]
-            |                                  }
-            |                              ]
-            |                          }
-            |                      ]
-            |                  }""".stripMargin
+    "should extract from json" - {
 
-        val resp: Response =
-          Response("", 200, "", Map.empty, new ResponseBlob(singleStrJson.getBytes()), None)
-        val result: JValue = JParser.parseFromString(singleStrJson).get
+      "body" in {
+        val singleStrJson                           = getJsonStringFromFile("/json/single.json")
+        val input: Response[Either[String, String]] = mkResponse(singleStrJson)
+        val out: JValue                             = JParser.parseFromString(singleStrJson).get
 
-        jsonHandler.responseBody(resp).value shouldEqual result
+        UrlJsonHandler.responseBody(input).success.value.value shouldEqual out
       }
 
-      "query result from JSON" in {
-        val json =
-          JParser.parseUnsafe("""
-                                |{
-                                |    "results": [
-                                |        {
-                                |            "statement_id": 0,
-                                |            "series": [
-                                |                {
-                                |                    "name": "cpu_load_short",
-                                |                    "columns": [
-                                |                        "time",
-                                |                        "name",
-                                |                        "value"
-                                |                    ],
-                                |                    "values": [
-                                |                        [
-                                |                            "2015-01-29T21:55:43.702900257Z",
-                                |                            "Fz",
-                                |                            2
-                                |                        ],
-                                |                        [
-                                |                            "2015-01-29T21:55:43.702900257Z",
-                                |                            "Rz",
-                                |                            0.55
-                                |                        ],
-                                |                        [
-                                |                            "2015-06-11T20:46:02Z",
-                                |                            null,
-                                |                            0.64
-                                |                        ]
-                                |                    ]
-                                |                }
-                                |            ]
-                                |        }
-                                |    ]
-                                |}
-      """.stripMargin)
+      "query result" in {
+        val json = JParser.parseUnsafe(getJsonStringFromFile("/json/query.json"))
 
-        val result = Array(
+        val out = Array(
           JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JString("Fz"), JNum(2))),
           JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JString("Rz"), JNum(0.55))),
           JArray(Array(JString("2015-06-11T20:46:02Z"), JNull, JNum(0.64)))
         )
 
-        jsonHandler.queryResult(json).get shouldEqual result
+        UrlJsonHandler.queryResult(json).value shouldEqual out
       }
 
-      "query result from empty JSON" in {
-        val json = JParser.parseUnsafe("""{"results":[{"statement_id":0}]}""")
+      "empty query result" in {
+        val json = JParser.parseUnsafe(getJsonStringFromFile("/json/query-empty.json"))
 
-        jsonHandler.queryResult(json) shouldEqual None
+        UrlJsonHandler.queryResult(json) shouldEqual None
       }
 
-      "bulk query result from JSON" in {
+      "bulk query result" in {
         val json =
-          JParser.parseUnsafe("""
-                                |{
-                                |    "results": [
-                                |        {
-                                |            "statement_id": 0,
-                                |            "series": [
-                                |                {
-                                |                    "name": "cpu_load_short",
-                                |                    "columns": [
-                                |                        "time",
-                                |                        "value"
-                                |                    ],
-                                |                    "values": [
-                                |                        [
-                                |                            "2015-01-29T21:55:43.702900257Z",
-                                |                            2
-                                |                        ],
-                                |                        [
-                                |                            "2015-01-29T21:55:43.702900257Z",
-                                |                            0.55
-                                |                        ],
-                                |                        [
-                                |                            "2015-06-11T20:46:02Z",
-                                |                            0.64
-                                |                        ]
-                                |                    ]
-                                |                }
-                                |            ]
-                                |        },
-                                |        {
-                                |            "statement_id": 1,
-                                |            "series": [
-                                |                {
-                                |                    "name": "cpu_load_short",
-                                |                    "columns": [
-                                |                        "time",
-                                |                        "count"
-                                |                    ],
-                                |                    "values": [
-                                |                        [
-                                |                            "1970-01-01T00:00:00Z",
-                                |                            3
-                                |                        ]
-                                |                    ]
-                                |                }
-                                |            ]
-                                |        }
-                                |    ]
-                                |}
-      """.stripMargin)
+          JParser.parseUnsafe(getJsonStringFromFile("/json/query-bulk.json"))
 
-        val result = Array(
+        val out = Array(
           Array(
             JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
             JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
@@ -196,45 +80,14 @@ class UrlJsonHandlerSpec
           )
         )
 
-        jsonHandler.bulkResult(json).get shouldEqual result
+        UrlJsonHandler.bulkResult(json).value shouldEqual out
       }
 
-      "bulk query result partially empty from JSON" in {
+      "partially empty bulk query result" in {
         val json =
-          JParser.parseUnsafe("""
-                                |{
-                                |    "results": [
-                                |        {
-                                |            "statement_id": 0,
-                                |            "series": [
-                                |                {
-                                |                    "name": "cpu_load_short",
-                                |                    "columns": [
-                                |                        "time",
-                                |                        "value"
-                                |                    ],
-                                |                    "values": [
-                                |                        [
-                                |                            "2015-01-29T21:55:43.702900257Z",
-                                |                            2
-                                |                        ],
-                                |                        [
-                                |                            "2015-01-29T21:55:43.702900257Z",
-                                |                            0.55
-                                |                        ],
-                                |                        [
-                                |                            "2015-06-11T20:46:02Z",
-                                |                            0.64
-                                |                        ]
-                                |                    ]
-                                |                }
-                                |            ]
-                                |        },
-                                |        {"statement_id": 1}
-                                |    ]
-                                |}""".stripMargin)
+          JParser.parseUnsafe(getJsonStringFromFile("/json/query-bulk-partially.json"))
 
-        val result = Array(
+        val out = Array(
           Array(
             JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
             JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
@@ -242,53 +95,17 @@ class UrlJsonHandlerSpec
           )
         )
 
-        jsonHandler.bulkResult(json).get shouldEqual result
+        UrlJsonHandler.bulkResult(json).get shouldEqual out
       }
 
-      "empty bulk query result from JSON" in {
-        val json =
-          JParser.parseUnsafe(
-            """{"results": [{"statement_id": 0},{"statement_id": 1}] }""".stripMargin
-          )
+      "empty bulk query result" in {
+        val json = JParser.parseUnsafe(getJsonStringFromFile("/json/query-bulk-empty.json"))
 
-        jsonHandler.bulkResult(json).get shouldEqual Array.empty[Array[JArray]]
+        UrlJsonHandler.bulkResult(json).get shouldEqual Array.empty[Array[JArray]]
       }
 
-      "grouped system query result from JSON" in {
-        val json =
-          JParser.parseUnsafe("""
-                                |{
-                                |    "results": [
-                                |        {
-                                |            "statement_id": 0,
-                                |            "series": [
-                                |                {
-                                |                    "name": "cpu_load_short",
-                                |                    "columns": [
-                                |                        "time",
-                                |                        "value"
-                                |                    ],
-                                |                    "values": [
-                                |                        [
-                                |                            "2015-01-29T21:55:43.702900257Z",
-                                |                            2
-                                |                        ],
-                                |                        [
-                                |                            "2015-01-29T21:55:43.702900257Z",
-                                |                            0.55
-                                |                        ],
-                                |                        [
-                                |                            "2015-06-11T20:46:02Z",
-                                |                            0.64
-                                |                        ]
-                                |                    ]
-                                |                }
-                                |            ]
-                                |        }
-                                |    ]
-                                |}
-      """.stripMargin)
-
+      "grouped system query result" in {
+        val json = JParser.parseUnsafe(getJsonStringFromFile("/json/grouped.json"))
         val result = Array(
           "cpu_load_short" -> Array(
             JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
@@ -297,70 +114,21 @@ class UrlJsonHandlerSpec
           )
         )
 
-        val res = jsonHandler.groupedSystemInfoJs(json).get
+        val groupedSystemQuery = UrlJsonHandler.groupedSystemInfoJs(json).value
 
-        res.length shouldEqual 1
-        val (measurament, points) = res.head
+        groupedSystemQuery.length shouldEqual 1
 
-        measurament shouldEqual "cpu_load_short"
+        val (measName, points) = groupedSystemQuery.headOption.value
+        measName shouldEqual "cpu_load_short"
         points shouldEqual result.head._2
       }
 
-      "grouped query result from JSON" in {
-        val json = JParser.parseUnsafe("""
-                                         |{
-                                         |   "results": [
-                                         |     {
-                                         |         "statement_id": 0,
-                                         |         "series": [
-                                         |           {
-                                         |             "name": "cpu_load_short",
-                                         |             "tags": {
-                                         |               "host": "server01",
-                                         |               "region": "us-west"
-                                         |             },
-                                         |             "columns": [
-                                         |               "time",
-                                         |               "mean"
-                                         |             ],
-                                         |             "values": [
-                                         |               [
-                                         |                 "1970-01-01T00:00:00Z",
-                                         |                 0.69
-                                         |               ]
-                                         |             ]
-                                         |           },
-                                         |           {
-                                         |             "name": "cpu_load_short",
-                                         |             "tags": {
-                                         |               "host": "server02",
-                                         |               "region": "us-west"
-                                         |             },
-                                         |             "columns": [
-                                         |               "time",
-                                         |               "mean"
-                                         |             ],
-                                         |             "values": [
-                                         |               [
-                                         |                 "1970-01-01T00:00:00Z",
-                                         |                 0.73
-                                         |               ]
-                                         |             ]
-                                         |           }
-                                         |         ]
-                                         |     }
-                                         |   ]
-                                         |}
-      """.stripMargin)
+      "grouped query result" in {
+        val json          = JParser.parseUnsafe(getJsonStringFromFile("/json/grouped-system.json"))
+        val groupedResult = UrlJsonHandler.groupedResult(json).value
 
-        val groupedResult = jsonHandler.groupedResult(json)
-
-        groupedResult should not be None
-
-        val result = groupedResult.get
-        result.length shouldEqual 2
-
-        result.map { case (k, v) => k.toList -> v.toList }.toList shouldEqual List(
+        groupedResult.length shouldEqual 2
+        groupedResult.map { case (k, v) => k.toList -> v.toList }.toList shouldEqual List(
           List("server01", "us-west") -> List(
             JArray(Array(JString("1970-01-01T00:00:00Z"), JNum(0.69)))
           ),

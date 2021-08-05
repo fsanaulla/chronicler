@@ -17,13 +17,12 @@
 package com.github.fsanaulla.chronicler.urlhttp.management
 
 import com.github.fsanaulla.chronicler.core.ManagementClient
-import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
+import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.components.ResponseHandler
-import com.github.fsanaulla.chronicler.core.implicits.{applyId, functorId}
 import com.github.fsanaulla.chronicler.core.model.{FunctionK, Functor, InfluxCredentials, InfluxDBInfo}
-import com.github.fsanaulla.chronicler.urlhttp.shared.Url
-import com.github.fsanaulla.chronicler.urlhttp.shared.handlers.{UrlJsonHandler, UrlQueryBuilder, UrlRequestExecutor}
-import requests.Response
+import com.github.fsanaulla.chronicler.urlhttp.shared.{ResponseE, UrlJsonHandler, UrlQueryBuilder, UrlRequestExecutor, tryApply}
+import sttp.client3.{SttpBackend, TryHttpURLConnectionBackend}
+import sttp.model.Uri
 
 import scala.util.Try
 
@@ -31,19 +30,21 @@ final class UrlManagementClient(
     host: String,
     port: Int,
     credentials: Option[InfluxCredentials]
-  )(implicit val F: Functor[Try],
-    val FK: FunctionK[Id, Try])
-  extends ManagementClient[Try, Id, Response, Url, String] {
+)(implicit val F: Functor[Try], val FK: FunctionK[Try, Try])
+    extends ManagementClient[Try, Try, ResponseE, Uri, String] {
 
-  val jsonHandler                                = new UrlJsonHandler(compressed = false)
-  implicit val qb: UrlQueryBuilder               = new UrlQueryBuilder(host, port, credentials)
-  implicit val re: UrlRequestExecutor            = new UrlRequestExecutor(jsonHandler)
-  implicit val rh: ResponseHandler[Id, Response] = new ResponseHandler(jsonHandler)
+  private val backend: SttpBackend[Try, Any]       = TryHttpURLConnectionBackend()
+  implicit val qb: UrlQueryBuilder                 = new UrlQueryBuilder(host, port, credentials)
+  implicit val re: UrlRequestExecutor              = new UrlRequestExecutor(backend)
+  implicit val rh: ResponseHandler[Try, ResponseE] = new ResponseHandler(UrlJsonHandler)
 
   override def ping: Try[ErrorOr[InfluxDBInfo]] = {
-    re.get(qb.buildQuery("/ping"), compress = false)
-      .map(rh.pingResult)
+    re.get(qb.buildQuery("/ping"), compression = false)
+      .flatMap(rh.pingResult)
   }
 
-  override def close(): Unit = {}
+  override def close(): Unit = {
+    backend.close()
+    ()
+  }
 }
