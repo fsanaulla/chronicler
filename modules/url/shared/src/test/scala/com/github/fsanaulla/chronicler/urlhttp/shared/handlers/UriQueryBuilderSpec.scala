@@ -1,10 +1,9 @@
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
 import com.github.fsanaulla.chronicler.urlhttp.shared.UrlQueryBuilder
-import org.scalatest.freespec.AnyFreeSpec
-import org.scalatest.matchers.should.Matchers
+import com.github.fsanaulla.chronicler.testing.BaseSpec
 
-class UriQueryBuilderSpec extends AnyFreeSpec with Matchers {
+class UriQueryBuilderSpec extends BaseSpec {
 
   "Uri builder" - {
     val qb = new UrlQueryBuilder("localhost", 8080, None)

@@ -6,6 +6,7 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{EitherValues, TryValues, BeforeAndAfterAll}
+import com.github.fsanaulla.chronicler.testing.BaseSpec
 
 /**
   * Created by
@@ -13,10 +14,7 @@ import org.scalatest.{EitherValues, TryValues, BeforeAndAfterAll}
   * Date: 07.09.17
   */
 class SystemManagementSpec
-    extends AnyFlatSpec
-    with Matchers
-    with ScalaFutures
-    with IntegrationPatience
+    extends BaseSpec
     with EitherValues
     with TryValues
     with DockerizedInfluxDB
@@ -30,9 +28,13 @@ class SystemManagementSpec
   lazy val influx: UrlManagementClient =
     InfluxMng(host, port, Some(credentials))
 
-  "System Management API" should "ping InfluxDB" in {
-    val result = influx.ping.success.value.value
-    result.build shouldEqual "OSS"
-    result.version shouldEqual version
+  "System Management API" - {
+    "should" - {
+      "ping InfluxDB" in {
+        val result = influx.ping.success.value.value
+        result.build shouldEqual "OSS"
+        result.version shouldEqual version
+      }
+    }
   }
 }

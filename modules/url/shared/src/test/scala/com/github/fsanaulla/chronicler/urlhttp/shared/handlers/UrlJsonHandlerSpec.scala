@@ -21,6 +21,7 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{EitherValues, OptionValues, TryValues}
 import org.typelevel.jawn.ast._
+import com.github.fsanaulla.chronicler.testing.BaseSpec
 import sttp.client3.Response
 
 /**
@@ -29,8 +30,7 @@ import sttp.client3.Response
   * Date: 10.08.17
   */
 class UrlJsonHandlerSpec
-    extends AnyFreeSpec
-    with Matchers
+    extends BaseSpec
     with TryValues
     with EitherValues
     with OptionValues {
