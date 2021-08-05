@@ -1,6 +1,7 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
-import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity, BaseSpec}
+import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity}
+import com.github.fsanaulla.chronicler.testing.BaseSpec
 import com.github.fsanaulla.chronicler.urlhttp.SampleEntitys._
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}

@@ -3,7 +3,8 @@ package com.github.fsanaulla.chronicler.urlhttp
 import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either.EitherOps
 import com.github.fsanaulla.chronicler.core.enums.Precisions
-import com.github.fsanaulla.chronicler.testing.it.{BaseSpec, DockerizedInfluxDB}
+import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
+import com.github.fsanaulla.chronicler.testing.BaseSpec
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
