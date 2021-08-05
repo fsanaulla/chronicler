@@ -1,4 +1,4 @@
-package com.github.fsanaulla.chronicler.testing.it
+package com.github.fsanaulla.chronicler.testing
 
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
