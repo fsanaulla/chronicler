@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
-import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity}
+import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity, BaseSpec}
 import com.github.fsanaulla.chronicler.urlhttp.SampleEntitys._
 import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
@@ -9,6 +9,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{EitherValues, TryValues}
+import org.scalatest.BeforeAndAfterAll
 
 /**
   * Created by
@@ -16,12 +17,12 @@ import org.scalatest.{EitherValues, TryValues}
   * Date: 28.09.17
   */
 class MeasurementApiSpec
-    extends AnyFlatSpec
-    with Matchers
+    extends BaseSpec
     with ScalaFutures
     with EitherValues
     with TryValues
-    with DockerizedInfluxDB {
+    with DockerizedInfluxDB
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     mng.close()
@@ -33,7 +34,7 @@ class MeasurementApiSpec
   val measName = "meas"
 
   lazy val influxConf: InfluxConfig =
-    InfluxConfig(s"http://$host", port, Some(creds))
+    InfluxConfig(host, port, Some(credentials))
 
   lazy val mng: UrlManagementClient =
     InfluxMng(influxConf)
@@ -43,17 +44,20 @@ class MeasurementApiSpec
   lazy val meas: io.Measurement[FakeEntity] =
     io.measurement[FakeEntity](db, measName)
 
-  it should "write single point" in {
-    mng.createDatabase(db).success.value.value shouldEqual 200
+  "Measurement API" - {
 
-    meas.write(singleEntity).success.value.value shouldEqual 204
+    "should" - {
 
-    meas.read(s"SELECT * FROM $measName").success.value.value shouldEqual Seq(singleEntity)
-  }
+      "write single point" in {
+        mng.createDatabase(db).success.value.value shouldEqual 200
+        meas.write(singleEntity).success.value.value shouldEqual 204
+        meas.read(s"SELECT * FROM $measName").success.value.value shouldEqual Seq(singleEntity)
+      }
 
-  it should "bulk write" in {
-    meas.bulkWrite(multiEntitys).success.value.value shouldEqual 204
-
-    meas.read(s"SELECT * FROM $measName").success.value.value.length shouldEqual 3
+      "bulk write" in {
+        meas.bulkWrite(multiEntitys).success.value.value shouldEqual 204
+        meas.read(s"SELECT * FROM $measName").success.value.value.length shouldEqual 3
+      }
+    }
   }
 }

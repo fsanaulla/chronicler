@@ -8,7 +8,7 @@ import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagem
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.{EitherValues, TryValues}
+import org.scalatest.{EitherValues, TryValues, BeforeAndAfterAll}
 
 /**
   * Created by
@@ -22,7 +22,8 @@ class SubscriptionManagementSpec
     with IntegrationPatience
     with EitherValues
     with TryValues
-    with DockerizedInfluxDB {
+    with DockerizedInfluxDB
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     influx.close()
@@ -41,7 +42,7 @@ class SubscriptionManagementSpec
   val duration: String = 1.hours + 30.minutes
 
   lazy val influx: UrlManagementClient =
-    InfluxMng(s"http://$host", port, Some(creds))
+    InfluxMng(host, port, Some(credentials))
 
   "Subscription API" should "create subscription" in {
 

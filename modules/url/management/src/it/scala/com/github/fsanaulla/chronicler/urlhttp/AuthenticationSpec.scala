@@ -4,7 +4,7 @@ import com.github.fsanaulla.chronicler.core.enums.Privileges
 import com.github.fsanaulla.chronicler.core.model.{InfluxException, UserPrivilegesInfo}
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
-import org.scalatest.EitherValues
+import org.scalatest.{EitherValues, BeforeAndAfterAll, TryValues}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -20,10 +20,13 @@ class AuthenticationSpec
     with ScalaFutures
     with IntegrationPatience
     with DockerizedInfluxDB
-    with EitherValues {
+    with EitherValues
+    with TryValues
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     influx.close()
+    authInflux.close()
     super.afterAll()
   }
 
@@ -36,35 +39,35 @@ class AuthenticationSpec
   val adminPass = "admin"
 
   lazy val influx: UrlManagementClient = {
-    InfluxMng(s"http://$host", port)
+    InfluxMng(host, port)
   }
 
   lazy val authInflux: UrlManagementClient =
-    InfluxMng(s"http://$host", port, Some(creds))
+    InfluxMng(host, port, Some(credentials))
 
   "Authenticated User Management API" should "create admin user " in {
-    influx.showUsers.get.left.value shouldBe a[InfluxException]
+    influx.showUsers.success.value.left.value shouldBe a[InfluxException]
   }
 
   it should "create database" in {
-    authInflux.createDatabase(userDB).get.value shouldEqual 200
+    authInflux.createDatabase(userDB).success.value.value shouldEqual 200
   }
 
   it should "create user" in {
-    authInflux.createUser(userName, userPass).get.value shouldEqual 200
-    authInflux.showUsers.get.value.exists(_.username == userName) shouldEqual true
+    authInflux.createUser(userName, userPass).success.value.value shouldEqual 200
+    authInflux.showUsers.success.value.value.exists(_.username == userName) shouldEqual true
   }
 
   it should "set user password" in {
-    authInflux.setUserPassword(userName, userNPass).get.value shouldEqual 200
+    authInflux.setUserPassword(userName, userNPass).success.value.value shouldEqual 200
   }
 
   it should "set user privileges" in {
-    authInflux.setPrivileges(userName, userDB, Privileges.READ).get.value shouldEqual 200
+    authInflux.setPrivileges(userName, userDB, Privileges.READ).success.value.value shouldEqual 200
   }
 
   it should "get user privileges" in {
-    val userPrivs = authInflux.showUserPrivileges(userName).get.value
+    val userPrivs = authInflux.showUserPrivileges(userName).success.value.value
 
     userPrivs.length shouldEqual 1
     userPrivs.exists { upi =>
@@ -73,14 +76,14 @@ class AuthenticationSpec
   }
 
   it should "revoke user privileges" in {
-    authInflux.revokePrivileges(userName, userDB, Privileges.READ).get.value shouldEqual 200
-    authInflux.showUserPrivileges(userName).get.value shouldEqual Array(
+    authInflux.revokePrivileges(userName, userDB, Privileges.READ).success.value.value shouldEqual 200
+    authInflux.showUserPrivileges(userName).success.value.value shouldEqual Array(
       UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES)
     )
   }
 
   it should "drop user" in {
-    authInflux.dropUser(userName).get.value shouldEqual 200
-    authInflux.dropUser(admin).get.value shouldEqual 200
+    authInflux.dropUser(userName).success.value.value shouldEqual 200
+    authInflux.dropUser(admin).success.value.value shouldEqual 200
   }
 }

@@ -5,7 +5,7 @@ import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagem
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.{EitherValues, TryValues}
+import org.scalatest.{EitherValues, TryValues, BeforeAndAfterAll}
 
 /**
   * Created by
@@ -19,7 +19,8 @@ class SystemManagementSpec
     with IntegrationPatience
     with EitherValues
     with TryValues
-    with DockerizedInfluxDB {
+    with DockerizedInfluxDB
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     influx.close()
@@ -27,7 +28,7 @@ class SystemManagementSpec
   }
 
   lazy val influx: UrlManagementClient =
-    InfluxMng(s"http://$host", port, Some(creds))
+    InfluxMng(host, port, Some(credentials))
 
   "System Management API" should "ping InfluxDB" in {
     val result = influx.ping.success.value.value

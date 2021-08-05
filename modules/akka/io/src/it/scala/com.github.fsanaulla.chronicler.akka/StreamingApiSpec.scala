@@ -17,7 +17,7 @@ import com.github.fsanaulla.chronicler.macros.Influx
 import com.github.fsanaulla.chronicler.macros.annotations.reader.epoch
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag, timestamp}
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import org.scalatest.EitherValues
+import org.scalatest.{EitherValues, BeforeAndAfterAll}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
@@ -31,7 +31,8 @@ class StreamingApiSpec
     with IntegrationPatience
     with Matchers
     with EitherValues
-    with DockerizedInfluxDB {
+    with DockerizedInfluxDB
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     mng.close()
@@ -47,7 +48,7 @@ class StreamingApiSpec
   implicit val mat: ActorMaterializer       = ActorMaterializer()
 
   lazy val influxConf: InfluxConfig =
-    InfluxConfig(host, port, credentials = Some(creds))
+    InfluxConfig(host, port, credentials = Some(credentials))
 
   lazy val mng: AkkaManagementClient =
     InfluxMng(influxConf)
