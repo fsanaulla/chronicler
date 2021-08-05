@@ -3,7 +3,7 @@ package com.github.fsanaulla.chronicler.ahc.management
 import com.github.fsanaulla.chronicler.core.enums.Privileges
 import com.github.fsanaulla.chronicler.core.model.{InfluxException, UserPrivilegesInfo}
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import org.scalatest.EitherValues
+import org.scalatest.{EitherValues, BeforeAndAfterAll}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -21,7 +21,8 @@ class AuthenticationSpec
     with ScalaFutures
     with EitherValues
     with IntegrationPatience
-    with DockerizedInfluxDB {
+    with DockerizedInfluxDB
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     influx.close()
@@ -41,7 +42,7 @@ class AuthenticationSpec
     InfluxMng(host, port)
 
   lazy val authInflux: AhcManagementClient =
-    InfluxMng(host = host, port = port, credentials = Some(creds))
+    InfluxMng(host = host, port = port, credentials = Some(credentials))
 
   "Authenticated User Management API" should "create admin user " in {
     influx.showUsers.futureValue.left.value shouldBe a[InfluxException]

@@ -8,26 +8,31 @@ import org.testcontainers.containers.output.ToStringConsumer
 import org.testcontainers.containers.wait.strategy.Wait
 
 trait DockerizedInfluxDB extends ForAllTestContainer { self: Suite =>
-  private val influxPort        = 8086
-  protected def version: String = sys.env.getOrElse("INFLUXDB_VERSION", "1.7.3")
+  def adminName = "admin"
+  def adminPassword = "password"
+  def influxPort        = 8086
+  def version: String = sys.env.getOrElse("INFLUXDB_VERSION", "1.7.3")
 
-  protected val container: GenericContainer =
+  override val container: GenericContainer =
     GenericContainer(
       s"influxdb:$version",
       exposedPorts = Seq(influxPort),
-      waitStrategy = Wait.forHttp("/")
+      waitStrategy = Wait.forHttp("/ping").forStatusCode(204),
+      env = Map(
+        "INFLUXDB_ADMIN_USER"     -> adminName,
+        "INFLUXDB_ADMIN_PASSWORD" -> adminPassword,
+        "INFLUXDB_HTTP_AUTH_ENABLED" -> String.valueOf(true)
+      )
     )
 
   /** Credentials for influx */
-  final val credentials: InfluxCredentials = InfluxCredentials("admin", "password")
+  final val credentials: InfluxCredentials = InfluxCredentials(adminName, adminPassword)
 
   /** host address */
   def host: String = container.container.getContainerIpAddress
 
   /** mapped port */
   def port: Int = container.container.getMappedPort(influxPort)
-
-  def mappedPort(mappedPort: Int): Integer = container.mappedPort(mappedPort)
 
   override def afterStart(): Unit = {
     container.configure(_.followOutput(new ToStringConsumer, OutputType.STDOUT))

@@ -5,7 +5,7 @@ import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagem
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.{EitherValues, TryValues}
+import org.scalatest.{EitherValues, TryValues, BeforeAndAfterAll}
 
 /**
   * Created by
@@ -19,7 +19,8 @@ class ShardManagementSpec
     with IntegrationPatience
     with EitherValues
     with TryValues
-    with DockerizedInfluxDB {
+    with DockerizedInfluxDB
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     influx.close()
@@ -29,7 +30,7 @@ class ShardManagementSpec
   val testDb = "_internal"
 
   lazy val influx: UrlManagementClient =
-    InfluxMng(s"http://$host", port, Some(creds))
+    InfluxMng(host, port, Some(credentials))
 
   "Shard Management API" should {
     "show" should {
