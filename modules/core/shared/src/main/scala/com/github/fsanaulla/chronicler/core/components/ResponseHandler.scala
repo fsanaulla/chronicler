@@ -57,6 +57,8 @@ class ResponseHandler[G[_], R](
         }
       case 204 =>
         A.pure(Right(204))
+      case 401 =>
+        A.pure(Left(new InfluxException(401, "Authorized")))
       case _ =>
         F.map(errorHandler(response))(Left(_))
     }
@@ -67,8 +69,8 @@ class ResponseHandler[G[_], R](
     * @param response - backend response value
     * @return         - Query result of JArray in future container
     */
-  final def queryResultJson(response: R): G[ErrorOr[Array[JArray]]] =
-    jsonHandler.responseCode(response).intValue() match {
+  final def queryResultJson(response: R): G[ErrorOr[Array[JArray]]] = {
+    jsonHandler.responseCode(response) match {
       case code if isSuccessful(code) =>
         F.map(jsonHandler.responseBody(response)) { body =>
           body.mapRight { json =>
@@ -78,29 +80,35 @@ class ResponseHandler[G[_], R](
             }
           }
         }
+      case 401 =>
+        A.pure(Left(new InfluxException(401, "Authorized")))
       case _ =>
         F.map(errorHandler(response))(Left(_))
     }
+  }
 
   /** Handling HTTP response with GROUP BY clause in the query
     *
     * @param response - backend response
     * @return         - grouped result
     */
-  final def groupedResultJson(response: R): G[ErrorOr[Array[(Tags, Values)]]] =
+  final def groupedResultJson(response: R): G[ErrorOr[Array[(Tags, Values)]]] = {
     jsonHandler.responseCode(response) match {
       case code if isSuccessful(code) =>
         F.map(jsonHandler.responseBody(response)) { ethRes =>
-          ethRes.mapRight(jv =>
+          ethRes.mapRight { jv =>
             jsonHandler.groupedResult(jv) match {
               case Some(arr) => arr
               case _         => Array.empty
             }
-          )
+          }
         }
+      case 401 =>
+        A.pure(Left(new InfluxException(401, "Authorized")))
       case _ =>
         F.map(errorHandler(response))(Left(_))
     }
+  }
 
   /** Method for handling HTtp responses with non empty body, that contains multiple response.
     *
@@ -120,6 +128,8 @@ class ResponseHandler[G[_], R](
             }
           )
         }
+      case 401 =>
+        A.pure(Left(new InfluxException(401, "Authorized")))
       case _ =>
         F.map(errorHandler(response))(Left(_))
     }
@@ -145,6 +155,8 @@ class ResponseHandler[G[_], R](
               arr.map { case (dbName, queries) => f(dbName, queries) }
             }
         }
+      case 401 =>
+        A.pure(Left(new InfluxException(401, "Authorized")))
       case _ =>
         F.map(errorHandler(response))(Left(_))
     }

@@ -5,7 +5,7 @@ import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.{EitherValues, TryValues}
+import org.scalatest.{EitherValues, TryValues, BeforeAndAfterAll}
 
 /** Created by
   * Author: fayaz.sanaulla@gmail.com
@@ -17,14 +17,15 @@ class SystemManagementSpec
     with ScalaFutures
     with EitherValues
     with TryValues
-    with DockerizedInfluxDB {
+    with DockerizedInfluxDB
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     influx.close()
     super.afterAll()
   }
 
-  lazy val influx: UrlIOClient = InfluxIO(s"http://$host", port, Some(creds))
+  lazy val influx: UrlIOClient = InfluxIO(host, port, Some(credentials))
 
   it should "ping InfluxDB" in {
     val result = influx.ping.success.value.value

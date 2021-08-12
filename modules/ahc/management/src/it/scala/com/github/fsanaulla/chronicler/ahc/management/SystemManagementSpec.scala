@@ -1,7 +1,7 @@
 package com.github.fsanaulla.chronicler.ahc.management
 
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import org.scalatest.EitherValues
+import org.scalatest.{EitherValues, BeforeAndAfterAll}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -18,7 +18,8 @@ class SystemManagementSpec
     with ScalaFutures
     with EitherValues
     with IntegrationPatience
-    with DockerizedInfluxDB {
+    with DockerizedInfluxDB
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     influx.close()
@@ -26,7 +27,7 @@ class SystemManagementSpec
   }
 
   lazy val influx: AhcManagementClient =
-    InfluxMng(host, port, Some(creds))
+    InfluxMng(host, port, Some(credentials))
 
   "System Management API" should "ping InfluxDB" in {
     val result = influx.ping.futureValue.value

@@ -8,20 +8,19 @@ import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagem
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.{EitherValues, TryValues}
+import org.scalatest.{EitherValues, TryValues, BeforeAndAfterAll}
+import com.github.fsanaulla.chronicler.testing.BaseSpec
 
 /** Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 21.08.17
   */
 class SubscriptionManagementSpec
-    extends AnyFlatSpec
-    with Matchers
-    with ScalaFutures
-    with IntegrationPatience
+    extends BaseSpec
     with EitherValues
     with TryValues
-    with DockerizedInfluxDB {
+    with DockerizedInfluxDB
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     influx.close()
@@ -40,42 +39,48 @@ class SubscriptionManagementSpec
   val duration: String = 1.hours + 30.minutes
 
   lazy val influx: UrlManagementClient =
-    InfluxMng(s"http://$host", port, Some(creds))
+    InfluxMng(host, port, Some(credentials))
 
-  "Subscription API" should "create subscription" in {
+  "Subscription API" - {
+    
+    "should" - {
 
-    influx.createDatabase(dbName).success.value.value shouldEqual 200
+      "create subscription" in {
 
-    influx
-      .createRetentionPolicy(rpName, dbName, duration, 1, Some(duration))
-      .success
-      .value
-      .value shouldEqual 200
+        influx.createDatabase(dbName).success.value.value shouldEqual 200
 
-    influx.showDatabases().success.value.value.contains(dbName) shouldEqual true
+        influx
+          .createRetentionPolicy(rpName, dbName, duration, 1, Some(duration))
+          .success
+          .value
+          .value shouldEqual 200
 
-    influx
-      .createSubscription(subName, dbName, rpName, destType, hosts)
-      .success
-      .value
-      .value shouldEqual 200
+        influx.showDatabases().success.value.value.contains(dbName) shouldEqual true
 
-    val Some(subscr) = influx.showSubscriptionsInfo.success.value.value.headOption
-      .flatMap(_.subscriptions.headOption)
+        influx
+          .createSubscription(subName, dbName, rpName, destType, hosts)
+          .success
+          .value
+          .value shouldEqual 200
 
-    subscr.subsName shouldEqual subscription.subsName
-    subscr.addresses shouldEqual subscription.addresses
-    subscr.destType shouldEqual subscription.destType
-    subscr.addresses.toList shouldEqual subscription.addresses.toList
-  }
+        val Some(subscr) = influx.showSubscriptionsInfo.success.value.value.headOption
+          .flatMap(_.subscriptions.headOption)
 
-  it should "drop subscription" in {
-    influx.dropSubscription(subName, dbName, rpName).success.value.value shouldEqual 200
+        subscr.subsName shouldEqual subscription.subsName
+        subscr.addresses shouldEqual subscription.addresses
+        subscr.destType shouldEqual subscription.destType
+        subscr.addresses.toList shouldEqual subscription.addresses.toList
+      }
 
-    influx.showSubscriptionsInfo.success.value.value shouldEqual Nil
+      "drop subscription" in {
+        influx.dropSubscription(subName, dbName, rpName).success.value.value shouldEqual 200
 
-    influx.dropRetentionPolicy(rpName, dbName).success.value.value shouldEqual 200
+        influx.showSubscriptionsInfo.success.value.value shouldEqual Nil
 
-    influx.dropDatabase(dbName).success.value.value shouldEqual 200
+        influx.dropRetentionPolicy(rpName, dbName).success.value.value shouldEqual 200
+
+        influx.dropDatabase(dbName).success.value.value shouldEqual 200
+      }
+    }
   }
 }

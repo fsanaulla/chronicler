@@ -4,7 +4,7 @@ import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, InfluxMng}
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import org.scalatest.EitherValues
+import org.scalatest.{EitherValues, BeforeAndAfterAll}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
@@ -22,7 +22,8 @@ class SystemManagementSpec
     with ScalaFutures
     with IntegrationPatience
     with EitherValues
-    with DockerizedInfluxDB {
+    with DockerizedInfluxDB
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     influx.close()
@@ -31,7 +32,7 @@ class SystemManagementSpec
   }
 
   lazy val influx: AkkaManagementClient =
-    InfluxMng(host, port, Some(creds))
+    InfluxMng(host, port, Some(credentials))
 
   it should "ping InfluxDB" in {
     val result = influx.ping.futureValue.value

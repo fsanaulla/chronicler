@@ -1,39 +1,41 @@
 package com.github.fsanaulla.chronicler.testing.it
 
+import com.dimafeng.testcontainers.{ForAllTestContainer, GenericContainer}
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
-import org.scalatest.{BeforeAndAfterAll, Suite}
-import org.testcontainers.containers.InfluxDBContainer
+import org.scalatest.Suite
+import org.testcontainers.containers.output.OutputFrame.OutputType
 import org.testcontainers.containers.output.ToStringConsumer
+import org.testcontainers.containers.wait.strategy.Wait
 
-trait DockerizedInfluxDB extends BeforeAndAfterAll { self: Suite =>
+trait DockerizedInfluxDB extends ForAllTestContainer { self: Suite =>
+  def adminName = "admin"
+  def adminPassword = "password"
+  def influxPort        = 8086
+  def version: String = sys.env.getOrElse("INFLUXDB_VERSION", "1.7.3")
 
-  protected def version: String = sys.env.getOrElse("INFLUXDB_VERSION", "1.7.3")
-  protected val _influx: InfluxDBContainer[Nothing] =
-    new InfluxDBContainer(version).withLogConsumer(new ToStringConsumer)
+  override val container: GenericContainer =
+    GenericContainer(
+      s"influxdb:$version",
+      exposedPorts = Seq(influxPort),
+      waitStrategy = Wait.forHttp("/ping").forStatusCode(204),
+      env = Map(
+        "INFLUXDB_ADMIN_USER"     -> adminName,
+        "INFLUXDB_ADMIN_PASSWORD" -> adminPassword,
+        "INFLUXDB_HTTP_AUTH_ENABLED" -> String.valueOf(true)
+      )
+    )
 
   /** Credentials for influx */
-  final val creds: InfluxCredentials = InfluxCredentials("admin", "password")
+  final val credentials: InfluxCredentials = InfluxCredentials(adminName, adminPassword)
 
   /** host address */
-  def host: String = _influx.getContainerIpAddress
+  def host: String = container.container.getContainerIpAddress
 
   /** mapped port */
-  def port: Int = _influx.getLivenessCheckPortNumbers.toArray.head.asInstanceOf[Int]
+  def port: Int = container.container.getMappedPort(influxPort)
 
-  def mappedPort(mappedPort: Int): Integer = _influx.getMappedPort(mappedPort)
-
-  def beforeStartContainer(container: InfluxDBContainer[Nothing]): InfluxDBContainer[Nothing] =
-    container
-
-  override def beforeAll(): Unit = {
-    super.beforeAll()
-    _influx.start()
-    _influx.followOutput(new ToStringConsumer)
-    beforeStartContainer(_influx) /*.start()*/
-  }
-
-  override def afterAll(): Unit = {
-    super.afterAll()
-    _influx.stop()
+  override def afterStart(): Unit = {
+    container.configure(_.followOutput(new ToStringConsumer, OutputType.STDOUT))
+    super.afterStart()
   }
 }

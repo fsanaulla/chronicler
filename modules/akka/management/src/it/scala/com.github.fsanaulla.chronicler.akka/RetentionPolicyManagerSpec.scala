@@ -6,7 +6,7 @@ import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, In
 import com.github.fsanaulla.chronicler.core.duration._
 import com.github.fsanaulla.chronicler.core.model.RetentionPolicyInfo
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import org.scalatest.EitherValues
+import org.scalatest.{EitherValues, BeforeAndAfterAll}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
@@ -25,7 +25,8 @@ class RetentionPolicyManagerSpec
     with ScalaFutures
     with IntegrationPatience
     with DockerizedInfluxDB
-    with EitherValues {
+    with EitherValues
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     influx.close()
@@ -36,7 +37,7 @@ class RetentionPolicyManagerSpec
   val rpDB = "db"
 
   lazy val influx: AkkaManagementClient =
-    InfluxMng(host, port, Some(creds))
+    InfluxMng(host, port, Some(credentials))
 
   "Retention policy API" should "create retention policy" in {
     influx.createDatabase(rpDB).futureValue.value shouldEqual 200

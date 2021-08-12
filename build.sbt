@@ -1,11 +1,11 @@
+import Owner._
+import de.heikoseeberger.sbtheader.License
 import sbt.Keys.{libraryDependencies, name}
 import xerial.sbt.Sonatype._
-import de.heikoseeberger.sbtheader.License
-import Owner._
 
 ThisBuild / scalaVersion := "2.13.4"
 ThisBuild / organization := "com.github.fsanaulla"
-ThisBuild / description := "RDD primitive for fetching data from an HTTP source "
+ThisBuild / description := "Scala toolchain for InfluxDB "
 ThisBuild / homepage := Some(url(s"${Owner.github}/${Owner.projectName}"))
 ThisBuild / developers += Developer(
   id = Owner.id,
@@ -82,9 +82,9 @@ lazy val coreShared = projectMatrix
   .settings(
     name := s"$projectName-core-shared",
     libraryDependencies ++= List(
-      "com.beachape"  %% "enumeratum" % "1.6.1",
-      "org.typelevel" %% "jawn-ast"   % "0.14.3"
-    ) ++ Library.coreTestDeps
+      "com.beachape"                                     %% "enumeratum" % "1.6.1",
+      "org.typelevel"                                    %% "jawn-ast" % "0.14.3"
+    ) ++ (Library.scalaCheck :: Library.scalaTest).map(_ % Test)
   )
   .settings(Settings.propertyTestSettings: _*)
   .configs(Settings.PropertyTest)
@@ -116,9 +116,11 @@ lazy val urlShared = projectMatrix
   .settings(
     name := s"$projectName-url-shared",
     libraryDependencies ++=
-      Library.scalaTest % Test :: Library.requestScala(scalaVersion.value) :: Nil
+      "com.softwaremill.sttp.client3" %% "core" % "3.3.11"
+        :: Library.scalaTest.map(_ % Test)
   )
   .dependsOn(coreShared)
+  .dependsOn(testing % "test")
   .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
 //////////////////////////////////////////////////////
@@ -153,7 +155,7 @@ lazy val akkaShared = projectMatrix
   .settings(
     name := s"$projectName-akka-shared",
     libraryDependencies ++=
-      Library.scalaTest % Test :: Library.akkaDep
+      Library.akkaDep ++ Library.scalaTest.map(_ % Test)
   )
   .dependsOn(coreShared)
   .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
@@ -183,7 +185,7 @@ lazy val ahcShared = projectMatrix
   .settings(
     name := s"$projectName-ahc-shared",
     libraryDependencies ++=
-      Library.scalaTest % Test :: Library.asyncDeps
+      Library.asyncDeps ++ Library.scalaTest.map(_ % Test)
   )
   .dependsOn(coreShared)
   .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
@@ -211,8 +213,8 @@ lazy val macros = projectMatrix
   .settings(
     name := s"$projectName-macros",
     libraryDependencies ++= Seq(
-      "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0" % Test
-    ) ++ Library.macroDeps(scalaVersion.value)
+      "org.scala-lang"                                   % "scala-reflect" % scalaVersion.value
+    ) ++ (Library.scalaCheck :: Library.scalaTest).map(_ % Test)
   )
   .settings(Settings.propertyTestSettings: _*)
   .configs(Settings.PropertyTest)
@@ -292,5 +294,7 @@ def exampleModule(
     moduleDir: String,
     dependsOn: sbt.ClasspathDep[sbt.ProjectReference]*
 ): Project =
-  Project(s"$projectName-$moduleName", file(s"examples/$moduleDir"))
-    .dependsOn(dependsOn: _*)
+  Project(
+    s"$projectName-$moduleName",
+    file(s"examples/$moduleDir")
+  ).dependsOn(dependsOn: _*)

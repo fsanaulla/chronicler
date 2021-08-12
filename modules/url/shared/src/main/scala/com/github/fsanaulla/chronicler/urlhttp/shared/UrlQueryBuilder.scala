@@ -14,22 +14,39 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
+package com.github.fsanaulla.chronicler.urlhttp.shared
 
 import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
-import com.github.fsanaulla.chronicler.urlhttp.shared.Url
+import sttp.model.Uri
+import sttp.model.Uri.QuerySegment
+import sttp.model.Uri.QuerySegment.KeyValue
+
+import scala.annotation.tailrec
 
 private[urlhttp] class UrlQueryBuilder(
     host: String,
     port: Int,
     credentials: Option[InfluxCredentials]
-) extends QueryBuilder[Url](credentials) {
+) extends QueryBuilder[Uri](credentials) {
 
-  override def buildQuery(url: String): Url =
-    Url(host + ":" + port + url)
+  // todo: move to safer version
+  override def buildQuery(path: String): Uri =
+    Uri.unsafeApply(host = host, port).withWholePath(path)
 
-  // used as a stub class to collect all request information
-  override def buildQuery(uri: String, queryParams: List[(String, String)]): Url =
-    Url(host + ":" + port + uri, queryParams)
+  override def buildQuery(path: String, queryParams: List[(String, String)]): Uri = {
+    val params = queryParams.map {
+      case (k, v) => KeyValue(k, v, valueEncoding = Uri.QuerySegmentEncoding.All)
+    }
+
+    @tailrec
+    def addQueryParam(u: Uri, lst: Seq[QuerySegment]): Uri = {
+      lst match {
+        case Nil       => u
+        case h :: tail => addQueryParam(u.addQuerySegment(h), tail)
+      }
+    }
+
+    addQueryParam(buildQuery(path), params)
+  }
 }

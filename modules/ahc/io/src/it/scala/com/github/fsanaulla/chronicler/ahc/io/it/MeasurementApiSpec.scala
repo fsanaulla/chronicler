@@ -4,7 +4,7 @@ import com.github.fsanaulla.chronicler.ahc.io.{AhcIOClient, InfluxIO}
 import com.github.fsanaulla.chronicler.ahc.management.{AhcManagementClient, InfluxMng}
 import com.github.fsanaulla.chronicler.ahc.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity}
-import org.scalatest.EitherValues
+import org.scalatest.{EitherValues, BeforeAndAfterAll}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -21,7 +21,8 @@ class MeasurementApiSpec
     with ScalaFutures
     with EitherValues
     with IntegrationPatience
-    with DockerizedInfluxDB {
+    with DockerizedInfluxDB
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     mng.close()
@@ -33,10 +34,10 @@ class MeasurementApiSpec
   val measName = "meas"
 
   lazy val influxConf: InfluxConfig =
-    InfluxConfig(host, port, credentials = Some(creds), compress = false, None)
+    InfluxConfig(host, port, credentials = Some(credentials), compress = false, None)
 
   lazy val mng: AhcManagementClient =
-    InfluxMng(host, port, credentials = Some(creds))
+    InfluxMng(host, port, credentials = Some(credentials))
 
   lazy val io: AhcIOClient = InfluxIO(influxConf)
   lazy val meas: io.Measurement[FakeEntity] =

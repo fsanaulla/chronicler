@@ -19,11 +19,13 @@ package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
-import org.scalatest.flatspec.AnyFlatSpec
+import com.github.fsanaulla.chronicler.urlhttp.shared.UrlJsonHandler
+import com.github.fsanaulla.chronicler.urlhttp.shared._
+import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.{EitherValues, TryValues}
+import org.scalatest.{EitherValues, OptionValues, TryValues}
 import org.typelevel.jawn.ast._
-import requests.{Response, ResponseBlob}
+import com.github.fsanaulla.chronicler.testing.BaseSpec
 
 import scala.language.implicitConversions
 
@@ -31,211 +33,84 @@ import scala.language.implicitConversions
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UrlResponseHandlerSpec extends AnyFlatSpec with Matchers with TryValues with EitherValues {
+class UrlResponseHandlerSpec
+    extends BaseSpec
+    with TryValues
+    with EitherValues
+    with OptionValues {
 
-  implicit val p: JParser.type = JParser
-  val jsonHandler              = new UrlJsonHandler(compressed = false)
-  val respHandler              = new ResponseHandler(jsonHandler)
+  "Response handler" - {
+    val respHandler = new ResponseHandler(UrlJsonHandler)
 
-  implicit def str2resp(str: String): Response =
-    Response("", 200, "", Map.empty, new ResponseBlob(str.getBytes()), None)
+    "should extract from response" - {
 
-  "UrlResponseHandler" should "extract single query result from response" in {
+      "single query result" in {
+        val singleResponse = mkResponse(getJsonStringFromFile("/response/single-response.json"))
 
-    val singleResponse =
-      """
-        |{
-        |    "results": [
-        |        {
-        |            "statement_id": 0,
-        |            "series": [
-        |                {
-        |                    "name": "cpu_load_short",
-        |                    "columns": [
-        |                        "time",
-        |                        "value"
-        |                    ],
-        |                    "values": [
-        |                        [
-        |                            "2015-01-29T21:55:43.702900257Z",
-        |                            2
-        |                        ],
-        |                        [
-        |                            "2015-01-29T21:55:43.702900257Z",
-        |                            0.55
-        |                        ],
-        |                        [
-        |                            "2015-06-11T20:46:02Z",
-        |                            0.64
-        |                        ]
-        |                    ]
-        |                }
-        |            ]
-        |        }
-        |    ]
-        |}
-      """.stripMargin
+        val result = Array(
+          JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
+          JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
+          JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
+        )
 
-    val result = Array(
-      JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
-      JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
-      JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
-    )
+        respHandler.queryResultJson(singleResponse).success.value.value shouldEqual result
+      }
 
-    respHandler.queryResultJson(singleResponse).value shouldEqual result
-  }
+      "bulk query results" in {
+        val bulkResponse = mkResponse(getJsonStringFromFile("/response/bulk-response.json"))
 
-  it should "extract bulk query results from response" in {
+        respHandler.bulkQueryResultJson(bulkResponse).success.value.value shouldEqual Array(
+          Array(
+            JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
+            JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
+            JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
+          ),
+          Array(
+            JArray(Array(JString("1970-01-01T00:00:00Z"), JNum(3)))
+          )
+        )
+      }
 
-    val bulkResponse =
-      """
-        |{
-        |    "results": [
-        |        {
-        |            "statement_id": 0,
-        |            "series": [
-        |                {
-        |                    "name": "cpu_load_short",
-        |                    "columns": [
-        |                        "time",
-        |                        "value"
-        |                    ],
-        |                    "values": [
-        |                        [
-        |                            "2015-01-29T21:55:43.702900257Z",
-        |                            2
-        |                        ],
-        |                        [
-        |                            "2015-01-29T21:55:43.702900257Z",
-        |                            0.55
-        |                        ],
-        |                        [
-        |                            "2015-06-11T20:46:02Z",
-        |                            0.64
-        |                        ]
-        |                    ]
-        |                }
-        |            ]
-        |        },
-        |        {
-        |            "statement_id": 1,
-        |            "series": [
-        |                {
-        |                    "name": "cpu_load_short",
-        |                    "columns": [
-        |                        "time",
-        |                        "count"
-        |                    ],
-        |                    "values": [
-        |                        [
-        |                            "1970-01-01T00:00:00Z",
-        |                            3
-        |                        ]
-        |                    ]
-        |                }
-        |            ]
-        |        }
-        |    ]
-        |}
-      """.stripMargin
+      "continues query result" in {
 
-    respHandler.bulkQueryResultJson(bulkResponse).value shouldEqual Array(
-      Array(
-        JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
-        JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
-        JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
-      ),
-      Array(
-        JArray(Array(JString("1970-01-01T00:00:00Z"), JNum(3)))
-      )
-    )
-  }
+        val cqStrJson = mkResponse(getJsonStringFromFile("/response/cq.json"))
 
-  it should "cq unpacking" in {
+        val cqi =
+          respHandler
+            .toCqQueryResult(cqStrJson)
+            .success
+            .value
+            .value
+            .find(_.queries.nonEmpty)
+            .value
 
-    val cqStrJson =
-      """{
-      "results": [
-        {
-          "statement_id": 0,
-          "series": [
-            {
-              "name": "_internal",
-              "columns": [
-                "name",
-                "query"
-              ]
-            },
-            {
-              "name": "my_test_db",
-              "columns": [
-                "name",
-                "query"
-              ]
-            },
-            {
-              "name": "mydb",
-              "columns": [
-                "name",
-                "query"
-              ],
-              "values": [
-                [
-                  "cq",
-                  "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END"
-                ]
-              ]
-            },
-            {
-              "name": "db",
-              "columns": [
-                "name",
-                "query"
-              ]
-            },
-            {
-              "name": "fz_db",
-              "columns": [
-                "name",
-                "query"
-              ]
-            }
-          ]
-        }
-      ]
+        cqi.dbName shouldEqual "mydb"
+        cqi.queries.head shouldEqual ContinuousQuery(
+          "cq",
+          "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END"
+        )
+      }
+
+      "optional error message" in {
+        val errorResponse = mkResponse(getJsonStringFromFile("/response/error.json"))
+
+        UrlJsonHandler
+          .responseErrorMsgOpt(errorResponse)
+          .success
+          .value
+          .value
+          .value shouldEqual "user not found"
+      }
+
+      "error message" in {
+        val errorResponse = mkResponse(getJsonStringFromFile("/response/err-msg.json"))
+
+        UrlJsonHandler
+          .responseErrorMsg(errorResponse)
+          .success
+          .value
+          .value shouldEqual "user not found"
+      }
     }
-  """
-
-    val cqi = respHandler.toCqQueryResult(cqStrJson).value.filter(_.queries.nonEmpty).head
-    cqi.dbName shouldEqual "mydb"
-    cqi.queries.head shouldEqual ContinuousQuery(
-      "cq",
-      "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END"
-    )
-  }
-
-  it should "extract optional error message" in {
-
-    val errorResponse =
-      """
-        |{
-        |        "results": [
-        |          {
-        |            "statement_id": 0,
-        |            "error": "user not found"
-        |          }
-        |        ]
-        |}
-      """.stripMargin
-
-    jsonHandler.responseErrorMsgOpt(errorResponse).value shouldEqual Some("user not found")
-  }
-
-  it should "extract error message" in {
-
-    val errorResponse =
-      """ { "error": "user not found" } """
-
-    jsonHandler.responseErrorMsg(errorResponse).value shouldEqual "user not found"
   }
 }

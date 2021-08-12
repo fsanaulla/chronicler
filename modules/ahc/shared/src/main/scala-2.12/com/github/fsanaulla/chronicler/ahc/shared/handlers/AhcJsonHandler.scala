@@ -16,16 +16,14 @@
 
 package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
-import java.nio.charset.{Charset, StandardCharsets}
-
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
 import com.github.fsanaulla.chronicler.core.components.JsonHandler
-import com.github.fsanaulla.chronicler.core.encoding.encodingFromContentType
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.jawn.RichJParser
 import org.asynchttpclient.Response
 import org.typelevel.jawn.ast.{JParser, JValue}
 
+import java.nio.charset.{Charset, StandardCharsets}
 import scala.collection.JavaConverters._
 
 private[ahc] final class AhcJsonHandler extends JsonHandler[Id, Response] {

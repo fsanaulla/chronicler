@@ -7,7 +7,7 @@ import com.github.fsanaulla.chronicler.core.duration._
 import com.github.fsanaulla.chronicler.core.enums.{Destination, Destinations}
 import com.github.fsanaulla.chronicler.core.model.Subscription
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import org.scalatest.EitherValues
+import org.scalatest.{EitherValues, BeforeAndAfterAll}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
@@ -25,7 +25,8 @@ class SubscriptionManagementSpec
     with ScalaFutures
     with IntegrationPatience
     with EitherValues
-    with DockerizedInfluxDB {
+    with DockerizedInfluxDB
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     influx.close()
@@ -45,7 +46,7 @@ class SubscriptionManagementSpec
   val duration: String = 1.hours + 30.minutes
 
   lazy val influx: AkkaManagementClient =
-    InfluxMng(host, port, Some(creds))
+    InfluxMng(host, port, Some(credentials))
 
   "Subscription API" should "create subscription" in {
 

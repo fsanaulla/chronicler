@@ -3,22 +3,19 @@ package com.github.fsanaulla.chronicler.urlhttp
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.{EitherValues, TryValues}
+import org.scalatest.{EitherValues, TryValues, BeforeAndAfterAll}
+import com.github.fsanaulla.chronicler.testing.BaseSpec
 
 /** Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 20.08.17
   */
 class ShardManagementSpec
-    extends AnyWordSpec
-    with Matchers
-    with ScalaFutures
-    with IntegrationPatience
+    extends BaseSpec
     with EitherValues
     with TryValues
-    with DockerizedInfluxDB {
+    with DockerizedInfluxDB
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     influx.close()
@@ -28,10 +25,10 @@ class ShardManagementSpec
   val testDb = "_internal"
 
   lazy val influx: UrlManagementClient =
-    InfluxMng(s"http://$host", port, Some(creds))
+    InfluxMng(host, port, Some(credentials))
 
-  "Shard Management API" should {
-    "show" should {
+  "Shard Management API" - {
+    "should show" - {
       "shards" in {
 
         influx

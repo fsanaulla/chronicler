@@ -14,6 +14,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{EitherValues, TryValues}
 import org.typelevel.jawn.ast.{JArray, JNum, JString, JValue}
+import org.scalatest.BeforeAndAfterAll
 
 /** Created by
   * Author: fayaz.sanaulla@gmail.com
@@ -25,7 +26,8 @@ class DatabaseApiSpec
     with ScalaFutures
     with EitherValues
     with TryValues
-    with DockerizedInfluxDB {
+    with DockerizedInfluxDB
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     mng.close()
@@ -38,7 +40,7 @@ class DatabaseApiSpec
   val testDB = "db"
 
   lazy val influxConf: InfluxConfig =
-    InfluxConfig(s"http://$host", port, Some(creds))
+    InfluxConfig(host, port, Some(credentials))
 
   lazy val mng: UrlManagementClient =
     InfluxMng(influxConf)

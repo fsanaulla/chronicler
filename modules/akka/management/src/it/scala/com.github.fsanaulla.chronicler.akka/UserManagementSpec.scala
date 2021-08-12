@@ -6,7 +6,7 @@ import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, In
 import com.github.fsanaulla.chronicler.core.enums.Privileges
 import com.github.fsanaulla.chronicler.core.model.{UserInfo, UserPrivilegesInfo}
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import org.scalatest.EitherValues
+import org.scalatest.{EitherValues, BeforeAndAfterAll}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
@@ -24,7 +24,8 @@ class UserManagementSpec
     with ScalaFutures
     with IntegrationPatience
     with EitherValues
-    with DockerizedInfluxDB {
+    with DockerizedInfluxDB
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     influx.close()
@@ -41,7 +42,7 @@ class UserManagementSpec
   val adminPass = "admin_pass"
 
   lazy val influx: AkkaManagementClient =
-    InfluxMng(host, port, Some(creds))
+    InfluxMng(host, port, Some(credentials))
 
   "User Management API" should "create user" in {
     influx.createDatabase(userDB).futureValue.value shouldEqual 200

@@ -7,7 +7,7 @@ import com.github.fsanaulla.chronicler.akka.io.{AkkaIOClient, InfluxIO}
 import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, InfluxMng}
 import com.github.fsanaulla.chronicler.akka.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity}
-import org.scalatest.EitherValues
+import org.scalatest.{EitherValues, BeforeAndAfterAll}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
@@ -25,7 +25,8 @@ class MeasurementApiSpec
     with ScalaFutures
     with IntegrationPatience
     with EitherValues
-    with DockerizedInfluxDB {
+    with DockerizedInfluxDB
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     mng.close()
@@ -38,10 +39,10 @@ class MeasurementApiSpec
   val measName = "meas"
 
   lazy val influxConf: InfluxConfig =
-    InfluxConfig(host, port, credentials = Some(creds), compress = false, None)
+    InfluxConfig(host, port, credentials = Some(credentials), compress = false, None)
 
   lazy val mng: AkkaManagementClient =
-    InfluxMng(host, port, credentials = Some(creds))
+    InfluxMng(host, port, credentials = Some(credentials))
 
   lazy val io: AkkaIOClient = InfluxIO(influxConf)
   lazy val meas: io.Measurement[FakeEntity] =
