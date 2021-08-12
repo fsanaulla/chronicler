@@ -36,7 +36,7 @@ object InfluxIO {
       port: Int = 8086,
       credentials: Option[InfluxCredentials] = None,
       compress: Boolean = false
-    ): UrlIOClient =
+  ): UrlIOClient =
     new UrlIOClient(host, port, credentials, compress)
 
   /**
