@@ -8,7 +8,7 @@ import com.github.fsanaulla.chronicler.ahc.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.core.enums.Epochs
 import com.github.fsanaulla.chronicler.core.model.Point
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import org.scalatest.EitherValues
+import org.scalatest.{EitherValues, BeforeAndAfterAll}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -27,7 +27,8 @@ class DatabaseApiSpec
     with ScalaFutures
     with EitherValues
     with IntegrationPatience
-    with DockerizedInfluxDB {
+    with DockerizedInfluxDB
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     mng.close()
@@ -40,10 +41,10 @@ class DatabaseApiSpec
   val testDB = "db"
 
   lazy val influxConf: InfluxConfig =
-    InfluxConfig(host, port, credentials = Some(creds), compress = false, None)
+    InfluxConfig(host, port, credentials = Some(credentials), compress = false, None)
 
   lazy val mng: AhcManagementClient =
-    InfluxMng(host, port, credentials = Some(creds))
+    InfluxMng(host, port, credentials = Some(credentials))
 
   lazy val io: AhcIOClient =
     InfluxIO(influxConf)
