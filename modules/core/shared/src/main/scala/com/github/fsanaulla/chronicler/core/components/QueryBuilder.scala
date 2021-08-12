@@ -26,7 +26,7 @@ import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
   */
 abstract class QueryBuilder[U](credentials: Option[InfluxCredentials]) {
 
-  def buildQuery(url: String): U
+  def buildQuery(path: String): U
 
   /**
     * Method that build result URI object of type [A], from uri path, and query parameters
@@ -35,7 +35,7 @@ abstract class QueryBuilder[U](credentials: Option[InfluxCredentials]) {
     * @param queryParams - query parameters that will be embedded into request
     * @return            - URI object
     */
-  def buildQuery(uri: String, queryParams: List[(String, String)]): U
+  def buildQuery(path: String, queryParams: List[(String, String)]): U
 
   /**
     * Method that embed credentials to already created query parameters map, sorted by key
@@ -56,7 +56,7 @@ abstract class QueryBuilder[U](credentials: Option[InfluxCredentials]) {
   final def appendCredentials(
       db: String,
       queryMap: List[(String, String)]
-    ): List[(String, String)] =
+  ): List[(String, String)] =
     credentials.fold("db" -> db :: queryMap)(
       c => List("db" -> db, "u" -> c.username, "p" -> c.password) ::: queryMap
     )

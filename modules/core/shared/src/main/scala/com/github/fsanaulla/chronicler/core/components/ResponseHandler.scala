@@ -32,8 +32,7 @@ import scala.reflect.ClassTag
   */
 class ResponseHandler[G[_], R](
     jsonHandler: JsonHandler[G, R]
-  )(implicit F: Functor[G],
-    A: Apply[G]) {
+)(implicit F: Functor[G], A: Apply[G]) {
 
   /**
     * Handling ping response
@@ -61,6 +60,8 @@ class ResponseHandler[G[_], R](
         }
       case 204 =>
         A.pure(Right(204))
+      case 401 =>
+        A.pure(Left(new InfluxException(401, "Authorized")))
       case _ =>
         F.map(errorHandler(response))(Left(_))
     }
@@ -72,8 +73,8 @@ class ResponseHandler[G[_], R](
     * @param response - backend response value
     * @return         - Query result of JArray in future container
     */
-  final def queryResultJson(response: R): G[ErrorOr[Array[JArray]]] =
-    jsonHandler.responseCode(response).intValue() match {
+  final def queryResultJson(response: R): G[ErrorOr[Array[JArray]]] = {
+    jsonHandler.responseCode(response) match {
       case code if isSuccessful(code) =>
         F.map(jsonHandler.responseBody(response)) { body =>
           body.mapRight { json =>
@@ -83,9 +84,12 @@ class ResponseHandler[G[_], R](
             }
           }
         }
+      case 401 =>
+        A.pure(Left(new InfluxException(401, "Authorized")))
       case _ =>
         F.map(errorHandler(response))(Left(_))
     }
+  }
 
   /**
     * Handling HTTP response with GROUP BY clause in the query
@@ -93,21 +97,23 @@ class ResponseHandler[G[_], R](
     * @param response - backend response
     * @return         - grouped result
     */
-  final def groupedResultJson(response: R): G[ErrorOr[Array[(Tags, Values)]]] =
+  final def groupedResultJson(response: R): G[ErrorOr[Array[(Tags, Values)]]] = {
     jsonHandler.responseCode(response) match {
       case code if isSuccessful(code) =>
         F.map(jsonHandler.responseBody(response)) { ethRes =>
-          ethRes.mapRight(
-            jv =>
-              jsonHandler.groupedResult(jv) match {
-                case Some(arr) => arr
-                case _         => Array.empty
-              }
-          )
+          ethRes.mapRight { jv =>
+            jsonHandler.groupedResult(jv) match {
+              case Some(arr) => arr
+              case _         => Array.empty
+            }
+          }
         }
+      case 401 =>
+        A.pure(Left(new InfluxException(401, "Authorized")))
       case _ =>
         F.map(errorHandler(response))(Left(_))
     }
+  }
 
   /**
     * Method for handling HTtp responses with non empty body, that contains multiple response.
@@ -129,6 +135,8 @@ class ResponseHandler[G[_], R](
               }
           )
         }
+      case 401 =>
+        A.pure(Left(new InfluxException(401, "Authorized")))
       case _ =>
         F.map(errorHandler(response))(Left(_))
     }
@@ -145,7 +153,7 @@ class ResponseHandler[G[_], R](
   final def toComplexQueryResult[A: ClassTag: InfluxReader, B: ClassTag](
       response: R,
       f: (String, Array[A]) => B
-    ): G[ErrorOr[Array[B]]] = {
+  ): G[ErrorOr[Array[B]]] = {
     jsonHandler.responseCode(response) match {
       case code if isSuccessful(code) =>
         F.map(jsonHandler.responseBody(response)) { body =>
@@ -155,6 +163,8 @@ class ResponseHandler[G[_], R](
               arr.map { case (dbName, queries) => f(dbName, queries) }
             }
         }
+      case 401 =>
+        A.pure(Left(new InfluxException(401, "Authorized")))
       case _ =>
         F.map(errorHandler(response))(Left(_))
     }
@@ -169,8 +179,7 @@ class ResponseHandler[G[_], R](
     */
   final def queryResult[A: ClassTag](
       response: R
-    )(implicit rd: InfluxReader[A]
-    ): G[ErrorOr[Array[A]]] =
+  )(implicit rd: InfluxReader[A]): G[ErrorOr[Array[A]]] =
     F.map(queryResultJson(response)) { jvRes =>
       jvRes
         .mapRight(_.map(rd.read))
@@ -201,8 +210,7 @@ class ResponseHandler[G[_], R](
     */
   def toCqQueryResult(
       response: R
-    )(implicit reader: InfluxReader[ContinuousQuery]
-    ): G[ErrorOr[Array[ContinuousQueryInfo]]] = {
+  )(implicit reader: InfluxReader[ContinuousQuery]): G[ErrorOr[Array[ContinuousQueryInfo]]] = {
     toComplexQueryResult[ContinuousQuery, ContinuousQueryInfo](
       response,
       (dbName: String, queries: Array[ContinuousQuery]) => ContinuousQueryInfo(dbName, queries)
@@ -218,8 +226,7 @@ class ResponseHandler[G[_], R](
     */
   final def toShardQueryResult(
       response: R
-    )(implicit reader: InfluxReader[Shard]
-    ): G[ErrorOr[Array[ShardInfo]]] = {
+  )(implicit reader: InfluxReader[Shard]): G[ErrorOr[Array[ShardInfo]]] = {
     toComplexQueryResult[Shard, ShardInfo](
       response,
       (dbName: String, shards: Array[Shard]) => ShardInfo(dbName, shards)
@@ -235,8 +242,7 @@ class ResponseHandler[G[_], R](
     */
   final def toSubscriptionQueryResult(
       response: R
-    )(implicit reader: InfluxReader[Subscription]
-    ): G[ErrorOr[Array[SubscriptionInfo]]] = {
+  )(implicit reader: InfluxReader[Subscription]): G[ErrorOr[Array[SubscriptionInfo]]] = {
     toComplexQueryResult[Subscription, SubscriptionInfo](
       response,
       (dbName: String, subscriptions: Array[Subscription]) =>
@@ -253,8 +259,7 @@ class ResponseHandler[G[_], R](
     */
   final def toShardGroupQueryResult(
       response: R
-    )(implicit reader: InfluxReader[ShardGroup]
-    ): G[ErrorOr[Array[ShardGroupsInfo]]] = {
+  )(implicit reader: InfluxReader[ShardGroup]): G[ErrorOr[Array[ShardGroupsInfo]]] = {
     toComplexQueryResult[ShardGroup, ShardGroupsInfo](
       response,
       (dbName: String, shardGroups: Array[ShardGroup]) => ShardGroupsInfo(dbName, shardGroups)

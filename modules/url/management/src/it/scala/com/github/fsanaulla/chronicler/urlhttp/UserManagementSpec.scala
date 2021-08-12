@@ -7,7 +7,8 @@ import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagem
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.{EitherValues, TryValues}
+import org.scalatest.{EitherValues, TryValues, BeforeAndAfterAll}
+import com.github.fsanaulla.chronicler.testing.BaseSpec
 
 /**
   * Created by
@@ -15,13 +16,12 @@ import org.scalatest.{EitherValues, TryValues}
   * Date: 10.08.17
   */
 class UserManagementSpec
-    extends AnyFlatSpec
-    with Matchers
+    extends BaseSpec
     with ScalaFutures
-    with IntegrationPatience
     with EitherValues
     with TryValues
-    with DockerizedInfluxDB {
+    with DockerizedInfluxDB
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     influx.close()
@@ -37,63 +37,74 @@ class UserManagementSpec
   val adminPass = "admin_pass"
 
   lazy val influx: UrlManagementClient =
-    InfluxMng(s"http://$host", port, Some(creds))
+    InfluxMng(host, port, Some(credentials))
 
-  "User Management API" should "create user" in {
-    influx.createDatabase(userDB).success.value.value shouldEqual 200
+  "User Management API" - {
+    "should" - {
+      "create user" in {
+        influx.createDatabase(userDB).success.value.value shouldEqual 200
 
-    influx.createUser(userName, userPass).success.value.value shouldEqual 200
-    influx.showUsers.success.value.value
-      .contains(UserInfo(userName, isAdmin = false)) shouldEqual true
-  }
+        influx.createUser(userName, userPass).success.value.value shouldEqual 200
+        influx.showUsers.success.value.value
+          .contains(UserInfo(userName, isAdmin = false)) shouldEqual true
+      }
 
-  it should "create admin" in {
-    influx.createAdmin(admin, adminPass).success.value.value shouldEqual 200
-    influx.showUsers.success.value.value.contains(UserInfo(admin, isAdmin = true)) shouldEqual true
-  }
+      "create admin" in {
+        influx.createAdmin(admin, adminPass).success.value.value shouldEqual 200
+        influx.showUsers.success.value.value
+          .contains(UserInfo(admin, isAdmin = true)) shouldEqual true
+      }
 
-  it should "show user privileges" in {
-    influx.showUserPrivileges(admin).success.value.value shouldEqual Nil
-  }
+      "show user privileges" in {
+        influx.showUserPrivileges(admin).success.value.value shouldEqual Nil
+      }
 
-  it should "set user password" in {
-    influx.setUserPassword(userName, userNPass).success.value.value shouldEqual 200
-  }
+      "set user password" in {
+        influx.setUserPassword(userName, userNPass).success.value.value shouldEqual 200
+      }
 
-  it should "set privileges" in {
-    influx.setPrivileges(userName, userDB, Privileges.READ).success.value.value shouldEqual 200
-    influx
-      .setPrivileges("unknown", userDB, Privileges.READ)
-      .success
-      .value
-      .left
-      .value
-      .getMessage shouldEqual "user not found"
+      "set privileges" in {
+        influx.setPrivileges(userName, userDB, Privileges.READ).success.value.value shouldEqual 200
+        influx
+          .setPrivileges("unknown", userDB, Privileges.READ)
+          .success
+          .value
+          .left
+          .value
+          .getMessage shouldEqual "user not found"
 
-    influx.showUserPrivileges(userName).success.value.value shouldEqual Array(
-      UserPrivilegesInfo(userDB, Privileges.READ)
-    )
-  }
+        influx.showUserPrivileges(userName).success.value.value shouldEqual Array(
+          UserPrivilegesInfo(userDB, Privileges.READ)
+        )
+      }
 
-  it should "revoke privileges" in {
-    influx.revokePrivileges(userName, userDB, Privileges.READ).success.value.value shouldEqual 200
-    influx.showUserPrivileges(userName).success.value.value shouldEqual Array(
-      UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES)
-    )
-  }
+      "revoke privileges" in {
+        influx
+          .revokePrivileges(userName, userDB, Privileges.READ)
+          .success
+          .value
+          .value shouldEqual 200
+        influx.showUserPrivileges(userName).success.value.value shouldEqual Array(
+          UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES)
+        )
+      }
 
-  it should "disable admin" in {
-    influx.disableAdmin(admin).success.value.value shouldEqual 200
-    influx.showUsers.success.value.value.contains(UserInfo(admin, isAdmin = false)) shouldEqual true
-  }
+      "disable admin" in {
+        influx.disableAdmin(admin).success.value.value shouldEqual 200
+        influx.showUsers.success.value.value
+          .contains(UserInfo(admin, isAdmin = false)) shouldEqual true
+      }
 
-  it should "make admin" in {
-    influx.makeAdmin(admin).success.value.value shouldEqual 200
-    influx.showUsers.success.value.value.contains(UserInfo(admin, isAdmin = true)) shouldEqual true
-  }
+      "make admin" in {
+        influx.makeAdmin(admin).success.value.value shouldEqual 200
+        influx.showUsers.success.value.value
+          .contains(UserInfo(admin, isAdmin = true)) shouldEqual true
+      }
 
-  it should "drop users" in {
-    influx.dropUser(userName).success.value.value shouldEqual 200
-    influx.dropUser(admin).success.value.value shouldEqual 200
+      "drop users" in {
+        influx.dropUser(userName).success.value.value shouldEqual 200
+        influx.dropUser(admin).success.value.value shouldEqual 200
+      }
+    }
   }
 }
