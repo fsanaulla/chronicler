@@ -5,9 +5,8 @@ import com.github.fsanaulla.chronicler.core.model.RetentionPolicyInfo
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.{EitherValues, TryValues}
+import com.github.fsanaulla.chronicler.testing.BaseSpec
+import org.scalatest.{EitherValues, TryValues, BeforeAndAfterAll}
 
 /**
   * Created by
@@ -15,13 +14,11 @@ import org.scalatest.{EitherValues, TryValues}
   * Date: 27.07.17
   */
 class RetentionPolicyManagerSpec
-    extends AnyFlatSpec
-    with Matchers
-    with ScalaFutures
-    with IntegrationPatience
+    extends BaseSpec
     with EitherValues
     with TryValues
-    with DockerizedInfluxDB {
+    with DockerizedInfluxDB
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     influx.close()
@@ -31,51 +28,60 @@ class RetentionPolicyManagerSpec
   val rpDB = "db"
 
   lazy val influx: UrlManagementClient =
-    InfluxMng(s"http://$host", port, Some(creds))
+    InfluxMng(host, port, Some(credentials))
 
-  "Retention policy API" should "create retention policy" in {
-    influx.createDatabase(rpDB).success.value.value shouldEqual 200
+  "Retention policy API" - {
+    "should" - {
+      "create retention policy" in {
+        influx.createDatabase(rpDB).success.value.value shouldEqual 200
 
-    influx.showDatabases().success.value.value.contains(rpDB) shouldEqual true
+        influx.showDatabases().success.value.value.contains(rpDB) shouldEqual true
 
-    influx
-      .createRetentionPolicy("test", rpDB, 2.hours, 2, Some(2.hours), default = true)
-      .success
-      .value
-      .value shouldEqual 200
+        influx
+          .createRetentionPolicy("test", rpDB, 2.hours, 2, Some(2.hours), default = true)
+          .success
+          .value
+          .value shouldEqual 200
 
-    influx
-      .showRetentionPolicies(rpDB)
-      .success
-      .value
-      .value
-      .contains(RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true)) shouldEqual true
+        influx
+          .showRetentionPolicies(rpDB)
+          .success
+          .value
+          .value
+          .contains(RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true)) shouldEqual true
 
-  }
+      }
 
-  it should "drop retention policy" in {
-    influx.dropRetentionPolicy("autogen", rpDB).success.value.value shouldEqual 200
+      "drop retention policy" in {
+        influx.dropRetentionPolicy("autogen", rpDB).success.value.value shouldEqual 200
 
-    influx.showRetentionPolicies(rpDB).success.value.value shouldEqual Seq(
-      RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true)
-    )
-  }
+        influx.showRetentionPolicies(rpDB).success.value.value shouldEqual Seq(
+          RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true)
+        )
+      }
 
-  it should "update retention policy" in {
-    influx.updateRetentionPolicy("test", rpDB, Some(3.hours)).success.value.value shouldEqual 200
+      "update retention policy" in {
+        influx
+          .updateRetentionPolicy("test", rpDB, Some(3.hours))
+          .success
+          .value
+          .value shouldEqual 200
 
-    influx.showRetentionPolicies(rpDB).success.value.value shouldEqual Seq(
-      RetentionPolicyInfo("test", "3h0m0s", "2h0m0s", 2, default = true)
-    )
-  }
+        influx.showRetentionPolicies(rpDB).success.value.value shouldEqual Seq(
+          RetentionPolicyInfo("test", "3h0m0s", "2h0m0s", 2, default = true)
+        )
+      }
 
-  it should "clean up everything" in {
-    influx.dropRetentionPolicy("test", rpDB).success.value.value shouldEqual 200
+      "clean up everything" in {
+        influx.dropRetentionPolicy("test", rpDB).success.value.value shouldEqual 200
 
-    influx.showRetentionPolicies(rpDB).success.value.value.toList shouldEqual Nil
+        influx.showRetentionPolicies(rpDB).success.value.value.toList shouldEqual Nil
 
-    influx.dropDatabase(rpDB).success.value.value shouldEqual 200
+        influx.dropDatabase(rpDB).success.value.value shouldEqual 200
 
-    influx.showDatabases().success.value.value.contains(rpDB) shouldEqual false
+        influx.showDatabases().success.value.value.contains(rpDB) shouldEqual false
+      }
+    }
+
   }
 }

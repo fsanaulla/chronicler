@@ -9,7 +9,7 @@ import com.github.fsanaulla.chronicler.core.alias.Id
 import com.github.fsanaulla.chronicler.core.api.DatabaseApi
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import org.asynchttpclient.Response
-import org.scalatest.EitherValues
+import org.scalatest.{EitherValues, BeforeAndAfterAll}
 import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -24,7 +24,8 @@ class CompressionSpec
     with DockerizedInfluxDB
     with ScalaFutures
     with Eventually
-    with IntegrationPatience {
+    with IntegrationPatience
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     mng.close()
@@ -35,10 +36,10 @@ class CompressionSpec
   val testDB = "db"
 
   lazy val mng: AhcManagementClient =
-    InfluxMng(host, port, Some(creds), None)
+    InfluxMng(host, port, Some(credentials), None)
 
   lazy val io: AhcIOClient =
-    InfluxIO(host, port, Some(creds), compress = true)
+    InfluxIO(host, port, Some(credentials), compress = true)
 
   lazy val db: DatabaseApi[Future, Id, Response, Uri, String] =
     io.database(testDB)
