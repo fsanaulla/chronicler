@@ -8,7 +8,7 @@ import com.github.fsanaulla.chronicler.akka.io.{AkkaDatabaseApi, AkkaIOClient, I
 import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, InfluxMng}
 import com.github.fsanaulla.chronicler.akka.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import org.scalatest.EitherValues
+import org.scalatest.{EitherValues, BeforeAndAfterAll}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
@@ -22,7 +22,8 @@ class CompressionSpec
     with DockerizedInfluxDB
     with ScalaFutures
     with EitherValues
-    with IntegrationPatience {
+    with IntegrationPatience
+    with BeforeAndAfterAll {
 
   implicit val ec: ExecutionContextExecutor = system.dispatcher
 
@@ -36,10 +37,10 @@ class CompressionSpec
   val testDB = "db"
 
   lazy val influxConf: InfluxConfig =
-    InfluxConfig(host, port, credentials = Some(creds), compress = true)
+    InfluxConfig(host, port, credentials = Some(credentials), compress = true)
 
   lazy val mng: AkkaManagementClient =
-    InfluxMng(host, port, credentials = Some(creds))
+    InfluxMng(host, port, credentials = Some(credentials))
 
   lazy val io: AkkaIOClient =
     InfluxIO(influxConf)

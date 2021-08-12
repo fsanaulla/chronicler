@@ -13,6 +13,7 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 import org.typelevel.jawn.ast.{JArray, JNum, JString}
+import org.scalatest.BeforeAndAfterAll
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.io.Source
@@ -24,7 +25,8 @@ class GroupedApiSpec
     with Matchers
     with ScalaFutures
     with IntegrationPatience
-    with DockerizedInfluxDB {
+    with DockerizedInfluxDB
+    with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     mng.close()
@@ -37,9 +39,9 @@ class GroupedApiSpec
   val dbName                                = "mydb"
 
   lazy val influxConf: InfluxConfig =
-    InfluxConfig(host, port, credentials = Some(creds), compress = true, None)
+    InfluxConfig(host, port, credentials = Some(credentials), compress = true, None)
   lazy val mng: AkkaManagementClient =
-    InfluxMng(host, port, credentials = Some(creds))
+    InfluxMng(host, port, credentials = Some(credentials))
   lazy val io: AkkaIOClient =
     InfluxIO(influxConf)
 
