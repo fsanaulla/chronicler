@@ -1,6 +1,6 @@
 ThisBuild / credentials += Credentials(
   "GnuPG Key ID",
   "gpg",
-  "CEE7CE443552E579208DCFD59385CE83F6DA105C", // key identifier
+  "671029B321DD6582831014D1C70607956920685B", // key identifier
   "ignored" // this field is ignored; passwords are supplied by pinentry
 )
