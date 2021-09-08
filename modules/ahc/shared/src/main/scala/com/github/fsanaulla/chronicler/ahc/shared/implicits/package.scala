@@ -17,7 +17,7 @@
 package com.github.fsanaulla.chronicler.ahc.shared
 
 import com.github.fsanaulla.chronicler.core.alias.Id
-import com.github.fsanaulla.chronicler.core.model.{Apply, Failable, FunctionK, Functor}
+import com.github.fsanaulla.chronicler.core.typeclasses.{Apply, Failable, FunctionK, Functor}
 
 import scala.concurrent.{ExecutionContext, Future}
 

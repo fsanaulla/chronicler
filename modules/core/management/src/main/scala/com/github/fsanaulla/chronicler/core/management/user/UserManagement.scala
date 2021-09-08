@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.management
+package com.github.fsanaulla.chronicler.core.management.user
 
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
 import com.github.fsanaulla.chronicler.core.components._
+import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
 import com.github.fsanaulla.chronicler.core.enums.Privilege
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.UserManagementQuery
+import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, FunctionK}
 
 trait UserManagement[F[_], G[_], Resp, Uri, Body] extends UserManagementQuery[Uri] {
   implicit val qb: QueryBuilder[Uri]
   implicit val re: RequestExecutor[F, Resp, Uri, Body]
-  implicit val rh: ResponseHandler[G, Resp]
+  implicit val rh: ManagementResponseHandler[G, Resp]
   implicit val F: Functor[F]
   implicit val FK: FunctionK[G, F]
 
@@ -107,5 +109,4 @@ trait UserManagement[F[_], G[_], Resp, Uri, Body] extends UserManagementQuery[Ur
     F.flatMap(
       re.get(showUserPrivilegesQuery(username), compress = false)
     )(resp => FK(rh.queryResult[UserPrivilegesInfo](resp)))
-
 }

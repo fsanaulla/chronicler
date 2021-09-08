@@ -1,7 +1,8 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
 import com.github.fsanaulla.chronicler.core.enums.Privileges
-import com.github.fsanaulla.chronicler.core.model.{InfluxException, UserPrivilegesInfo}
+import com.github.fsanaulla.chronicler.core.model.{InfluxException}
+import com.github.fsanaulla.chronicler.core.management.user._
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import org.scalatest.{EitherValues, BeforeAndAfterAll, TryValues}

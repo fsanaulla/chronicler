@@ -16,12 +16,14 @@
 
 package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 
-import com.github.fsanaulla.chronicler.core.components.ResponseHandler
+import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
 import com.github.fsanaulla.chronicler.core.implicits._
-import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
+import com.github.fsanaulla.chronicler.core.management.cq.ContinuousQuery
 import com.github.fsanaulla.chronicler.urlhttp.shared.UrlJsonHandler
 import com.github.fsanaulla.chronicler.urlhttp.shared._
 import org.scalatest.freespec.AnyFreeSpec
+import sttp.client3.Response
+import scala.io.Source
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{EitherValues, OptionValues, TryValues}
 import org.typelevel.jawn.ast._
@@ -34,14 +36,16 @@ import scala.language.implicitConversions
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UrlResponseHandlerSpec
-    extends BaseSpec
-    with TryValues
-    with EitherValues
-    with OptionValues {
+class UrlResponseHandlerSpec extends BaseSpec with TryValues with EitherValues with OptionValues {
+
+  def mkResponse(str: String): Response[Either[String, String]] =
+    Response.ok(Right(str))
+
+  def getJsonStringFromFile(name: String): String =
+    Source.fromFile(getClass.getResource(name).toURI).mkString
 
   "Response handler" - {
-    val respHandler = new ResponseHandler(UrlJsonHandler)
+    val respHandler = new ManagementResponseHandler(UrlJsonHandler)
 
     "should extract from response" - {
 

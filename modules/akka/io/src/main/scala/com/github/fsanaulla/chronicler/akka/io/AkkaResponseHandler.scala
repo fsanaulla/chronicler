@@ -21,7 +21,7 @@ import akka.stream.scaladsl.{Framing, Source}
 import akka.util.ByteString
 import com.github.fsanaulla.chronicler.akka.shared.implicits._
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
-import com.github.fsanaulla.chronicler.core.components.{JsonHandler, ResponseHandler}
+import com.github.fsanaulla.chronicler.core.components.{JsonHandler, ResponseHandlerBase}
 import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either.EitherOps
 import com.github.fsanaulla.chronicler.core.jawn.RichJParser
@@ -34,7 +34,7 @@ import scala.reflect.ClassTag
 class AkkaResponseHandler(
     jsonHandler: JsonHandler[Future, HttpResponse]
   )(implicit ex: ExecutionContext)
-  extends ResponseHandler[Future, HttpResponse](jsonHandler) {
+  extends ResponseHandlerBase[Future, HttpResponse](jsonHandler) {
 
   final def queryChunkedResultJson(response: HttpResponse): Source[ErrorOr[Array[JArray]], Any] = {
     response.entity.dataBytes

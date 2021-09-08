@@ -24,10 +24,10 @@ import com.github.fsanaulla.chronicler.ahc.shared.handlers.{
 import com.github.fsanaulla.chronicler.ahc.shared.implicits.{fkId, futureFailable, futureFunctor}
 import com.github.fsanaulla.chronicler.ahc.shared.{InfluxAhcClient, Uri}
 import com.github.fsanaulla.chronicler.core.IOClient
+import com.github.fsanaulla.chronicler.core.typeclasses.Apply._
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
 import com.github.fsanaulla.chronicler.core.api.{DatabaseApi, MeasurementApi}
-import com.github.fsanaulla.chronicler.core.components.ResponseHandler
-import com.github.fsanaulla.chronicler.core.implicits.{applyId, functorId}
+import com.github.fsanaulla.chronicler.core.components.ResponseHandlerBase
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
 import org.asynchttpclient.{AsyncHttpClientConfig, Response}
 
@@ -47,7 +47,7 @@ final class AhcIOClient(
   val jsonHandler: AhcJsonHandler                = new AhcJsonHandler
   implicit val qb: AhcQueryBuilder               = new AhcQueryBuilder(schema, host, port, credentials)
   implicit val re: AhcRequestExecutor            = new AhcRequestExecutor
-  implicit val rh: ResponseHandler[Id, Response] = new ResponseHandler(jsonHandler)
+  implicit val rh: ResponseHandlerBase[Id, Response] = new ResponseHandlerBase(jsonHandler)
 
   override def database(dbName: String) =
     new DatabaseApi(dbName, compress)

@@ -18,10 +18,12 @@ package com.github.fsanaulla.chronicler.core.management
 
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
 import com.github.fsanaulla.chronicler.core.components._
+import com.github.fsanaulla.chronicler.core.management.subscription._
 import com.github.fsanaulla.chronicler.core.enums.Destination
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.SubscriptionsManagementQuery
+import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, FunctionK}
 
 /***
   * Provide support of subscription api
@@ -37,7 +39,7 @@ import com.github.fsanaulla.chronicler.core.query.SubscriptionsManagementQuery
 trait SubscriptionManagement[F[_], G[_], R, U, E] extends SubscriptionsManagementQuery[U] {
   implicit val qb: QueryBuilder[U]
   implicit val re: RequestExecutor[F, R, U, E]
-  implicit val rh: ResponseHandler[G, R]
+  implicit val rh: ManagementResponseHandler[G, R]
   implicit val F: Functor[F]
   implicit val FK: FunctionK[G, F]
 

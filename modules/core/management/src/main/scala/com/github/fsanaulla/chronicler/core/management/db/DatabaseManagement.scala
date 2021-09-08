@@ -19,8 +19,9 @@ package com.github.fsanaulla.chronicler.core.management
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
 import com.github.fsanaulla.chronicler.core.components._
 import com.github.fsanaulla.chronicler.core.implicits._
-import com.github.fsanaulla.chronicler.core.model._
+import com.github.fsanaulla.chronicler.core.management.db._
 import com.github.fsanaulla.chronicler.core.query.DataManagementQuery
+import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, FunctionK}
 
 /**
   * Created by
@@ -30,7 +31,7 @@ import com.github.fsanaulla.chronicler.core.query.DataManagementQuery
 trait DatabaseManagement[F[_], G[_], Resp, Uri, Body] extends DataManagementQuery[Uri] {
   implicit val qb: QueryBuilder[Uri]
   implicit val re: RequestExecutor[F, Resp, Uri, Body]
-  implicit val rh: ResponseHandler[G, Resp]
+  implicit val rh: ManagementResponseHandler[G, Resp]
   implicit val F: Functor[F]
   implicit val FK: FunctionK[G, F]
 

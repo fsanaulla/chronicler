@@ -2,7 +2,7 @@ package com.github.fsanaulla.chronicler.ahc.management
 
 import com.github.fsanaulla.chronicler.core.duration._
 import com.github.fsanaulla.chronicler.core.enums.{Destination, Destinations}
-import com.github.fsanaulla.chronicler.core.model.Subscription
+import com.github.fsanaulla.chronicler.core.management.subscription.Subscription
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import org.scalatest.{EitherValues, BeforeAndAfterAll}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}

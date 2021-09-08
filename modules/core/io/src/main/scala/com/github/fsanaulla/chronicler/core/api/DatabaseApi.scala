@@ -22,6 +22,7 @@ import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode, Tags, 
 import com.github.fsanaulla.chronicler.core.components._
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
+import com.github.fsanaulla.chronicler.core.typeclasses.{FunctionK, Functor}
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
 import org.typelevel.jawn.ast.JArray
 
@@ -42,7 +43,7 @@ class DatabaseApi[F[_], G[_], R, U, E](
   )(implicit qb: QueryBuilder[U],
     bd: BodyBuilder[E],
     re: RequestExecutor[F, R, U, E],
-    rh: ResponseHandler[G, R],
+    rh: ResponseHandlerBase[G, R],
     F: Functor[F],
     FK: FunctionK[G, F])
   extends DatabaseOperationQuery[U] {

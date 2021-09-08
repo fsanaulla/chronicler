@@ -4,7 +4,7 @@ import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, InfluxMng}
 import com.github.fsanaulla.chronicler.core.enums.Privileges
-import com.github.fsanaulla.chronicler.core.model.{UserInfo, UserPrivilegesInfo}
+import com.github.fsanaulla.chronicler.core.management.user.{UserInfo, UserPrivilegesInfo}
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import org.scalatest.{EitherValues, BeforeAndAfterAll}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}

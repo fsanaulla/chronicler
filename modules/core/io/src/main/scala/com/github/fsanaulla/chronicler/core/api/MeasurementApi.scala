@@ -20,6 +20,7 @@ import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
 import com.github.fsanaulla.chronicler.core.components._
 import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either.EitherOps
+import com.github.fsanaulla.chronicler.core.typeclasses.{FunctionK, Functor, Failable}
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
@@ -36,7 +37,7 @@ class MeasurementApi[F[_], G[_], Resp, Uri, Body, A](
   )(implicit qb: QueryBuilder[Uri],
     bd: BodyBuilder[Body],
     re: RequestExecutor[F, Resp, Uri, Body],
-    rh: ResponseHandler[G, Resp],
+    rh: ResponseHandlerBase[G, Resp],
     F: Functor[F],
     FA: Failable[F],
     FK: FunctionK[G, F])

@@ -24,11 +24,9 @@ import com.github.fsanaulla.chronicler.ahc.shared.handlers.{
 import com.github.fsanaulla.chronicler.ahc.shared.{InfluxAhcClient, Uri}
 import com.github.fsanaulla.chronicler.core.ManagementClient
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
-import com.github.fsanaulla.chronicler.core.components.ResponseHandler
-import com.github.fsanaulla.chronicler.core.implicits.{applyId, functorId}
+import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
+import com.github.fsanaulla.chronicler.core.typeclasses._
 import com.github.fsanaulla.chronicler.core.model.{
-  FunctionK,
-  Functor,
   InfluxCredentials,
   InfluxDBInfo
 }
@@ -50,7 +48,7 @@ final class AhcManagementClient(
   val jsonHandler: AhcJsonHandler                = new AhcJsonHandler
   implicit val qb: AhcQueryBuilder               = new AhcQueryBuilder(schema, host, port, credentials)
   implicit val re: AhcRequestExecutor            = new AhcRequestExecutor
-  implicit val rh: ResponseHandler[Id, Response] = new ResponseHandler(jsonHandler)
+  implicit val rh: ManagementResponseHandler[Id, Response] = new ManagementResponseHandler(jsonHandler)
 
   override def ping: Future[ErrorOr[InfluxDBInfo]] = {
     re.get(qb.buildQuery("/ping"), compress = false)

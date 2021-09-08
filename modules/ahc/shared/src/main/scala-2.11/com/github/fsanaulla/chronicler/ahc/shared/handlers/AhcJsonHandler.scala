@@ -19,6 +19,7 @@ package com.github.fsanaulla.chronicler.ahc.shared.handlers
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
 import com.github.fsanaulla.chronicler.core.components.JsonHandler
 import com.github.fsanaulla.chronicler.core.implicits._
+import com.github.fsanaulla.chronicler.core.typeclasses.Functor._
 import com.github.fsanaulla.chronicler.core.jawn.RichJParser
 import org.asynchttpclient.Response
 import org.typelevel.jawn.ast.{JParser, JValue}

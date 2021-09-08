@@ -21,9 +21,9 @@ import akka.http.scaladsl.model.HttpResponse
 import akka.stream.ActorMaterializer
 import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.shared.implicits.{futureApply, futureFunctor}
-import com.github.fsanaulla.chronicler.core.components.ResponseHandler
+import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
 import com.github.fsanaulla.chronicler.core.implicits._
-import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
+import com.github.fsanaulla.chronicler.core.management.cq.ContinuousQuery
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
@@ -53,7 +53,7 @@ class AkkaResponseHandlerSpec
   implicit val ec: ExecutionContextExecutor = system.dispatcher
   implicit val mat: ActorMaterializer       = ActorMaterializer()
   val jsonHandler                           = new AkkaJsonHandler(new AkkaBodyUnmarshaller(compressed = false))
-  val rh                                    = new ResponseHandler(jsonHandler)
+  val rh                                    = new ManagementResponseHandler(jsonHandler)
 
   it should "extract single query queryResult from response" in {
 

@@ -1,7 +1,7 @@
 package com.github.fsanaulla.chronicler.ahc.management
 
 import com.github.fsanaulla.chronicler.core.enums.Privileges
-import com.github.fsanaulla.chronicler.core.model.{UserInfo, UserPrivilegesInfo}
+import com.github.fsanaulla.chronicler.core.management.user.{UserInfo, UserPrivilegesInfo}
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import org.scalatest.{EitherValues, BeforeAndAfterAll}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}

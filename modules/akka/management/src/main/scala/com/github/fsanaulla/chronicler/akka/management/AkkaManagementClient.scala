@@ -25,6 +25,8 @@ import com.github.fsanaulla.chronicler.akka.shared.handlers._
 import com.github.fsanaulla.chronicler.core.ManagementClient
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.model._
+import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, FunctionK, Apply}
+import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,18 +36,22 @@ final class AkkaManagementClient(
     credentials: Option[InfluxCredentials],
     httpsContext: Option[HttpsConnectionContext],
     terminateActorSystem: Boolean
-  )(implicit val ex: ExecutionContext,
+)(
+    implicit val ex: ExecutionContext,
     val system: ActorSystem,
     val F: Functor[Future],
-    val FK: FunctionK[Future, Future])
-  extends InfluxAkkaClient(terminateActorSystem, httpsContext)
-  with ManagementClient[Future, Future, HttpResponse, Uri, RequestEntity] {
+    val A: Apply[Future],
+    val FK: FunctionK[Future, Future]
+) extends InfluxAkkaClient(terminateActorSystem, httpsContext)
+    with ManagementClient[Future, Future, HttpResponse, Uri, RequestEntity] {
 
   implicit val mat: ActorMaterializer  = ActorMaterializer()
   implicit val qb: AkkaQueryBuilder    = new AkkaQueryBuilder(schema, host, port, credentials)
   implicit val jh: AkkaJsonHandler     = new AkkaJsonHandler(new AkkaBodyUnmarshaller(false))
   implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor(ctx)
-  implicit val rh: AkkaResponseHandler = new AkkaResponseHandler(jh)
+  implicit val rh: ManagementResponseHandler[Future, HttpResponse] = new ManagementResponseHandler(
+    jh
+  )
 
   override def ping: Future[ErrorOr[InfluxDBInfo]] = {
     re.get(qb.buildQuery("/ping"), compressed = false)

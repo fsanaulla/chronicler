@@ -1,10 +1,14 @@
 package com.github.fsanaulla.chronicler.ahc.management
 
 import com.github.fsanaulla.chronicler.core.enums.Privileges
-import com.github.fsanaulla.chronicler.core.model.{InfluxException, UserPrivilegesInfo}
+import com.github.fsanaulla.chronicler.core.management.user._
+import com.github.fsanaulla.chronicler.core.model.InfluxException
+import com.github.fsanaulla.chronicler.testing.BaseSpec
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import org.scalatest.{EitherValues, BeforeAndAfterAll}
-import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.EitherValues
+import org.scalatest.concurrent.IntegrationPatience
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -16,8 +20,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Date: 17.08.17
   */
 class AuthenticationSpec
-    extends AnyFlatSpec
-    with Matchers
+    extends BaseSpec
     with ScalaFutures
     with EitherValues
     with IntegrationPatience
@@ -44,51 +47,65 @@ class AuthenticationSpec
   lazy val authInflux: AhcManagementClient =
     InfluxMng(host = host, port = port, credentials = Some(credentials))
 
-  "Authenticated User Management API" should "create admin user " in {
-    influx.showUsers.futureValue.left.value shouldBe a[InfluxException]
-  }
+  "Authenticated User Management API" - {
 
-  it should "create database" in {
-    authInflux.createDatabase(userDB).futureValue.value shouldEqual 200
-  }
+    "should" - {
 
-  it should "create user" in {
-    authInflux.createUser(userName, userPass).futureValue.value shouldEqual 200
-    authInflux.showUsers.futureValue.value.exists(_.username == userName) shouldEqual true
-  }
+      "create" - {
 
-  it should "set user password" in {
-    authInflux.setUserPassword(userName, userNPass).futureValue.value shouldEqual 200
-  }
+        "admin user " in {
+          influx.showUsers.futureValue.left.value shouldBe a[InfluxException]
+        }
 
-  it should "set user privileges" in {
-    authInflux
-      .setPrivileges(userName, userDB, Privileges.READ)
-      .futureValue
-      .value shouldEqual 200
-  }
+        "database" in {
+          authInflux.createDatabase(userDB).futureValue.value shouldEqual 200
+        }
 
-  it should "get user privileges" in {
-    val userPrivs = authInflux.showUserPrivileges(userName).futureValue.value
+        "user" in {
+          authInflux.createUser(userName, userPass).futureValue.value shouldEqual 200
+          authInflux.showUsers.futureValue.value.exists(_.username == userName) shouldEqual true
+        }
 
-    userPrivs.length shouldEqual 1
-    userPrivs.exists { upi =>
-      upi.database == userDB && upi.privilege == Privileges.withName("READ")
-    } shouldEqual true
-  }
+      }
 
-  it should "revoke user privileges" in {
-    authInflux
-      .revokePrivileges(userName, userDB, Privileges.READ)
-      .futureValue
-      .value shouldEqual 200
-    authInflux.showUserPrivileges(userName).futureValue.value shouldEqual Array(
-      UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES)
-    )
-  }
+      "set" - {
+        "user password" in {
+          authInflux.setUserPassword(userName, userNPass).futureValue.value shouldEqual 200
+        }
 
-  it should "drop user" in {
-    authInflux.dropUser(userName).futureValue.value shouldEqual 200
-    authInflux.dropUser(admin).futureValue.value shouldEqual 200
+        "user privileges" in {
+          authInflux
+            .setPrivileges(userName, userDB, Privileges.READ)
+            .futureValue
+            .value shouldEqual 200
+        }
+      }
+
+      "get user privileges" in {
+        val userPrivs = authInflux.showUserPrivileges(userName).futureValue.value
+
+        userPrivs.length shouldEqual 1
+        userPrivs.exists { upi =>
+          upi.database == userDB && upi.privilege == Privileges.withName("READ")
+        } shouldEqual true
+      }
+
+      "revoke user privileges" in {
+        authInflux
+          .revokePrivileges(userName, userDB, Privileges.READ)
+          .futureValue
+          .value shouldEqual 200
+
+        authInflux.showUserPrivileges(userName).futureValue.value shouldEqual Array(
+          UserPrivilegesInfo(userDB, Privileges.NO_PRIVILEGES)
+        )
+      }
+
+      "drop user" in {
+        authInflux.dropUser(userName).futureValue.value shouldEqual 200
+        authInflux.dropUser(admin).futureValue.value shouldEqual 200
+      }
+    }
+
   }
 }

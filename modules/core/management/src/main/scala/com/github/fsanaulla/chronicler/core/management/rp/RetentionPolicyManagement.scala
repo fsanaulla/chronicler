@@ -18,9 +18,11 @@ package com.github.fsanaulla.chronicler.core.management
 
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
 import com.github.fsanaulla.chronicler.core.components._
+import com.github.fsanaulla.chronicler.core.management.rp._
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.RetentionPolicyManagementQuery
+import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, FunctionK}
 
 /**
   * Created by
@@ -31,7 +33,7 @@ trait RetentionPolicyManagement[F[_], G[_], Resp, Uri, Entity]
   extends RetentionPolicyManagementQuery[Uri] {
   implicit val qb: QueryBuilder[Uri]
   implicit val re: RequestExecutor[F, Resp, Uri, Entity]
-  implicit val rh: ResponseHandler[G, Resp]
+  implicit val rh: ManagementResponseHandler[G, Resp]
   implicit val F: Functor[F]
   implicit val FK: FunctionK[G, F]
 

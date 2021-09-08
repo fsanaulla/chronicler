@@ -18,9 +18,10 @@ package com.github.fsanaulla.chronicler.ahc.shared.handlers
 
 import java.nio.ByteBuffer
 
-import com.github.fsanaulla.chronicler.core.components.ResponseHandler
+import com.github.fsanaulla.chronicler.core.components.ResponseHandlerBase
 import com.github.fsanaulla.chronicler.core.implicits._
-import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
+import com.github.fsanaulla.chronicler.core.management.cq.ContinuousQuery
+import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
 import io.netty.buffer.Unpooled
 import io.netty.handler.codec.http.{DefaultHttpResponse, HttpVersion}
 import org.asynchttpclient.Response
@@ -51,7 +52,7 @@ class AhcResponseHandlerSpec extends AnyFlatSpec with Matchers with ScalaFutures
 
   implicit val p: JParser.type = JParser
 
-  val rh = new ResponseHandler(jsonHandler)
+  val rh = new ManagementResponseHandler(jsonHandler)
 
   def buildResponse(bts: Array[Byte]): Response = {
     val b = new Response.ResponseBuilder()

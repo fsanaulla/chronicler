@@ -1,7 +1,7 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
 import com.github.fsanaulla.chronicler.core.duration._
-import com.github.fsanaulla.chronicler.core.model.RetentionPolicyInfo
+import com.github.fsanaulla.chronicler.core.management.rp.RetentionPolicyInfo
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.model
+package com.github.fsanaulla.chronicler.core.typeclasses
 
 import com.github.fsanaulla.chronicler.core.alias.Id
 

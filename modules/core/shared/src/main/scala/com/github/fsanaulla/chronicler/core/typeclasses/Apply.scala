@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.model
+package com.github.fsanaulla.chronicler.core.typeclasses
 
-trait Functor[F[_]] {
-  def map[A, B](fa: F[A])(f: A => B): F[B]
-  def flatMap[A, B](fa: F[A])(f: A => F[B]): F[B]
+import com.github.fsanaulla.chronicler.core.alias.Id
+
+/**
+  * Apply typeclass
+  *
+  * @since 0.5.5
+  */
+trait Apply[F[_]] {
+  def pure[A](v: A): F[A]
+}
+
+object Apply {
+  implicit val applyId: Apply[Id] = new Apply[Id] {
+    override def pure[A](v: A): Id[A] = v
+  }
 }

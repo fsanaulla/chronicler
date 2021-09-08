@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.model
+package com.github.fsanaulla.chronicler.core.typeclasses
 
-/**
-  * Apply typeclass
-  *
-  * @since 0.5.5
-  */
-trait Apply[F[_]] {
-  def pure[A](v: A): F[A]
+trait Failable[F[_]] {
+  def fail[A](ex: Throwable): F[A]
 }

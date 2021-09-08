@@ -18,9 +18,16 @@ package com.github.fsanaulla.chronicler.urlhttp.management
 
 import com.github.fsanaulla.chronicler.core.ManagementClient
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
-import com.github.fsanaulla.chronicler.core.components.ResponseHandler
-import com.github.fsanaulla.chronicler.core.model.{FunctionK, Functor, InfluxCredentials, InfluxDBInfo}
-import com.github.fsanaulla.chronicler.urlhttp.shared.{ResponseE, UrlJsonHandler, UrlQueryBuilder, UrlRequestExecutor, tryApply}
+import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
+import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
+import com.github.fsanaulla.chronicler.core.typeclasses.{FunctionK, Functor}
+import com.github.fsanaulla.chronicler.urlhttp.shared.{
+  ResponseE,
+  UrlJsonHandler,
+  UrlQueryBuilder,
+  UrlRequestExecutor,
+  tryApply
+}
 import sttp.client3.{SttpBackend, TryHttpURLConnectionBackend}
 import sttp.model.Uri
 
@@ -33,10 +40,12 @@ final class UrlManagementClient(
 )(implicit val F: Functor[Try], val FK: FunctionK[Try, Try])
     extends ManagementClient[Try, Try, ResponseE, Uri, String] {
 
-  private val backend: SttpBackend[Try, Any]       = TryHttpURLConnectionBackend()
-  implicit val qb: UrlQueryBuilder                 = new UrlQueryBuilder(host, port, credentials)
-  implicit val re: UrlRequestExecutor              = new UrlRequestExecutor(backend)
-  implicit val rh: ResponseHandler[Try, ResponseE] = new ResponseHandler(UrlJsonHandler)
+  private val backend: SttpBackend[Try, Any] = TryHttpURLConnectionBackend()
+  implicit val qb: UrlQueryBuilder           = new UrlQueryBuilder(host, port, credentials)
+  implicit val re: UrlRequestExecutor        = new UrlRequestExecutor(backend)
+  implicit val rh: ManagementResponseHandler[Try, ResponseE] = new ManagementResponseHandler(
+    UrlJsonHandler
+  )
 
   override def ping: Try[ErrorOr[InfluxDBInfo]] = {
     re.get(qb.buildQuery("/ping"), compression = false)

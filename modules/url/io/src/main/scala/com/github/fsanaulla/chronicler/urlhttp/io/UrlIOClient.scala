@@ -19,7 +19,7 @@ package com.github.fsanaulla.chronicler.urlhttp.io
 import com.github.fsanaulla.chronicler.core.IOClient
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.api.{DatabaseApi, MeasurementApi}
-import com.github.fsanaulla.chronicler.core.components.ResponseHandler
+import com.github.fsanaulla.chronicler.core.components.ResponseHandlerBase
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
 import com.github.fsanaulla.chronicler.urlhttp.shared.{ResponseE, UrlJsonHandler, UrlQueryBuilder, UrlRequestExecutor, tryApply, tryFailable, tryFunctor}
 import sttp.client3.{SttpBackend, TryHttpURLConnectionBackend}
@@ -38,7 +38,7 @@ final class UrlIOClient(
   private val backend: SttpBackend[Try, Any]       = TryHttpURLConnectionBackend()
   implicit val qb: UrlQueryBuilder                 = new UrlQueryBuilder(host, port, credentials)
   implicit val re: UrlRequestExecutor              = new UrlRequestExecutor(backend)
-  implicit val rh: ResponseHandler[Try, ResponseE] = new ResponseHandler(UrlJsonHandler)
+  implicit val rh: ResponseHandlerBase[Try, ResponseE] = new ResponseHandlerBase(UrlJsonHandler)
 
   override def database(dbName: String): Database =
     new DatabaseApi(dbName, compress)

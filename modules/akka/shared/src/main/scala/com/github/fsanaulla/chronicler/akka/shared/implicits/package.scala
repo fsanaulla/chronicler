@@ -16,14 +16,13 @@
 
 package com.github.fsanaulla.chronicler.akka.shared
 
-import com.github.fsanaulla.chronicler.core.model.{Apply, Failable, Functor}
+import com.github.fsanaulla.chronicler.core.typeclasses.{Apply, Failable, Functor}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 package object implicits {
   implicit def futureFunctor(implicit ec: ExecutionContext): Functor[Future] = new Functor[Future] {
     override def map[A, B](fa: Future[A])(f: A => B): Future[B] = fa.map(f)
-
     override def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = fa.flatMap(f)
   }
 

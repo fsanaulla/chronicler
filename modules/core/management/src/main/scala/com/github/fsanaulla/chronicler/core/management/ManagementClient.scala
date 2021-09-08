@@ -17,6 +17,8 @@
 package com.github.fsanaulla.chronicler.core
 
 import com.github.fsanaulla.chronicler.core.management._
+import com.github.fsanaulla.chronicler.core.management.user.UserManagement
+import com.github.fsanaulla.chronicler.core.management.cq.ContinuousQueryManagement
 
 /**
   * Functionality of management client

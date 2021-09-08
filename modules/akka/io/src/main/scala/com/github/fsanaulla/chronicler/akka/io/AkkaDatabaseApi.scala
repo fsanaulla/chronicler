@@ -27,7 +27,7 @@ import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, JPoint}
 import com.github.fsanaulla.chronicler.core.api.DatabaseApi
 import com.github.fsanaulla.chronicler.core.components.BodyBuilder
 import com.github.fsanaulla.chronicler.core.enums.{Epoch, Epochs}
-import com.github.fsanaulla.chronicler.core.model.{FunctionK, Functor}
+import com.github.fsanaulla.chronicler.core.typeclasses.{FunctionK, Functor}
 
 import scala.concurrent.Future
 

@@ -1,7 +1,7 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
 import com.github.fsanaulla.chronicler.core.alias.Id
-import com.github.fsanaulla.chronicler.core.model.{Apply, Failable, FunctionK, Functor}
+import com.github.fsanaulla.chronicler.core.typeclasses.{Apply, Failable, FunctionK, Functor}
 import sttp.client3.Response
 
 import scala.util.{Failure, Success, Try}
