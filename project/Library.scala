@@ -16,7 +16,7 @@ object Library {
     }
 
     object Testing {
-      val scalaTest            = "3.2.9"
+      val scalaTest            = "3.2.10"
       val scalaCheck           = "1.14.0"
       val scalaCheckGenerators = "0.2.0"
     }
@@ -42,8 +42,8 @@ object Library {
 
   // async-http
   val asyncDeps: List[ModuleID] = List(
-    "org.asynchttpclient"    % "async-http-client"   % "2.12.3",
-    "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.0"
+    "org.asynchttpclient"    % "async-http-client"   % "2.12.1",
+    "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.1"
   )
 
   // looks like a shit, but need to keep it until spark on 2.12 will become stable
