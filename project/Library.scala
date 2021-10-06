@@ -42,7 +42,7 @@ object Library {
 
   // async-http
   val asyncDeps: List[ModuleID] = List(
-    "org.asynchttpclient"    % "async-http-client"   % "2.12.1",
+    "org.asynchttpclient"    % "async-http-client"   % "2.12.3",
     "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.1"
   )
 
