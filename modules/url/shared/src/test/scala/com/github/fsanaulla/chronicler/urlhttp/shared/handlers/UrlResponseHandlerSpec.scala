@@ -29,16 +29,9 @@ import com.github.fsanaulla.chronicler.testing.BaseSpec
 
 import scala.language.implicitConversions
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 10.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 10.08.17
   */
-class UrlResponseHandlerSpec
-    extends BaseSpec
-    with TryValues
-    with EitherValues
-    with OptionValues {
+class UrlResponseHandlerSpec extends BaseSpec with TryValues with EitherValues with OptionValues {
 
   "Response handler" - {
     val respHandler = new ResponseHandler(UrlJsonHandler)

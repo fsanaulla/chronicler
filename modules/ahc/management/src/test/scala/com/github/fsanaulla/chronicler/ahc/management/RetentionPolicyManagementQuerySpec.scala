@@ -26,10 +26,7 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.language.postfixOps
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 27.07.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 27.07.17
   */
 class RetentionPolicyManagementQuerySpec
     extends AnyFlatSpec
@@ -44,7 +41,7 @@ class RetentionPolicyManagementQuerySpec
 
   trait AuthEnv extends Env {
     val credentials: Option[InfluxCredentials] = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AhcQueryBuilder           = new AhcQueryBuilder(schema, host, port, credentials)
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(schema, host, port, credentials)
   }
 
   trait NonAuthEnv extends Env {
@@ -55,7 +52,14 @@ class RetentionPolicyManagementQuerySpec
   val testDBName = "testDB"
 
   it should "create retention policy" in new AuthEnv {
-    createRPQuery(testRPName, testDBName, 4 hours, 3, Some(4 hours), default = true).mkUrl shouldEqual
+    createRPQuery(
+      testRPName,
+      testDBName,
+      4 hours,
+      3,
+      Some(4 hours),
+      default = true
+    ).mkUrl shouldEqual
       queryTesterAuth(
         s"CREATE RETENTION POLICY $testRPName ON $testDBName DURATION 4h REPLICATION 3 SHARD DURATION 4h DEFAULT"
       )(credentials.get)
@@ -87,7 +91,14 @@ class RetentionPolicyManagementQuerySpec
   }
 
   it should "update retention policy" in new AuthEnv {
-    updateRPQuery(testRPName, testDBName, Some(4 hours), Some(3), Some(4 hours), default = true).mkUrl shouldEqual
+    updateRPQuery(
+      testRPName,
+      testDBName,
+      Some(4 hours),
+      Some(3),
+      Some(4 hours),
+      default = true
+    ).mkUrl shouldEqual
       queryTesterAuth(
         s"ALTER RETENTION POLICY $testRPName ON $testDBName DURATION 4h REPLICATION 3 SHARD DURATION 4h DEFAULT"
       )(credentials.get)

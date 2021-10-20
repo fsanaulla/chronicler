@@ -20,17 +20,14 @@ import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 15.03.18
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 15.03.18
   */
 private[akka] class AkkaQueryBuilder(
     schema: String,
     host: String,
     port: Int,
-    credentials: Option[InfluxCredentials])
-  extends QueryBuilder[Uri](credentials) {
+    credentials: Option[InfluxCredentials]
+) extends QueryBuilder[Uri](credentials) {
 
   override def buildQuery(url: String): Uri =
     Uri.from(

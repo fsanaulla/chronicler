@@ -30,22 +30,26 @@ trait UserManagement[F[_], G[_], Resp, Uri, Body] extends UserManagementQuery[Ur
   implicit val F: Functor[F]
   implicit val FK: FunctionK[G, F]
 
-  /***
-    * Create new username
-    * @param username - Name for new user
-    * @param password - Password for new user
-    * @return         - Result of execution
+  /** * Create new username
+    * @param username
+    *   - Name for new user
+    * @param password
+    *   - Password for new user
+    * @return
+    *   - Result of execution
     */
   final def createUser(username: String, password: String): F[ErrorOr[ResponseCode]] =
     F.flatMap(
       re.get(createUserQuery(username, password), compress = false)
     )(resp => FK(rh.writeResult(resp)))
 
-  /**
-    * Create admin user
-    * @param username - admin name
-    * @param password - admin password
-    * @return         - execution response
+  /** Create admin user
+    * @param username
+    *   - admin name
+    * @param password
+    *   - admin password
+    * @return
+    *   - execution response
     */
   final def createAdmin(username: String, password: String): F[ErrorOr[ResponseCode]] =
     F.flatMap(
@@ -69,7 +73,7 @@ trait UserManagement[F[_], G[_], Resp, Uri, Body] extends UserManagementQuery[Ur
       username: String,
       dbName: String,
       privilege: Privilege
-    ): F[ErrorOr[ResponseCode]] =
+  ): F[ErrorOr[ResponseCode]] =
     F.flatMap(
       re.get(setPrivilegesQuery(dbName, username, privilege), compress = false)
     )(resp => FK(rh.writeResult(resp)))
@@ -79,7 +83,7 @@ trait UserManagement[F[_], G[_], Resp, Uri, Body] extends UserManagementQuery[Ur
       username: String,
       dbName: String,
       privilege: Privilege
-    ): F[ErrorOr[ResponseCode]] =
+  ): F[ErrorOr[ResponseCode]] =
     F.flatMap(
       re.get(revokePrivilegesQuery(dbName, username, privilege), compress = false)
     )(resp => FK(rh.writeResult(resp)))

@@ -73,10 +73,13 @@ class GroupedApiSpec
         lazy val db = io.database(dbName)
 
         "multiple tags" in {
-          val sql = "select mean(\"water_level\") from h2o_feet group by \"location\", time(10d) fill(none)"
+          val sql =
+            "select mean(\"water_level\") from h2o_feet group by \"location\", time(10d) fill(none)"
           val Success(groupedResult) = db.readGroupedJson(sql)
 
-          groupedResult.mapRight(_.map { case (tags, value) => tags.toList -> value.toList }.toList) shouldEqual Right(
+          groupedResult.mapRight(
+            _.map { case (tags, value) => tags.toList -> value.toList }.toList
+          ) shouldEqual Right(
             List(
               (
                 List("coyote_creek"),
@@ -104,7 +107,9 @@ class GroupedApiSpec
           val sql = "select mean(\"water_level\") from h2o_feet group by \"location\""
           val Success(groupedResult) = db.readGroupedJson(sql)
 
-          groupedResult.mapRight(_.map { case (tags, value) => tags.toList -> value.toList }.toList) shouldEqual Right(
+          groupedResult.mapRight(
+            _.map { case (tags, value) => tags.toList -> value.toList }.toList
+          ) shouldEqual Right(
             List(
               (
                 List("coyote_creek"),

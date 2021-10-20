@@ -8,10 +8,7 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import com.github.fsanaulla.chronicler.testing.BaseSpec
 import org.scalatest.{EitherValues, TryValues, BeforeAndAfterAll}
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 27.07.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 27.07.17
   */
 class RetentionPolicyManagerSpec
     extends BaseSpec
@@ -48,7 +45,9 @@ class RetentionPolicyManagerSpec
           .success
           .value
           .value
-          .contains(RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true)) shouldEqual true
+          .contains(
+            RetentionPolicyInfo("test", "2h0m0s", "2h0m0s", 2, default = true)
+          ) shouldEqual true
 
       }
 

@@ -10,10 +10,7 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 10.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 10.08.17
   */
 class UserManagementSpec
     extends AnyFlatSpec

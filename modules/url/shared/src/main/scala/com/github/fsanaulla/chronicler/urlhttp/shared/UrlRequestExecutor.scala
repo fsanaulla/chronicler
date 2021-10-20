@@ -28,11 +28,12 @@ import scala.util.Try
 private[urlhttp] final class UrlRequestExecutor(backend: SttpBackend[Try, Any])
     extends RequestExecutor[Try, ResponseE, Uri, String] {
 
-  /**
-    * Execute HTTP GET request
+  /** Execute HTTP GET request
     *
-    * @param uri - request uri
-    * @return    - Return wrapper response
+    * @param uri
+    *   - request uri
+    * @return
+    *   - Return wrapper response
     */
   override def get(uri: Uri, compression: Boolean): Try[ResponseE] = {
     val maybeGzipped =

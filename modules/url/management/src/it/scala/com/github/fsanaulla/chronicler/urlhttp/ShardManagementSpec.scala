@@ -6,10 +6,7 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.{EitherValues, TryValues, BeforeAndAfterAll}
 import com.github.fsanaulla.chronicler.testing.BaseSpec
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 20.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 20.08.17
   */
 class ShardManagementSpec
     extends BaseSpec

@@ -35,8 +35,8 @@ private[urlhttp] class UrlQueryBuilder(
     Uri.unsafeApply(host = host, port).withWholePath(path)
 
   override def buildQuery(path: String, queryParams: List[(String, String)]): Uri = {
-    val params = queryParams.map {
-      case (k, v) => KeyValue(k, v, valueEncoding = Uri.QuerySegmentEncoding.All)
+    val params = queryParams.map { case (k, v) =>
+      KeyValue(k, v, valueEncoding = Uri.QuerySegmentEncoding.All)
     }
 
     @tailrec

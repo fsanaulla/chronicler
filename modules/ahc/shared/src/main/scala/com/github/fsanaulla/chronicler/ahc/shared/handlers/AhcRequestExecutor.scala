@@ -26,13 +26,14 @@ import scala.compat.java8.FutureConverters._
 import scala.concurrent.Future
 
 private[ahc] final class AhcRequestExecutor()(implicit client: AsyncHttpClient)
-  extends RequestExecutor[Future, Response, Uri, String] {
+    extends RequestExecutor[Future, Response, Uri, String] {
 
-  /**
-    * Execute uri
+  /** Execute uri
     *
-    * @param uri - request uri
-    * @return    - Return wrapper response
+    * @param uri
+    *   - request uri
+    * @return
+    *   - Return wrapper response
     */
   override def get(uri: Uri, compress: Boolean): Future[Response] = {
     val req             = client.prepareGet(uri.mkUrl)
@@ -45,7 +46,7 @@ private[ahc] final class AhcRequestExecutor()(implicit client: AsyncHttpClient)
       uri: Uri,
       body: String,
       compress: Boolean
-    ): Future[Response] = {
+  ): Future[Response] = {
     val req = client.preparePost(uri.mkUrl)
     val maybeEncoded = if (compress) {
       val (length, data) = gzip.compress(body.getBytes())
@@ -63,10 +64,10 @@ private[ahc] final class AhcRequestExecutor()(implicit client: AsyncHttpClient)
       .toScala
   }
 
-  /**
-    * Quite simple post operation for creating
+  /** Quite simple post operation for creating
     *
-    * @param uri - request uri
+    * @param uri
+    *   - request uri
     */
   override def post(uri: Uri): Future[Response] = {
     client

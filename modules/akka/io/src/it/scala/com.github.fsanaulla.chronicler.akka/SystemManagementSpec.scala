@@ -11,10 +11,7 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 07.09.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 07.09.17
   */
 class SystemManagementSpec
     extends TestKit(ActorSystem())
@@ -23,7 +20,7 @@ class SystemManagementSpec
     with ScalaFutures
     with IntegrationPatience
     with EitherValues
-    with DockerizedInfluxDB 
+    with DockerizedInfluxDB
     with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {

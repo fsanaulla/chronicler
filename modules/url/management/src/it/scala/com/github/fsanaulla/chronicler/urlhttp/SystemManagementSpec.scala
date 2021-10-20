@@ -8,10 +8,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.{EitherValues, TryValues, BeforeAndAfterAll}
 import com.github.fsanaulla.chronicler.testing.BaseSpec
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 07.09.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 07.09.17
   */
 class SystemManagementSpec
     extends BaseSpec

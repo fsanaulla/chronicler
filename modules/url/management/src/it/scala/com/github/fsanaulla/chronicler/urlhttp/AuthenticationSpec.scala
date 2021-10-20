@@ -9,10 +9,7 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 
 import com.github.fsanaulla.chronicler.testing.BaseSpec
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 17.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 17.08.17
   */
 class AuthenticationSpec
     extends BaseSpec

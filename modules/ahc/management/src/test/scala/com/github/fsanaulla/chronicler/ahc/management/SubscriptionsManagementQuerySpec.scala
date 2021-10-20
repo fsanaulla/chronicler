@@ -24,10 +24,7 @@ import com.github.fsanaulla.chronicler.core.query.SubscriptionsManagementQuery
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 21.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 21.08.17
   */
 class SubscriptionsManagementQuerySpec
     extends AnyFlatSpec
@@ -42,7 +39,7 @@ class SubscriptionsManagementQuerySpec
 
   trait AuthEnv extends Env {
     val credentials: Option[InfluxCredentials] = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AhcQueryBuilder           = new AhcQueryBuilder(schema, host, port, credentials)
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(schema, host, port, credentials)
   }
 
   trait NonAuthEnv extends Env {
