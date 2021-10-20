@@ -18,8 +18,6 @@ package com.github.fsanaulla.chronicler.akka.query
 
 import java.net.URLEncoder
 
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
-
 package object unit {
   implicit class StringRich(val str: String) extends AnyVal {
     def encode: String = URLEncoder.encode(str, "UTF-8")

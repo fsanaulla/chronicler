@@ -16,31 +16,33 @@
 
 package com.github.fsanaulla.chronicler.akka.io
 
-import akka.http.scaladsl.model.{HttpResponse, RequestEntity, Uri}
 import akka.stream.scaladsl.Source
-import com.github.fsanaulla.chronicler.akka.shared.handlers.{
-  AkkaQueryBuilder,
-  AkkaRequestExecutor,
-  AkkaResponseHandler
-}
-import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, JPoint}
+import com.github.fsanaulla.chronicler.akka.shared.{AkkaQueryBuilder, AkkaRequestBuilder, AkkaRequestExecutor, RequestE, ResponseE}
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
 import com.github.fsanaulla.chronicler.core.api.DatabaseApi
-import com.github.fsanaulla.chronicler.core.components.BodyBuilder
 import com.github.fsanaulla.chronicler.core.enums.{Epoch, Epochs}
-import com.github.fsanaulla.chronicler.core.typeclasses.{FunctionK, Functor}
+import com.github.fsanaulla.chronicler.core.typeclasses.{FunctionK, Functor, Monad}
+import org.typelevel.jawn.ast.JArray
+import sttp.client3.Identity
+import sttp.model.Uri
 
 import scala.concurrent.Future
 
 final class AkkaDatabaseApi(
     dbName: String,
     compressed: Boolean
-  )(implicit qb: AkkaQueryBuilder,
-    bd: BodyBuilder[RequestEntity],
+)(
+    implicit qb: AkkaQueryBuilder,
+    rb: AkkaRequestBuilder,
     re: AkkaRequestExecutor,
     rh: AkkaResponseHandler,
+    M: Monad[Future],
     F: Functor[Future],
-    FK: FunctionK[Future, Future])
-  extends DatabaseApi[Future, Future, HttpResponse, Uri, RequestEntity](dbName, compressed) {
+    FK: FunctionK[Id, Future]
+) extends DatabaseApi[Future, Id, RequestE[Identity], Uri, String, ResponseE](
+      dbName,
+      compressed
+    ) {
 
   /**
     * Read chunked data
@@ -57,8 +59,11 @@ final class AkkaDatabaseApi(
       epoch: Epoch = Epochs.None,
       pretty: Boolean = false,
       chunkSize: Int
-    ): Future[Source[ErrorOr[Array[JPoint]], Any]] = {
-    val uri = chunkedQuery(dbName, query, epoch, pretty, chunkSize)
-    F.map(re.get(uri, compressed))(rh.queryChunkedResultJson)
+  ): Source[ErrorOr[Array[JArray]], Future[Any]] = {
+    val uri  = chunkedQuery(dbName, query, epoch, pretty, chunkSize)
+    val req  = rb.getStream(uri, compress = false)
+    val resp = re.executeStream(req)
+
+    Source.fromFutureSource(F.map(resp)(resp => rh.queryChunkedResultJson(resp)))
   }
 }

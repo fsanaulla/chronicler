@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.akka
+package com.github.fsanaulla.chronicler.akka.query
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.HttpResponse
@@ -55,7 +55,7 @@ class AkkaResponseHandlerSpec
   implicit val ec: ExecutionContextExecutor = system.dispatcher
   implicit val mat: ActorMaterializer       = ActorMaterializer()
   val jsonHandler                           = new AkkaJsonHandler()
-  val rh                                    = new ResponseHandlerBase(jsonHandler)
+  val rh                                    = new ManagementResponseHandler(jsonHandler)
 
   it should "extract single query queryResult from response" in {
 

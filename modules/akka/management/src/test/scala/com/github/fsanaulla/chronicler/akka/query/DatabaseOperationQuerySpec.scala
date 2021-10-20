@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.akka.query.unit
+package com.github.fsanaulla.chronicler.akka.query
 
 import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.shared.AkkaQueryBuilder

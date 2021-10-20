@@ -20,6 +20,7 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.model.HttpResponse
 import akka.stream.ActorMaterializer
 import akka.testkit.TestKit
+import com.github.fsanaulla.chronicler.akka.shared.AkkaJsonHandler
 import org.scalatest._
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.matchers.should.Matchers

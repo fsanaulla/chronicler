@@ -18,9 +18,8 @@ package com.github.fsanaulla.chronicler.akka.management
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.HttpsConnectionContext
-import com.github.fsanaulla.chronicler.akka.shared.InfluxConfig
-import com.github.fsanaulla.chronicler.akka.shared.implicits._
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.akka.shared.{InfluxConfig, futureApply, futureMonadError}
+import com.github.fsanaulla.chronicler.core.auth.InfluxCredentials
 
 import scala.concurrent.ExecutionContext
 
@@ -46,12 +45,9 @@ object InfluxMng {
       host: String,
       port: Int = 8086,
       credentials: Option[InfluxCredentials] = None,
-      httpsContext: Option[HttpsConnectionContext] = None,
-      terminateActorSystem: Boolean = false
-    )(implicit ex: ExecutionContext,
-      system: ActorSystem
-    ): AkkaManagementClient =
-    new AkkaManagementClient(host, port, credentials, httpsContext, terminateActorSystem)
+      httpsContext: Option[HttpsConnectionContext] = None
+  )(implicit ex: ExecutionContext, system: ActorSystem): AkkaManagementClient =
+    new AkkaManagementClient(host, port, credentials, httpsContext)
 
   /**
     * Retrieve management InfluxDB client, without IO functionality using configuration object
@@ -63,14 +59,11 @@ object InfluxMng {
     */
   def apply(
       conf: InfluxConfig
-    )(implicit ex: ExecutionContext,
-      system: ActorSystem
-    ): AkkaManagementClient =
+  )(implicit ex: ExecutionContext, system: ActorSystem): AkkaManagementClient =
     apply(
       conf.host,
       conf.port,
       conf.credentials,
-      conf.httpsContext,
-      conf.terminateActorSystem
+      conf.httpsContext
     )
 }

@@ -17,9 +17,8 @@
 package com.github.fsanaulla.chronicler.akka.query
 
 import akka.http.scaladsl.model.Uri
-import com.github.fsanaulla.chronicler.akka.shared.handlers.AkkaQueryBuilder
+import com.github.fsanaulla.chronicler.akka.shared.AkkaQueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.Privileges
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.UserManagementQuery
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers

@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.akka.shared.handlers
+package com.github.fsanaulla.chronicler.akka.io
 
-import akka.http.scaladsl.model.HttpResponse
-import akka.stream.scaladsl.{Framing, Source}
-import akka.util.ByteString
-import com.github.fsanaulla.chronicler.akka.shared.implicits._
-import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import akka.stream.scaladsl.Source
+import com.github.fsanaulla.chronicler.akka.shared.{ResponseE, ResponseS}
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
 import com.github.fsanaulla.chronicler.core.components.{JsonHandler, ResponseHandlerBase}
 import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either.EitherOps
@@ -28,36 +26,47 @@ import com.github.fsanaulla.chronicler.core.jawn.RichJParser
 import com.github.fsanaulla.chronicler.core.model.{InfluxReader, ParsingException}
 import org.typelevel.jawn.ast.{JArray, JParser}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
 
-class AkkaResponseHandler(
-    jsonHandler: JsonHandler[Future, HttpResponse]
-  )(implicit ex: ExecutionContext)
-  extends ResponseHandlerBase[Future, HttpResponse](jsonHandler) {
+final class AkkaResponseHandler(jsonHandler: JsonHandler[Id, ResponseE])(
+    implicit ec: ExecutionContext
+) extends ResponseHandlerBase[Id, ResponseE](jsonHandler) {
 
-  final def queryChunkedResultJson(response: HttpResponse): Source[ErrorOr[Array[JArray]], Any] = {
-    response.entity.dataBytes
-      .via(Framing.delimiter(ByteString("\n"), Int.MaxValue))
-      .map(_.utf8String)
-      .map(JParser.parseFromStringEither)
-      .map(
-        _.flatMapRight(
-          jv =>
-            jsonHandler
-              .queryResult(jv)
-              .toRight[Throwable](new ParsingException("Can't extract query result from response"))
-        )
-      )
+  def queryChunkedResultJson(
+      response: ResponseS
+  ): Source[ErrorOr[Array[JArray]], Any] = {
+    val body = response.body
+
+    val src = body.left.map(new Exception(_)).right.map { source =>
+      source.map { bs =>
+        val str  = bs.utf8String
+        val json = JParser.parseFromStringEither(str)
+        val rows = json.flatMapRight { js =>
+          jsonHandler
+            .queryResult(js)
+            .toRight[Throwable](
+              new ParsingException("Can't extract query result from response")
+            )
+        }
+
+        rows
+      }
+    }
+
+    src match {
+      case Left(ex) => Source.failed(ex)
+      case Right(s) => s
+    }
   }
 
-  final def queryChunkedResult[T: ClassTag](
-      response: HttpResponse
-    )(implicit rd: InfluxReader[T]
-    ): Source[ErrorOr[Array[T]], Any] = {
-    queryChunkedResultJson(response)
-      .map(_.flatMapRight { arr =>
+  def queryChunkedResult[T: ClassTag](
+      response: ResponseS
+  )(implicit rd: InfluxReader[T]): Source[Either[Throwable, Array[T]], Any] = {
+    queryChunkedResultJson(response).map { eth =>
+      eth.flatMapRight { arr =>
         either.array(arr.map(rd.read))
-      })
+      }
+    }
   }
 }
