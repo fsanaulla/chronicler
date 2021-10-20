@@ -94,7 +94,7 @@ lazy val coreShared = projectMatrix
 ////////////////// URL HTTP MODULES //////////////////
 //////////////////////////////////////////////////////
 lazy val urlManagement = projectMatrix
-  .in(file("modules/url/management"))
+  .in(file("modules/sync/management"))
   .settings(name := s"$projectName-url-management")
   .configure(defaultSettingsWithIt)
   .dependsOn(coreManagement, urlShared)
@@ -102,7 +102,7 @@ lazy val urlManagement = projectMatrix
   .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
 lazy val urlIO = projectMatrix
-  .in(file("modules/url/io"))
+  .in(file("modules/sync/io"))
   .settings(name := s"$projectName-url-io")
   .configure(defaultSettingsWithIt)
   .dependsOn(coreIO, urlShared)
@@ -112,7 +112,7 @@ lazy val urlIO = projectMatrix
   .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
 lazy val urlShared = projectMatrix
-  .in(file("modules/url/shared"))
+  .in(file("modules/sync/shared"))
   .settings(
     name := s"$projectName-url-shared",
     libraryDependencies ++=

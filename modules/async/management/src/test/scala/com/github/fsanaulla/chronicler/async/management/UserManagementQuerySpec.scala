@@ -16,7 +16,7 @@
 
 package com.github.fsanaulla.chronicler.ahc.management
 
-import com.github.fsanaulla.chronicler.ahc.shared.handlers.AhcQueryBuilder
+import com.github.fsanaulla.chronicler.async.shared.AsyncQueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.Privileges
 import com.github.fsanaulla.chronicler.core.query.UserManagementQuery
 import org.scalatest.flatspec.AnyFlatSpec
