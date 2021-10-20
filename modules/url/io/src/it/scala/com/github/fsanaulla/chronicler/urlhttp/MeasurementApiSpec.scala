@@ -7,15 +7,11 @@ import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{EitherValues, TryValues}
 import org.scalatest.BeforeAndAfterAll
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 28.09.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 28.09.17
   */
 class MeasurementApiSpec
     extends BaseSpec
@@ -49,15 +45,18 @@ class MeasurementApiSpec
 
     "should" - {
 
-      "write single point" in {
-        mng.createDatabase(db).success.value.value shouldEqual 200
-        meas.write(singleEntity).success.value.value shouldEqual 204
-        meas.read(s"SELECT * FROM $measName").success.value.value shouldEqual Seq(singleEntity)
-      }
+      "write" - {
 
-      "bulk write" in {
-        meas.bulkWrite(multiEntitys).success.value.value shouldEqual 204
-        meas.read(s"SELECT * FROM $measName").success.value.value.length shouldEqual 3
+        "single point" in {
+          mng.createDatabase(db).success.value.value shouldEqual 200
+          meas.write(singleEntity).success.value.value shouldEqual 204
+          meas.read(s"SELECT * FROM $measName").success.value.value shouldEqual Seq(singleEntity)
+        }
+
+        "multiple points" in {
+          meas.bulkWrite(multiEntitys).success.value.value shouldEqual 204
+          meas.read(s"SELECT * FROM $measName").success.value.value.length shouldEqual 3
+        }
       }
     }
   }

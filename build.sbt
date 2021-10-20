@@ -219,6 +219,7 @@ lazy val macros = projectMatrix
   .settings(Settings.propertyTestSettings: _*)
   .configs(Settings.PropertyTest)
   .dependsOn(coreShared)
+  .dependsOn(testing % "test")
   .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
 
 //////////////////////////////////////////////////////

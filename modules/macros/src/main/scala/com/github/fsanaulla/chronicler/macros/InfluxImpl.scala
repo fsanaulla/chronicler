@@ -23,10 +23,7 @@ import com.github.fsanaulla.chronicler.macros.annotations.writer.escape
 
 import scala.reflect.macros.blackbox
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 13.02.18
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 13.02.18
   */
 private[macros] final class InfluxImpl(val c: blackbox.Context) {
   import c.universe._
@@ -49,7 +46,14 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
   private[this] val tagsTypes =
     Seq(getType[Option[String]], getType[String])
   private[this] val fieldTypes =
-    Seq(getType[Boolean], getType[Int], getType[Double], getType[String], getType[Float], getType[Long])
+    Seq(
+      getType[Boolean],
+      getType[Int],
+      getType[Double],
+      getType[String],
+      getType[Float],
+      getType[Long]
+    )
 
   private[this] def illegalArgExc(name: String): c.universe.Tree = {
     val msg = s"Tag value can 't be empty string for tag: $name"
@@ -91,11 +95,12 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
   private[this] def compileError(msg: String): Nothing =
     c.abort(c.enclosingPosition, msg)
 
-  /**
-    * Generate read method for specified type
+  /** Generate read method for specified type
     *
-    * @param tpe  - for which type
-    * @return     - AST that will be expanded to read method
+    * @param tpe
+    *   - for which type
+    * @return
+    *   - AST that will be expanded to read method
     */
   private[this] def createReadMethod(tpe: c.universe.Type, unsafe: Boolean): Tree = {
 
@@ -107,7 +112,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
         tp: c.universe.Type,
         constructors: List[Tree],
         unsafe: Boolean
-      ): c.universe.Tree = {
+    ): c.universe.Tree = {
       if (!unsafe)
         q"""scala.util.Try(new $tp(..$constructors)) match {
               case scala.util.Success(v) => scala.util.Right(v)
@@ -128,7 +133,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
         timestampCtor: Tree,
         constructors: List[Tree],
         unsafe: Boolean
-      ): c.universe.Tree = {
+    ): c.universe.Tree = {
       val sCase              = buildResult(tpe, timestampCtor :: constructors, unsafe)
       val (name, returnType) = safeOrUnsafeRead(unsafe)
 
@@ -147,7 +152,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     val fields = getFieldInfo(othFields)
 
     val constructorParams = fields
-    // sort by field name
+      // sort by field name
       .sortBy(_._1)
 
       // to future extraction from incoming array by index
@@ -171,13 +176,13 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
         timeField: Option[MethodSymbol],
         ctors: List[Tree],
         unsafe: Boolean
-      ): c.universe.Tree = {
+    ): c.universe.Tree = {
 
       def buildTimestamp(
           nm: MethodSymbol,
           isLong: Boolean,
           isGeneric: Boolean
-        ): c.universe.Tree = {
+      ): c.universe.Tree = {
         val tnm = TermName(nm.name.decodedName.toString)
 
         if (!isGeneric) {
@@ -245,11 +250,12 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     readMethod(timeField.headOption, constructorParams, unsafe)
   }
 
-  /**
-    * Create write method for specified type
+  /** Create write method for specified type
     *
-    * @param tpe - specified type
-    * @return    - AST that will be expanded to write method
+    * @param tpe
+    *   - specified type
+    * @return
+    *   - AST that will be expanded to write method
     */
   private[this] def createWriteMethod(tpe: c.Type): Tree = {
     /// ADT
@@ -263,12 +269,8 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     }
     sealed trait Field extends Unquotable
 
-    final class Tag(
-        val key: Name,
-        val value: Tree,
-        optional: Boolean,
-        escapable: Boolean)
-      extends Unquotable {
+    final class Tag(val key: Name, val value: Tree, optional: Boolean, escapable: Boolean)
+        extends Unquotable {
       def escaped(value: Tree): c.universe.Tree =
         q"com.github.fsanaulla.chronicler.core.regex.tagPattern.matcher($value).replaceAll(com.github.fsanaulla.chronicler.core.regex.replace)"
 
@@ -340,7 +342,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
 
     def isOption(tpe: c.universe.Type): Boolean =
       tpe.typeConstructor =:= typeOf[Option[_]].typeConstructor
-    def isString(tpe: c.universe.Type): Boolean = tpe =:= string
+    def isString(tpe: c.universe.Type): Boolean    = tpe =:= string
     def isIntOrLong(tpe: c.universe.Type): Boolean = tpe =:= int || tpe =:= long
 
     /** Is it valid tag type */
@@ -376,12 +378,19 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     /** Check method for one of @tag, @field annotations */
     def isAnnotated(m: MethodSymbol): Boolean = isTag(m) || isField(m)
 
-    def unquote(lst: List[Unquotable]): Tree = {
-      lst.tail.foldLeft(q"${lst.head.unquoted(true)}") { (acc, e) =>
-        q"""
-         $acc
-         ${e.unquoted(false)}
-        """
+    def unquote(lst: List[Unquotable]): Option[Tree] = {
+      lst match {
+        case Nil      => None
+        case h :: Nil => Some(q"${h.unquoted(true)}")
+        case h :: tail =>
+          Some(
+            tail.foldLeft(q"${h.unquoted(true)}") { (acc, e) =>
+              q"""
+              $acc
+              ${e.unquoted(false)}
+            """
+            }
+          )
       }
     }
 
@@ -430,18 +439,21 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
         new OtherField(m.name, q"obj.${m.name}")
     }
 
-    val tagString   = unquote(tags)
+    val tagString = unquote(tags) match {
+      case Some(tree) =>
+        q"""$tree
+            sb.append(" ")
+         """
+      case _ => q""
+    }
     val fieldString = unquote(fields)
     val timestampString = timeField.headOption.fold(q"") { m =>
-      q"""
-         sb.append(" " + obj.${m.name})
-       """
+      q"""sb.append(" " + obj.${m.name})"""
     }
 
     q"""def write(obj: $tpe): com.github.fsanaulla.chronicler.core.alias.ErrorOr[String] = {
           val sb = new StringBuilder()
           $tagString
-          sb.append(" ")
           $fieldString
 
           $timestampString
@@ -450,20 +462,20 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
       }"""
   }
 
-  /***
-    * Generate AST for current type at compile time.
+  /** * Generate AST for current type at compile time.
     *
-    * @tparam T - Type parameter for whom will be generated AST
+    * @tparam T
+    *   - Type parameter for whom will be generated AST
     */
   def writer[T: c.WeakTypeTag]: Tree = {
     val tpe = c.weakTypeOf[T]
     q"new com.github.fsanaulla.chronicler.core.model.InfluxWriter[$tpe] { ${createWriteMethod(tpe)} }"
   }
 
-  /***
-    * Generate AST for current type at compile time.
+  /** * Generate AST for current type at compile time.
     *
-    * @tparam T - Type parameter for whom will be generated AST
+    * @tparam T
+    *   - Type parameter for whom will be generated AST
     */
   def reader[T: c.WeakTypeTag]: Tree = {
     val tpe = c.weakTypeOf[T]
