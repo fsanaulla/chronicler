@@ -4,7 +4,7 @@ import java.io.File
 
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.model.{InfluxReader, InfluxWriter, Point}
-import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
+import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, SyncIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import org.scalatest.concurrent.{Eventually, IntegrationPatience}
 import org.scalatest.flatspec.AnyFlatSpec
@@ -62,7 +62,7 @@ class UdpClientSpec
   lazy val httpPort: Integer = container.getServicePort(service, servicePort)
 
   lazy val influxUdp: InfluxUDPClient           = InfluxUdp(host, udpPort)
-  lazy val influxHttpIO: UrlIOClient            = InfluxIO(host, httpPort /*, Some(creds)*/ )
+  lazy val influxHttpIO: SyncIOClient            = InfluxIO(host, httpPort /*, Some(creds)*/ )
   lazy val influxHttpMng: UrlManagementClient   = InfluxMng(host, httpPort /*, Some(creds)*/ )
   lazy val meas: influxHttpIO.Measurement[Test] = influxHttpIO.measurement[Test]("udp", "cpu")
 
