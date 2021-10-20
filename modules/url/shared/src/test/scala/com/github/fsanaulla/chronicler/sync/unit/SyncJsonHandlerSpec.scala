@@ -14,26 +14,25 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
+package com.github.fsanaulla.chronicler.sync.unit
 
-import com.github.fsanaulla.chronicler.urlhttp.shared.UrlJsonHandler
+import com.github.fsanaulla.chronicler.sync.SyncJsonHandler
+import com.github.fsanaulla.chronicler.testing.BaseSpec
+import com.github.fsanaulla.chronicler.testing._
 import org.scalatest.{EitherValues, OptionValues, TryValues}
 import org.typelevel.jawn.ast._
 import sttp.client3.Response
-import com.github.fsanaulla.chronicler.testing.BaseSpec
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UrlJsonHandlerSpec
-    extends BaseSpec
-    with TryValues
-    with EitherValues
-    with OptionValues {
+class SyncJsonHandlerSpec extends BaseSpec with TryValues with EitherValues with OptionValues {
 
   "Json handler" - {
+
+    val jh = new SyncJsonHandler
 
     "should extract from json" - {
 
@@ -42,7 +41,7 @@ class UrlJsonHandlerSpec
         val input: Response[Either[String, String]] = mkResponse(singleStrJson)
         val out: JValue                             = JParser.parseFromString(singleStrJson).get
 
-        UrlJsonHandler.responseBody(input).success.value.value shouldEqual out
+        jh.responseBody(input).success.value.value shouldEqual out
       }
 
       "query result" in {
@@ -54,13 +53,13 @@ class UrlJsonHandlerSpec
           JArray(Array(JString("2015-06-11T20:46:02Z"), JNull, JNum(0.64)))
         )
 
-        UrlJsonHandler.queryResult(json).value shouldEqual out
+        jh.queryResult(json).value shouldEqual out
       }
 
       "empty query result" in {
         val json = JParser.parseUnsafe(getJsonStringFromFile("/json/query-empty.json"))
 
-        UrlJsonHandler.queryResult(json) shouldEqual None
+        jh.queryResult(json) shouldEqual None
       }
 
       "bulk query result" in {
@@ -78,7 +77,7 @@ class UrlJsonHandlerSpec
           )
         )
 
-        UrlJsonHandler.bulkResult(json).value shouldEqual out
+        jh.bulkResult(json).value shouldEqual out
       }
 
       "partially empty bulk query result" in {
@@ -93,13 +92,13 @@ class UrlJsonHandlerSpec
           )
         )
 
-        UrlJsonHandler.bulkResult(json).get shouldEqual out
+        jh.bulkResult(json).get shouldEqual out
       }
 
       "empty bulk query result" in {
         val json = JParser.parseUnsafe(getJsonStringFromFile("/json/query-bulk-empty.json"))
 
-        UrlJsonHandler.bulkResult(json).get shouldEqual Array.empty[Array[JArray]]
+        jh.bulkResult(json).get shouldEqual Array.empty[Array[JArray]]
       }
 
       "grouped system query result" in {
@@ -112,7 +111,7 @@ class UrlJsonHandlerSpec
           )
         )
 
-        val groupedSystemQuery = UrlJsonHandler.groupedSystemInfoJs(json).value
+        val groupedSystemQuery = jh.groupedSystemInfoJs(json).value
 
         groupedSystemQuery.length shouldEqual 1
 
@@ -123,7 +122,7 @@ class UrlJsonHandlerSpec
 
       "grouped query result" in {
         val json          = JParser.parseUnsafe(getJsonStringFromFile("/json/grouped-system.json"))
-        val groupedResult = UrlJsonHandler.groupedResult(json).value
+        val groupedResult = jh.groupedResult(json).value
 
         groupedResult.length shouldEqual 2
         groupedResult.map { case (k, v) => k.toList -> v.toList }.toList shouldEqual List(

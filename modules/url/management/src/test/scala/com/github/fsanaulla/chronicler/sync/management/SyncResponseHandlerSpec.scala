@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
+package com.github.fsanaulla.chronicler.sync
 
 import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
-import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.management.cq.ContinuousQuery
-import com.github.fsanaulla.chronicler.urlhttp.shared.UrlJsonHandler
-import com.github.fsanaulla.chronicler.urlhttp.shared._
-import org.scalatest.freespec.AnyFreeSpec
-import sttp.client3.Response
-import scala.io.Source
-import org.scalatest.matchers.should.Matchers
+import com.github.fsanaulla.chronicler.testing.{BaseSpec, _}
+import com.github.fsanaulla.chronicler.sync.shared.{SyncJsonHandler, _}
 import org.scalatest.{EitherValues, OptionValues, TryValues}
 import org.typelevel.jawn.ast._
-import com.github.fsanaulla.chronicler.testing.BaseSpec
+import sttp.client3.Response
 
+import scala.io.Source
 import scala.language.implicitConversions
 
 /**
@@ -41,11 +37,8 @@ class UrlResponseHandlerSpec extends BaseSpec with TryValues with EitherValues w
   def mkResponse(str: String): Response[Either[String, String]] =
     Response.ok(Right(str))
 
-  def getJsonStringFromFile(name: String): String =
-    Source.fromFile(getClass.getResource(name).toURI).mkString
-
   "Response handler" - {
-    val respHandler = new ManagementResponseHandler(UrlJsonHandler)
+    val respHandler = new ManagementResponseHandler(SyncJsonHandler)
 
     "should extract from response" - {
 
@@ -99,7 +92,7 @@ class UrlResponseHandlerSpec extends BaseSpec with TryValues with EitherValues w
       "optional error message" in {
         val errorResponse = mkResponse(getJsonStringFromFile("/response/error.json"))
 
-        UrlJsonHandler
+        SyncJsonHandler
           .responseErrorMsgOpt(errorResponse)
           .success
           .value
@@ -110,7 +103,7 @@ class UrlResponseHandlerSpec extends BaseSpec with TryValues with EitherValues w
       "error message" in {
         val errorResponse = mkResponse(getJsonStringFromFile("/response/err-msg.json"))
 
-        UrlJsonHandler
+        SyncJsonHandler
           .responseErrorMsg(errorResponse)
           .success
           .value

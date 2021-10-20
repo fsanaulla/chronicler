@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.urlhttp.shared
+ package com.github.fsanaulla.chronicler.sync.shared
 
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.components.JsonHandler
 import org.typelevel.jawn.ast.{JParser, JValue}
-import com.github.fsanaulla.chronicler.core.model.InfluxException
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{Failure, Try}
 
-private[urlhttp] object UrlJsonHandler extends JsonHandler[Try, ResponseE] {
+private[sync] class SyncJsonHandler extends JsonHandler[Try, ResponseE] {
 
   /***
     * Extract response http code

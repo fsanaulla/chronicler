@@ -1,12 +1,12 @@
-package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
+package com.github.fsanaulla.chronicler.sync.unit
 
-import com.github.fsanaulla.chronicler.urlhttp.shared.UrlQueryBuilder
+import com.github.fsanaulla.chronicler.sync.SyncQueryBuilder
 import com.github.fsanaulla.chronicler.testing.BaseSpec
 
-class UriQueryBuilderSpec extends BaseSpec {
+class SyncQueryBuilderSpec extends BaseSpec {
 
   "Uri builder" - {
-    val qb = new UrlQueryBuilder("localhost", 8080, None)
+    val qb = new SyncQueryBuilder("localhost", 8080)
 
     "should build valid URI" - {
 

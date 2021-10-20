@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.urlhttp.shared
+ package com.github.fsanaulla.chronicler.sync.shared
 
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.auth.InfluxCredentials
 
 final case class InfluxConfig(
     host: String,
     port: Int = 8086,
     credentials: Option[InfluxCredentials] = None,
-    compress: Boolean = false)
+    compress: Boolean = false
+)

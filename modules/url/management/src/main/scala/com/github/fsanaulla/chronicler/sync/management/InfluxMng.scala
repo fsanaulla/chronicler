@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.urlhttp.management
+package com.github.fsanaulla.chronicler.sync.management
 
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
-import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
-import com.github.fsanaulla.chronicler.urlhttp.shared.{tryFunctor, urlFk}
+import com.github.fsanaulla.chronicler.core.auth.InfluxCredentials
+import com.github.fsanaulla.chronicler.sync.shared.InfluxConfig
+import com.github.fsanaulla.chronicler.sync.shared.tryMonadError
 
 object InfluxMng {
 
@@ -34,8 +34,8 @@ object InfluxMng {
       host: String,
       port: Int = 8086,
       credentials: Option[InfluxCredentials] = None
-  ): UrlManagementClient =
-    new UrlManagementClient(host, port, credentials)
+  ): SyncManagementClient =
+    new SyncManagementClient(host, port, credentials)
 
   /**
     * Retrieve management InfluxDB client, without IO functionality using [[InfluxConfig]]
@@ -43,6 +43,6 @@ object InfluxMng {
     * @param conf - configuration object
     * @return     - [[UrlManagementClient]]
     */
-  def apply(conf: InfluxConfig): UrlManagementClient =
+  def apply(conf: InfluxConfig): SyncManagementClient =
     apply(conf.host, conf.port, conf.credentials)
 }

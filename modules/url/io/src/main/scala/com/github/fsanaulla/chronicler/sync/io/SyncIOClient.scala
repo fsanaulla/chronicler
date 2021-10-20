@@ -14,33 +14,38 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.urlhttp.io
+package com.github.fsanaulla.chronicler.sync.io
 
 import com.github.fsanaulla.chronicler.core.IOClient
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.api.{DatabaseApi, MeasurementApi}
+import com.github.fsanaulla.chronicler.core.auth.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.components.ResponseHandlerBase
-import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
-import com.github.fsanaulla.chronicler.urlhttp.shared.{ResponseE, UrlJsonHandler, UrlQueryBuilder, UrlRequestExecutor, tryApply, tryFailable, tryFunctor}
-import sttp.client3.{SttpBackend, TryHttpURLConnectionBackend}
+import com.github.fsanaulla.chronicler.core.model.InfluxDBInfo
+import com.github.fsanaulla.chronicler.sync.{RequestE, ResponseE, SyncJsonHandler, SyncQueryBuilder, SyncRequestBuilder, SyncRequestExecutor, tryApply, tryFunctor, tryMonad, tryMonadError}
+import sttp.client3.{Identity, SttpBackend, TryHttpURLConnectionBackend}
 import sttp.model.Uri
 
 import scala.reflect.ClassTag
 import scala.util.Try
 
-final class UrlIOClient(
+final class SyncIOClient(
     host: String,
     port: Int,
     credentials: Option[InfluxCredentials],
     compress: Boolean
-) extends IOClient[Try, Try, ResponseE, Uri, String] {
+) extends IOClient[Try, Try, RequestE[Identity], Uri, String, ResponseE] {
 
-  private val backend: SttpBackend[Try, Any]       = TryHttpURLConnectionBackend()
-  implicit val qb: UrlQueryBuilder                 = new UrlQueryBuilder(host, port, credentials)
-  implicit val re: UrlRequestExecutor              = new UrlRequestExecutor(backend)
-  implicit val rh: ResponseHandlerBase[Try, ResponseE] = new ResponseHandlerBase(UrlJsonHandler)
+  private val backend: SttpBackend[Try, Any] = TryHttpURLConnectionBackend()
 
-  override def database(dbName: String): Database =
+  implicit val qb: SyncQueryBuilder    = new SyncQueryBuilder(host, port)
+  implicit val rb: SyncRequestBuilder  = new SyncRequestBuilder(credentials)
+  implicit val re: SyncRequestExecutor = new SyncRequestExecutor(backend)
+  implicit val rh: ResponseHandlerBase[Try, ResponseE] = new ResponseHandlerBase(
+    new SyncJsonHandler
+  )
+
+  override def database(dbName: String) =
     new DatabaseApi(dbName, compress)
 
   override def measurement[A: ClassTag](
@@ -50,8 +55,11 @@ final class UrlIOClient(
     new MeasurementApi(dbName, measurementName, compress)
 
   override def ping: Try[ErrorOr[InfluxDBInfo]] = {
-    re.get(qb.buildQuery("/ping"), compression = false)
-      .flatMap(rh.pingResult)
+    val uri  = qb.buildQuery("/ping")
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    resp.flatMap(rh.pingResult)
   }
 
   override def close(): Unit = {

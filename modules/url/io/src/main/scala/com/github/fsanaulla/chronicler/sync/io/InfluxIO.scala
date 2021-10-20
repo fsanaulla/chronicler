@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.urlhttp.io
+package com.github.fsanaulla.chronicler.sync.io
 
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
-import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
+import com.github.fsanaulla.chronicler.core.auth.InfluxCredentials
+import com.github.fsanaulla.chronicler.sync.InfluxConfig
 
 object InfluxIO {
 
@@ -29,23 +29,23 @@ object InfluxIO {
     * @param port        - port value
     * @param credentials - user credentials
     * @param compress    - enable gzip compression
-    * @return            - [[UrlIOClient]]
+    * @return            - [[SyncIOClient]]
     */
   def apply(
       host: String,
       port: Int = 8086,
       credentials: Option[InfluxCredentials] = None,
       compress: Boolean = false
-  ): UrlIOClient =
-    new UrlIOClient(host, port, credentials, compress)
+  ): SyncIOClient =
+    new SyncIOClient(host, port, credentials, compress)
 
   /**
     * Retrieve IO InfluxDB client, without management functionality using configuration object
     *
     * @param conf - configuration object
-    * @return     - [[UrlIOClient]]
+    * @return     - [[SyncIOClient]]
     */
-  def apply(conf: InfluxConfig): UrlIOClient =
+  def apply(conf: InfluxConfig): SyncIOClient =
     apply(conf.host, conf.port, conf.credentials, conf.compress)
 
 }

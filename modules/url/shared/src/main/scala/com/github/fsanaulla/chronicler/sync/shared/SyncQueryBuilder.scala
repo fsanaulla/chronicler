@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.urlhttp.shared
+package com.github.fsanaulla.chronicler.sync.shared
 
 import com.github.fsanaulla.chronicler.core.components.QueryBuilder
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import sttp.model.Uri
 import sttp.model.Uri.QuerySegment
 import sttp.model.Uri.QuerySegment.KeyValue
 
 import scala.annotation.tailrec
 
-private[urlhttp] class UrlQueryBuilder(
+private[sync] class SyncQueryBuilder(
     host: String,
-    port: Int,
-    credentials: Option[InfluxCredentials]
-) extends QueryBuilder[Uri](credentials) {
+    port: Int
+) extends QueryBuilder[Uri] {
 
   // todo: move to safer version
   override def buildQuery(path: String): Uri =
     Uri.unsafeApply(host = host, port).withWholePath(path)
+
+  override def buildQuery(path: String, queryParam: (String, String)): Uri =
+    buildQuery(path).addQuerySegment(
+      KeyValue(queryParam._1, queryParam._2, valueEncoding = Uri.QuerySegmentEncoding.All)
+    )
 
   override def buildQuery(path: String, queryParams: List[(String, String)]): Uri = {
     val params = queryParams.map {
