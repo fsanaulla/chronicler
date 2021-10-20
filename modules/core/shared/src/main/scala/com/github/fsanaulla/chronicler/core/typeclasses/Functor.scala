@@ -20,12 +20,10 @@ import com.github.fsanaulla.chronicler.core.alias.Id
 
 trait Functor[F[_]] {
   def map[A, B](fa: F[A])(f: A => B): F[B]
-  def flatMap[A, B](fa: F[A])(f: A => F[B]): F[B]
 }
 
 object Functor {
   implicit val functorId: Functor[Id] = new Functor[Id] {
     override def map[A, B](fa: Id[A])(f: A => B): Id[B]         = f(fa)
-    override def flatMap[A, B](fa: Id[A])(f: A => Id[B]): Id[B] = f(fa)
   }
 }

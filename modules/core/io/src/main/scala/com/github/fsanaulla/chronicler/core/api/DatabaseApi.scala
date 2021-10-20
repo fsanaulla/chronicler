@@ -16,37 +16,40 @@
 
 package com.github.fsanaulla.chronicler.core.api
 
-import java.nio.file.Path
-
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode, Tags, Values}
 import com.github.fsanaulla.chronicler.core.components._
 import com.github.fsanaulla.chronicler.core.enums._
 import com.github.fsanaulla.chronicler.core.model._
-import com.github.fsanaulla.chronicler.core.typeclasses.{FunctionK, Functor}
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
+import com.github.fsanaulla.chronicler.core.typeclasses.{FunctionK, Monad}
 import org.typelevel.jawn.ast.JArray
+
+import java.nio.file.Path
 
 /**
   * Generic interface for basic database IO operation
   *
   * @tparam F - request execution effect
   * @tparam G - response parsing effect
-  * @tparam R - HTTP response
+  * @tparam Req - HTTP request
+  * @tparam Resp - HTTP response
   * @tparam U - HTTP URi
   * @tparam E - Entity
   *
   * @since Big Bang
   */
-class DatabaseApi[F[_], G[_], R, U, E](
+class DatabaseApi[F[_], G[_], Req, U, E, Resp](
     dbName: String,
     compress: Boolean
-  )(implicit qb: QueryBuilder[U],
+)(
+    implicit qb: QueryBuilder[U],
     bd: BodyBuilder[E],
-    re: RequestExecutor[F, R, U, E],
-    rh: ResponseHandlerBase[G, R],
-    F: Functor[F],
-    FK: FunctionK[G, F])
-  extends DatabaseOperationQuery[U] {
+    rb: RequestBuilder[Req, U, E],
+    re: RequestExecutor[F, Req, Resp],
+    rh: ResponseHandlerBase[G, Resp],
+    M: Monad[F],
+    FK: FunctionK[G, F]
+) extends DatabaseOperationQuery[U] {
 
   def writeFromFile(
       filePath: Path,
@@ -54,11 +57,12 @@ class DatabaseApi[F[_], G[_], R, U, E](
       consistency: Consistency = Consistencies.None,
       precision: Precision = Precisions.None,
       retentionPolicy: Option[String] = None
-    ): F[ErrorOr[ResponseCode]] = {
-    val uri = write(dbName, consistency, precision, retentionPolicy)
-    F.flatMap(
-      re.post(uri, bd.fromFile(filePath, enc), compress)
-    )(resp => FK(rh.writeResult(resp)))
+  ): F[ErrorOr[ResponseCode]] = {
+    val uri  = write(dbName, consistency, precision, retentionPolicy)
+    val req  = rb.post(uri, bd.fromFile(filePath, enc), compress)
+    val resp = re.execute(req)
+
+    M.flatMap(resp)(resp => FK(rh.writeResult(resp)))
   }
 
   def writeNative(
@@ -66,11 +70,12 @@ class DatabaseApi[F[_], G[_], R, U, E](
       consistency: Consistency = Consistencies.None,
       precision: Precision = Precisions.None,
       retentionPolicy: Option[String] = None
-    ): F[ErrorOr[ResponseCode]] = {
-    val uri = write(dbName, consistency, precision, retentionPolicy)
-    F.flatMap(
-      re.post(uri, bd.fromString(point), compress)
-    )(resp => FK(rh.writeResult(resp)))
+  ): F[ErrorOr[ResponseCode]] = {
+    val uri  = write(dbName, consistency, precision, retentionPolicy)
+    val req  = rb.post(uri, bd.fromString(point), compress)
+    val resp = re.execute(req)
+
+    M.flatMap(resp)(resp => FK(rh.writeResult(resp)))
   }
 
   def bulkWriteNative(
@@ -78,11 +83,12 @@ class DatabaseApi[F[_], G[_], R, U, E](
       consistency: Consistency = Consistencies.None,
       precision: Precision = Precisions.None,
       retentionPolicy: Option[String] = None
-    ): F[ErrorOr[ResponseCode]] = {
-    val uri = write(dbName, consistency, precision, retentionPolicy)
-    F.flatMap(
-      re.post(uri, bd.fromStrings(points), compress)
-    )(resp => FK(rh.writeResult(resp)))
+  ): F[ErrorOr[ResponseCode]] = {
+    val uri  = write(dbName, consistency, precision, retentionPolicy)
+    val req  = rb.post(uri, bd.fromStrings(points), compress)
+    val resp = re.execute(req)
+
+    M.flatMap(resp)(resp => FK(rh.writeResult(resp)))
   }
 
   def writePoint(
@@ -90,11 +96,12 @@ class DatabaseApi[F[_], G[_], R, U, E](
       consistency: Consistency = Consistencies.None,
       precision: Precision = Precisions.None,
       retentionPolicy: Option[String] = None
-    ): F[ErrorOr[ResponseCode]] = {
-    val uri = write(dbName, consistency, precision, retentionPolicy)
-    F.flatMap(
-      re.post(uri, bd.fromPoint(point), compress)
-    )(resp => FK(rh.writeResult(resp)))
+  ): F[ErrorOr[ResponseCode]] = {
+    val uri  = write(dbName, consistency, precision, retentionPolicy)
+    val req  = rb.post(uri, bd.fromPoint(point), compress)
+    val resp = re.execute(req)
+
+    M.flatMap(resp)(resp => FK(rh.writeResult(resp)))
   }
 
   def bulkWritePoints(
@@ -102,39 +109,46 @@ class DatabaseApi[F[_], G[_], R, U, E](
       consistency: Consistency = Consistencies.None,
       precision: Precision = Precisions.None,
       retentionPolicy: Option[String] = None
-    ): F[Either[Throwable, ResponseCode]] = {
-    val uri = write(dbName, consistency, precision, retentionPolicy)
-    F.flatMap(
-      re.post(uri, bd.fromPoints(points), compress)
-    )(resp => FK(rh.writeResult(resp)))
+  ): F[Either[Throwable, ResponseCode]] = {
+    val uri  = write(dbName, consistency, precision, retentionPolicy)
+    val req  = rb.post(uri, bd.fromPoints(points), compress)
+    val resp = re.execute(req)
+
+    M.flatMap(resp)(resp => FK(rh.writeResult(resp)))
   }
 
   def readJson(
       query: String,
       epoch: Epoch = Epochs.None,
       pretty: Boolean = false
-    ): F[ErrorOr[Array[JArray]]] = {
-    val uri = singleQuery(dbName, query, epoch, pretty)
-    F.flatMap(re.get(uri, compress))(resp => FK(rh.queryResultJson(resp)))
+  ): F[ErrorOr[Array[JArray]]] = {
+    val uri  = singleQuery(dbName, query, epoch, pretty)
+    val req  = rb.get(uri, compress)
+    val resp = re.execute(req)
+    M.flatMap(resp)(resp => FK(rh.queryResultJson(resp)))
   }
 
   def bulkReadJson(
       queries: Seq[String],
       epoch: Epoch = Epochs.None,
       pretty: Boolean = false
-    ): F[ErrorOr[Array[Array[JArray]]]] = {
-    val uri = bulkQuery(dbName, queries, epoch, pretty)
-    F.flatMap(re.get(uri, compress))(resp => FK(rh.bulkQueryResultJson(resp)))
+  ): F[ErrorOr[Array[Array[JArray]]]] = {
+    val uri  = bulkQuery(dbName, queries, epoch, pretty)
+    val req  = rb.get(uri, compress)
+    val resp = re.execute(req)
+
+    M.flatMap(resp)(resp => FK(rh.bulkQueryResultJson(resp)))
   }
 
   def readGroupedJson(
       query: String,
       epoch: Epoch = Epochs.None,
       pretty: Boolean = false
-    ): F[ErrorOr[Array[(Tags, Values)]]] = {
-    val uri = singleQuery(dbName, query, epoch, pretty)
-    F.flatMap(
-      re.get(uri, compress)
-    )(resp => FK(rh.groupedResultJson(resp)))
+  ): F[ErrorOr[Array[(Tags, Values)]]] = {
+    val uri  = singleQuery(dbName, query, epoch, pretty)
+    val req  = rb.get(uri, compress)
+    val resp = re.execute(req)
+
+    M.flatMap(resp)(resp => FK(rh.groupedResultJson(resp)))
   }
 }

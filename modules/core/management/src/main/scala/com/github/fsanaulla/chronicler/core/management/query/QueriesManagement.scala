@@ -14,37 +14,42 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.management
+package com.github.fsanaulla.chronicler.core.management.query
 
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
 import com.github.fsanaulla.chronicler.core.components._
-import com.github.fsanaulla.chronicler.core.management.query._
-import com.github.fsanaulla.chronicler.core.implicits._
-import com.github.fsanaulla.chronicler.core.model._
-import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, FunctionK}
-import com.github.fsanaulla.chronicler.core.query.QueriesManagementQuery
+import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
+import com.github.fsanaulla.chronicler.core.typeclasses.{FunctionK, MonadError}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-trait QueriesManagement[F[_], G[_], Resp, Uri, Entity] extends QueriesManagementQuery[Uri] {
-  implicit val qb: QueryBuilder[Uri]
-  implicit val re: RequestExecutor[F, Resp, Uri, Entity]
+trait QueriesManagement[F[_], G[_], Req, Resp, U, E] extends QueriesManagementQuery[U] {
+  implicit val qb: QueryBuilder[U]
+  implicit val rb: RequestBuilder[Req, U, E]
+  implicit val re: RequestExecutor[F, Req, Resp]
   implicit val rh: ManagementResponseHandler[G, Resp]
-  implicit val F: Functor[F]
+  implicit val ME: MonadError[F, Throwable]
+
   implicit val FK: FunctionK[G, F]
 
   /** Show list of queries */
-  final def showQueries: F[ErrorOr[Array[QueryInfo]]] =
-    F.flatMap(
-      re.get(showQuerysQuery, compress = false)
-    )(resp => FK(rh.queryResult[QueryInfo](resp)))
+  final def showQueries: F[ErrorOr[Array[QueryInfo]]] = {
+    val uri  = showQuerysQuery
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.queryResult[QueryInfo](resp)))
+  }
 
   /** Kill query */
-  final def killQuery(queryId: Int): F[ErrorOr[ResponseCode]] =
-    F.flatMap(
-      re.get(killQueryQuery(queryId), compress = false)
-    )(resp => FK(rh.writeResult(resp)))
+  final def killQuery(queryId: Int): F[ErrorOr[ResponseCode]] = {
+    val uri  = killQueryQuery(queryId)
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.writeResult(resp)))
+  }
 }

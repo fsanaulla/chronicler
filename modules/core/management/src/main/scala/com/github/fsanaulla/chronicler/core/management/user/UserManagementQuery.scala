@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.query
+package com.github.fsanaulla.chronicler.core.management.user
 
 import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.Privilege
@@ -22,67 +22,60 @@ import com.github.fsanaulla.chronicler.core.enums.Privilege
 private[fsanaulla] trait UserManagementQuery[U] {
 
   private[chronicler] final def showUsersQuery(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.appendCredentials("SHOW USERS"))
+    qb.buildQuery("/query", qb.query("SHOW USERS"))
 
   private[chronicler] final def showUserPrivilegesQuery(
       username: String
-    )(implicit qb: QueryBuilder[U]
-    ): U =
-    qb.buildQuery("/query", qb.appendCredentials(s"SHOW GRANTS FOR $username"))
+  )(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.query(s"SHOW GRANTS FOR $username"))
 
   private[chronicler] final def setUserPasswordQuery(
       username: String,
       password: String
-    )(implicit qb: QueryBuilder[U]
-    ): U =
-    qb.buildQuery("/query", qb.appendCredentials(s"SET PASSWORD FOR $username = '$password'"))
+  )(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.query(s"SET PASSWORD FOR $username = '$password'"))
 
   private[chronicler] final def createAdminQuery(
       username: String,
       password: String
-    )(implicit qb: QueryBuilder[U]
-    ): U =
+  )(implicit qb: QueryBuilder[U]): U =
     qb.buildQuery(
       "/query",
-      qb.appendCredentials(s"CREATE USER $username WITH PASSWORD '$password' WITH ALL PRIVILEGES")
+      qb.query(s"CREATE USER $username WITH PASSWORD '$password' WITH ALL PRIVILEGES")
     )
 
   private[chronicler] final def makeAdminQuery(username: String)(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.appendCredentials(s"GRANT ALL PRIVILEGES TO $username"))
+    qb.buildQuery("/query", qb.query(s"GRANT ALL PRIVILEGES TO $username"))
 
   private[chronicler] final def disableAdminQuery(
       username: String
-    )(implicit qb: QueryBuilder[U]
-    ): U =
-    qb.buildQuery("/query", qb.appendCredentials(s"REVOKE ALL PRIVILEGES FROM $username"))
+  )(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.query(s"REVOKE ALL PRIVILEGES FROM $username"))
 
   private[chronicler] final def createUserQuery(
       username: String,
       password: String
-    )(implicit qb: QueryBuilder[U]
-    ): U =
+  )(implicit qb: QueryBuilder[U]): U =
     qb.buildQuery(
       "/query",
-      qb.appendCredentials(s"CREATE USER $username WITH PASSWORD '$password'")
+      qb.query(s"CREATE USER $username WITH PASSWORD '$password'")
     )
 
   private[chronicler] final def dropUserQuery(username: String)(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.appendCredentials(s"DROP USER $username"))
+    qb.buildQuery("/query", qb.query(s"DROP USER $username"))
 
   private[chronicler] final def setPrivilegesQuery(
       dbName: String,
       username: String,
       privileges: Privilege
-    )(implicit qb: QueryBuilder[U]
-    ): U =
-    qb.buildQuery("/query", qb.appendCredentials(s"GRANT $privileges ON $dbName TO $username"))
+  )(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.query(s"GRANT $privileges ON $dbName TO $username"))
 
   private[chronicler] final def revokePrivilegesQuery(
       dbName: String,
       username: String,
       privileges: Privilege
-    )(implicit qb: QueryBuilder[U]
-    ): U =
-    qb.buildQuery("/query", qb.appendCredentials(s"REVOKE $privileges ON $dbName FROM $username"))
+  )(implicit qb: QueryBuilder[U]): U =
+    qb.buildQuery("/query", qb.query(s"REVOKE $privileges ON $dbName FROM $username"))
 
 }

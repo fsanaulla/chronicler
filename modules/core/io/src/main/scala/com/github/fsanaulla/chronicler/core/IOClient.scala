@@ -26,14 +26,15 @@ import scala.reflect.ClassTag
   *
   * @tparam F - request execution effect
   * @tparam G - response parser effect
-  * @tparam R - response type
+  * @tparam Req - request typr
+  * @tparam Resp - response type
   * @tparam U - request uri type
   * @tparam E - request entity type
   */
-trait IOClient[F[_], G[_], R, U, E] extends SystemManagement[F] with AutoCloseable {
+trait IOClient[F[_], G[_], Req, U, E, Resp] extends SystemManagement[F] with AutoCloseable {
 
-  type Database       = DatabaseApi[F, G, R, U, E]
-  type Measurement[A] = MeasurementApi[F, G, R, U, E, A]
+  type Database       = DatabaseApi[F, G, Req, U, E, Resp]
+  type Measurement[A] = MeasurementApi[F, G, Req, U, E, Resp, A]
 
   /**
     * Get database instant

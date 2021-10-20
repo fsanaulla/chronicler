@@ -9,7 +9,7 @@ import com.github.fsanaulla.chronicler.core.model.ParsingException
 final case class QueryInfo(queryId: Int, query: String, dbName: String, duration: String)
 
 object QueryInfo {
-  implicit val reader = new InfluxReader[QueryInfo] {
+  implicit val reader: InfluxReader[QueryInfo] = new InfluxReader[QueryInfo] {
     override def read(js: JArray): ErrorOr[QueryInfo] = js.vs match {
       case Array(queryId: JValue, query: JValue, dbName: JValue, duration: JValue) =>
         Right(QueryInfo(queryId, query, dbName, duration))

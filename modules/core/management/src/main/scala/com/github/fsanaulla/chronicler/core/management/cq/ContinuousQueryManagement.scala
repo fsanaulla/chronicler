@@ -17,23 +17,25 @@
 package com.github.fsanaulla.chronicler.core.management.cq
 
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
-import com.github.fsanaulla.chronicler.core.components.{QueryBuilder, RequestExecutor}
+import com.github.fsanaulla.chronicler.core.components.{
+  QueryBuilder,
+  RequestBuilder,
+  RequestExecutor
+}
 import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
-import com.github.fsanaulla.chronicler.core.implicits._
-import com.github.fsanaulla.chronicler.core.model._
-import com.github.fsanaulla.chronicler.core.query.ContinuousQueries
-import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, FunctionK}
+import com.github.fsanaulla.chronicler.core.typeclasses.{FunctionK, MonadError}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 08.08.17
   */
-trait ContinuousQueryManagement[F[_], G[_], Resp, Uri, Entity] extends ContinuousQueries[Uri] {
-  implicit val qb: QueryBuilder[Uri]
-  implicit val re: RequestExecutor[F, Resp, Uri, Entity]
+trait ContinuousQueryManagement[F[_], G[_], Req, Resp, U, E] extends ContinuousQueries[U] {
+  implicit val qb: QueryBuilder[U]
+  implicit val rb: RequestBuilder[Req, U, E]
+  implicit val re: RequestExecutor[F, Req, Resp]
   implicit val rh: ManagementResponseHandler[G, Resp]
-  implicit val F: Functor[F]
+  implicit val ME: MonadError[F, Throwable]
   implicit val FK: FunctionK[G, F]
 
   /**
@@ -48,18 +50,24 @@ trait ContinuousQueryManagement[F[_], G[_], Resp, Uri, Entity] extends Continuou
       dbName: String,
       cqName: String,
       query: String
-    ): F[ErrorOr[ResponseCode]] = {
-    require(validCQQuery(query), "Query required INTO and GROUP BY clause")
-    F.flatMap(
-      re.get(createCQQuery(dbName, cqName, query), compress = false)
-    )(resp => FK(rh.writeResult(resp)))
+  ): F[ErrorOr[ResponseCode]] = {
+    if (!validCQQuery(query)) ME.fail(new Exception("Query required INTO and GROUP BY clause"))
+    else {
+      val uri  = createCQQuery(dbName, cqName, query)
+      val req  = rb.get(uri, compress = false)
+      val resp = re.execute(req)
+
+      ME.flatMap(resp)(resp => FK(rh.writeResult(resp)))
+    }
   }
 
   /** Show continuous query information */
-  final def showCQs: F[ErrorOr[Array[ContinuousQueryInfo]]] =
-    F.flatMap(
-      re.get(showCQQuery, compress = false)
-    )(resp => FK(rh.toCqQueryResult(resp)))
+  final def showCQs: F[ErrorOr[Array[ContinuousQueryInfo]]] = {
+    val req  = rb.get(showCQQuery, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.toCqQueryResult(resp)))
+  }
 
   /**
     * Drop continuous query
@@ -68,10 +76,13 @@ trait ContinuousQueryManagement[F[_], G[_], Resp, Uri, Entity] extends Continuou
     * @param cqName - continuous query name
     * @return       - execution result
     */
-  final def dropCQ(dbName: String, cqName: String): F[ErrorOr[ResponseCode]] =
-    F.flatMap(
-      re.get(dropCQQuery(dbName, cqName), compress = false)
-    )(resp => FK(rh.writeResult(resp)))
+  final def dropCQ(dbName: String, cqName: String): F[ErrorOr[ResponseCode]] = {
+    val uri  = dropCQQuery(dbName, cqName)
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.writeResult(resp)))
+  }
 
   private[this] def validCQQuery(query: String): Boolean =
     query.contains("INTO") && query.contains("GROUP BY")

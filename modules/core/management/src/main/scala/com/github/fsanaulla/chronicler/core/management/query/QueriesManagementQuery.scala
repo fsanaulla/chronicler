@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.query
+package com.github.fsanaulla.chronicler.core.management.query
 
 import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 
@@ -26,8 +26,8 @@ import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 private[chronicler] trait QueriesManagementQuery[U] {
 
   private[chronicler] final def showQuerysQuery(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.appendCredentials("SHOW QUERIES"))
+    qb.buildQuery("/query", qb.query("SHOW QUERIES"))
 
   private[chronicler] final def killQueryQuery(queryId: Int)(implicit qb: QueryBuilder[U]): U =
-    qb.buildQuery("/query", qb.appendCredentials(s"KILL QUERY $queryId"))
+    qb.buildQuery("/query", qb.query(s"KILL QUERY $queryId"))
 }

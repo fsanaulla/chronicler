@@ -29,14 +29,14 @@ trait DatabaseOperationQuery[U] {
   private[this] def addPrettyQueryParam(
       pretty: Boolean,
       queryParams: List[(String, String)]
-    ): List[(String, String)] =
+  ): List[(String, String)] =
     if (!pretty) queryParams
     else ("pretty" -> pretty.toString) :: queryParams
 
   private[this] def addEpochQueryParam(
       epoch: Epoch,
       queryParams: List[(String, String)]
-    ): List[(String, String)] =
+  ): List[(String, String)] =
     if (epoch.isNone) queryParams
     else ("epoch" -> epoch.toString) :: queryParams
 
@@ -47,11 +47,10 @@ trait DatabaseOperationQuery[U] {
       precision: Precision,
       retentionPolicy: Option[String]
     )(implicit qb: QueryBuilder[U]): U = {
-    val queryParams = Nil
+    val queryParams = 
+      "db" -> dbName :: Nil
 
-    val withRP =
-      if (retentionPolicy.isEmpty) queryParams
-      else "rp" -> retentionPolicy.get :: queryParams
+    val withRP = retentionPolicy.fold(queryParams)(rp => ("rp" -> rp) :: queryParams)
 
     val withPrecision =
       if (precision.isNone) withRP
@@ -61,7 +60,7 @@ trait DatabaseOperationQuery[U] {
       if (consistency.isNone) withPrecision
       else "consistency" -> consistency.toString :: withPrecision
 
-    qb.buildQuery("/write", qb.appendCredentials(dbName, withConsistency))
+    qb.buildQuery("/write", withConsistency)
   }
 
   private[chronicler] final def singleQuery(
@@ -70,11 +69,11 @@ trait DatabaseOperationQuery[U] {
       epoch: Epoch,
       pretty: Boolean
     )(implicit qb: QueryBuilder[U]): U = {
-    val queryParams = List("q" -> query)
+    val queryParams = List("q" -> query, "db" -> dbName)
     val withEpoch   = addEpochQueryParam(epoch, queryParams)
     val withPretty  = addPrettyQueryParam(pretty, withEpoch)
 
-    qb.buildQuery("/query", qb.appendCredentials(dbName, withPretty))
+    qb.buildQuery("/query", withPretty)
   }
 
   private[chronicler] final def chunkedQuery(
@@ -95,7 +94,7 @@ trait DatabaseOperationQuery[U] {
     val withEpoch  = addEpochQueryParam(epoch, queryParams)
     val withPretty = addPrettyQueryParam(pretty, withEpoch)
 
-    qb.buildQuery("/query", qb.appendCredentials(withPretty))
+    qb.buildQuery("/query", withPretty)
   }
 
   private[chronicler] final def bulkQuery(
@@ -104,10 +103,10 @@ trait DatabaseOperationQuery[U] {
       epoch: Epoch,
       pretty: Boolean
     )(implicit qb: QueryBuilder[U]): U = {
-    val queryParams = List("q" -> queries.mkString(";"))
+    val queryParams = List("q" -> queries.mkString(";"), "db" -> dbName)
     val withEpoch   = addEpochQueryParam(epoch, queryParams)
     val withPretty  = addPrettyQueryParam(pretty, withEpoch)
 
-    qb.buildQuery("/query", qb.appendCredentials(dbName, withPretty))
+    qb.buildQuery("/query", withPretty)
   }
 }

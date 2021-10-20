@@ -18,18 +18,16 @@ package com.github.fsanaulla.chronicler.core.management.user
 
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
 import com.github.fsanaulla.chronicler.core.components._
-import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
 import com.github.fsanaulla.chronicler.core.enums.Privilege
-import com.github.fsanaulla.chronicler.core.implicits._
-import com.github.fsanaulla.chronicler.core.model._
-import com.github.fsanaulla.chronicler.core.query.UserManagementQuery
-import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, FunctionK}
+import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
+import com.github.fsanaulla.chronicler.core.typeclasses.{FunctionK, MonadError}
 
-trait UserManagement[F[_], G[_], Resp, Uri, Body] extends UserManagementQuery[Uri] {
-  implicit val qb: QueryBuilder[Uri]
-  implicit val re: RequestExecutor[F, Resp, Uri, Body]
+trait UserManagement[F[_], G[_], Req, Resp, U, E] extends UserManagementQuery[U] {
+  implicit val qb: QueryBuilder[U]
+  implicit val rb: RequestBuilder[Req, U, E]
+  implicit val re: RequestExecutor[F, Req, Resp]
   implicit val rh: ManagementResponseHandler[G, Resp]
-  implicit val F: Functor[F]
+  implicit val ME: MonadError[F, Throwable]
   implicit val FK: FunctionK[G, F]
 
   /***
@@ -38,10 +36,13 @@ trait UserManagement[F[_], G[_], Resp, Uri, Body] extends UserManagementQuery[Ur
     * @param password - Password for new user
     * @return         - Result of execution
     */
-  final def createUser(username: String, password: String): F[ErrorOr[ResponseCode]] =
-    F.flatMap(
-      re.get(createUserQuery(username, password), compress = false)
-    )(resp => FK(rh.writeResult(resp)))
+  final def createUser(username: String, password: String): F[ErrorOr[ResponseCode]] = {
+    val uri  = createUserQuery(username, password)
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.writeResult(resp)))
+  }
 
   /**
     * Create admin user
@@ -49,64 +50,91 @@ trait UserManagement[F[_], G[_], Resp, Uri, Body] extends UserManagementQuery[Ur
     * @param password - admin password
     * @return         - execution response
     */
-  final def createAdmin(username: String, password: String): F[ErrorOr[ResponseCode]] =
-    F.flatMap(
-      re.get(createAdminQuery(username, password), compress = false)
-    )(resp => FK(rh.writeResult(resp)))
+  final def createAdmin(username: String, password: String): F[ErrorOr[ResponseCode]] = {
+    val uri  = createAdminQuery(username, password)
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.writeResult(resp)))
+  }
 
   /** Drop user */
-  final def dropUser(username: String): F[ErrorOr[ResponseCode]] =
-    F.flatMap(
-      re.get(dropUserQuery(username), compress = false)
-    )(resp => FK(rh.writeResult(resp)))
+  final def dropUser(username: String): F[ErrorOr[ResponseCode]] = {
+    val uri  = dropUserQuery(username)
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.writeResult(resp)))
+  }
 
   /** Set password for user */
-  final def setUserPassword(username: String, password: String): F[ErrorOr[ResponseCode]] =
-    F.flatMap(
-      re.get(setUserPasswordQuery(username, password), compress = false)
-    )(resp => FK(rh.writeResult(resp)))
+  final def setUserPassword(username: String, password: String): F[ErrorOr[ResponseCode]] = {
+    val uri  = setUserPasswordQuery(username, password)
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.writeResult(resp)))
+  }
 
   /** Set user privilege on specified database */
   final def setPrivileges(
       username: String,
       dbName: String,
       privilege: Privilege
-    ): F[ErrorOr[ResponseCode]] =
-    F.flatMap(
-      re.get(setPrivilegesQuery(dbName, username, privilege), compress = false)
-    )(resp => FK(rh.writeResult(resp)))
+  ): F[ErrorOr[ResponseCode]] = {
+    val uri  = setPrivilegesQuery(dbName, username, privilege)
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.writeResult(resp)))
+  }
 
   /** Revoke user privilege on specified database */
   final def revokePrivileges(
       username: String,
       dbName: String,
       privilege: Privilege
-    ): F[ErrorOr[ResponseCode]] =
-    F.flatMap(
-      re.get(revokePrivilegesQuery(dbName, username, privilege), compress = false)
-    )(resp => FK(rh.writeResult(resp)))
+  ): F[ErrorOr[ResponseCode]] = {
+    val uri  = revokePrivilegesQuery(dbName, username, privilege)
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.writeResult(resp)))
+  }
 
   /** Grant admin rights */
-  final def makeAdmin(username: String): F[ErrorOr[ResponseCode]] =
-    F.flatMap(
-      re.get(makeAdminQuery(username), compress = false)
-    )(resp => FK(rh.writeResult(resp)))
+  final def makeAdmin(username: String): F[ErrorOr[ResponseCode]] = {
+    val uri  = makeAdminQuery(username)
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.writeResult(resp)))
+  }
 
   /** Remove admin rights */
-  final def disableAdmin(username: String): F[ErrorOr[ResponseCode]] =
-    F.flatMap(
-      re.get(disableAdminQuery(username), compress = false)
-    )(resp => FK(rh.writeResult(resp)))
+  final def disableAdmin(username: String): F[ErrorOr[ResponseCode]] = {
+    val uri  = disableAdminQuery(username)
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.writeResult(resp)))
+  }
 
   /** Show user lists */
-  final def showUsers: F[ErrorOr[Array[UserInfo]]] =
-    F.flatMap(
-      re.get(showUsersQuery, compress = false)
-    )(resp => FK(rh.queryResult[UserInfo](resp)))
+  final def showUsers: F[ErrorOr[Array[UserInfo]]] = {
+    val uri  = showUsersQuery
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.queryResult[UserInfo](resp)))
+  }
 
   /** Show user privileges */
-  final def showUserPrivileges(username: String): F[ErrorOr[Array[UserPrivilegesInfo]]] =
-    F.flatMap(
-      re.get(showUserPrivilegesQuery(username), compress = false)
-    )(resp => FK(rh.queryResult[UserPrivilegesInfo](resp)))
+  final def showUserPrivileges(username: String): F[ErrorOr[Array[UserPrivilegesInfo]]] = {
+    val uri  = showUserPrivilegesQuery(username)
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.queryResult[UserPrivilegesInfo](resp)))
+  }
 }

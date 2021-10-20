@@ -14,41 +14,51 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.management
+package com.github.fsanaulla.chronicler.core.management.shard
 
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
 import com.github.fsanaulla.chronicler.core.components._
-import com.github.fsanaulla.chronicler.core.management.shard._
-import com.github.fsanaulla.chronicler.core.implicits._
-import com.github.fsanaulla.chronicler.core.model._
+import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
 import com.github.fsanaulla.chronicler.core.query.ShardManagementQuery
-import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, FunctionK}
+import com.github.fsanaulla.chronicler.core.typeclasses.{FunctionK, MonadError}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 19.08.17
   */
-trait ShardManagement[F[_], G[_], Resp, Uri, Entity] extends ShardManagementQuery[Uri] {
-  implicit val qb: QueryBuilder[Uri]
-  implicit val re: RequestExecutor[F, Resp, Uri, Entity]
+trait ShardManagement[F[_], G[_], Req, Resp, U, E] extends ShardManagementQuery[U] {
+  implicit val qb: QueryBuilder[U]
+  implicit val rb: RequestBuilder[Req, U, E]
+  implicit val re: RequestExecutor[F, Req, Resp]
   implicit val rh: ManagementResponseHandler[G, Resp]
-  implicit val F: Functor[F]
+  implicit val ME: MonadError[F, Throwable]
   implicit val FK: FunctionK[G, F]
 
   /** Drop shard */
-  final def dropShard(shardId: Int): F[ErrorOr[ResponseCode]] =
-    F.flatMap(re.get(dropShardQuery(shardId), compress = false))(resp => FK(rh.writeResult(resp)))
+  final def dropShard(shardId: Int): F[ErrorOr[ResponseCode]] = {
+    val uri  = dropShardQuery(shardId)
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.writeResult(resp)))
+  }
 
   /** Show shard groups */
-  final def showShardGroups: F[ErrorOr[Array[ShardGroupsInfo]]] =
-    F.flatMap(
-      re.get(showShardGroupsQuery, compress = false)
-    )(resp => FK(rh.toShardGroupQueryResult(resp)))
+  final def showShardGroups: F[ErrorOr[Array[ShardGroupsInfo]]] = {
+    val uri  = showShardGroupsQuery
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.toShardGroupQueryResult(resp)))
+  }
 
   /** Show shards */
-  final def showShards: F[ErrorOr[Array[ShardInfo]]] =
-    F.flatMap(
-      re.get(showShardsQuery, compress = false)
-    )(resp => FK(rh.toShardQueryResult(resp)))
+  final def showShards: F[ErrorOr[Array[ShardInfo]]] = {
+    val uri  = showShardsQuery
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.toShardQueryResult(resp)))
+  }
 }

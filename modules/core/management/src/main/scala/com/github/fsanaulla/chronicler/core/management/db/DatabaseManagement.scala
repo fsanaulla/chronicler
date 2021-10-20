@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core.management
+package com.github.fsanaulla.chronicler.core.management.db
 
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, ResponseCode}
 import com.github.fsanaulla.chronicler.core.components._
 import com.github.fsanaulla.chronicler.core.implicits._
-import com.github.fsanaulla.chronicler.core.management.db._
-import com.github.fsanaulla.chronicler.core.query.DataManagementQuery
-import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, FunctionK}
+import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
+import com.github.fsanaulla.chronicler.core.typeclasses.{FunctionK, Monad, MonadError}
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 08.08.17
   */
-trait DatabaseManagement[F[_], G[_], Resp, Uri, Body] extends DataManagementQuery[Uri] {
+trait DatabaseManagement[F[_], G[_], Req, Resp, Uri, Body] extends DataManagementQuery[Uri] {
   implicit val qb: QueryBuilder[Uri]
-  implicit val re: RequestExecutor[F, Resp, Uri, Body]
+  implicit val rb: RequestBuilder[Req, Uri, Body]
+  implicit val re: RequestExecutor[F, Req, Resp]
   implicit val rh: ManagementResponseHandler[G, Resp]
-  implicit val F: Functor[F]
+  implicit val ME: MonadError[F, Throwable]
   implicit val FK: FunctionK[G, F]
 
   /**
@@ -51,49 +51,62 @@ trait DatabaseManagement[F[_], G[_], Resp, Uri, Body] extends DataManagementQuer
       replication: Option[Int] = None,
       shardDuration: Option[String] = None,
       rpName: Option[String] = None
-    ): F[ErrorOr[ResponseCode]] =
-    F.flatMap(
-      re.post(
-        createDatabaseQuery(dbName, duration, replication, shardDuration, rpName)
-      )
-    )(resp => FK(rh.writeResult(resp)))
+  ): F[ErrorOr[ResponseCode]] = {
+    val uri  = createDatabaseQuery(dbName, duration, replication, shardDuration, rpName)
+    val req  = rb.post(uri)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.writeResult(resp)))
+  }
 
   /** Drop database */
-  final def dropDatabase(dbName: String): F[ErrorOr[ResponseCode]] =
-    F.flatMap(
-      re.get(dropDatabaseQuery(dbName), compress = false)
-    )(resp => FK(rh.writeResult(resp)))
+  final def dropDatabase(dbName: String): F[ErrorOr[ResponseCode]] = {
+    val uri  = dropDatabaseQuery(dbName)
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.writeResult(resp)))
+  }
 
   /** Drop measurement */
-  final def dropMeasurement(dbName: String, measurementName: String): F[ErrorOr[ResponseCode]] =
-    F.flatMap(
-      re.get(dropMeasurementQuery(dbName, measurementName), compress = false)
-    )(resp => FK(rh.writeResult(resp)))
+  final def dropMeasurement(dbName: String, measurementName: String): F[ErrorOr[ResponseCode]] = {
+    val uri  = dropMeasurementQuery(dbName, measurementName)
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.writeResult(resp)))
+  }
 
   /** Show measurements */
   final def showMeasurement(
-      dbName: String,
-      compressed: Boolean = false
-    ): F[ErrorOr[Array[String]]] =
-    F.flatMap(
-      re.get(showMeasurementQuery(dbName), compressed)
-    )(resp => FK(rh.queryResult[String](resp)))
+      dbName: String
+  ): F[ErrorOr[Array[String]]] = {
+    val uri  = showMeasurementQuery(dbName)
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.queryResult[String](resp)))
+  }
 
   /** Show database list */
-  final def showDatabases(compressed: Boolean = false): F[ErrorOr[Array[String]]] =
-    F.flatMap(
-      re.get(showDatabasesQuery, compressed)
-    )(resp => FK(rh.queryResult[String](resp)))
+  final def showDatabases: F[ErrorOr[Array[String]]] = {
+    val req  = rb.get(showDatabasesQuery, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.queryResult[String](resp)))
+  }
 
   /** Show field tags list */
   final def showFieldKeys(
       dbName: String,
-      measurementName: String,
-      compressed: Boolean = false
-    ): F[ErrorOr[Array[FieldInfo]]] =
-    F.flatMap(
-      re.get(showFieldKeysQuery(dbName, measurementName), compressed)
-    )(resp => FK(rh.queryResult[FieldInfo](resp)))
+      measurementName: String
+  ): F[ErrorOr[Array[FieldInfo]]] = {
+    val uri  = showFieldKeysQuery(dbName, measurementName)
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.queryResult[FieldInfo](resp)))
+  }
 
   /** Show tags keys list */
   final def showTagKeys(
@@ -101,12 +114,14 @@ trait DatabaseManagement[F[_], G[_], Resp, Uri, Body] extends DataManagementQuer
       measurementName: String,
       whereClause: Option[String] = None,
       limit: Option[Int] = None,
-      offset: Option[Int] = None,
-      compressed: Boolean = false
-    ): F[ErrorOr[Array[String]]] =
-    F.flatMap(
-      re.get(showTagKeysQuery(dbName, measurementName, whereClause, limit, offset), compressed)
-    )(resp => FK(rh.queryResult[String](resp)))
+      offset: Option[Int] = None
+  ): F[ErrorOr[Array[String]]] = {
+    val uri  = showTagKeysQuery(dbName, measurementName, whereClause, limit, offset)
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.queryResult[String](resp)))
+  }
 
   /** Show tag values list */
   final def showTagValues(
@@ -115,13 +130,12 @@ trait DatabaseManagement[F[_], G[_], Resp, Uri, Body] extends DataManagementQuer
       withKey: Seq[String],
       whereClause: Option[String] = None,
       limit: Option[Int] = None,
-      offset: Option[Int] = None,
-      compressed: Boolean = false
-    ): F[ErrorOr[Array[TagValue]]] =
-    F.flatMap(
-      re.get(
-        showTagValuesQuery(dbName, measurementName, withKey, whereClause, limit, offset),
-        compressed
-      )
-    )(resp => FK(rh.queryResult[TagValue](resp)))
+      offset: Option[Int] = None
+  ): F[ErrorOr[Array[TagValue]]] = {
+    val uri  = showTagValuesQuery(dbName, measurementName, withKey, whereClause, limit, offset)
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    ME.flatMap(resp)(resp => FK(rh.queryResult[TagValue](resp)))
+  }
 }

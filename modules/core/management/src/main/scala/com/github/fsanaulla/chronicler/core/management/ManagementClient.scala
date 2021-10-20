@@ -14,27 +14,32 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.core
+package com.github.fsanaulla.chronicler.core.management
 
 import com.github.fsanaulla.chronicler.core.management._
 import com.github.fsanaulla.chronicler.core.management.user.UserManagement
 import com.github.fsanaulla.chronicler.core.management.cq.ContinuousQueryManagement
+import com.github.fsanaulla.chronicler.core.management.db.DatabaseManagement
+import com.github.fsanaulla.chronicler.core.management.query.QueriesManagement
+import com.github.fsanaulla.chronicler.core.management.rp.RetentionPolicyManagement
+import com.github.fsanaulla.chronicler.core.management.shard.ShardManagement
+import com.github.fsanaulla.chronicler.core.management.subscription.SubscriptionManagement
 
 /**
   * Functionality of management client
   *
   * @tparam F      - Container
   * @tparam Resp   - Response type
-  * @tparam Uri    - Uri type
-  * @tparam Entity - Request entity type
+  * @tparam U    - Uri type
+  * @tparam E - Request entity type
   */
-trait ManagementClient[F[_], G[_], Resp, Uri, Entity]
+trait ManagementClient[F[_], G[_], Req, U, E, Resp]
   extends SystemManagement[F]
-  with DatabaseManagement[F, G, Resp, Uri, Entity]
-  with UserManagement[F, G, Resp, Uri, Entity]
-  with QueriesManagement[F, G, Resp, Uri, Entity]
-  with RetentionPolicyManagement[F, G, Resp, Uri, Entity]
-  with ContinuousQueryManagement[F, G, Resp, Uri, Entity]
-  with ShardManagement[F, G, Resp, Uri, Entity]
-  with SubscriptionManagement[F, G, Resp, Uri, Entity]
+  with DatabaseManagement[F, G, Req, Resp, U, E]
+  with UserManagement[F, G, Req, Resp, U, E]
+  with QueriesManagement[F, G, Req, Resp, U, E]
+  with RetentionPolicyManagement[F, G, Req, Resp, U, E]
+  with ContinuousQueryManagement[F, G, Req, Resp, U, E]
+  with ShardManagement[F, G, Req, Resp, U, E]
+  with SubscriptionManagement[F, G, Req, Resp, U, E]
   with AutoCloseable
