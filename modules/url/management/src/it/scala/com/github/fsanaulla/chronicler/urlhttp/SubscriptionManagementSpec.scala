@@ -4,7 +4,7 @@ import com.github.fsanaulla.chronicler.core.duration._
 import com.github.fsanaulla.chronicler.core.enums.{Destination, Destinations}
 import com.github.fsanaulla.chronicler.core.management.subscription.Subscription
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
+import com.github.fsanaulla.chronicler.sync.management.{InfluxMng, UrlManagementClient}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -56,7 +56,7 @@ class SubscriptionManagementSpec
           .value
           .value shouldEqual 200
 
-        influx.showDatabases().success.value.value.contains(dbName) shouldEqual true
+        influx.showDatabases.success.value.value.contains(dbName) shouldEqual true
 
         influx
           .createSubscription(subName, dbName, rpName, destType, hosts)

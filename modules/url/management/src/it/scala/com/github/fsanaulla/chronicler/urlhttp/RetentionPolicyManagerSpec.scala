@@ -35,7 +35,7 @@ class RetentionPolicyManagerSpec
       "create retention policy" in {
         influx.createDatabase(rpDB).success.value.value shouldEqual 200
 
-        influx.showDatabases().success.value.value.contains(rpDB) shouldEqual true
+        influx.showDatabases.success.value.value.contains(rpDB) shouldEqual true
 
         influx
           .createRetentionPolicy("test", rpDB, 2.hours, 2, Some(2.hours), default = true)
@@ -79,7 +79,7 @@ class RetentionPolicyManagerSpec
 
         influx.dropDatabase(rpDB).success.value.value shouldEqual 200
 
-        influx.showDatabases().success.value.value.contains(rpDB) shouldEqual false
+        influx.showDatabases.success.value.value.contains(rpDB) shouldEqual false
       }
     }
 

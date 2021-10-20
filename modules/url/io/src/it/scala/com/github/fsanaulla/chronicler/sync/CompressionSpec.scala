@@ -2,7 +2,7 @@ package com.github.fsanaulla.chronicler.urlhttp
 
 import java.nio.file.Paths
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
+import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, SyncIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}
 import org.scalatest.{EitherValues, TryValues}
@@ -30,7 +30,7 @@ class CompressionSpec
   lazy val mng: UrlManagementClient =
     InfluxMng(host, port, Some(credentials))
 
-  lazy val io: UrlIOClient =
+  lazy val io: SyncIOClient =
     InfluxIO(host, port, Some(credentials), compress = true)
 
   lazy val db: io.Database = io.database(testDB)

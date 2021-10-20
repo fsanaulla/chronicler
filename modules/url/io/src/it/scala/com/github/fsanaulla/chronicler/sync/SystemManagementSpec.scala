@@ -1,7 +1,7 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
+import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, SyncIOClient}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -26,7 +26,7 @@ class SystemManagementSpec
     super.afterAll()
   }
 
-  lazy val influx: UrlIOClient = InfluxIO(host, port, Some(credentials))
+  lazy val influx: SyncIOClient = InfluxIO(host, port, Some(credentials))
 
   it should "ping InfluxDB" in {
     val result = influx.ping.success.value.value

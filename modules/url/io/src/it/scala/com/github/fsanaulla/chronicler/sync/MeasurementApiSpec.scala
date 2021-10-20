@@ -1,11 +1,11 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
+import com.github.fsanaulla.chronicler.sync.InfluxConfig
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity}
 import com.github.fsanaulla.chronicler.testing.BaseSpec
 import com.github.fsanaulla.chronicler.urlhttp.SampleEntitys._
-import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
+import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, SyncIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
-import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -40,7 +40,7 @@ class MeasurementApiSpec
   lazy val mng: UrlManagementClient =
     InfluxMng(influxConf)
 
-  lazy val io: UrlIOClient = InfluxIO(influxConf)
+  lazy val io: SyncIOClient = InfluxIO(influxConf)
 
   lazy val meas: io.Measurement[FakeEntity] =
     io.measurement[FakeEntity](db, measName)

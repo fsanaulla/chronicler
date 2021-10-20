@@ -1,14 +1,13 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
 import java.nio.file.Paths
-
 import com.github.fsanaulla.chronicler.core.enums.Epochs
 import com.github.fsanaulla.chronicler.core.model.Point
+import com.github.fsanaulla.chronicler.sync.InfluxConfig
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.urlhttp.SampleEntitys._
-import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
+import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, SyncIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
-import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -46,7 +45,7 @@ class DatabaseApiSpec
   lazy val mng: UrlManagementClient =
     InfluxMng(influxConf)
 
-  lazy val io: UrlIOClient =
+  lazy val io: SyncIOClient =
     InfluxIO(influxConf)
 
   lazy val db: io.Database = io.database(testDB)
