@@ -25,6 +25,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class MacroWriterSpec extends AnyWordSpec with Matchers with EitherValues {
+
   "InfluxWriter" should {
     "write optional" should {
       case class WithOptional(
@@ -72,7 +73,9 @@ class MacroWriterSpec extends AnyWordSpec with Matchers with EitherValues {
 
       val wr1: InfluxWriter[WithDouble] = InfluxWriter[WithDouble]
       wr1
-        .write(WithDouble("nm", Some("sn"), 65.4, "Berkly", 1438715114318570484L)) shouldEqual Right(
+        .write(
+          WithDouble("nm", Some("sn"), 65.4, "Berkly", 1438715114318570484L)
+        ) shouldEqual Right(
         "name=nm,surname=sn mark=65.4,school=\"Berkly\" 1438715114318570484"
       )
 
@@ -86,7 +89,9 @@ class MacroWriterSpec extends AnyWordSpec with Matchers with EitherValues {
 
       val wr2: InfluxWriter[WithDoubleAsASecondField] = InfluxWriter[WithDoubleAsASecondField]
       wr2
-        .write(WithDoubleAsASecondField("nm", Some("sn"), 1, 65.4, 1438715114318570484L)) shouldEqual Right(
+        .write(
+          WithDoubleAsASecondField("nm", Some("sn"), 1, 65.4, 1438715114318570484L)
+        ) shouldEqual Right(
         "name=nm,surname=sn age=1i,mark=65.4 1438715114318570484"
       )
     }
@@ -114,6 +119,14 @@ class MacroWriterSpec extends AnyWordSpec with Matchers with EitherValues {
         val t = Test("My ,=Name", 5)
         wr.write(t).value shouldEqual "name=My\\ \\,\\=Name age=5i"
       }
+    }
+
+    "write without tags" in {
+      case class Test(@field age: Int)
+      val wr: InfluxWriter[Test] = InfluxWriter[Test]
+
+      val t = Test(5)
+      wr.write(Test(5)).value shouldEqual "age=5i"
     }
   }
 }

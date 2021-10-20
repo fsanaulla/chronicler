@@ -17,61 +17,77 @@
 package com.github.fsanaulla.chronicler.core.shared
 
 import com.github.fsanaulla.chronicler.core.model._
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.must.Matchers
 
-class PointSpec extends AnyFlatSpec with Matchers {
-  "Point" should "escape spaces" in {
-    val p = Point("test meas")
-      .addTag("tag key", "tag value")
-      .addField("field space", 1)
+class PointSpec extends AnyFreeSpec with Matchers {
 
-    p.serialize shouldEqual "test\\ meas,tag\\ key=tag\\ value field\\ space=1i"
-  }
+  "Point" - {
 
-  it should "escape commas" in {
-    val p = Point("test,meas")
-      .addTag("tag,key", "tag,value")
-      .addField("field,space", 1)
+    "should" - {
 
-    p.serialize shouldEqual "test\\,meas,tag\\,key=tag\\,value field\\,space=1i"
-  }
+      "escape" - {
 
-  it should "escape equals sign" in {
-    val p = Point("test=meas")
-      .addTag("tag=key", "tag=value")
-      .addField("field=space", 1)
+        "spaces" in {
+          val p = Point("test meas")
+            .addTag("tag key", "tag value")
+            .addField("field space", 1)
 
-    p.serialize shouldEqual "test=meas,tag\\=key=tag\\=value field\\=space=1i"
-  }
+          p.serialize mustEqual "test\\ meas,tag\\ key=tag\\ value field\\ space=1i"
+        }
 
-  it should "escape complex case" in {
-    val p = Point("test, meas")
-      .addTag("tag, =key", "tag= ,value")
-      .addField("field=, space", 1)
+        "commas" in {
+          val p = Point("test,meas")
+            .addTag("tag,key", "tag,value")
+            .addField("field,space", 1)
 
-    p.serialize shouldEqual "test\\,\\ meas,tag\\,\\ \\=key=tag\\=\\ \\,value field\\=\\,\\ space=1i"
-  }
+          p.serialize mustEqual "test\\,meas,tag\\,key=tag\\,value field\\,space=1i"
+        }
 
-  it should "generate tags" in {
-    val p = Point("foo")
-      .addTag("bar", "baz")
-      .addField("field", 1)
+        "equals sign" in {
+          val p = Point("test=meas")
+            .addTag("tag=key", "tag=value")
+            .addField("field=space", 1)
 
-    p.serialize shouldEqual "foo,bar=baz field=1i"
-  }
+          p.serialize mustEqual "test=meas,tag\\=key=tag\\=value field\\=space=1i"
+        }
 
-  it should "generate a valid statement with empty tag list" in {
-    val p = Point(measurement = "foo", tags = List())
-      .addField("bar", 1)
+        "complex case" in {
+          val p = Point("test, meas")
+            .addTag("tag, =key", "tag= ,value")
+            .addField("field=, space", 1)
 
-    p.serialize shouldEqual "foo bar=1i"
-  }
+          p.serialize mustEqual "test\\,\\ meas,tag\\,\\ \\=key=tag\\=\\ \\,value field\\=\\,\\ space=1i"
+        }
+      }
 
-  it should "generate a valid statement with no defined tag list" in {
-    val p = Point("foo")
-      .addField("bar", 1)
+      "generate" - {
 
-    p.serialize shouldEqual "foo bar=1i"
+        "tags" in {
+          val p = Point("foo")
+            .addTag("bar", "baz")
+            .addField("field", 1)
+
+          p.serialize mustEqual "foo,bar=baz field=1i"
+        }
+
+        "valid statement" - {
+
+          "with empty tag list" in {
+            val p = Point(measurement = "foo", tags = List())
+              .addField("bar", 1)
+
+            p.serialize mustEqual "foo bar=1i"
+          }
+
+          "with undefined tag list" in {
+            val p = Point("foo")
+              .addField("bar", 1)
+
+            p.serialize mustEqual "foo bar=1i"
+          }
+        }
+      }
+    }
   }
 }
