@@ -135,7 +135,7 @@ lazy val akkaManagement = projectMatrix
   .configure(defaultSettingsWithIt)
   .dependsOn(coreManagement, akkaShared)
   .dependsOn(testing % "test,it")
-  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212))
 
 lazy val akkaIO = projectMatrix
   .in(file("modules/akka/io"))
@@ -148,7 +148,7 @@ lazy val akkaIO = projectMatrix
   .dependsOn(akkaManagement % "test,it")
   .dependsOn(testing % "test,it")
   .dependsOn(macros % "test,it")
-  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212))
 
 lazy val akkaShared = projectMatrix
   .in(file("modules/akka/shared"))
@@ -158,37 +158,38 @@ lazy val akkaShared = projectMatrix
       Library.akkaDep ++ Library.scalaTest.map(_ % Test)
   )
   .dependsOn(coreShared)
-  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212))
 
 //////////////////////////////////////////////////////
 ///////////////// ASYNC HTTP MODULES /////////////////
 //////////////////////////////////////////////////////
 lazy val ahcManagement = projectMatrix
-  .in(file("modules/ahc/management"))
+  .in(file("modules/async/management"))
   .settings(name := s"$projectName-ahc-management")
   .configure(defaultSettingsWithIt)
   .dependsOn(coreManagement, ahcShared)
   .dependsOn(testing % "it,test")
-  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212))
 
 lazy val ahcIO = projectMatrix
-  .in(file("modules/ahc/io"))
+  .in(file("modules/async/io"))
   .settings(name := s"$projectName-ahc-io")
   .configure(defaultSettingsWithIt)
   .dependsOn(coreIO, ahcShared)
   .dependsOn(ahcManagement % "it,test")
   .dependsOn(testing % "it,test")
-  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212))
 
 lazy val ahcShared = projectMatrix
-  .in(file("modules/ahc/shared"))
+  .in(file("modules/async/shared"))
   .settings(
     name := s"$projectName-ahc-shared",
     libraryDependencies ++=
       Library.asyncDeps ++ Library.scalaTest.map(_ % Test)
   )
   .dependsOn(coreShared)
-  .jvmPlatform(scalaVersions = Seq(scala213, scala212, scala211))
+  .dependsOn(testing % "test")
+  .jvmPlatform(scalaVersions = Seq(scala213, scala212))
 
 //////////////////////////////////////////////////////
 ///////////////////// UPD MODULE /////////////////////
@@ -243,10 +244,10 @@ lazy val akkaManagementExample =
   exampleModule("akka-management-example", "akka/management", akkaManagement.jvm(scala213))
 
 lazy val ahcIOExample =
-  exampleModule("ahc-io-example", "ahc/io", ahcIO.jvm(scala213), macros.jvm(scala213))
+  exampleModule("ahc-io-example", "async/io", ahcIO.jvm(scala213), macros.jvm(scala213))
 
 lazy val ahcManagementExample =
-  exampleModule("ahc-management-example", "ahc/management", ahcManagement.jvm(scala213))
+  exampleModule("ahc-management-example", "async/management", ahcManagement.jvm(scala213))
 
 lazy val urlIOExample =
   exampleModule("url-io-example", "url/io", urlIO.jvm(scala213), macros.jvm(scala213))
