@@ -12,11 +12,11 @@ object Library {
 
     object Akka {
       val akka     = "2.5.32"
-      val akkaHttp = "10.1.13"
+      val akkaHttp = "10.1.14"
     }
 
     object Testing {
-      val scalaTest            = "3.2.9"
+      val scalaTest            = "3.2.10"
       val scalaCheck           = "1.14.0"
       val scalaCheckGenerators = "0.2.0"
     }
