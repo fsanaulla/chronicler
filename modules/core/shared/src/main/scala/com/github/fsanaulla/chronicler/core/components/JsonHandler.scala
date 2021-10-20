@@ -21,14 +21,11 @@ import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.headers.{buildHeader, versionHeader}
 import com.github.fsanaulla.chronicler.core.jawn._
-import com.github.fsanaulla.chronicler.core.model.{
-  InfluxDBInfo,
-  InfluxReader,
-  ParsingException
-}
+import com.github.fsanaulla.chronicler.core.model.{InfluxDBInfo, InfluxReader, ParsingException}
 import com.github.fsanaulla.chronicler.core.typeclasses.Functor
 import org.typelevel.jawn.ast.{JArray, JValue}
 
+import scala.language.higherKinds
 import scala.reflect.ClassTag
 
 /***
@@ -166,8 +163,7 @@ abstract class JsonHandler[F[_], R](implicit F: Functor[F]) {
     */
   final def groupedSystemInfo[T: ClassTag](
       js: JValue
-    )(implicit rd: InfluxReader[T]
-    ): ErrorOr[Array[(String, Array[T])]] = {
+  )(implicit rd: InfluxReader[T]): ErrorOr[Array[(String, Array[T])]] = {
     groupedSystemInfoJs(js) match {
       case Some(arr) =>
         either.array(arr.map {
