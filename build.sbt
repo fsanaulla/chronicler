@@ -116,7 +116,7 @@ lazy val urlShared = projectMatrix
   .settings(
     name := s"$projectName-url-shared",
     libraryDependencies ++=
-      "com.softwaremill.sttp.client3" %% "core" % "3.3.14"
+      "com.softwaremill.sttp.client3" %% "core" % "3.3.16"
         :: Library.scalaTest.map(_ % Test)
   )
   .dependsOn(coreShared)
