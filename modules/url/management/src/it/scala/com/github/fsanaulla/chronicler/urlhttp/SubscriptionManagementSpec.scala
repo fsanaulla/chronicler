@@ -11,10 +11,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.{EitherValues, TryValues, BeforeAndAfterAll}
 import com.github.fsanaulla.chronicler.testing.BaseSpec
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 21.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 21.08.17
   */
 class SubscriptionManagementSpec
     extends BaseSpec
@@ -28,13 +25,13 @@ class SubscriptionManagementSpec
     super.afterAll()
   }
 
-  val subName                       = "subs"
-  val dbName                        = "async_subs_spec_db"
-  val rpName                        = "subs_rp"
-  val destType: Destination         = Destinations.ANY
-  val newDestType: Destination      = Destinations.ALL
-  val hosts: Array[String]          = Array("udp://h1.example.com:9090", "udp://h2.example.com:9090")
-  val subscription: Subscription    = Subscription(rpName, subName, destType, hosts)
+  val subName                    = "subs"
+  val dbName                     = "async_subs_spec_db"
+  val rpName                     = "subs_rp"
+  val destType: Destination      = Destinations.ANY
+  val newDestType: Destination   = Destinations.ALL
+  val hosts: Array[String]       = Array("udp://h1.example.com:9090", "udp://h2.example.com:9090")
+  val subscription: Subscription = Subscription(rpName, subName, destType, hosts)
   val newSubscription: Subscription = subscription.copy(destType = newDestType)
 
   val duration: String = 1.hours + 30.minutes
@@ -43,7 +40,7 @@ class SubscriptionManagementSpec
     InfluxMng(host, port, Some(credentials))
 
   "Subscription API" - {
-    
+
     "should" - {
 
       "create subscription" in {

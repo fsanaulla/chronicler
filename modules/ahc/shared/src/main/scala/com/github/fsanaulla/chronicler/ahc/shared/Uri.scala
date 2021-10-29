@@ -20,14 +20,18 @@ import java.net.URLEncoder
 
 import org.asynchttpclient.Param
 
-/***
-  * Syntetic container for request information
+/** * Syntetic container for request information
   *
-  * @param schema - request schema
-  * @param host   - request api address
-  * @param port   - request port
-  * @param query  - query path
-  * @param params - query params
+  * @param schema
+  *   - request schema
+  * @param host
+  *   - request api address
+  * @param port
+  *   - request port
+  * @param query
+  *   - query path
+  * @param params
+  *   - query params
   *
   * @since 0.6.0
   */
@@ -36,7 +40,8 @@ final case class Uri(
     host: String,
     port: Int,
     query: String,
-    params: List[Param] = Nil) {
+    params: List[Param] = Nil
+) {
 
   /** Append query parameter */
   def addParam(param: Param): Uri =

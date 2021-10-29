@@ -10,10 +10,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.{EitherValues, TryValues, BeforeAndAfterAll}
 import com.github.fsanaulla.chronicler.testing.BaseSpec
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 10.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 10.08.17
   */
 class UserManagementSpec
     extends BaseSpec

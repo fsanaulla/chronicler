@@ -258,7 +258,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     *   - AST that will be expanded to write method
     */
   private[this] def createWriteMethod(tpe: c.Type): Tree = {
-    /// ADT
+    // / ADT
     sealed trait Unquotable {
       def key: Name
       def value: Tree

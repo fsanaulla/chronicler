@@ -23,16 +23,21 @@ import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.SubscriptionsManagementQuery
 
-/***
-  * Provide support of subscription api
+/** * Provide support of subscription api
   *
-  * @tparam F - execution effect type
-  * @tparam G - parsing effect type
-  * @tparam R - response type
-  * @tparam U - uri type
-  * @tparam E - response entity type
+  * @tparam F
+  *   - execution effect type
+  * @tparam G
+  *   - parsing effect type
+  * @tparam R
+  *   - response type
+  * @tparam U
+  *   - uri type
+  * @tparam E
+  *   - response entity type
   *
-  * @see      - https://docs.influxdata.com/influxdb/v1.7/administration/subscription-management/
+  * @see
+  *   - https://docs.influxdata.com/influxdb/v1.7/administration/subscription-management/
   */
 trait SubscriptionManagement[F[_], G[_], R, U, E] extends SubscriptionsManagementQuery[U] {
   implicit val qb: QueryBuilder[U]
@@ -41,14 +46,19 @@ trait SubscriptionManagement[F[_], G[_], R, U, E] extends SubscriptionsManagemen
   implicit val F: Functor[F]
   implicit val FK: FunctionK[G, F]
 
-  /**
-    * Create subscription
-    * @param subsName        - subscription name
-    * @param dbName          - database name
-    * @param rpName          - retention policy name
-    * @param destinationType - destination type, where subscription should aggregate data
-    * @param addresses       - subscription addresses
-    * @return                - execution result
+  /** Create subscription
+    * @param subsName
+    *   - subscription name
+    * @param dbName
+    *   - database name
+    * @param rpName
+    *   - retention policy name
+    * @param destinationType
+    *   - destination type, where subscription should aggregate data
+    * @param addresses
+    *   - subscription addresses
+    * @return
+    *   - execution result
     */
   final def createSubscription(
       subsName: String,
@@ -56,7 +66,7 @@ trait SubscriptionManagement[F[_], G[_], R, U, E] extends SubscriptionsManagemen
       rpName: String = "autogen",
       destinationType: Destination,
       addresses: Seq[String]
-    ): F[ErrorOr[ResponseCode]] =
+  ): F[ErrorOr[ResponseCode]] =
     F.flatMap(
       re.get(
         createSubscriptionQuery(subsName, dbName, rpName, destinationType, addresses),
@@ -69,7 +79,7 @@ trait SubscriptionManagement[F[_], G[_], R, U, E] extends SubscriptionsManagemen
       subName: String,
       dbName: String,
       rpName: String
-    ): F[ErrorOr[ResponseCode]] =
+  ): F[ErrorOr[ResponseCode]] =
     F.flatMap(
       re.get(dropSubscriptionQuery(subName, dbName, rpName), compress = false)
     )(resp => FK(rh.writeResult(resp)))

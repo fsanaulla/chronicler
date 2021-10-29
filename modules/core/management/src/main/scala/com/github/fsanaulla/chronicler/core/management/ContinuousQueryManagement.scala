@@ -22,10 +22,7 @@ import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.ContinuousQueries
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 08.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 08.08.17
   */
 trait ContinuousQueryManagement[F[_], G[_], Resp, Uri, Entity] extends ContinuousQueries[Uri] {
   implicit val qb: QueryBuilder[Uri]
@@ -34,19 +31,21 @@ trait ContinuousQueryManagement[F[_], G[_], Resp, Uri, Entity] extends Continuou
   implicit val F: Functor[F]
   implicit val FK: FunctionK[G, F]
 
-  /**
-    * Create new one continuous query
+  /** Create new one continuous query
     *
-    * @param dbName - database on which CQ will runes
-    * @param cqName - continuous query name
-    * @param query  - query
+    * @param dbName
+    *   - database on which CQ will runes
+    * @param cqName
+    *   - continuous query name
+    * @param query
+    *   - query
     * @return
     */
   final def createCQ(
       dbName: String,
       cqName: String,
       query: String
-    ): F[ErrorOr[ResponseCode]] = {
+  ): F[ErrorOr[ResponseCode]] = {
     require(validCQQuery(query), "Query required INTO and GROUP BY clause")
     F.flatMap(
       re.get(createCQQuery(dbName, cqName, query), compress = false)
@@ -59,12 +58,14 @@ trait ContinuousQueryManagement[F[_], G[_], Resp, Uri, Entity] extends Continuou
       re.get(showCQQuery, compress = false)
     )(resp => FK(rh.toCqQueryResult(resp)))
 
-  /**
-    * Drop continuous query
+  /** Drop continuous query
     *
-    * @param dbName - database name
-    * @param cqName - continuous query name
-    * @return       - execution result
+    * @param dbName
+    *   - database name
+    * @param cqName
+    *   - continuous query name
+    * @return
+    *   - execution result
     */
   final def dropCQ(dbName: String, cqName: String): F[ErrorOr[ResponseCode]] =
     F.flatMap(

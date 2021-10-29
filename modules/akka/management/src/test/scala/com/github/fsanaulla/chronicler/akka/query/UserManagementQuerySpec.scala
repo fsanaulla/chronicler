@@ -24,16 +24,13 @@ import com.github.fsanaulla.chronicler.core.query.UserManagementQuery
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 21.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 21.08.17
   */
 class UserManagementQuerySpec extends AnyFlatSpec with Matchers with UserManagementQuery[Uri] {
 
   trait AuthEnv {
     val credentials: Option[InfluxCredentials] = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AkkaQueryBuilder          = new AkkaQueryBuilder("http", "localhost", 8086, credentials)
+    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("http", "localhost", 8086, credentials)
   }
 
   trait NonAuthEnv {

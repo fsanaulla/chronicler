@@ -19,8 +19,19 @@ package com.github.fsanaulla.chronicler.urlhttp.management
 import com.github.fsanaulla.chronicler.core.ManagementClient
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.components.ResponseHandler
-import com.github.fsanaulla.chronicler.core.model.{FunctionK, Functor, InfluxCredentials, InfluxDBInfo}
-import com.github.fsanaulla.chronicler.urlhttp.shared.{ResponseE, UrlJsonHandler, UrlQueryBuilder, UrlRequestExecutor, tryApply}
+import com.github.fsanaulla.chronicler.core.model.{
+  FunctionK,
+  Functor,
+  InfluxCredentials,
+  InfluxDBInfo
+}
+import com.github.fsanaulla.chronicler.urlhttp.shared.{
+  ResponseE,
+  UrlJsonHandler,
+  UrlQueryBuilder,
+  UrlRequestExecutor,
+  tryApply
+}
 import sttp.client3.{SttpBackend, TryHttpURLConnectionBackend}
 import sttp.model.Uri
 

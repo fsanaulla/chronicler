@@ -21,7 +21,15 @@ import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.api.{DatabaseApi, MeasurementApi}
 import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
-import com.github.fsanaulla.chronicler.urlhttp.shared.{ResponseE, UrlJsonHandler, UrlQueryBuilder, UrlRequestExecutor, tryApply, tryFailable, tryFunctor}
+import com.github.fsanaulla.chronicler.urlhttp.shared.{
+  ResponseE,
+  UrlJsonHandler,
+  UrlQueryBuilder,
+  UrlRequestExecutor,
+  tryApply,
+  tryFailable,
+  tryFunctor
+}
 import sttp.client3.{SttpBackend, TryHttpURLConnectionBackend}
 import sttp.model.Uri
 

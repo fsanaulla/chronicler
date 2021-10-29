@@ -24,16 +24,22 @@ import scala.concurrent.ExecutionContext
 
 object InfluxIO {
 
-  /**
-    * Retrieve IO InfluxDB client, without management functionality
+  /** Retrieve IO InfluxDB client, without management functionality
     *
-    * @param host              - hostname
-    * @param port              - port value
-    * @param credentials       - user credentials
-    * @param compress           - enable gzip compression
-    * @param asyncClientConfig - custom configuration
-    * @param ec                - implicit execution context, by default use standard one
-    * @return                  - [[AhcIOClient]]
+    * @param host
+    *   - hostname
+    * @param port
+    *   - port value
+    * @param credentials
+    *   - user credentials
+    * @param compress
+    *   - enable gzip compression
+    * @param asyncClientConfig
+    *   - custom configuration
+    * @param ec
+    *   - implicit execution context, by default use standard one
+    * @return
+    *   - [[AhcIOClient]]
     */
   def apply(
       host: String,
@@ -41,16 +47,17 @@ object InfluxIO {
       credentials: Option[InfluxCredentials] = None,
       compress: Boolean = false,
       asyncClientConfig: Option[AsyncHttpClientConfig] = None
-    )(implicit ec: ExecutionContext
-    ): AhcIOClient =
+  )(implicit ec: ExecutionContext): AhcIOClient =
     new AhcIOClient(host, port, compress, credentials, asyncClientConfig)
 
-  /**
-    * Retrieve IO InfluxDB client, without management functionality using configuration object
+  /** Retrieve IO InfluxDB client, without management functionality using configuration object
     *
-    * @param conf - configuration object
-    * @param ex   - implicit execution context, by default use standard one
-    * @return     - [[AhcIOClient]]
+    * @param conf
+    *   - configuration object
+    * @param ex
+    *   - implicit execution context, by default use standard one
+    * @return
+    *   - [[AhcIOClient]]
     */
   def apply(conf: InfluxConfig)(implicit ex: ExecutionContext): AhcIOClient =
     apply(conf.host, conf.port, conf.credentials, conf.compress, conf.asyncClientConfig)

@@ -24,19 +24,17 @@ import com.github.fsanaulla.chronicler.core.components.RequestExecutor
 
 import scala.concurrent.Future
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 15.03.18
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 15.03.18
   */
 private[akka] final class AkkaRequestExecutor(ctx: HttpsConnectionContext)(implicit http: HttpExt)
-  extends RequestExecutor[Future, HttpResponse, Uri, RequestEntity] {
+    extends RequestExecutor[Future, HttpResponse, Uri, RequestEntity] {
 
-  /**
-    * Execute uri
+  /** Execute uri
     *
-    * @param uri - request uri
-    * @return    - Return wrapper response
+    * @param uri
+    *   - request uri
+    * @return
+    *   - Return wrapper response
     */
   override def get(uri: Uri, compressed: Boolean): Future[HttpResponse] = {
     val request = HttpRequest(
@@ -56,7 +54,7 @@ private[akka] final class AkkaRequestExecutor(ctx: HttpsConnectionContext)(impli
       uri: Uri,
       body: RequestEntity,
       compressed: Boolean
-    ): Future[HttpResponse] = {
+  ): Future[HttpResponse] = {
     val headers = if (compressed) `Content-Encoding`(HttpEncodings.gzip) :: Nil else Nil
     val entity  = if (compressed) body.transformDataBytes(Gzip.encoderFlow) else body
 
@@ -67,10 +65,10 @@ private[akka] final class AkkaRequestExecutor(ctx: HttpsConnectionContext)(impli
     http.singleRequest(request, connectionContext = ctx)
   }
 
-  /**
-    * Quite simple post operation for creating
+  /** Quite simple post operation for creating
     *
-    * @param uri - request uri
+    * @param uri
+    *   - request uri
     */
   override def post(uri: Uri): Future[HttpResponse] = {
     val request = HttpRequest(

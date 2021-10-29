@@ -36,26 +36,31 @@ final class AkkaMeasurementApi[T: ClassTag](
     dbName: String,
     measurementName: String,
     gzipped: Boolean
-  )(implicit qb: AkkaQueryBuilder,
+)(implicit
+    qb: AkkaQueryBuilder,
     bd: BodyBuilder[RequestEntity],
     re: AkkaRequestExecutor,
     rh: AkkaResponseHandler,
     F: Functor[Future],
-    FA: Failable[Future])
-  extends MeasurementApi[Future, Future, HttpResponse, Uri, RequestEntity, T](
-    dbName,
-    measurementName,
-    gzipped
-  ) {
+    FA: Failable[Future]
+) extends MeasurementApi[Future, Future, HttpResponse, Uri, RequestEntity, T](
+      dbName,
+      measurementName,
+      gzipped
+    ) {
 
-  /**
-    * Read chunked data, typed
+  /** Read chunked data, typed
     *
-    * @param query     - request SQL query
-    * @param epoch     - epoch precision
-    * @param pretty    - pretty printed result
-    * @param chunkSize - number of elements in the response chunk
-    * @return          - streaming response of batched items
+    * @param query
+    *   - request SQL query
+    * @param epoch
+    *   - epoch precision
+    * @param pretty
+    *   - pretty printed result
+    * @param chunkSize
+    *   - number of elements in the response chunk
+    * @return
+    *   - streaming response of batched items
     * @since 0.5.4
     */
   def readChunked(
@@ -63,8 +68,7 @@ final class AkkaMeasurementApi[T: ClassTag](
       epoch: Epoch = Epochs.None,
       pretty: Boolean = false,
       chunkSize: Int
-    )(implicit rd: InfluxReader[T]
-    ): Future[Source[ErrorOr[Array[T]], Any]] = {
+  )(implicit rd: InfluxReader[T]): Future[Source[ErrorOr[Array[T]], Any]] = {
     val uri = chunkedQuery(dbName, query, epoch, pretty, chunkSize)
     F.map(re.get(uri, compressed = false))(rh.queryChunkedResult[T])
   }

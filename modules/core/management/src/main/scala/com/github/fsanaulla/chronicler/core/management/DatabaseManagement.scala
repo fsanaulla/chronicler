@@ -22,10 +22,7 @@ import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.DataManagementQuery
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 08.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 08.08.17
   */
 trait DatabaseManagement[F[_], G[_], Resp, Uri, Body] extends DataManagementQuery[Uri] {
   implicit val qb: QueryBuilder[Uri]
@@ -34,15 +31,20 @@ trait DatabaseManagement[F[_], G[_], Resp, Uri, Body] extends DataManagementQuer
   implicit val F: Functor[F]
   implicit val FK: FunctionK[G, F]
 
-  /**
-    * Create database
+  /** Create database
     *
-    * @param dbName        - database name
-    * @param duration      - database duration
-    * @param replication   - replication
-    * @param shardDuration - shard duration
-    * @param rpName        - retention policy name
-    * @return              - execution R
+    * @param dbName
+    *   - database name
+    * @param duration
+    *   - database duration
+    * @param replication
+    *   - replication
+    * @param shardDuration
+    *   - shard duration
+    * @param rpName
+    *   - retention policy name
+    * @return
+    *   - execution R
     */
   final def createDatabase(
       dbName: String,
@@ -50,7 +52,7 @@ trait DatabaseManagement[F[_], G[_], Resp, Uri, Body] extends DataManagementQuer
       replication: Option[Int] = None,
       shardDuration: Option[String] = None,
       rpName: Option[String] = None
-    ): F[ErrorOr[ResponseCode]] =
+  ): F[ErrorOr[ResponseCode]] =
     F.flatMap(
       re.post(
         createDatabaseQuery(dbName, duration, replication, shardDuration, rpName)
@@ -73,7 +75,7 @@ trait DatabaseManagement[F[_], G[_], Resp, Uri, Body] extends DataManagementQuer
   final def showMeasurement(
       dbName: String,
       compressed: Boolean = false
-    ): F[ErrorOr[Array[String]]] =
+  ): F[ErrorOr[Array[String]]] =
     F.flatMap(
       re.get(showMeasurementQuery(dbName), compressed)
     )(resp => FK(rh.queryResult[String](resp)))
@@ -89,7 +91,7 @@ trait DatabaseManagement[F[_], G[_], Resp, Uri, Body] extends DataManagementQuer
       dbName: String,
       measurementName: String,
       compressed: Boolean = false
-    ): F[ErrorOr[Array[FieldInfo]]] =
+  ): F[ErrorOr[Array[FieldInfo]]] =
     F.flatMap(
       re.get(showFieldKeysQuery(dbName, measurementName), compressed)
     )(resp => FK(rh.queryResult[FieldInfo](resp)))
@@ -102,7 +104,7 @@ trait DatabaseManagement[F[_], G[_], Resp, Uri, Body] extends DataManagementQuer
       limit: Option[Int] = None,
       offset: Option[Int] = None,
       compressed: Boolean = false
-    ): F[ErrorOr[Array[String]]] =
+  ): F[ErrorOr[Array[String]]] =
     F.flatMap(
       re.get(showTagKeysQuery(dbName, measurementName, whereClause, limit, offset), compressed)
     )(resp => FK(rh.queryResult[String](resp)))
@@ -116,7 +118,7 @@ trait DatabaseManagement[F[_], G[_], Resp, Uri, Body] extends DataManagementQuer
       limit: Option[Int] = None,
       offset: Option[Int] = None,
       compressed: Boolean = false
-    ): F[ErrorOr[Array[TagValue]]] =
+  ): F[ErrorOr[Array[TagValue]]] =
     F.flatMap(
       re.get(
         showTagValuesQuery(dbName, measurementName, withKey, whereClause, limit, offset),

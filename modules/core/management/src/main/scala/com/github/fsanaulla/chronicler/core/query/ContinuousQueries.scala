@@ -18,10 +18,7 @@ package com.github.fsanaulla.chronicler.core.query
 
 import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 08.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 08.08.17
   */
 private[chronicler] trait ContinuousQueries[U] {
 
@@ -31,16 +28,14 @@ private[chronicler] trait ContinuousQueries[U] {
   private[chronicler] final def dropCQQuery(
       dbName: String,
       cqName: String
-    )(implicit qb: QueryBuilder[U]
-    ): U =
+  )(implicit qb: QueryBuilder[U]): U =
     qb.buildQuery("/query", qb.appendCredentials(s"DROP CONTINUOUS QUERY $cqName ON $dbName"))
 
   private[chronicler] final def createCQQuery(
       dbName: String,
       cqName: String,
       query: String
-    )(implicit qb: QueryBuilder[U]
-    ): U =
+  )(implicit qb: QueryBuilder[U]): U =
     qb.buildQuery(
       "/query",
       qb.appendCredentials(s"CREATE CONTINUOUS QUERY $cqName ON $dbName BEGIN $query END")

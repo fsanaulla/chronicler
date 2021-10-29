@@ -23,10 +23,7 @@ import com.github.fsanaulla.chronicler.core.query.ContinuousQueries
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 10.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 10.08.17
   */
 class ContinuousQueriesSpec extends AnyFlatSpec with Matchers with ContinuousQueries[Uri] {
 
@@ -38,7 +35,7 @@ class ContinuousQueriesSpec extends AnyFlatSpec with Matchers with ContinuousQue
 
   trait AuthEnv extends Env {
     val credentials: Option[InfluxCredentials] = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AhcQueryBuilder           = new AhcQueryBuilder(schema, host, port, credentials)
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(schema, host, port, credentials)
   }
 
   trait NonAuthEnv extends Env {

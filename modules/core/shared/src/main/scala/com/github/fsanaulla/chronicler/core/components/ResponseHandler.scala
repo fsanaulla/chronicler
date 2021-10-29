@@ -24,18 +24,17 @@ import org.typelevel.jawn.ast.JArray
 
 import scala.reflect.ClassTag
 
-/**
-  * Response handling functionality, it's provide method's that generalize
-  * response handle flow, for every backend implementation
+/** Response handling functionality, it's provide method's that generalize response handle flow, for
+  * every backend implementation
   *
-  * @tparam R - Backend HTTP response type, for example for Akka HTTP backend - HttpResponse
+  * @tparam R
+  *   - Backend HTTP response type, for example for Akka HTTP backend - HttpResponse
   */
 class ResponseHandler[G[_], R](
     jsonHandler: JsonHandler[G, R]
 )(implicit F: Functor[G], A: Apply[G]) {
 
-  /**
-    * Handling ping response
+  /** Handling ping response
     *
     * @since 0.5.1
     */
@@ -44,11 +43,12 @@ class ResponseHandler[G[_], R](
     else F.map(errorHandler(response))(Left(_))
   }
 
-  /**
-    * Method for handling HTTP responses with empty body
+  /** Method for handling HTTP responses with empty body
     *
-    * @param response - backend response value
-    * @return         - Result in future container
+    * @param response
+    *   - backend response value
+    * @return
+    *   - Result in future container
     */
   final def writeResult(response: R): G[ErrorOr[ResponseCode]] = {
     jsonHandler.responseCode(response) match {
@@ -67,11 +67,12 @@ class ResponseHandler[G[_], R](
     }
   }
 
-  /**
-    * Handling HTTP responses with on fly body deserialization into JArray value
+  /** Handling HTTP responses with on fly body deserialization into JArray value
     *
-    * @param response - backend response value
-    * @return         - Query result of JArray in future container
+    * @param response
+    *   - backend response value
+    * @return
+    *   - Query result of JArray in future container
     */
   final def queryResultJson(response: R): G[ErrorOr[Array[JArray]]] = {
     jsonHandler.responseCode(response) match {
@@ -91,11 +92,12 @@ class ResponseHandler[G[_], R](
     }
   }
 
-  /**
-    * Handling HTTP response with GROUP BY clause in the query
+  /** Handling HTTP response with GROUP BY clause in the query
     *
-    * @param response - backend response
-    * @return         - grouped result
+    * @param response
+    *   - backend response
+    * @return
+    *   - grouped result
     */
   final def groupedResultJson(response: R): G[ErrorOr[Array[(Tags, Values)]]] = {
     jsonHandler.responseCode(response) match {
@@ -115,24 +117,24 @@ class ResponseHandler[G[_], R](
     }
   }
 
-  /**
-    * Method for handling HTtp responses with non empty body, that contains multiple response.
+  /** Method for handling HTtp responses with non empty body, that contains multiple response.
     *
     * deserialize to Seq[JArray]
     *
-    * @param response - backend response value
-    * @return         - Query result with multiple response values
+    * @param response
+    *   - backend response value
+    * @return
+    *   - Query result with multiple response values
     */
   final def bulkQueryResultJson(response: R): G[ErrorOr[Array[Array[JArray]]]] =
     jsonHandler.responseCode(response) match {
       case code if isSuccessful(code) =>
         F.map(jsonHandler.responseBody(response)) { ethRes =>
-          ethRes.mapRight(
-            resp =>
-              jsonHandler.bulkResult(resp) match {
-                case Some(arr) => arr
-                case _         => Array.empty
-              }
+          ethRes.mapRight(resp =>
+            jsonHandler.bulkResult(resp) match {
+              case Some(arr) => arr
+              case _         => Array.empty
+            }
           )
         }
       case 401 =>
@@ -141,14 +143,18 @@ class ResponseHandler[G[_], R](
         F.map(errorHandler(response))(Left(_))
     }
 
-  /**
-    * Method for handling Info based HTTP responses, with possibility for future deserialization.
+  /** Method for handling Info based HTTP responses, with possibility for future deserialization.
     *
-    * @param response - backend response value
-    * @param f        - function that transform into value of type [B]
-    * @tparam A       - entity for creating full Info object
-    * @tparam B       - info object
-    * @return         - Query result of [B] in future container
+    * @param response
+    *   - backend response value
+    * @param f
+    *   - function that transform into value of type [B]
+    * @tparam A
+    *   - entity for creating full Info object
+    * @tparam B
+    *   - info object
+    * @return
+    *   - Query result of [B] in future container
     */
   final def toComplexQueryResult[A: ClassTag: InfluxReader, B: ClassTag](
       response: R,
@@ -170,12 +176,14 @@ class ResponseHandler[G[_], R](
     }
   }
 
-  /**
-    * Extract HTTP response body, and transform it to A
+  /** Extract HTTP response body, and transform it to A
     *
-    * @param response backend response
-    * @tparam A - Deserializer entity type
-    * @return - Query result in future container
+    * @param response
+    *   backend response
+    * @tparam A
+    *   - Deserializer entity type
+    * @return
+    *   - Query result in future container
     */
   final def queryResult[A: ClassTag](
       response: R
@@ -187,11 +195,12 @@ class ResponseHandler[G[_], R](
         .joinRight
     }
 
-  /***
-    * Handler error codes by it's value
+  /** * Handler error codes by it's value
     *
-    * @param response - response for extracting error message
-    * @return         - InfluxException wrraped in container type
+    * @param response
+    *   - response for extracting error message
+    * @return
+    *   - InfluxException wrraped in container type
     */
   final def errorHandler(response: R): G[Throwable] =
     F.map(jsonHandler.responseErrorMsg(response)) { ethErr =>
@@ -201,12 +210,14 @@ class ResponseHandler[G[_], R](
         .merge
     }
 
-  /***
-    * Get CQ information from Response
+  /** * Get CQ information from Response
     *
-    * @param response - Response object
-    * @param reader - implicit influx reader, predefined
-    * @return - CQ results
+    * @param response
+    *   - Response object
+    * @param reader
+    *   - implicit influx reader, predefined
+    * @return
+    *   - CQ results
     */
   def toCqQueryResult(
       response: R
@@ -217,12 +228,14 @@ class ResponseHandler[G[_], R](
     )
   }
 
-  /***
-    * Get Shard info information from Response
+  /** * Get Shard info information from Response
     *
-    * @param response - Response object
-    * @param reader - implicit influx reader, predefined
-    * @return - Shard info  results
+    * @param response
+    *   - Response object
+    * @param reader
+    *   - implicit influx reader, predefined
+    * @return
+    *   - Shard info results
     */
   final def toShardQueryResult(
       response: R
@@ -233,12 +246,14 @@ class ResponseHandler[G[_], R](
     )
   }
 
-  /***
-    * Get Subscription info information from Response
+  /** * Get Subscription info information from Response
     *
-    * @param response - Response object
-    * @param reader - implicit influx reader, predefined
-    * @return - Subscription info  results
+    * @param response
+    *   - Response object
+    * @param reader
+    *   - implicit influx reader, predefined
+    * @return
+    *   - Subscription info results
     */
   final def toSubscriptionQueryResult(
       response: R
@@ -250,12 +265,14 @@ class ResponseHandler[G[_], R](
     )
   }
 
-  /***
-    * Get Shard group info information from Response
+  /** * Get Shard group info information from Response
     *
-    * @param response - Response object
-    * @param reader - implicit influx reader, predefined
-    * @return - Shard group info  results
+    * @param response
+    *   - Response object
+    * @param reader
+    *   - implicit influx reader, predefined
+    * @return
+    *   - Shard group info results
     */
   final def toShardGroupQueryResult(
       response: R
@@ -266,18 +283,19 @@ class ResponseHandler[G[_], R](
     )
   }
 
-  /***
-    * Check response for success
+  /** * Check response for success
     *
-    * @param code - response code
-    * @return     - is it success
+    * @param code
+    *   - response code
+    * @return
+    *   - is it success
     */
   final def isSuccessful(code: Int): Boolean = code >= 200 && code < 300
 
-  /***
-    * Check for ping response status code
+  /** * Check for ping response status code
     *
-    * @param code - response code
+    * @param code
+    *   - response code
     */
   final def isPingCode(code: Int): Boolean = code == 200 || code == 204
 }

@@ -41,15 +41,13 @@ final class AhcManagementClient(
     port: Int,
     credentials: Option[InfluxCredentials],
     asyncClientConfig: Option[AsyncHttpClientConfig]
-  )(implicit ex: ExecutionContext,
-    val F: Functor[Future],
-    val FK: FunctionK[Id, Future])
-  extends InfluxAhcClient(asyncClientConfig)
-  with ManagementClient[Future, Id, Response, Uri, String] {
+)(implicit ex: ExecutionContext, val F: Functor[Future], val FK: FunctionK[Id, Future])
+    extends InfluxAhcClient(asyncClientConfig)
+    with ManagementClient[Future, Id, Response, Uri, String] {
 
-  val jsonHandler: AhcJsonHandler                = new AhcJsonHandler
-  implicit val qb: AhcQueryBuilder               = new AhcQueryBuilder(schema, host, port, credentials)
-  implicit val re: AhcRequestExecutor            = new AhcRequestExecutor
+  val jsonHandler: AhcJsonHandler     = new AhcJsonHandler
+  implicit val qb: AhcQueryBuilder    = new AhcQueryBuilder(schema, host, port, credentials)
+  implicit val re: AhcRequestExecutor = new AhcRequestExecutor
   implicit val rh: ResponseHandler[Id, Response] = new ResponseHandler(jsonHandler)
 
   override def ping: Future[ErrorOr[InfluxDBInfo]] = {

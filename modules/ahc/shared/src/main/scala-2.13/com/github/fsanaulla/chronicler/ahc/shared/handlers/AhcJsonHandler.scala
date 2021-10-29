@@ -28,11 +28,12 @@ import scala.jdk.CollectionConverters._
 
 private[ahc] final class AhcJsonHandler extends JsonHandler[Id, Response] {
 
-  /***
-    * Extract response body
+  /** * Extract response body
     *
-    * @see - [https://groups.google.com/forum/#!searchin/asynchttpclient/compression%7Csort:date/asynchttpclient/TAq33OWXeKU/sBm3v4EWAwAJ],
-    *        netty automatically decompress gzipped request
+    * @see
+    *   -
+    *   [https://groups.google.com/forum/#!searchin/asynchttpclient/compression%7Csort:date/asynchttpclient/TAq33OWXeKU/sBm3v4EWAwAJ],
+    *   netty automatically decompress gzipped request
     */
   def responseBody(response: Response): ErrorOr[JValue] = {
     val bodyBts = response.getResponseBodyAsBytes

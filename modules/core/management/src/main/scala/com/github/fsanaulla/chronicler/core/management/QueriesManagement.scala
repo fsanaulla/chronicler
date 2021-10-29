@@ -22,10 +22,7 @@ import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.query.QueriesManagementQuery
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 19.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 19.08.17
   */
 trait QueriesManagement[F[_], G[_], Resp, Uri, Entity] extends QueriesManagementQuery[Uri] {
   implicit val qb: QueryBuilder[Uri]

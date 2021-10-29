@@ -26,10 +26,7 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.language.implicitConversions
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 27.07.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 27.07.17
   */
 class DatabaseApiOperationQuerySpec
     extends AnyFlatSpec
@@ -44,7 +41,7 @@ class DatabaseApiOperationQuerySpec
 
   trait AuthEnv extends Env {
     val credentials: Option[InfluxCredentials] = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AhcQueryBuilder           = new AhcQueryBuilder(schema, host, port, credentials)
+    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(schema, host, port, credentials)
   }
 
   trait NonAuthEnv extends Env {
