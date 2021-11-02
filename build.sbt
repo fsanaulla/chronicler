@@ -5,8 +5,8 @@ import xerial.sbt.Sonatype._
 
 ThisBuild / scalaVersion := "2.13.4"
 ThisBuild / organization := "com.github.fsanaulla"
-ThisBuild / description := "Scala toolchain for InfluxDB "
-ThisBuild / homepage := Some(url(s"${Owner.github}/${Owner.projectName}"))
+ThisBuild / description  := "Scala toolchain for InfluxDB "
+ThisBuild / homepage     := Some(url(s"${Owner.github}/${Owner.projectName}"))
 ThisBuild / developers += Developer(
   id = Owner.id,
   name = Owner.name,
@@ -26,12 +26,12 @@ ThisBuild / sonatypeBundleDirectory := (ThisBuild / baseDirectory).value / "targ
 ThisBuild / sonatypeProjectHosting := Some(
   GitHubHosting(Owner.github, Owner.projectName, Owner.email)
 )
-ThisBuild / licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
+ThisBuild / licenses      := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
 ThisBuild / pgpPassphrase := sys.env.get("PGP_PASSPHRASE").map(_.toCharArray)
 ThisBuild / publishMavenStyle := true
-ThisBuild / headerLicense := Some(License.ALv2("2017-2021", Owner.name))
+ThisBuild / headerLicense     := Some(License.ALv2("2017-2021", Owner.name))
 
-val scala213 = "2.13.6"
+val scala213 = "2.13.7"
 val scala212 = "2.12.14"
 val scala211 = "2.11.12"
 
@@ -82,8 +82,8 @@ lazy val coreShared = projectMatrix
   .settings(
     name := s"$projectName-core-shared",
     libraryDependencies ++= List(
-      "com.beachape"                                     %% "enumeratum" % "1.6.1",
-      "org.typelevel"                                    %% "jawn-ast" % "0.14.3"
+      "com.beachape"                                    %% "enumeratum" % "1.6.1",
+      "org.typelevel"                                   %% "jawn-ast"   % "0.14.3"
     ) ++ (Library.scalaCheck :: Library.scalaTest).map(_ % Test)
   )
   .settings(Settings.propertyTestSettings: _*)
@@ -129,7 +129,7 @@ lazy val urlShared = projectMatrix
 lazy val akkaManagement = projectMatrix
   .in(file("modules/akka/management"))
   .settings(
-    name := s"$projectName-akka-management",
+    name                                      := s"$projectName-akka-management",
     libraryDependencies += Library.akkaTestKit % "test,it"
   )
   .configure(defaultSettingsWithIt)
@@ -140,7 +140,7 @@ lazy val akkaManagement = projectMatrix
 lazy val akkaIO = projectMatrix
   .in(file("modules/akka/io"))
   .settings(
-    name := s"$projectName-akka-io",
+    name                                      := s"$projectName-akka-io",
     libraryDependencies += Library.akkaTestKit % "test,it"
   )
   .configure(defaultSettingsWithIt)
@@ -265,12 +265,12 @@ lazy val benchmark = project
   .in(file("benchmark"))
   .settings(name := s"$projectName-benchmark")
   .settings(
-    Jmh / sourceDirectory := (Test / sourceDirectory).value,
-    Jmh / classDirectory := (Test / classDirectory).value,
+    Jmh / sourceDirectory     := (Test / sourceDirectory).value,
+    Jmh / classDirectory      := (Test / classDirectory).value,
     Jmh / dependencyClasspath := (Test / dependencyClasspath).value,
     // rewire tasks, so that 'jmh:run' automatically invokes 'jmh:compile' (otherwise a clean 'jmh:run' would fail)
-    Jmh / compile := (Jmh / compile).dependsOn(Test / compile).value,
-    Jmh / run := (Jmh / run).dependsOn(Jmh / compile).evaluated,
+    Jmh / compile                           := (Jmh / compile).dependsOn(Test / compile).value,
+    Jmh / run                               := (Jmh / run).dependsOn(Jmh / compile).evaluated,
     libraryDependencies += "org.openjdk.jmh" % "jmh-generator-annprocess" % "1.21" % Test
   )
   .dependsOn(macros.jvm(scala213) % "test->test")
@@ -282,7 +282,7 @@ lazy val benchmark = project
 //////////////////////////////////////////////////////
 def license: Project => Project =
   _.settings(
-    startYear := Some(2017),
+    startYear     := Some(2017),
     headerLicense := Some(HeaderLicense.ALv2("2021", Owner.name))
   ).enablePlugins(AutomateHeaderPlugin)
 
