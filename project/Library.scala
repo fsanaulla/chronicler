@@ -34,25 +34,13 @@ object Library {
   // akka-http
   // format: off
   val akkaDep: List[ModuleID] = List(
+    "com.softwaremill.sttp.client3" %% "akka-http-backend" % "3.3.14",
     "com.typesafe.akka" %% "akka-stream" % Versions.Akka.akka exclude ("com.typesafe", "config"),
-    "com.typesafe"      %  "config"       % "1.4.1",
-    "com.typesafe.akka" %% "akka-http"   % Versions.Akka.akkaHttp,
     akkaTestKit % Test
   )
 
   // async-http
   val asyncDeps: List[ModuleID] = List(
-    "org.asynchttpclient"    % "async-http-client"   % "2.12.1",
-    "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.1"
+    "com.softwaremill.sttp.client3" %% "async-http-client-backend-future" % "3.3.14"
   )
-
-  // looks like a shit, but need to keep it until spark on 2.12 will become stable
-  def requestScala(scalaVersion: String): ModuleID = {
-    val requestVersion = scalaVersion match {
-      case v if v.startsWith("2.11") => "0.1.9"
-      case _                         => Versions.request
-    }
-
-    "com.lihaoyi" %% "requests" % requestVersion
-  }
 }

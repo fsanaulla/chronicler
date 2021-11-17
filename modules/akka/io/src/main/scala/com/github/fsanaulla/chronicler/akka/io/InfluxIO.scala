@@ -19,56 +19,59 @@ package com.github.fsanaulla.chronicler.akka.io
 import akka.actor.ActorSystem
 import akka.http.scaladsl.HttpsConnectionContext
 import com.github.fsanaulla.chronicler.akka.shared.InfluxConfig
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.auth.InfluxCredentials
 
 import scala.concurrent.ExecutionContext
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 15.03.18
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 15.03.18
   */
 object InfluxIO {
 
-  /**
-    * Retrieve IO InfluxDB client, without management functionality
+  /** Retrieve IO InfluxDB client, without management functionality
     *
-    * @param host         - hostname
-    * @param port         - port value
-    * @param credentials  - user credentials
-    * @param httpsContext - Context for enabling HTTPS
-    * @param system       - actor system, by default will create new one
-    * @param compress      - enable gzip compression
-    * @param ex           - implicit execution context, by default use standard one
-    * @return             - [[AkkaIOClient]]
+    * @param host
+    *   - hostname
+    * @param port
+    *   - port value
+    * @param credentials
+    *   - user credentials
+    * @param httpsContext
+    *   - Context for enabling HTTPS
+    * @param system
+    *   - actor system, by default will create new one
+    * @param compress
+    *   - enable gzip compression
+    * @param ex
+    *   - implicit execution context, by default use standard one
+    * @return
+    *   - [[AkkaIOClient]]
     */
   def apply(
       host: String,
       port: Int = 8086,
       credentials: Option[InfluxCredentials] = None,
       compress: Boolean = false,
-      httpsContext: Option[HttpsConnectionContext] = None,
-      terminateActorSystem: Boolean = false
-    )(implicit ex: ExecutionContext,
-      system: ActorSystem
-    ): AkkaIOClient =
-    new AkkaIOClient(host, port, credentials, compress, httpsContext, terminateActorSystem)
+      httpsContext: Option[HttpsConnectionContext] = None
+  )(implicit ec: ExecutionContext, system: ActorSystem): AkkaIOClient =
+    new AkkaIOClient(host, port, credentials, compress, httpsContext)
 
-  /**
-    * Retrieve IO InfluxDB client, without management functionality using configuration object
+  /** Retrieve IO InfluxDB client, without management functionality using configuration object
     *
-    * @param conf        - configuration object
-    * @param system      - actor system, by default will create new one
-    * @param ex          - implicit execution context, by default use standard one
-    * @return            - [[AkkaIOClient]]
+    * @param conf
+    *   - configuration object
+    * @param system
+    *   - actor system, by default will create new one
+    * @param ex
+    *   - implicit execution context, by default use standard one
+    * @return
+    *   - [[AkkaIOClient]]
     */
-  def apply(conf: InfluxConfig)(implicit ex: ExecutionContext, system: ActorSystem): AkkaIOClient =
+  def apply(conf: InfluxConfig)(implicit ec: ExecutionContext, system: ActorSystem): AkkaIOClient =
     apply(
       conf.host,
       conf.port,
       conf.credentials,
       conf.compress,
-      conf.httpsContext,
-      conf.terminateActorSystem
+      conf.httpsContext
     )
 }

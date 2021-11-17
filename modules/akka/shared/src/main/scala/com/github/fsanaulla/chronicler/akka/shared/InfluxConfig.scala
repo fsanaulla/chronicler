@@ -17,7 +17,7 @@
 package com.github.fsanaulla.chronicler.akka.shared
 
 import akka.http.scaladsl.HttpsConnectionContext
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.auth.InfluxCredentials
 
 final case class InfluxConfig(
     host: String,
@@ -25,4 +25,5 @@ final case class InfluxConfig(
     credentials: Option[InfluxCredentials] = None,
     compress: Boolean = false,
     httpsContext: Option[HttpsConnectionContext] = None,
-    terminateActorSystem: Boolean = false)
+    terminateActorSystem: Boolean = false
+)
