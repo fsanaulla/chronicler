@@ -22,10 +22,7 @@ import org.scalatest.matchers.should.Matchers
 import com.github.fsanaulla.chronicler.async.shared.AsyncQueryBuilder
 import sttp.model.Uri
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 19.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 19.08.17
   */
 class ShardManagementQuerySpec extends AnyFlatSpec with Matchers with ShardManagementQuery[Uri] {
 

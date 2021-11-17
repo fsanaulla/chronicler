@@ -22,14 +22,14 @@ object Shard {
   implicit val reader: InfluxReader[Shard] = new InfluxReader[Shard] {
     override def read(js: JArray): ErrorOr[Shard] = js.vs match {
       case Array(
-          shardId: JValue,
-          dbName: JValue,
-          rpName: JValue,
-          shardGroupId: JValue,
-          startTime: JValue,
-          endTime: JValue,
-          expiryTime: JValue,
-          owners: JValue
+            shardId: JValue,
+            dbName: JValue,
+            rpName: JValue,
+            shardGroupId: JValue,
+            startTime: JValue,
+            endTime: JValue,
+            expiryTime: JValue,
+            owners: JValue
           ) =>
         Right(Shard(shardId, dbName, rpName, shardGroupId, startTime, endTime, expiryTime, owners))
       case _ =>
@@ -38,14 +38,14 @@ object Shard {
 
     override def readUnsafe(js: JArray): Shard = js.vs match {
       case Array(
-          shardId: JValue,
-          dbName: JValue,
-          rpName: JValue,
-          shardGroupId: JValue,
-          startTime: JValue,
-          endTime: JValue,
-          expiryTime: JValue,
-          owners: JValue
+            shardId: JValue,
+            dbName: JValue,
+            rpName: JValue,
+            shardGroupId: JValue,
+            startTime: JValue,
+            endTime: JValue,
+            expiryTime: JValue,
+            owners: JValue
           ) =>
         Shard(shardId, dbName, rpName, shardGroupId, startTime, endTime, expiryTime, owners)
       case _ =>

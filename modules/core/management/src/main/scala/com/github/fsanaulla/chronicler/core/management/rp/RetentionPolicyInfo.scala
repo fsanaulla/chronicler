@@ -19,11 +19,11 @@ object RetentionPolicyInfo {
 
     def read(js: JArray): ErrorOr[RetentionPolicyInfo] = js.vs match {
       case Array(
-          name: JValue,
-          duration: JValue,
-          shardGroupDuration: JValue,
-          replication: JValue,
-          default: JValue
+            name: JValue,
+            duration: JValue,
+            shardGroupDuration: JValue,
+            replication: JValue,
+            default: JValue
           ) =>
         Right(RetentionPolicyInfo(name, duration, shardGroupDuration, replication, default))
       case _ =>
@@ -32,11 +32,11 @@ object RetentionPolicyInfo {
 
     override def readUnsafe(js: JArray): RetentionPolicyInfo = js.vs match {
       case Array(
-          name: JValue,
-          duration: JValue,
-          shardGroupDuration: JValue,
-          replication: JValue,
-          default: JValue
+            name: JValue,
+            duration: JValue,
+            shardGroupDuration: JValue,
+            replication: JValue,
+            default: JValue
           ) =>
         RetentionPolicyInfo(name, duration, shardGroupDuration, replication, default)
       case _ =>

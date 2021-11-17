@@ -26,10 +26,7 @@ import com.github.fsanaulla.chronicler.core.model.{InfluxWriter, Point}
 import scala.io.Source
 import scala.util.{Failure, Try}
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 27.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 27.08.17
   */
 final class InfluxUDPClient(host: String, port: Int) extends AutoCloseable {
   private[this] val socket = new DatagramSocket()

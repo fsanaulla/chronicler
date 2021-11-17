@@ -19,10 +19,7 @@ package com.github.fsanaulla.chronicler.core.query
 import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.{Consistency, Epoch, Precision}
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 27.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 27.08.17
   */
 trait DatabaseOperationQuery[U] {
 

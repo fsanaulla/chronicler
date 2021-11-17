@@ -26,23 +26,29 @@ import org.typelevel.jawn.ast.JArray
 
 import java.nio.file.Path
 
-/**
-  * Generic interface for basic database IO operation
+/** Generic interface for basic database IO operation
   *
-  * @tparam F - request execution effect
-  * @tparam G - response parsing effect
-  * @tparam Req - HTTP request
-  * @tparam Resp - HTTP response
-  * @tparam U - HTTP URi
-  * @tparam E - Entity
+  * @tparam F
+  *   - request execution effect
+  * @tparam G
+  *   - response parsing effect
+  * @tparam Req
+  *   - HTTP request
+  * @tparam Resp
+  *   - HTTP response
+  * @tparam U
+  *   - HTTP URi
+  * @tparam E
+  *   - Entity
   *
-  * @since Big Bang
+  * @since Big
+  *   Bang
   */
 class DatabaseApi[F[_], G[_], Req, U, E, Resp](
     dbName: String,
     compress: Boolean
-)(
-    implicit qb: QueryBuilder[U],
+)(implicit
+    qb: QueryBuilder[U],
     bd: BodyBuilder[E],
     rb: RequestBuilder[Req, U, E],
     re: RequestExecutor[F, Req, Resp],

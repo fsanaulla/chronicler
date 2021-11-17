@@ -27,10 +27,7 @@ import sttp.client3.Response
 import scala.io.Source
 import scala.language.implicitConversions
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 10.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 10.08.17
   */
 class UrlResponseHandlerSpec extends BaseSpec with TryValues with EitherValues with OptionValues {
 

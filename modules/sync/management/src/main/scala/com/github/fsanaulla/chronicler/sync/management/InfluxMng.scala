@@ -22,13 +22,16 @@ import com.github.fsanaulla.chronicler.sync.shared.tryMonadError
 
 object InfluxMng {
 
-  /**
-    * Retrieve InfluxDB management client, without IO functionality
+  /** Retrieve InfluxDB management client, without IO functionality
     *
-    * @param host        - hostname
-    * @param port        - port value
-    * @param credentials - user credentials
-    * @return            - UrlManagementClient
+    * @param host
+    *   - hostname
+    * @param port
+    *   - port value
+    * @param credentials
+    *   - user credentials
+    * @return
+    *   - UrlManagementClient
     */
   def apply(
       host: String,
@@ -37,11 +40,12 @@ object InfluxMng {
   ): SyncManagementClient =
     new SyncManagementClient(host, port, credentials)
 
-  /**
-    * Retrieve management InfluxDB client, without IO functionality using [[InfluxConfig]]
+  /** Retrieve management InfluxDB client, without IO functionality using [[InfluxConfig]]
     *
-    * @param conf - configuration object
-    * @return     - [[UrlManagementClient]]
+    * @param conf
+    *   - configuration object
+    * @return
+    *   - [[UrlManagementClient]]
     */
   def apply(conf: InfluxConfig): SyncManagementClient =
     apply(conf.host, conf.port, conf.credentials)

@@ -23,23 +23,26 @@ import com.github.fsanaulla.chronicler.core.auth.InfluxCredentials
 
 import scala.concurrent.ExecutionContext
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 15.03.18
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 15.03.18
   */
 object InfluxMng {
 
-  /**
-    * Retrieve InfluxDB management client, without IO functionality
+  /** Retrieve InfluxDB management client, without IO functionality
     *
-    * @param host         - hostname
-    * @param port         - port value
-    * @param credentials  - user credentials
-    * @param httpsContext - Context for enabling HTTPS
-    * @param system       - actor system, by default will create new one
-    * @param ex           - implicit execution context, by default use standard one
-    * @return             - [[AkkaManagementClient]]
+    * @param host
+    *   - hostname
+    * @param port
+    *   - port value
+    * @param credentials
+    *   - user credentials
+    * @param httpsContext
+    *   - Context for enabling HTTPS
+    * @param system
+    *   - actor system, by default will create new one
+    * @param ex
+    *   - implicit execution context, by default use standard one
+    * @return
+    *   - [[AkkaManagementClient]]
     */
   def apply(
       host: String,
@@ -49,13 +52,16 @@ object InfluxMng {
   )(implicit ex: ExecutionContext, system: ActorSystem): AkkaManagementClient =
     new AkkaManagementClient(host, port, credentials, httpsContext)
 
-  /**
-    * Retrieve management InfluxDB client, without IO functionality using configuration object
+  /** Retrieve management InfluxDB client, without IO functionality using configuration object
     *
-    * @param conf        - configuration object
-    * @param system      - actor system, by default will create new one
-    * @param ex          - implicit execution context, by default use standard one
-    * @return            - [[AkkaManagementClient]]
+    * @param conf
+    *   - configuration object
+    * @param system
+    *   - actor system, by default will create new one
+    * @param ex
+    *   - implicit execution context, by default use standard one
+    * @return
+    *   - [[AkkaManagementClient]]
     */
   def apply(
       conf: InfluxConfig

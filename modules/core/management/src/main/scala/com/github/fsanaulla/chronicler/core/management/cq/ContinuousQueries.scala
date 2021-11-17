@@ -18,10 +18,7 @@ package com.github.fsanaulla.chronicler.core.management.cq
 
 import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 08.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 08.08.17
   */
 private[chronicler] trait ContinuousQueries[U] {
 

@@ -22,10 +22,7 @@ import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
 import com.github.fsanaulla.chronicler.core.typeclasses.{FunctionK, Monad, MonadError}
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 08.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 08.08.17
   */
 trait DatabaseManagement[F[_], G[_], Req, Resp, Uri, Body] extends DataManagementQuery[Uri] {
   implicit val qb: QueryBuilder[Uri]
@@ -35,15 +32,20 @@ trait DatabaseManagement[F[_], G[_], Req, Resp, Uri, Body] extends DataManagemen
   implicit val ME: MonadError[F, Throwable]
   implicit val FK: FunctionK[G, F]
 
-  /**
-    * Create database
+  /** Create database
     *
-    * @param dbName        - database name
-    * @param duration      - database duration
-    * @param replication   - replication
-    * @param shardDuration - shard duration
-    * @param rpName        - retention policy name
-    * @return              - execution R
+    * @param dbName
+    *   - database name
+    * @param duration
+    *   - database duration
+    * @param replication
+    *   - replication
+    * @param shardDuration
+    *   - shard duration
+    * @param rpName
+    *   - retention policy name
+    * @return
+    *   - execution R
     */
   final def createDatabase(
       dbName: String,

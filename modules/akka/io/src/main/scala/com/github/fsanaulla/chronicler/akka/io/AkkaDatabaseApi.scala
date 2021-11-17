@@ -37,8 +37,8 @@ import scala.concurrent.Future
 final class AkkaDatabaseApi(
     dbName: String,
     compressed: Boolean
-)(
-    implicit qb: AkkaQueryBuilder,
+)(implicit
+    qb: AkkaQueryBuilder,
     rb: AkkaRequestBuilder,
     re: AkkaRequestExecutor,
     rh: AkkaResponseHandler,
@@ -50,14 +50,18 @@ final class AkkaDatabaseApi(
       compressed
     ) {
 
-  /**
-    * Read chunked data
+  /** Read chunked data
     *
-    * @param query     - request SQL query
-    * @param epoch     - epoch precision
-    * @param pretty    - pretty printed result
-    * @param chunkSize - number of elements in the respinse chunk
-    * @return          - streaming response of batched points
+    * @param query
+    *   - request SQL query
+    * @param epoch
+    *   - epoch precision
+    * @param pretty
+    *   - pretty printed result
+    * @param chunkSize
+    *   - number of elements in the respinse chunk
+    * @return
+    *   - streaming response of batched points
     * @since 0.5.4
     */
   def readChunkedJson(

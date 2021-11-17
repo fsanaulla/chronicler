@@ -27,10 +27,7 @@ import com.github.fsanaulla.chronicler.testing._
 import sttp.client3
 import scala.io.Source
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 10.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 10.08.17
   */
 class AsyncJsonHandlerSpec extends BaseSpec with TryValues with EitherValues with OptionValues {
 

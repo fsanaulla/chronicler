@@ -22,16 +22,13 @@ import org.scalatest.matchers.should.Matchers
 import com.github.fsanaulla.chronicler.core.management.cq.ContinuousQueries
 import sttp.model.Uri
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 10.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 10.08.17
   */
 class ContinuousQueriesSpec extends AnyFlatSpec with Matchers with ContinuousQueries[Uri] {
 
-  val db          = "mydb"
-  val cq          = "bee_cq"
-  val query       = "SELECT mean(bees) AS mean_bees INTO aggregate_bees FROM farm GROUP BY time(30m)"
+  val db    = "mydb"
+  val cq    = "bee_cq"
+  val query = "SELECT mean(bees) AS mean_bees INTO aggregate_bees FROM farm GROUP BY time(30m)"
   implicit val qb = new AkkaQueryBuilder("localhost", 8086)
 
   "ContinuousQuerys operation" should "generate correct show query" in {

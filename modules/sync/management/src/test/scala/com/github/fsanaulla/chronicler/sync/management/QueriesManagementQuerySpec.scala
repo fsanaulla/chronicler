@@ -22,10 +22,7 @@ import com.github.fsanaulla.chronicler.core.management.query.QueriesManagementQu
 import sttp.model.Uri
 import com.github.fsanaulla.chronicler.sync.shared.SyncQueryBuilder
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 20.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 20.08.17
   */
 class QueriesManagementQuerySpec
     extends AnyFlatSpec

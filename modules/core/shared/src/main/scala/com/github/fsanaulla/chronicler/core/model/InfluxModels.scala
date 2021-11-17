@@ -16,9 +16,6 @@
 
 package com.github.fsanaulla.chronicler.core.model
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 19.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 19.08.17
   */
 final case class InfluxDBInfo(build: String, version: String)

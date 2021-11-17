@@ -16,6 +16,12 @@ import org.typelevel.jawn.ast.JString
 import org.typelevel.jawn.ast.JValue
 
 import java.nio.file.Paths
+import com.github.fsanaulla.chronicler.testing.BaseSpec
+import org.scalatest.EitherValues
+import org.scalatest.TryValues
+import org.scalatest.BeforeAndAfterAll
+import com.github.fsanaulla.chronicler.macros.annotations.field
+import com.github.fsanaulla.chronicler.macros.Influx
 
 /** Created by Author: fayaz.sanaulla@gmail.com Date: 02.03.18
   */

@@ -23,10 +23,7 @@ import sttp.model.Uri
 import com.github.fsanaulla.chronicler.sync.shared.SyncQueryBuilder
 import com.github.fsanaulla.chronicler.sync.shared.SyncQueryBuilder
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 19.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 19.08.17
   */
 class ShardManagementQuerySpec extends AnyFlatSpec with Matchers with ShardManagementQuery[Uri] {
 

@@ -23,10 +23,7 @@ import org.scalatest.{EitherValues, OptionValues, TryValues}
 import org.typelevel.jawn.ast._
 import sttp.client3.Response
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 10.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 10.08.17
   */
 class SyncJsonHandlerSpec extends BaseSpec with TryValues with EitherValues with OptionValues {
 

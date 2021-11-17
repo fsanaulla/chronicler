@@ -23,10 +23,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import sttp.model.Uri
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 27.07.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 27.07.17
   */
 class DatabaseOperationQuerySpec
     extends AnyFlatSpec

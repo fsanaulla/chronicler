@@ -30,11 +30,13 @@ trait UserManagement[F[_], G[_], Req, Resp, U, E] extends UserManagementQuery[U]
   implicit val ME: MonadError[F, Throwable]
   implicit val FK: FunctionK[G, F]
 
-  /***
-    * Create new username
-    * @param username - Name for new user
-    * @param password - Password for new user
-    * @return         - Result of execution
+  /** * Create new username
+    * @param username
+    *   - Name for new user
+    * @param password
+    *   - Password for new user
+    * @return
+    *   - Result of execution
     */
   final def createUser(username: String, password: String): F[ErrorOr[ResponseCode]] = {
     val uri  = createUserQuery(username, password)
@@ -44,11 +46,13 @@ trait UserManagement[F[_], G[_], Req, Resp, U, E] extends UserManagementQuery[U]
     ME.flatMap(resp)(resp => FK(rh.writeResult(resp)))
   }
 
-  /**
-    * Create admin user
-    * @param username - admin name
-    * @param password - admin password
-    * @return         - execution response
+  /** Create admin user
+    * @param username
+    *   - admin name
+    * @param password
+    *   - admin password
+    * @return
+    *   - execution response
     */
   final def createAdmin(username: String, password: String): F[ErrorOr[ResponseCode]] = {
     val uri  = createAdminQuery(username, password)

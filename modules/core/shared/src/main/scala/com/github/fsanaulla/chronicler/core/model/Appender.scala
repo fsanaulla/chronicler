@@ -16,10 +16,7 @@
 
 package com.github.fsanaulla.chronicler.core.model
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 27.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 27.08.17
   */
 trait Appender {
   final def append(measurement: String, serializedEntity: String): String =

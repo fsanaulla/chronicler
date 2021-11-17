@@ -16,14 +16,18 @@ class ManagementResponseHandler[G[_], R](
 )(implicit F: Functor[G], A: Apply[G])
     extends ResponseHandlerBase[G, R](jsonHandler) {
 
-  /**
-    * Method for handling Info based HTTP responses, with possibility for future deserialization.
+  /** Method for handling Info based HTTP responses, with possibility for future deserialization.
     *
-    * @param response - backend response value
-    * @param f        - function that transform into value of type [B]
-    * @tparam A       - entity for creating full Info object
-    * @tparam B       - info object
-    * @return         - Query result of [B] in future container
+    * @param response
+    *   - backend response value
+    * @param f
+    *   - function that transform into value of type [B]
+    * @tparam A
+    *   - entity for creating full Info object
+    * @tparam B
+    *   - info object
+    * @return
+    *   - Query result of [B] in future container
     */
   final def toComplexQueryResult[A: ClassTag: InfluxReader, B: ClassTag](
       response: R,
@@ -45,12 +49,14 @@ class ManagementResponseHandler[G[_], R](
     }
   }
 
-  /***
-    * Get CQ information from Response
+  /** * Get CQ information from Response
     *
-    * @param response - Response object
-    * @param reader - implicit influx reader, predefined
-    * @return - CQ results
+    * @param response
+    *   - Response object
+    * @param reader
+    *   - implicit influx reader, predefined
+    * @return
+    *   - CQ results
     */
   def toCqQueryResult(
       response: R
@@ -61,12 +67,14 @@ class ManagementResponseHandler[G[_], R](
     )
   }
 
-  /***
-    * Get Shard info information from Response
+  /** * Get Shard info information from Response
     *
-    * @param response - Response object
-    * @param reader - implicit influx reader, predefined
-    * @return - Shard info  results
+    * @param response
+    *   - Response object
+    * @param reader
+    *   - implicit influx reader, predefined
+    * @return
+    *   - Shard info results
     */
   final def toShardQueryResult(
       response: R
@@ -77,12 +85,14 @@ class ManagementResponseHandler[G[_], R](
     )
   }
 
-  /***
-    * Get Subscription info information from Response
+  /** * Get Subscription info information from Response
     *
-    * @param response - Response object
-    * @param reader - implicit influx reader, predefined
-    * @return - Subscription info  results
+    * @param response
+    *   - Response object
+    * @param reader
+    *   - implicit influx reader, predefined
+    * @return
+    *   - Subscription info results
     */
   final def toSubscriptionQueryResult(
       response: R
@@ -94,12 +104,14 @@ class ManagementResponseHandler[G[_], R](
     )
   }
 
-  /***
-    * Get Shard group info information from Response
+  /** * Get Shard group info information from Response
     *
-    * @param response - Response object
-    * @param reader - implicit influx reader, predefined
-    * @return - Shard group info  results
+    * @param response
+    *   - Response object
+    * @param reader
+    *   - implicit influx reader, predefined
+    * @return
+    *   - Shard group info results
     */
   final def toShardGroupQueryResult(
       response: R

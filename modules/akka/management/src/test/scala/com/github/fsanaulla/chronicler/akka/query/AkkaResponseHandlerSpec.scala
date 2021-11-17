@@ -36,8 +36,7 @@ import sttp.client3.Response
 import scala.concurrent.ExecutionContextExecutor
 import scala.io.Source
 
-/**
-  * Created by fayaz on 12.07.17.
+/** Created by fayaz on 12.07.17.
   */
 class AkkaResponseHandlerSpec
     extends TestKit(ActorSystem())

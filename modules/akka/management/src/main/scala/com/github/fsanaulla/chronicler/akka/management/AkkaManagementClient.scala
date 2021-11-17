@@ -46,8 +46,8 @@ final class AkkaManagementClient(
     port: Int,
     credentials: Option[InfluxCredentials],
     httpsContext: Option[HttpsConnectionContext]
-)(
-    implicit val ec: ExecutionContext,
+)(implicit
+    val ec: ExecutionContext,
     val system: ActorSystem,
     val ME: MonadError[Future, Throwable],
     val A: Apply[Future],

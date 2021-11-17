@@ -24,10 +24,7 @@ import sttp.model.Uri
 import com.github.fsanaulla.chronicler.async.shared.AsyncQueryBuilder
 import com.github.fsanaulla.chronicler.async.shared.AsyncQueryBuilder
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 21.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 21.08.17
   */
 class SubscriptionsManagementQuerySpec
     extends AnyFlatSpec

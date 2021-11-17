@@ -24,22 +24,20 @@ import scala.util.{Failure, Try}
 
 private[sync] class SyncJsonHandler extends JsonHandler[Try, ResponseE] {
 
-  /***
-    * Extract response http code
+  /** * Extract response http code
     */
   override def responseCode(response: ResponseE): Int =
     response.code.code
 
-  /***
-    * Extract response headers
+  /** * Extract response headers
     */
   override def responseHeader(response: ResponseE): Seq[(String, String)] =
     response.headers.map(h => h.name -> h.value)
 
-  /** *
-    * Extracting JSON from Response
+  /** * Extracting JSON from Response
     *
-    * @param response - HTTP response
+    * @param response
+    *   - HTTP response
     */
   override def responseBody(response: ResponseE): Try[ErrorOr[JValue]] = {
     response.body match {

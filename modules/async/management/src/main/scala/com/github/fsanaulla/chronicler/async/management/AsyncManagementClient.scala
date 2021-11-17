@@ -43,14 +43,14 @@ final class AsyncManagementClient(
     port: Int,
     credentials: Option[InfluxCredentials],
     asyncClientConfig: Option[AsyncHttpClientConfig]
-)(
-    implicit ex: ExecutionContext,
+)(implicit
+    ex: ExecutionContext,
     val ME: MonadError[Future, Throwable],
     val FK: FunctionK[Id, Future]
 ) extends ManagementClient[Future, Id, RequestE[Identity], Uri, String, ResponseE] {
 
-  private val backend = asyncClientConfig.fold(AsyncHttpClientFutureBackend())(
-    c => AsyncHttpClientFutureBackend.usingConfig(c)
+  private val backend = asyncClientConfig.fold(AsyncHttpClientFutureBackend())(c =>
+    AsyncHttpClientFutureBackend.usingConfig(c)
   )
 
   implicit val qb: AsyncQueryBuilder    = new AsyncQueryBuilder(host, port)

@@ -18,8 +18,7 @@ package com.github.fsanaulla.chronicler.core.management.db
 
 import com.github.fsanaulla.chronicler.core.components.QueryBuilder
 
-/**
-  * Created by fayaz on 27.06.17.
+/** Created by fayaz on 27.06.17.
   */
 private[chronicler] trait DataManagementQuery[U] {
 
@@ -35,7 +34,9 @@ private[chronicler] trait DataManagementQuery[U] {
 
     sb.append(s"CREATE DATABASE $dbName")
 
-    if (duration.isDefined || replication.isDefined || shardDuration.isDefined || rpName.isDefined) {
+    if (
+      duration.isDefined || replication.isDefined || shardDuration.isDefined || rpName.isDefined
+    ) {
       sb.append(" WITH")
     }
 

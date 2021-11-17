@@ -23,10 +23,7 @@ import com.github.fsanaulla.chronicler.async.shared.AsyncQueryBuilder
 import sttp.model.Uri
 import org.scalatest.flatspec.AnyFlatSpec
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 27.07.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 27.07.17
   */
 class DataManagementQuerySpec extends AnyFlatSpec with Matchers with DataManagementQuery[Uri] {
 
@@ -79,7 +76,13 @@ class DataManagementQuerySpec extends AnyFlatSpec with Matchers with DataManagem
   }
 
   it should "generate correct 'show tag-key' query" in {
-    showTagKeysQuery(testDb, testMeasurement, testWhereClause, testLimit, testOffset).toString shouldEqual
+    showTagKeysQuery(
+      testDb,
+      testMeasurement,
+      testWhereClause,
+      testLimit,
+      testOffset
+    ).toString shouldEqual
       queryTester(
         s"SHOW TAG KEYS ON $testDb FROM $testMeasurement WHERE ${testWhereClause.get} LIMIT ${testLimit.get} OFFSET ${testOffset.get}"
       )
@@ -91,7 +94,14 @@ class DataManagementQuerySpec extends AnyFlatSpec with Matchers with DataManagem
   }
 
   it should "generate correct 'show tag-value' query" in {
-    showTagValuesQuery(testDb, testMeasurement, Seq("key"), testWhereClause, testLimit, testOffset).toString shouldEqual
+    showTagValuesQuery(
+      testDb,
+      testMeasurement,
+      Seq("key"),
+      testWhereClause,
+      testLimit,
+      testOffset
+    ).toString shouldEqual
       queryTester(
         s"SHOW TAG VALUES ON $testDb FROM $testMeasurement WITH KEY = key WHERE ${testWhereClause.get} LIMIT ${testLimit.get} OFFSET ${testOffset.get}"
       )
@@ -185,10 +195,24 @@ class DataManagementQuerySpec extends AnyFlatSpec with Matchers with DataManagem
   }
 
   it should "generate correct 'show tag-value' query without auth" in {
-    showTagValuesQuery(testDb, testMeasurement, Seq("key"), None, None, None).toString shouldEqual queryTester(
+    showTagValuesQuery(
+      testDb,
+      testMeasurement,
+      Seq("key"),
+      None,
+      None,
+      None
+    ).toString shouldEqual queryTester(
       s"SHOW TAG VALUES ON $testDb FROM $testMeasurement WITH KEY = key"
     )
-    showTagValuesQuery(testDb, testMeasurement, Seq("key", "key1"), testWhereClause, None, None).toString shouldEqual queryTester(
+    showTagValuesQuery(
+      testDb,
+      testMeasurement,
+      Seq("key", "key1"),
+      testWhereClause,
+      None,
+      None
+    ).toString shouldEqual queryTester(
       s"SHOW TAG VALUES ON $testDb FROM $testMeasurement WITH KEY IN (key,key1) WHERE ${testWhereClause.get}"
     )
   }

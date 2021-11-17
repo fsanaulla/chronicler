@@ -21,15 +21,20 @@ import com.github.fsanaulla.chronicler.sync.shared.InfluxConfig
 
 object InfluxIO {
 
-  /**
-    * Retrieve IO InfluxDB client, without management functionality.
-    * See https://github.com/softwaremill/sttp/issues/114 to understand how to configure secured connection
+  /** Retrieve IO InfluxDB client, without management functionality. See
+    * https://github.com/softwaremill/sttp/issues/114 to understand how to configure secured
+    * connection
     *
-    * @param host        - hostname
-    * @param port        - port value
-    * @param credentials - user credentials
-    * @param compress    - enable gzip compression
-    * @return            - [[SyncIOClient]]
+    * @param host
+    *   - hostname
+    * @param port
+    *   - port value
+    * @param credentials
+    *   - user credentials
+    * @param compress
+    *   - enable gzip compression
+    * @return
+    *   - [[SyncIOClient]]
     */
   def apply(
       host: String,
@@ -39,11 +44,12 @@ object InfluxIO {
   ): SyncIOClient =
     new SyncIOClient(host, port, credentials, compress)
 
-  /**
-    * Retrieve IO InfluxDB client, without management functionality using configuration object
+  /** Retrieve IO InfluxDB client, without management functionality using configuration object
     *
-    * @param conf - configuration object
-    * @return     - [[SyncIOClient]]
+    * @param conf
+    *   - configuration object
+    * @return
+    *   - [[SyncIOClient]]
     */
   def apply(conf: InfluxConfig): SyncIOClient =
     apply(conf.host, conf.port, conf.credentials, conf.compress)

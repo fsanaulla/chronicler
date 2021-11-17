@@ -23,10 +23,7 @@ import sttp.model.Uri
 import com.github.fsanaulla.chronicler.testing.BaseSpec
 import com.github.fsanaulla.chronicler.sync.shared.SyncQueryBuilder
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 10.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 10.08.17
   */
 class ContinuousQueriesSpec extends BaseSpec with ContinuousQueries[Uri] {
 

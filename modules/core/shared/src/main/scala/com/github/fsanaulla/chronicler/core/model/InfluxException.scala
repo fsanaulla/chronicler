@@ -16,9 +16,6 @@
 
 package com.github.fsanaulla.chronicler.core.model
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 31.07.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 31.07.17
   */
 final case class InfluxException(httpCode: Int, msg: String) extends Throwable(msg)

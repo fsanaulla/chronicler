@@ -23,10 +23,7 @@ import sttp.model.Uri.QuerySegment.KeyValue
 
 import scala.annotation.tailrec
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 15.03.18
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 15.03.18
   */
 private[akka] class AkkaQueryBuilder(
     host: String,
@@ -43,8 +40,8 @@ private[akka] class AkkaQueryBuilder(
     )
 
   override def buildQuery(path: String, queryParams: List[(String, String)]): Uri = {
-    val params = queryParams.map {
-      case (k, v) => KeyValue(k, v, valueEncoding = Uri.QuerySegmentEncoding.All)
+    val params = queryParams.map { case (k, v) =>
+      KeyValue(k, v, valueEncoding = Uri.QuerySegmentEncoding.All)
     }
 
     @tailrec

@@ -20,18 +20,15 @@ import java.util.regex.Pattern
 
 package object regex {
 
-  /***
-    * Escape pattern for tag field
+  /** * Escape pattern for tag field
     */
   val tagPattern: Pattern = Pattern.compile("([ ,=])")
 
-  /***
-    * Escape pattern for meas value
+  /** * Escape pattern for meas value
     */
   val measPattern: Pattern = Pattern.compile("([ ,])")
 
-  /***
-    * Replace pattern
+  /** * Replace pattern
     */
   val replace: String = "\\\\$1"
 }

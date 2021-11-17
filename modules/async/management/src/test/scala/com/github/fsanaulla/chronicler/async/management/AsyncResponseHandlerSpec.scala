@@ -37,10 +37,7 @@ import scala.concurrent.duration._
 import com.github.fsanaulla.chronicler.async.shared.AsyncJsonHandler
 import scala.io.Source
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 10.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 10.08.17
   */
 class AsyncResponseHandlerSpec
     extends AnyFlatSpec

@@ -21,10 +21,7 @@ import com.github.fsanaulla.chronicler.core.components._
 import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
 import com.github.fsanaulla.chronicler.core.typeclasses.{FunctionK, MonadError}
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 08.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 08.08.17
   */
 trait RetentionPolicyManagement[F[_], G[_], Req, Resp, U, E]
     extends RetentionPolicyManagementQuery[U] {
@@ -35,15 +32,21 @@ trait RetentionPolicyManagement[F[_], G[_], Req, Resp, U, E]
   implicit val ME: MonadError[F, Throwable]
   implicit val FK: FunctionK[G, F]
 
-  /**
-    * Create retention policy for specified database
-    * @param rpName        - retention policy name
-    * @param dbName        - database name
-    * @param duration      - retention policy duration
-    * @param replication   - replication factor
-    * @param shardDuration - shard duration value
-    * @param default       - use default
-    * @return              - execution result
+  /** Create retention policy for specified database
+    * @param rpName
+    *   - retention policy name
+    * @param dbName
+    *   - database name
+    * @param duration
+    *   - retention policy duration
+    * @param replication
+    *   - replication factor
+    * @param shardDuration
+    *   - shard duration value
+    * @param default
+    *   - use default
+    * @return
+    *   - execution result
     */
   final def createRetentionPolicy(
       rpName: String,

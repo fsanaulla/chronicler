@@ -22,10 +22,7 @@ import org.scalatest.matchers.should.Matchers
 import com.github.fsanaulla.chronicler.core.management.query.QueriesManagementQuery
 import sttp.model.Uri
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 20.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 20.08.17
   */
 class QueriesManagementQuerySpec
     extends AnyFlatSpec

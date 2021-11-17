@@ -29,8 +29,8 @@ import org.typelevel.jawn.ast.{JArray, JParser}
 import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
 
-final class AkkaResponseHandler(jsonHandler: JsonHandler[Id, ResponseE])(
-    implicit ec: ExecutionContext
+final class AkkaResponseHandler(jsonHandler: JsonHandler[Id, ResponseE])(implicit
+    ec: ExecutionContext
 ) extends ResponseHandlerBase[Id, ResponseE](jsonHandler) {
 
   def queryChunkedResultJson(

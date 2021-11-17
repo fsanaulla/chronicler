@@ -20,10 +20,7 @@ import enumeratum.EnumEntry
 
 import scala.collection.immutable
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 29.07.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 29.07.17
   */
 sealed abstract class Consistency extends EnumEntry with HasNone {
   override def toString: String = entryName
@@ -36,5 +33,5 @@ object Consistencies extends enumeratum.Enum[Consistency] {
   case object Quorum extends Consistency { override val entryName: String = "quorum" }
   case object All    extends Consistency { override val entryName: String = "all"    }
   case object Any    extends Consistency { override val entryName: String = "any"    }
-  case object None   extends Consistency { override val isNone: Boolean   = true     }
+  case object None   extends Consistency { override val isNone: Boolean = true       }
 }

@@ -25,10 +25,7 @@ import scala.language.postfixOps
 import com.github.fsanaulla.chronicler.core.management.rp.RetentionPolicyManagementQuery
 import sttp.model.Uri
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 27.07.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 27.07.17
   */
 class RetentionPolicyManagementQuerySpec
     extends AnyFlatSpec
@@ -40,7 +37,14 @@ class RetentionPolicyManagementQuerySpec
   implicit val qb = new AkkaQueryBuilder("localhost", 8086)
 
   "RetentionPolicyManagement" should "create retention policy" in {
-    createRPQuery(testRPName, testDBName, 4 hours, 3, Some(4 hours), default = true).toString shouldEqual
+    createRPQuery(
+      testRPName,
+      testDBName,
+      4 hours,
+      3,
+      Some(4 hours),
+      default = true
+    ).toString shouldEqual
       queryTester(
         s"CREATE RETENTION POLICY $testRPName ON $testDBName DURATION 4h REPLICATION 3 SHARD DURATION 4h DEFAULT"
       )
@@ -72,7 +76,14 @@ class RetentionPolicyManagementQuerySpec
   }
 
   it should "update retention policy" in {
-    updateRPQuery(testRPName, testDBName, Some(4 hours), Some(3), Some(4 hours), default = true).toString shouldEqual
+    updateRPQuery(
+      testRPName,
+      testDBName,
+      Some(4 hours),
+      Some(3),
+      Some(4 hours),
+      default = true
+    ).toString shouldEqual
       queryTester(
         s"ALTER RETENTION POLICY $testRPName ON $testDBName DURATION 4h REPLICATION 3 SHARD DURATION 4h DEFAULT"
       )

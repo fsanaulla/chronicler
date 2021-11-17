@@ -23,16 +23,21 @@ import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
 import com.github.fsanaulla.chronicler.core.query.SubscriptionsManagementQuery
 import com.github.fsanaulla.chronicler.core.typeclasses.{FunctionK, MonadError}
 
-/***
-  * Provide support of subscription api
+/** * Provide support of subscription api
   *
-  * @tparam F - execution effect type
-  * @tparam G - parsing effect type
-  * @tparam Resp - response type
-  * @tparam U - uri type
-  * @tparam E - response entity type
+  * @tparam F
+  *   - execution effect type
+  * @tparam G
+  *   - parsing effect type
+  * @tparam Resp
+  *   - response type
+  * @tparam U
+  *   - uri type
+  * @tparam E
+  *   - response entity type
   *
-  * @see      - https://docs.influxdata.com/influxdb/v1.7/administration/subscription-management/
+  * @see
+  *   - https://docs.influxdata.com/influxdb/v1.7/administration/subscription-management/
   */
 trait SubscriptionManagement[F[_], G[_], Req, Resp, U, E] extends SubscriptionsManagementQuery[U] {
   implicit val qb: QueryBuilder[U]
@@ -42,14 +47,19 @@ trait SubscriptionManagement[F[_], G[_], Req, Resp, U, E] extends SubscriptionsM
   implicit val ME: MonadError[F, Throwable]
   implicit val FK: FunctionK[G, F]
 
-  /**
-    * Create subscription
-    * @param subsName        - subscription name
-    * @param dbName          - database name
-    * @param rpName          - retention policy name
-    * @param destinationType - destination type, where subscription should aggregate data
-    * @param addresses       - subscription addresses
-    * @return                - execution result
+  /** Create subscription
+    * @param subsName
+    *   - subscription name
+    * @param dbName
+    *   - database name
+    * @param rpName
+    *   - retention policy name
+    * @param destinationType
+    *   - destination type, where subscription should aggregate data
+    * @param addresses
+    *   - subscription addresses
+    * @return
+    *   - execution result
     */
   final def createSubscription(
       subsName: String,

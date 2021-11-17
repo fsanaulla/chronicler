@@ -21,10 +21,7 @@ import com.github.fsanaulla.chronicler.core.components._
 import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
 import com.github.fsanaulla.chronicler.core.typeclasses.{FunctionK, MonadError}
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 19.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 19.08.17
   */
 trait QueriesManagement[F[_], G[_], Req, Resp, U, E] extends QueriesManagementQuery[U] {
   implicit val qb: QueryBuilder[U]

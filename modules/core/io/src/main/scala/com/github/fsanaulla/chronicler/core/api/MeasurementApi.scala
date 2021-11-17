@@ -27,15 +27,14 @@ import com.github.fsanaulla.chronicler.core.typeclasses.{FunctionK, Functor, Mon
 
 import scala.reflect.ClassTag
 
-/**
-  * Main functionality for measurement api
+/** Main functionality for measurement api
   */
 class MeasurementApi[F[_], G[_], Req, Uri, Body, Resp, A](
     dbName: String,
     measurementName: String,
     gzipped: Boolean
-)(
-    implicit qb: QueryBuilder[Uri],
+)(implicit
+    qb: QueryBuilder[Uri],
     bd: BodyBuilder[Body],
     rb: RequestBuilder[Req, Uri, Body],
     re: RequestExecutor[F, Req, Resp],
@@ -45,15 +44,20 @@ class MeasurementApi[F[_], G[_], Req, Uri, Body, Resp, A](
     FK: FunctionK[G, F]
 ) extends DatabaseOperationQuery[Uri] {
 
-  /**
-    * Make single write
+  /** Make single write
     *
-    * @param entity          - entity to write
-    * @param consistency     - consistence level
-    * @param precision       - time precision
-    * @param retentionPolicy - retention policy type
-    * @param wr              - implicit serializer to InfluxLine format
-    * @return                - Write result on backend container
+    * @param entity
+    *   - entity to write
+    * @param consistency
+    *   - consistence level
+    * @param precision
+    *   - time precision
+    * @param retentionPolicy
+    *   - retention policy type
+    * @param wr
+    *   - implicit serializer to InfluxLine format
+    * @return
+    *   - Write result on backend container
     */
   final def write(
       entity: A,
@@ -72,15 +76,20 @@ class MeasurementApi[F[_], G[_], Req, Uri, Body, Resp, A](
     ME.flatMap(resp)(r => FK(rh.writeResult(r)))
   }
 
-  /**
-    * Make bulk write
+  /** Make bulk write
     *
-    * @param entities        - entities to write
-    * @param consistency     - consistence level
-    * @param precision       - time precision
-    * @param retentionPolicy - retention policy type
-    * @param writer          - implicit serializer to InfluxLine format
-    * @return                - Write result on backend container
+    * @param entities
+    *   - entities to write
+    * @param consistency
+    *   - consistence level
+    * @param precision
+    *   - time precision
+    * @param retentionPolicy
+    *   - retention policy type
+    * @param writer
+    *   - implicit serializer to InfluxLine format
+    * @return
+    *   - Write result on backend container
     */
   final def bulkWrite(
       entities: Seq[A],

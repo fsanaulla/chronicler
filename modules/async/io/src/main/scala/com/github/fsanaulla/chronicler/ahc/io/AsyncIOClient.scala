@@ -52,8 +52,8 @@ final class AsyncIOClient(
 )(implicit ec: ExecutionContext)
     extends IOClient[Future, Id, RequestE[Identity], Uri, String, ResponseE] {
 
-  private val backend = asyncClientConfig.fold(AsyncHttpClientFutureBackend())(
-    c => AsyncHttpClientFutureBackend.usingConfig(c)
+  private val backend = asyncClientConfig.fold(AsyncHttpClientFutureBackend())(c =>
+    AsyncHttpClientFutureBackend.usingConfig(c)
   )
 
   implicit val qb: AsyncQueryBuilder    = new AsyncQueryBuilder(host, port)

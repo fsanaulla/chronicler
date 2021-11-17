@@ -25,13 +25,16 @@ import com.github.fsanaulla.chronicler.core.management.rp.RetentionPolicyManagem
 import com.github.fsanaulla.chronicler.core.management.shard.ShardManagement
 import com.github.fsanaulla.chronicler.core.management.subscription.SubscriptionManagement
 
-/**
-  * Functionality of management client
+/** Functionality of management client
   *
-  * @tparam F      - Container
-  * @tparam Resp   - Response type
-  * @tparam U    - Uri type
-  * @tparam E - Request entity type
+  * @tparam F
+  *   - Container
+  * @tparam Resp
+  *   - Response type
+  * @tparam U
+  *   - Uri type
+  * @tparam E
+  *   - Request entity type
   */
 trait ManagementClient[F[_], G[_], Req, U, E, Resp]
     extends SystemManagement[F]

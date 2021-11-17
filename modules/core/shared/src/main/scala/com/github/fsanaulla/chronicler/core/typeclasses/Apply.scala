@@ -18,8 +18,7 @@ package com.github.fsanaulla.chronicler.core.typeclasses
 
 import com.github.fsanaulla.chronicler.core.alias.Id
 
-/**
-  * Apply typeclass
+/** Apply typeclass
   *
   * @since 0.5.5
   */

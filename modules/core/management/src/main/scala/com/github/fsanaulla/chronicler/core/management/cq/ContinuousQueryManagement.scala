@@ -25,10 +25,7 @@ import com.github.fsanaulla.chronicler.core.components.{
 import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
 import com.github.fsanaulla.chronicler.core.typeclasses.{FunctionK, MonadError}
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 08.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 08.08.17
   */
 trait ContinuousQueryManagement[F[_], G[_], Req, Resp, U, E] extends ContinuousQueries[U] {
   implicit val qb: QueryBuilder[U]
@@ -38,12 +35,14 @@ trait ContinuousQueryManagement[F[_], G[_], Req, Resp, U, E] extends ContinuousQ
   implicit val ME: MonadError[F, Throwable]
   implicit val FK: FunctionK[G, F]
 
-  /**
-    * Create new one continuous query
+  /** Create new one continuous query
     *
-    * @param dbName - database on which CQ will runes
-    * @param cqName - continuous query name
-    * @param query  - query
+    * @param dbName
+    *   - database on which CQ will runes
+    * @param cqName
+    *   - continuous query name
+    * @param query
+    *   - query
     * @return
     */
   final def createCQ(
@@ -69,12 +68,14 @@ trait ContinuousQueryManagement[F[_], G[_], Req, Resp, U, E] extends ContinuousQ
     ME.flatMap(resp)(resp => FK(rh.toCqQueryResult(resp)))
   }
 
-  /**
-    * Drop continuous query
+  /** Drop continuous query
     *
-    * @param dbName - database name
-    * @param cqName - continuous query name
-    * @return       - execution result
+    * @param dbName
+    *   - database name
+    * @param cqName
+    *   - continuous query name
+    * @return
+    *   - execution result
     */
   final def dropCQ(dbName: String, cqName: String): F[ErrorOr[ResponseCode]] = {
     val uri  = dropCQQuery(dbName, cqName)

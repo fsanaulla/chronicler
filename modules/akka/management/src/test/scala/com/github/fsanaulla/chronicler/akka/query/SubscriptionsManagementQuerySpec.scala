@@ -23,10 +23,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import sttp.model.Uri
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 21.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 21.08.17
   */
 class SubscriptionsManagementQuerySpec
     extends AnyFlatSpec
@@ -51,7 +48,13 @@ class SubscriptionsManagementQuerySpec
   }
 
   it should "create subs query without auth" in {
-    createSubscriptionQuery(subName, dbName, rpName, destType, hosts).toString shouldEqual queryTester(
+    createSubscriptionQuery(
+      subName,
+      dbName,
+      rpName,
+      destType,
+      hosts
+    ).toString shouldEqual queryTester(
       createRes
     )
   }

@@ -24,16 +24,22 @@ import scala.concurrent.ExecutionContext
 
 object InfluxIO {
 
-  /**
-    * Retrieve IO InfluxDB client, without management functionality
+  /** Retrieve IO InfluxDB client, without management functionality
     *
-    * @param host              - hostname
-    * @param port              - port value
-    * @param credentials       - user credentials
-    * @param compress           - enable gzip compression
-    * @param asyncClientConfig - custom configuration
-    * @param ec                - implicit execution context, by default use standard one
-    * @return                  - [[AhcIOClient]]
+    * @param host
+    *   - hostname
+    * @param port
+    *   - port value
+    * @param credentials
+    *   - user credentials
+    * @param compress
+    *   - enable gzip compression
+    * @param asyncClientConfig
+    *   - custom configuration
+    * @param ec
+    *   - implicit execution context, by default use standard one
+    * @return
+    *   - [[AhcIOClient]]
     */
   def apply(
       host: String,
@@ -44,12 +50,14 @@ object InfluxIO {
   )(implicit ec: ExecutionContext): AsyncIOClient =
     new AsyncIOClient(host, port, compress, credentials, asyncClientConfig)
 
-  /**
-    * Retrieve IO InfluxDB client, without management functionality using configuration object
+  /** Retrieve IO InfluxDB client, without management functionality using configuration object
     *
-    * @param conf - configuration object
-    * @param ex   - implicit execution context, by default use standard one
-    * @return     - [[AsyncIOClient]]
+    * @param conf
+    *   - configuration object
+    * @param ex
+    *   - implicit execution context, by default use standard one
+    * @return
+    *   - [[AsyncIOClient]]
     */
   def apply(conf: InfluxConfig)(implicit ex: ExecutionContext): AsyncIOClient =
     apply(conf.host, conf.port, conf.credentials, conf.compress, conf.asyncClientConfig)

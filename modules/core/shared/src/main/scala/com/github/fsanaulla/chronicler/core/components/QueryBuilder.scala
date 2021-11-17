@@ -16,22 +16,24 @@
 
 package com.github.fsanaulla.chronicler.core.components
 
-/**
-  * Trait that define functionality for handling query building
+/** Trait that define functionality for handling query building
   *
-  * @tparam U - Result type parameter, for example for AkkaHttpBackend
-  *           - used `akka.http.scaladsl.model.Uri`
+  * @tparam U
+  *   - Result type parameter, for example for AkkaHttpBackend
+  *   - used `akka.http.scaladsl.model.Uri`
   */
 abstract class QueryBuilder[U] {
 
   def buildQuery(path: String): U
 
-  /**
-    * Method that build result URI object of type [A], from uri path, and query parameters
+  /** Method that build result URI object of type [A], from uri path, and query parameters
     *
-    * @param path       - string based uri path
-    * @param queryParam - query parameters that will be embedded into request
-    * @return           - URI object
+    * @param path
+    *   - string based uri path
+    * @param queryParam
+    *   - query parameters that will be embedded into request
+    * @return
+    *   - URI object
     */
   def buildQuery(path: String, queryParam: (String, String)): U
 
