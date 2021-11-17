@@ -1,0 +1,50 @@
+{
+  "results": [
+    {
+      "statement_id": 0,
+      "series": [
+        {
+          "name": "_internal",
+          "columns": [
+            "name",
+            "query"
+          ]
+        },
+        {
+          "name": "my_test_db",
+          "columns": [
+            "name",
+            "query"
+          ]
+        },
+        {
+          "name": "mydb",
+          "columns": [
+            "name",
+            "query"
+          ],
+          "values": [
+            [
+              "cq",
+              "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END"
+            ]
+          ]
+        },
+        {
+          "name": "db",
+          "columns": [
+            "name",
+            "query"
+          ]
+        },
+        {
+          "name": "fz_db",
+          "columns": [
+            "name",
+            "query"
+          ]
+        }
+      ]
+    }
+  ]
+}
