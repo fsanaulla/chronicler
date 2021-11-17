@@ -41,7 +41,7 @@ abstract class QueryBuilder[U] {
     "q" -> query
 
   final def query(dbName: String, query: String): List[(String, String)] = List(
-    "db" -> dbName,
-    "q"  -> query
+    "q"  -> query,
+    "db" -> dbName
   )
 }
