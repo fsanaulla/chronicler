@@ -18,10 +18,7 @@ package com.github.fsanaulla.chronicler.core.model
 
 import com.github.fsanaulla.chronicler.core.implicits.RichString
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 05.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 05.08.17
   */
 final case class InfluxTag(key: String, value: String) {
   require(value.nonEmpty, "Value can't be empty string")
@@ -97,11 +94,11 @@ final case class Point(
     sb.append(measurement.escapeMeas)
 
     if (tags.nonEmpty) {
-      sb.append(
-        "," + tags
-          .map(tag => tag.key.escapeKey + "=" + tag.value.escapeKey)
-          .mkString(",")
-      )
+      val tagsStr = "," + tags
+        .map(tag => tag.key.escapeKey + "=" + tag.value.escapeKey)
+        .mkString(",")
+
+      sb.append(tagsStr)
     }
 
     sb.append(" ")
