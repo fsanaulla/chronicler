@@ -1,0 +1,43 @@
+{
+  "results": [
+    {
+      "statement_id": 0,
+      "series": [
+        {
+          "name": "cpu_load_short",
+          "tags": {
+            "host": "server01",
+            "region": "us-west"
+          },
+          "columns": [
+            "time",
+            "mean"
+          ],
+          "values": [
+            [
+              "1970-01-01T00:00:00Z",
+              0.69
+            ]
+          ]
+        },
+        {
+          "name": "cpu_load_short",
+          "tags": {
+            "host": "server02",
+            "region": "us-west"
+          },
+          "columns": [
+            "time",
+            "mean"
+          ],
+          "values": [
+            [
+              "1970-01-01T00:00:00Z",
+              0.73
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

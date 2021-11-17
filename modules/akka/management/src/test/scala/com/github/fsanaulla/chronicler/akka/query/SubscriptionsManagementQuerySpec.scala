@@ -16,13 +16,12 @@
 
 package com.github.fsanaulla.chronicler.akka.query
 
-import akka.http.scaladsl.model.Uri
-import com.github.fsanaulla.chronicler.akka.shared.handlers.AkkaQueryBuilder
+import com.github.fsanaulla.chronicler.akka.shared.AkkaQueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.Destinations
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.SubscriptionsManagementQuery
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import sttp.model.Uri
 
 /** Created by Author: fayaz.sanaulla@gmail.com Date: 21.08.17
   */
@@ -31,14 +30,7 @@ class SubscriptionsManagementQuerySpec
     with Matchers
     with SubscriptionsManagementQuery[Uri] {
 
-  trait AuthEnv {
-    val credentials: Option[InfluxCredentials] = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("http", "localhost", 8086, credentials)
-  }
-
-  trait NonAuthEnv {
-    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("http", "localhost", 8086, None)
-  }
+  implicit val qb = new AkkaQueryBuilder("localhost", 8086)
 
   val subName                         = "subs"
   val dbName                          = "db"
@@ -50,36 +42,42 @@ class SubscriptionsManagementQuerySpec
   val createRes =
     s"CREATE SUBSCRIPTION $subName ON $dbName.$rpName DESTINATIONS $destType $resHosts"
 
-  "SubscriptionsManagementQuery" should "create subs query" in new AuthEnv {
-    createSubscriptionQuery(subName, dbName, rpName, destType, hosts) shouldEqual
-      queryTesterAuth(createRes)(credentials.get)
+  "SubscriptionsManagementQuery" should "create subs query" in {
+    createSubscriptionQuery(subName, dbName, rpName, destType, hosts).toString shouldEqual
+      queryTester(createRes)
   }
 
-  it should "create subs query without auth" in new NonAuthEnv {
-    createSubscriptionQuery(subName, dbName, rpName, destType, hosts) shouldEqual queryTester(
+  it should "create subs query without auth" in {
+    createSubscriptionQuery(
+      subName,
+      dbName,
+      rpName,
+      destType,
+      hosts
+    ).toString shouldEqual queryTester(
       createRes
     )
   }
 
   val dropRes = s"DROP SUBSCRIPTION $subName ON $dbName.$rpName"
 
-  it should "drop subs query" in new AuthEnv {
-    dropSubscriptionQuery(subName, dbName, rpName) shouldEqual
-      queryTesterAuth(dropRes)(credentials.get)
+  it should "drop subs query" in {
+    dropSubscriptionQuery(subName, dbName, rpName).toString shouldEqual
+      queryTester(dropRes)
   }
 
-  it should "drop subs query without auth" in new NonAuthEnv {
-    dropSubscriptionQuery(subName, dbName, rpName) shouldEqual queryTester(dropRes)
+  it should "drop subs query without auth" in {
+    dropSubscriptionQuery(subName, dbName, rpName).toString shouldEqual queryTester(dropRes)
   }
 
   val showRes = "SHOW SUBSCRIPTIONS"
 
-  it should "show subs query" in new AuthEnv {
-    showSubscriptionsQuery shouldEqual
-      queryTesterAuth(showRes)(credentials.get)
+  it should "show subs query" in {
+    showSubscriptionsQuery.toString shouldEqual
+      queryTester(showRes)
   }
 
-  it should "show subs query without auth" in new NonAuthEnv {
-    showSubscriptionsQuery shouldEqual queryTester(showRes)
+  it should "show subs query without auth" in {
+    showSubscriptionsQuery.toString shouldEqual queryTester(showRes)
   }
 }

@@ -4,8 +4,8 @@ import java.io.File
 
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.model.{InfluxReader, InfluxWriter, Point}
-import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
-import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
+import com.github.fsanaulla.chronicler.sync.io.{InfluxIO}
+import com.github.fsanaulla.chronicler.sync.management.{InfluxMng}
 import org.scalatest.concurrent.{Eventually, IntegrationPatience}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -14,6 +14,9 @@ import org.testcontainers.containers.DockerComposeContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.typelevel.jawn.ast.{JArray, JNum, JString}
 import org.scalatest.Ignore
+import com.github.fsanaulla.chronicler.sync.io.SyncIOClient
+import com.github.fsanaulla.chronicler.sync.io.InfluxIO
+import com.github.fsanaulla.chronicler.sync.management.InfluxMng
 
 /** Created by Author: fayaz.sanaulla@gmail.comØ Date: 24.02.18
   */
@@ -59,8 +62,8 @@ class UdpClientSpec
   lazy val httpPort: Integer = container.getServicePort(service, servicePort)
 
   lazy val influxUdp: InfluxUDPClient           = InfluxUdp(host, udpPort)
-  lazy val influxHttpIO: UrlIOClient            = InfluxIO(host, httpPort /*, Some(creds)*/ )
-  lazy val influxHttpMng: UrlManagementClient   = InfluxMng(host, httpPort /*, Some(creds)*/ )
+  lazy val influxHttpIO                         = InfluxIO(host, httpPort /*, Some(creds)*/ )
+  lazy val influxHttpMng                        = InfluxMng(host, httpPort /*, Some(creds)*/ )
   lazy val meas: influxHttpIO.Measurement[Test] = influxHttpIO.measurement[Test]("udp", "cpu")
 
   it should "write" in {

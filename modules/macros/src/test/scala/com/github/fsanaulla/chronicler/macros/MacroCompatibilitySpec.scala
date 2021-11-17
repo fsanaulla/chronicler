@@ -1,7 +1,7 @@
 package com.github.fsanaulla.chronicler.macros
 
-import com.github.fsanaulla.chronicler.testing.BaseSpec
 import com.github.fsanaulla.chronicler.core.model.Point
+import com.github.fsanaulla.chronicler.testing.BaseSpec
 import com.github.fsanaulla.chronicler.core.model.InfluxWriter
 import com.github.fsanaulla.chronicler.macros.annotations.writer.escape
 import org.scalatest.EitherValues

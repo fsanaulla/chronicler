@@ -73,7 +73,6 @@ class StreamingApiSpec
 
     val src = db
       .readChunkedJson(s"SELECT * FROM $measName", chunkSize = 2)
-      .futureValue
 
     val seq = src
       .runWith(Sink.seq)
@@ -106,7 +105,6 @@ class StreamingApiSpec
   it should "read chunked json one by one" in {
     val src = db
       .readChunkedJson(s"SELECT * FROM $measName", chunkSize = 1)
-      .futureValue
       .runWith(Sink.seq)
       .futureValue
 

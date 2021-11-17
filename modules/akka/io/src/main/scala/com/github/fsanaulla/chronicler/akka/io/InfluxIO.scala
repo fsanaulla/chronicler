@@ -19,7 +19,7 @@ package com.github.fsanaulla.chronicler.akka.io
 import akka.actor.ActorSystem
 import akka.http.scaladsl.HttpsConnectionContext
 import com.github.fsanaulla.chronicler.akka.shared.InfluxConfig
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.auth.InfluxCredentials
 
 import scala.concurrent.ExecutionContext
 
@@ -51,10 +51,9 @@ object InfluxIO {
       port: Int = 8086,
       credentials: Option[InfluxCredentials] = None,
       compress: Boolean = false,
-      httpsContext: Option[HttpsConnectionContext] = None,
-      terminateActorSystem: Boolean = false
-  )(implicit ex: ExecutionContext, system: ActorSystem): AkkaIOClient =
-    new AkkaIOClient(host, port, credentials, compress, httpsContext, terminateActorSystem)
+      httpsContext: Option[HttpsConnectionContext] = None
+  )(implicit ec: ExecutionContext, system: ActorSystem): AkkaIOClient =
+    new AkkaIOClient(host, port, credentials, compress, httpsContext)
 
   /** Retrieve IO InfluxDB client, without management functionality using configuration object
     *
@@ -67,13 +66,12 @@ object InfluxIO {
     * @return
     *   - [[AkkaIOClient]]
     */
-  def apply(conf: InfluxConfig)(implicit ex: ExecutionContext, system: ActorSystem): AkkaIOClient =
+  def apply(conf: InfluxConfig)(implicit ec: ExecutionContext, system: ActorSystem): AkkaIOClient =
     apply(
       conf.host,
       conf.port,
       conf.credentials,
       conf.compress,
-      conf.httpsContext,
-      conf.terminateActorSystem
+      conf.httpsContext
     )
 }

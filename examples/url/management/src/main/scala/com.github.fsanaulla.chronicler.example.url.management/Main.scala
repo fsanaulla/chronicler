@@ -1,8 +1,7 @@
 package com.github.fsanaulla.chronicler.example.url.management
 
-import com.github.fsanaulla.chronicler.urlhttp.management.InfluxMng
-
 import scala.util.{Failure, Success}
+import com.github.fsanaulla.chronicler.sync.management.InfluxMng
 
 object Main {
 
@@ -14,7 +13,7 @@ object Main {
       // write record to Influx
       _ <- influx.createDatabase("db")
       // retrieve written record from Influx
-      databases <- influx.showDatabases()
+      databases <- influx.showDatabases
       // close
       _ = influx.close()
     } yield databases

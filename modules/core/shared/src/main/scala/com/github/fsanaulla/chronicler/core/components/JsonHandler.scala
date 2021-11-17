@@ -21,14 +21,11 @@ import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either._
 import com.github.fsanaulla.chronicler.core.headers.{buildHeader, versionHeader}
 import com.github.fsanaulla.chronicler.core.jawn._
-import com.github.fsanaulla.chronicler.core.model.{
-  Functor,
-  InfluxDBInfo,
-  InfluxReader,
-  ParsingException
-}
+import com.github.fsanaulla.chronicler.core.model.{InfluxDBInfo, InfluxReader, ParsingException}
+import com.github.fsanaulla.chronicler.core.typeclasses.Functor
 import org.typelevel.jawn.ast.{JArray, JValue}
 
+import scala.language.higherKinds
 import scala.reflect.ClassTag
 
 /** * JSON handler for extracting body, code, headers

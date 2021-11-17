@@ -18,38 +18,62 @@ package com.github.fsanaulla.chronicler.akka.management
 
 import _root_.akka.actor.ActorSystem
 import _root_.akka.http.scaladsl.HttpsConnectionContext
-import akka.http.scaladsl.model.{HttpResponse, RequestEntity, Uri}
-import akka.stream.ActorMaterializer
-import com.github.fsanaulla.chronicler.akka.shared.InfluxAkkaClient
-import com.github.fsanaulla.chronicler.akka.shared.handlers._
-import com.github.fsanaulla.chronicler.core.ManagementClient
-import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.akka.shared.{
+  AkkaJsonHandler,
+  AkkaQueryBuilder,
+  AkkaRequestBuilder,
+  AkkaRequestExecutor,
+  RequestE,
+  ResponseE
+}
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
+import com.github.fsanaulla.chronicler.core.auth.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
 import com.github.fsanaulla.chronicler.core.model._
+import com.github.fsanaulla.chronicler.core.typeclasses.{Apply, FunctionK, MonadError}
+import sttp.capabilities
+import sttp.capabilities.akka.AkkaStreams
+import sttp.client3.{Identity, SttpBackend}
+import sttp.client3.akkahttp.AkkaHttpBackend
+import sttp.model.Uri
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContext, Future}
+import com.github.fsanaulla.chronicler.core.management.ManagementClient
 
 final class AkkaManagementClient(
     host: String,
     port: Int,
     credentials: Option[InfluxCredentials],
-    httpsContext: Option[HttpsConnectionContext],
-    terminateActorSystem: Boolean
+    httpsContext: Option[HttpsConnectionContext]
 )(implicit
-    val ex: ExecutionContext,
+    val ec: ExecutionContext,
     val system: ActorSystem,
-    val F: Functor[Future],
-    val FK: FunctionK[Future, Future]
-) extends InfluxAkkaClient(terminateActorSystem, httpsContext)
-    with ManagementClient[Future, Future, HttpResponse, Uri, RequestEntity] {
+    val ME: MonadError[Future, Throwable],
+    val A: Apply[Future],
+    val FK: FunctionK[Id, Future]
+) extends ManagementClient[Future, Id, RequestE[Identity], Uri, String, ResponseE] {
 
-  implicit val mat: ActorMaterializer  = ActorMaterializer()
-  implicit val qb: AkkaQueryBuilder    = new AkkaQueryBuilder(schema, host, port, credentials)
-  implicit val jh: AkkaJsonHandler     = new AkkaJsonHandler(new AkkaBodyUnmarshaller(false))
-  implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor(ctx)
-  implicit val rh: AkkaResponseHandler = new AkkaResponseHandler(jh)
+  private val backend: SttpBackend[Future, AkkaStreams with capabilities.WebSockets] =
+    AkkaHttpBackend.usingActorSystem(system, customHttpsContext = httpsContext)
+
+  implicit val qb: AkkaQueryBuilder    = new AkkaQueryBuilder(host, port)
+  implicit val rb: AkkaRequestBuilder  = new AkkaRequestBuilder(credentials)
+  implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor(backend)
+  implicit val rh: ManagementResponseHandler[Id, ResponseE] = new ManagementResponseHandler(
+    new AkkaJsonHandler
+  )
 
   override def ping: Future[ErrorOr[InfluxDBInfo]] = {
-    re.get(qb.buildQuery("/ping"), compressed = false)
-      .flatMap(rh.pingResult)
+    val uri  = qb.buildQuery("/ping")
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    resp.map(rh.pingResult)
   }
+
+  override def close(): Unit =
+    Await.ready(closeAsync(), Duration.Inf)
+
+  def closeAsync(): Future[Unit] = backend.close()
 }
