@@ -22,10 +22,10 @@ import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 
 import scala.annotation.implicitNotFound
 
-/**
-  * Return string must be in following format
-  * <measurement>,[<tag-key>=<tag-value>...] [<field-key>=<field-value>,<field2-key>=<field2-value>...] [unix-nano-timestamp]
-  * Look on official documentation [https://docs.influxdata.com/influxdb/v1.2/write_protocols/line_protocol_reference/]
+/** Return string must be in following format <measurement>,[<tag-key>=<tag-value>...]
+  * [<field-key>=<field-value>,<field2-key>=<field2-value>...] [unix-nano-timestamp] Look on
+  * official documentation
+  * [https://docs.influxdata.com/influxdb/v1.2/write_protocols/line_protocol_reference/]
   */
 @implicitNotFound(
   "No InfluxWriter found for type ${T}. Try to implement an implicit InfluxWriter for this type."

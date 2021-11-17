@@ -20,10 +20,7 @@ import enumeratum.EnumEntry
 
 import scala.collection.immutable
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 29.07.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 29.07.17
   */
 sealed trait Privilege extends EnumEntry
 

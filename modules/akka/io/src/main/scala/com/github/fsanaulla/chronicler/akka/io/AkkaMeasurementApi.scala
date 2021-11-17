@@ -16,18 +16,22 @@
 
 package com.github.fsanaulla.chronicler.akka.io
 
-import akka.http.scaladsl.model.{HttpResponse, RequestEntity, Uri}
 import akka.stream.scaladsl.Source
-import com.github.fsanaulla.chronicler.akka.shared.handlers.{
+import com.github.fsanaulla.chronicler.akka.shared.{
   AkkaQueryBuilder,
+  AkkaRequestBuilder,
   AkkaRequestExecutor,
-  AkkaResponseHandler
+  RequestE,
+  ResponseE,
+  futureApply
 }
-import com.github.fsanaulla.chronicler.core.alias.ErrorOr
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
 import com.github.fsanaulla.chronicler.core.api.MeasurementApi
-import com.github.fsanaulla.chronicler.core.components.BodyBuilder
 import com.github.fsanaulla.chronicler.core.enums.{Epoch, Epochs}
-import com.github.fsanaulla.chronicler.core.model.{Failable, Functor, InfluxReader}
+import com.github.fsanaulla.chronicler.core.model.InfluxReader
+import com.github.fsanaulla.chronicler.core.typeclasses.{Functor, MonadError}
+import sttp.client3.Identity
+import sttp.model.Uri
 
 import scala.concurrent.Future
 import scala.reflect.ClassTag
@@ -35,27 +39,32 @@ import scala.reflect.ClassTag
 final class AkkaMeasurementApi[T: ClassTag](
     dbName: String,
     measurementName: String,
-    gzipped: Boolean
-  )(implicit qb: AkkaQueryBuilder,
-    bd: BodyBuilder[RequestEntity],
+    compress: Boolean
+)(implicit
+    qb: AkkaQueryBuilder,
+    rb: AkkaRequestBuilder,
     re: AkkaRequestExecutor,
     rh: AkkaResponseHandler,
-    F: Functor[Future],
-    FA: Failable[Future])
-  extends MeasurementApi[Future, Future, HttpResponse, Uri, RequestEntity, T](
-    dbName,
-    measurementName,
-    gzipped
-  ) {
+    ME: MonadError[Future, Throwable],
+    F: Functor[Future]
+) extends MeasurementApi[Future, Id, RequestE[Identity], Uri, String, ResponseE, T](
+      dbName,
+      measurementName,
+      compress
+    ) {
 
-  /**
-    * Read chunked data, typed
+  /** Read chunked data, typed
     *
-    * @param query     - request SQL query
-    * @param epoch     - epoch precision
-    * @param pretty    - pretty printed result
-    * @param chunkSize - number of elements in the response chunk
-    * @return          - streaming response of batched items
+    * @param query
+    *   - request SQL query
+    * @param epoch
+    *   - epoch precision
+    * @param pretty
+    *   - pretty printed result
+    * @param chunkSize
+    *   - number of elements in the response chunk
+    * @return
+    *   - streaming response of batched items
     * @since 0.5.4
     */
   def readChunked(
@@ -63,9 +72,11 @@ final class AkkaMeasurementApi[T: ClassTag](
       epoch: Epoch = Epochs.None,
       pretty: Boolean = false,
       chunkSize: Int
-    )(implicit rd: InfluxReader[T]
-    ): Future[Source[ErrorOr[Array[T]], Any]] = {
-    val uri = chunkedQuery(dbName, query, epoch, pretty, chunkSize)
-    F.map(re.get(uri, compressed = false))(rh.queryChunkedResult[T])
+  )(implicit rd: InfluxReader[T]): Future[Source[ErrorOr[Array[T]], Any]] = {
+    val uri  = chunkedQuery(dbName, query, epoch, pretty, chunkSize)
+    val req  = rb.getStream(uri, compress)
+    val resp = re.executeStream(req)
+
+    F.map(resp)(rh.queryChunkedResult[T])
   }
 }
