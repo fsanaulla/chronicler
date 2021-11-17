@@ -7,6 +7,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.fsanaulla.chronicler.async.management.InfluxMng
 
 /**
   * Created by
@@ -29,7 +30,7 @@ class ShardManagementSpec
 
   val testDb = "_internal"
 
-  lazy val influx: AhcManagementClient =
+  lazy val influx =
     InfluxMng(host, port, Some(credentials))
 
   "Shard Management API" should "show shards" in {

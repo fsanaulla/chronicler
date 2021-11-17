@@ -2,8 +2,8 @@ package com.github.fsanaulla.chronicler.ahc.io.it
 
 import java.nio.file.Paths
 
-import com.github.fsanaulla.chronicler.ahc.io.{AhcIOClient, InfluxIO}
-import com.github.fsanaulla.chronicler.ahc.management.{AhcManagementClient, InfluxMng}
+import com.github.fsanaulla.chronicler.async.io.{InfluxIO}
+import com.github.fsanaulla.chronicler.async.management.{InfluxMng}
 import com.github.fsanaulla.chronicler.core.alias.Id
 import com.github.fsanaulla.chronicler.core.api.DatabaseApi
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
@@ -15,6 +15,8 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import com.github.fsanaulla.chronicler.async.io.InfluxIO
+import com.github.fsanaulla.chronicler.async.management.InfluxMng
 
 class CompressionSpec
     extends AnyFlatSpec
@@ -34,10 +36,10 @@ class CompressionSpec
 
   val testDB = "db"
 
-  lazy val mng: AhcManagementClient =
+  lazy val mng =
     InfluxMng(host, port, Some(credentials), None)
 
-  lazy val io: AhcIOClient =
+  lazy val io =
     InfluxIO(host, port, Some(credentials), compress = true)
 
   lazy val db = io.database(testDB)

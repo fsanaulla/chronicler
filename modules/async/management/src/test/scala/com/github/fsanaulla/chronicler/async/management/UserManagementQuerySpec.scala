@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.ahc.management
+package com.github.fsanaulla.chronicler.async.management
 
 import com.github.fsanaulla.chronicler.async.shared.AsyncQueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.Privileges
-import com.github.fsanaulla.chronicler.core.query.UserManagementQuery
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import com.github.fsanaulla.chronicler.core.management.user.UserManagementQuery
+import sttp.model.Uri
 
 /**
   * Created by
@@ -29,127 +30,113 @@ import org.scalatest.matchers.should.Matchers
   */
 class UserManagementQuerySpec extends AnyFlatSpec with Matchers with UserManagementQuery[Uri] {
 
-  trait Env {
-    val schema = "http"
-    val host   = "localhost"
-    val port   = 8086
-  }
-
-  trait AuthEnv extends Env {
-    val credentials: Option[InfluxCredentials] = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AhcQueryBuilder           = new AhcQueryBuilder(schema, host, port, credentials)
-  }
-
-  trait NonAuthEnv extends Env {
-    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(schema, host, port, None)
-  }
-
   private val testUsername  = "TEST_USER_NAME"
   private val testPassword  = "TEST_PASSWORD"
   private val testDatabase  = "TEST_DATABASE"
   private val testPrivilege = Privileges.ALL
+  implicit val qb           = new AsyncQueryBuilder("localhost", 8086)
 
-  it should "create user query" in new AuthEnv {
-    createUserQuery(testUsername, testPassword).mkUrl shouldEqual
-      queryTesterAuth(s"CREATE USER $testUsername WITH PASSWORD '$testPassword'")(credentials.get)
-  }
-
-  it should "create user query without auth" in new NonAuthEnv {
-    createUserQuery(testUsername, testPassword).mkUrl shouldEqual
+  it should "create user query" in {
+    createUserQuery(testUsername, testPassword).toString shouldEqual
       queryTester(s"CREATE USER $testUsername WITH PASSWORD '$testPassword'")
   }
 
-  it should "create admin user query" in new AuthEnv {
-    createAdminQuery(testUsername, testPassword).mkUrl shouldEqual
-      queryTesterAuth(
+  it should "create user query without auth" in {
+    createUserQuery(testUsername, testPassword).toString shouldEqual
+      queryTester(s"CREATE USER $testUsername WITH PASSWORD '$testPassword'")
+  }
+
+  it should "create admin user query" in {
+    createAdminQuery(testUsername, testPassword).toString shouldEqual
+      queryTester(
         s"CREATE USER $testUsername WITH PASSWORD '$testPassword' WITH ALL PRIVILEGES"
-      )(credentials.get)
+      )
 
   }
 
-  it should "create admin user query without auth" in new NonAuthEnv {
-    createAdminQuery(testUsername, testPassword).mkUrl shouldEqual
+  it should "create admin user query without auth" in {
+    createAdminQuery(testUsername, testPassword).toString shouldEqual
       queryTester(s"CREATE USER $testUsername WITH PASSWORD '$testPassword' WITH ALL PRIVILEGES")
   }
 
-  it should "drop user query" in new AuthEnv {
-    dropUserQuery(testUsername).mkUrl shouldEqual
-      queryTesterAuth(s"DROP USER $testUsername")(credentials.get)
-  }
-
-  it should "drop user query without auth" in new NonAuthEnv {
-    dropUserQuery(testUsername).mkUrl shouldEqual
+  it should "drop user query" in {
+    dropUserQuery(testUsername).toString shouldEqual
       queryTester(s"DROP USER $testUsername")
   }
 
-  it should "show users query" in new AuthEnv {
-    showUsersQuery.mkUrl shouldEqual queryTesterAuth("SHOW USERS")(credentials.get)
+  it should "drop user query without auth" in {
+    dropUserQuery(testUsername).toString shouldEqual
+      queryTester(s"DROP USER $testUsername")
   }
 
-  it should "show users query without auth" in new NonAuthEnv {
-    showUsersQuery.mkUrl shouldEqual queryTester("SHOW USERS")
+  it should "show users query" in {
+    showUsersQuery.toString shouldEqual queryTester("SHOW USERS")
   }
 
-  it should "show user privileges query" in new AuthEnv {
-    showUserPrivilegesQuery(testUsername).mkUrl shouldEqual
-      queryTesterAuth(s"SHOW GRANTS FOR $testUsername")(credentials.get)
+  it should "show users query without auth" in {
+    showUsersQuery.toString shouldEqual queryTester("SHOW USERS")
   }
 
-  it should "show user privileges query without auth" in new NonAuthEnv {
-    showUserPrivilegesQuery(testUsername).mkUrl shouldEqual queryTester(
+  it should "show user privileges query" in {
+    showUserPrivilegesQuery(testUsername).toString shouldEqual
+      queryTester(s"SHOW GRANTS FOR $testUsername")
+  }
+
+  it should "show user privileges query without auth" in {
+    showUserPrivilegesQuery(testUsername).toString shouldEqual queryTester(
       s"SHOW GRANTS FOR $testUsername"
     )
   }
 
-  it should "make admin query" in new AuthEnv {
-    makeAdminQuery(testUsername).mkUrl shouldEqual
-      queryTesterAuth(s"GRANT ALL PRIVILEGES TO $testUsername")(credentials.get)
+  it should "make admin query" in {
+    makeAdminQuery(testUsername).toString shouldEqual
+      queryTester(s"GRANT ALL PRIVILEGES TO $testUsername")
   }
 
-  it should "make admin query without auth" in new NonAuthEnv {
-    makeAdminQuery(testUsername).mkUrl shouldEqual queryTester(
+  it should "make admin query without auth" in {
+    makeAdminQuery(testUsername).toString shouldEqual queryTester(
       s"GRANT ALL PRIVILEGES TO $testUsername"
     )
   }
 
-  it should "disable admin query" in new AuthEnv {
-    disableAdminQuery(testUsername).mkUrl shouldEqual
-      queryTesterAuth(s"REVOKE ALL PRIVILEGES FROM $testUsername")(credentials.get)
+  it should "disable admin query" in {
+    disableAdminQuery(testUsername).toString shouldEqual
+      queryTester(s"REVOKE ALL PRIVILEGES FROM $testUsername")
   }
 
-  it should "disable admin query without auth" in new NonAuthEnv {
-    disableAdminQuery(testUsername).mkUrl shouldEqual queryTester(
+  it should "disable admin query without auth" in {
+    disableAdminQuery(testUsername).toString shouldEqual queryTester(
       s"REVOKE ALL PRIVILEGES FROM $testUsername"
     )
   }
 
-  it should "set user password query" in new AuthEnv {
-    setUserPasswordQuery(testUsername, testPassword).mkUrl shouldEqual
-      queryTesterAuth(s"SET PASSWORD FOR $testUsername = '$testPassword'")(credentials.get)
-  }
-
-  it should "set user password query without auth" in new NonAuthEnv {
-    setUserPasswordQuery(testUsername, testPassword).mkUrl shouldEqual
+  it should "set user password query" in {
+    setUserPasswordQuery(testUsername, testPassword).toString shouldEqual
       queryTester(s"SET PASSWORD FOR $testUsername = '$testPassword'")
   }
 
-  it should "set privileges query" in new AuthEnv {
-    setPrivilegesQuery(testDatabase, testUsername, testPrivilege).mkUrl shouldEqual
-      queryTesterAuth(s"GRANT $testPrivilege ON $testDatabase TO $testUsername")(credentials.get)
+  it should "set user password query without auth" in {
+    setUserPasswordQuery(testUsername, testPassword).toString shouldEqual
+      queryTester(s"SET PASSWORD FOR $testUsername = '$testPassword'")
   }
 
-  it should "set privileges query without auth" in new NonAuthEnv {
-    setPrivilegesQuery(testDatabase, testUsername, testPrivilege).mkUrl shouldEqual
+  it should "set privileges query" in {
+    setPrivilegesQuery(testDatabase, testUsername, testPrivilege).toString shouldEqual
       queryTester(s"GRANT $testPrivilege ON $testDatabase TO $testUsername")
   }
 
-  it should "revoke privileges query" in new AuthEnv {
-    revokePrivilegesQuery(testDatabase, testUsername, testPrivilege).mkUrl shouldEqual
-      queryTesterAuth(s"REVOKE $testPrivilege ON $testDatabase FROM $testUsername")(credentials.get)
+  it should "set privileges query without auth" in {
+    setPrivilegesQuery(testDatabase, testUsername, testPrivilege).toString shouldEqual
+      queryTester(s"GRANT $testPrivilege ON $testDatabase TO $testUsername")
   }
 
-  it should "revoke privileges query without auth" in new NonAuthEnv {
-    revokePrivilegesQuery(testDatabase, testUsername, testPrivilege).mkUrl shouldEqual
+  it should "revoke privileges query" in {
+    revokePrivilegesQuery(testDatabase, testUsername, testPrivilege).toString shouldEqual
+      queryTester(s"REVOKE $testPrivilege ON $testDatabase FROM $testUsername")
+  }
+
+  it should "revoke privileges query without auth" in {
+    revokePrivilegesQuery(testDatabase, testUsername, testPrivilege).toString shouldEqual
       queryTester(s"REVOKE $testPrivilege ON $testDatabase FROM $testUsername")
   }
 }

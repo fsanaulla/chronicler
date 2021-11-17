@@ -14,66 +14,60 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.ahc.management
+package com.github.fsanaulla.chronicler.async.management
 
-import com.github.fsanaulla.chronicler.ahc.shared.handlers.AhcQueryBuilder
-import com.github.fsanaulla.chronicler.core.query.ContinuousQueries
+import com.github.fsanaulla.chronicler.async.shared.AsyncQueryBuilder
+import com.github.fsanaulla.chronicler.core.management.cq.ContinuousQueries
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import sttp.model.Uri
+import com.github.fsanaulla.chronicler.async.shared.AsyncQueryBuilder
+import com.github.fsanaulla.chronicler.testing.BaseSpec
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class ContinuousQueriesSpec extends AnyFlatSpec with Matchers with ContinuousQueries[Uri] {
+class ContinuousQueriesSpec extends BaseSpec with ContinuousQueries[Uri] {
 
-  trait Env {
-    val schema = "http"
-    val host   = "localhost"
-    val port   = 8086
-  }
-
-  trait AuthEnv extends Env {
-    val credentials: Option[InfluxCredentials] = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AhcQueryBuilder           = new AhcQueryBuilder(schema, host, port, credentials)
-  }
-
-  trait NonAuthEnv extends Env {
-    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(schema, host, port, None)
-  }
+  implicit val qb = new AsyncQueryBuilder("localhost", 8086)
 
   val db    = "mydb"
   val cq    = "bee_cq"
   val query = "SELECT mean(bees) AS mean_bees INTO aggregate_bees FROM farm GROUP BY time(30m)"
 
-  "ContinuousQuerys operation" should "generate correct show query" in new AuthEnv {
-    showCQQuery.mkUrl shouldEqual queryTesterAuth("SHOW CONTINUOUS QUERIES")(credentials.get)
-  }
+  "ContinuousQuerys operation" - {
 
-  it should "generate correct drop query" in new AuthEnv {
-    dropCQQuery(db, cq).mkUrl shouldEqual queryTesterAuth(s"DROP CONTINUOUS QUERY $cq ON $db")(
-      credentials.get
-    )
-  }
+    "should" - {
+      
+      "generate correct show query" in {
+        showCQQuery.toString() shouldEqual queryTester("SHOW CONTINUOUS QUERIES")
+      }
 
-  it should "generate correct create query" in new AuthEnv {
-    createCQQuery(db, cq, query).mkUrl shouldEqual queryTesterAuth(
-      s"CREATE CONTINUOUS QUERY $cq ON $db BEGIN $query END"
-    )(credentials.get)
-  }
+      "generate correct drop query" in {
+        dropCQQuery(db, cq).toString() shouldEqual queryTester(s"DROP CONTINUOUS QUERY $cq ON $db")
+      }
 
-  it should "generate correct show query without auth" in new NonAuthEnv {
-    showCQQuery.mkUrl shouldEqual queryTester("SHOW CONTINUOUS QUERIES")
-  }
+      "generate correct create query" in {
+        createCQQuery(db, cq, query).toString() shouldEqual queryTester(
+          s"CREATE CONTINUOUS QUERY $cq ON $db BEGIN $query END"
+        )
+      }
 
-  it should "generate correct drop query without auth" in new NonAuthEnv {
-    dropCQQuery(db, cq).mkUrl shouldEqual queryTester(s"DROP CONTINUOUS QUERY $cq ON $db")
-  }
+      "generate correct show query without auth" in {
+        showCQQuery.toString() shouldEqual queryTester("SHOW CONTINUOUS QUERIES")
+      }
 
-  it should "generate correct create query without auth" in new NonAuthEnv {
-    createCQQuery(db, cq, query).mkUrl shouldEqual queryTester(
-      s"CREATE CONTINUOUS QUERY $cq ON $db BEGIN $query END"
-    )
+      "generate correct drop query without auth" in {
+        dropCQQuery(db, cq).toString() shouldEqual queryTester(s"DROP CONTINUOUS QUERY $cq ON $db")
+      }
+
+      "generate correct create query without auth" in {
+        createCQQuery(db, cq, query).toString() shouldEqual queryTester(
+          s"CREATE CONTINUOUS QUERY $cq ON $db BEGIN $query END"
+        )
+      }
+    }
   }
 }

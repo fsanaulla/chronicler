@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.ahc
+package com.github.fsanaulla.chronicler.async
 
 import java.net.URLEncoder
 
@@ -23,17 +23,11 @@ package object management {
     def encode: String = URLEncoder.encode(str, "UTF-8")
   }
 
-  def queryTesterAuth(query: String)(credentials: InfluxCredentials): String =
-    s"http://localhost:8086/query?u=${credentials.username.encode}&p=${credentials.password.encode}&q=${query.encode}"
-
-  def queryTesterAuth(db: String, query: String)(credentials: InfluxCredentials): String =
-    s"http://localhost:8086/query?db=$db&u=${credentials.username.encode}&p=${credentials.password.encode}&q=${query.encode}"
-
   def queryTester(query: String): String =
     s"http://localhost:8086/query?q=${query.encode}"
 
   def queryTester(db: String, query: String): String =
-    s"http://localhost:8086/query?db=$db&q=${query.encode}"
+    s"http://localhost:8086/query?q=${query.encode}&db=$db"
 
   def queryTester(path: String, queryPrms: List[(String, String)]): String = {
     val s = queryPrms

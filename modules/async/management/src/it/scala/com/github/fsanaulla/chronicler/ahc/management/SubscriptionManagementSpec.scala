@@ -10,6 +10,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.fsanaulla.chronicler.async.management.InfluxMng
 
 /**
   * Created by
@@ -41,7 +42,7 @@ class SubscriptionManagementSpec
 
   val duration: String = 1.hours + 30.minutes
 
-  lazy val influx: AhcManagementClient =
+  lazy val influx =
     InfluxMng(host, port, Some(credentials))
 
   "Subscription API" should "create subscription" in {

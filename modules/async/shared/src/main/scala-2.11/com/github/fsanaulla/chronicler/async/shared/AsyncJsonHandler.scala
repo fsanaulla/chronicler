@@ -23,7 +23,7 @@ import org.typelevel.jawn.ast.{JParser, JValue}
 
 import scala.util.{Failure, Success}
 
-private[ahc] final class AsyncJsonHandler extends JsonHandler[Id, ResponseE] {
+private[async] final class AsyncJsonHandler extends JsonHandler[Id, ResponseE] {
 
   /***
     * Extract response http code

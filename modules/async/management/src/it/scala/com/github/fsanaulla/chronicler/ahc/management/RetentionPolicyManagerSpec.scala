@@ -9,6 +9,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.fsanaulla.chronicler.async.management.InfluxMng
 
 /**
   * Created by
@@ -31,7 +32,7 @@ class RetentionPolicyManagerSpec
 
   val rpDB = "db"
 
-  lazy val influx: AhcManagementClient =
+  lazy val influx =
     InfluxMng(host, port, Some(credentials))
 
   "Retention policy API" should "create retention policy" in {

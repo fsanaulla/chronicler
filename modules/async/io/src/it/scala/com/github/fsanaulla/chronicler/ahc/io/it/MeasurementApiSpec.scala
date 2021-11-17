@@ -1,8 +1,5 @@
 package com.github.fsanaulla.chronicler.ahc.io.it
 
-import com.github.fsanaulla.chronicler.ahc.io.{AhcIOClient, InfluxIO}
-import com.github.fsanaulla.chronicler.ahc.management.{AhcManagementClient, InfluxMng}
-import com.github.fsanaulla.chronicler.ahc.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.testing.it.{DockerizedInfluxDB, FakeEntity}
 import org.scalatest.{EitherValues, BeforeAndAfterAll}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -10,6 +7,9 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.fsanaulla.chronicler.async.shared.InfluxConfig
+import com.github.fsanaulla.chronicler.async.management.InfluxMng
+import com.github.fsanaulla.chronicler.async.io.InfluxIO
 
 /**
   * Created by
@@ -37,10 +37,10 @@ class MeasurementApiSpec
   lazy val influxConf: InfluxConfig =
     InfluxConfig(host, port, credentials = Some(credentials), compress = false, None)
 
-  lazy val mng: AhcManagementClient =
+  lazy val mng =
     InfluxMng(host, port, credentials = Some(credentials))
 
-  lazy val io: AhcIOClient = InfluxIO(influxConf)
+  lazy val io = InfluxIO(influxConf)
   lazy val meas: io.Measurement[FakeEntity] =
     io.measurement[FakeEntity](db, measName)
 

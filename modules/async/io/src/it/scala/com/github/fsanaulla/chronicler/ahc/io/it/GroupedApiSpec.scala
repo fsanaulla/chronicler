@@ -1,8 +1,5 @@
 package com.github.fsanaulla.chronicler.ahc.io.it
 
-import com.github.fsanaulla.chronicler.ahc.io.{AhcIOClient, InfluxIO}
-import com.github.fsanaulla.chronicler.ahc.management.{AhcManagementClient, InfluxMng}
-import com.github.fsanaulla.chronicler.ahc.shared.InfluxConfig
 import com.github.fsanaulla.chronicler.core.either
 import com.github.fsanaulla.chronicler.core.either.EitherOps
 import com.github.fsanaulla.chronicler.core.enums.Precisions
@@ -16,6 +13,9 @@ import org.typelevel.jawn.ast.{JArray, JNum, JString}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.io.Source
+import com.github.fsanaulla.chronicler.async.shared.InfluxConfig
+import com.github.fsanaulla.chronicler.async.management.InfluxMng
+import com.github.fsanaulla.chronicler.async.io.InfluxIO
 
 // https://github.com/fsanaulla/chronicler/issues/193
 class GroupedApiSpec
@@ -37,9 +37,9 @@ class GroupedApiSpec
 
   lazy val influxConf: InfluxConfig =
     InfluxConfig(host, port, credentials = Some(credentials), compress = false, None)
-  lazy val mng: AhcManagementClient =
+  lazy val mng =
     InfluxMng(host, port, credentials = Some(credentials))
-  lazy val io: AhcIOClient =
+  lazy val io =
     InfluxIO(influxConf)
 
   "Grouped Api" should {

@@ -13,6 +13,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.fsanaulla.chronicler.async.management.InfluxMng
 
 /**
   * Created by
@@ -41,10 +42,10 @@ class AuthenticationSpec
   val admin     = "admin"
   val adminPass = "admin"
 
-  lazy val influx: AhcManagementClient =
+  lazy val influx =
     InfluxMng(host, port)
 
-  lazy val authInflux: AhcManagementClient =
+  lazy val authInflux =
     InfluxMng(host = host, port = port, credentials = Some(credentials))
 
   "Authenticated User Management API" - {

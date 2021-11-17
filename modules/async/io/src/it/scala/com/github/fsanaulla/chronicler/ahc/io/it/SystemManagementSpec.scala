@@ -1,6 +1,5 @@
 package com.github.fsanaulla.chronicler.ahc.io.it
 
-import com.github.fsanaulla.chronicler.ahc.io.{AhcIOClient, InfluxIO}
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import org.scalatest.{EitherValues, BeforeAndAfterAll}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -8,6 +7,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.fsanaulla.chronicler.async.io.InfluxIO
 
 /**
   * Created by
@@ -28,7 +28,7 @@ class SystemManagementSpec
     super.afterAll()
   }
 
-  lazy val influx: AhcIOClient =
+  lazy val influx =
     InfluxIO(host, port, Some(credentials))
 
   it should "ping InfluxDB" in {

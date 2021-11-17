@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.fsanaulla.chronicler.ahc.management
+package com.github.fsanaulla.chronicler.async.management
 
-import com.github.fsanaulla.chronicler.ahc.shared.handlers.AhcQueryBuilder
 import com.github.fsanaulla.chronicler.core.query.ShardManagementQuery
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import com.github.fsanaulla.chronicler.async.shared.AsyncQueryBuilder
+import sttp.model.Uri
 
 /**
   * Created by
@@ -28,44 +29,21 @@ import org.scalatest.matchers.should.Matchers
   */
 class ShardManagementQuerySpec extends AnyFlatSpec with Matchers with ShardManagementQuery[Uri] {
 
-  trait Env {
-    val schema = "http"
-    val host   = "localhost"
-    val port   = 8086
+  implicit val qb = new AsyncQueryBuilder("localhost", 8086)
+
+  it should "drop shard by id" in {
+    dropShardQuery(5).toString shouldEqual queryTester("DROP SHARD 5")
   }
 
-  trait AuthEnv extends Env {
-    val credentials: Option[InfluxCredentials] = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AhcQueryBuilder           = new AhcQueryBuilder(schema, host, port, credentials)
+  it should "show shards" in {
+    showShardsQuery.toString shouldEqual queryTester("SHOW SHARDS")
   }
 
-  trait NonAuthEnv extends Env {
-    implicit val qb: AhcQueryBuilder = new AhcQueryBuilder(schema, host, port, None)
+  it should "show shards without auth" in {
+    showShardsQuery.toString shouldEqual queryTester("SHOW SHARDS")
   }
 
-  it should "drop shard by id" in new AuthEnv {
-    dropShardQuery(5).mkUrl shouldEqual queryTesterAuth("DROP SHARD 5")(credentials.get)
-  }
-
-  it should "drop shard by id without auth" in new NonAuthEnv {
-    dropShardQuery(5).mkUrl shouldEqual queryTester("DROP SHARD 5")
-  }
-
-  it should "show shards" in new AuthEnv {
-    showShardsQuery.mkUrl shouldEqual queryTesterAuth("SHOW SHARDS")(credentials.get)
-  }
-
-  it should "show shards without auth" in new NonAuthEnv {
-    showShardsQuery.mkUrl shouldEqual queryTester("SHOW SHARDS")
-  }
-
-  it should "show shard groups" in new AuthEnv {
-    showShardGroupsQuery.mkUrl shouldEqual queryTesterAuth("SHOW SHARD GROUPS")(
-      credentials.get
-    )
-  }
-
-  it should "show shard groups without auth" in new NonAuthEnv {
-    showShardGroupsQuery.mkUrl shouldEqual queryTester("SHOW SHARD GROUPS")
+  it should "show shard groups" in {
+    showShardGroupsQuery.toString shouldEqual queryTester("SHOW SHARD GROUPS")
   }
 }
