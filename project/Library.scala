@@ -1,9 +1,6 @@
 import sbt._
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 28.08.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 28.08.17
   */
 object Library {
 
@@ -11,7 +8,7 @@ object Library {
     val request = "0.2.0"
 
     object Akka {
-      val akka     = "2.5.32"
+      val akka     = "2.6.17"
       val akkaHttp = "10.1.14"
     }
 
@@ -24,7 +21,7 @@ object Library {
 
   val scalaTest   = List("org.scalatest" %% "scalatest").map(_ % Versions.Testing.scalaTest)
   val scalaCheck  = "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0"
-  val akkaTestKit = "com.typesafe.akka" %% "akka-testkit" % Versions.Akka.akka
+  val akkaTestKit = "com.typesafe.akka" %% "akka-testkit"    % Versions.Akka.akka
 
   // testing
   val testingDeps: List[ModuleID] = List(
