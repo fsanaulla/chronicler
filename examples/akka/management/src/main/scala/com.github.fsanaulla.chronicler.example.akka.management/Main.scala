@@ -18,7 +18,7 @@ object Main {
       // write record to Influx
       _ <- influx.createDatabase("db")
       // retrieve written record from Influx
-      databases <- influx.showDatabases()
+      databases <- influx.showDatabases
       // close
       _ <- influx.closeAsync()
     } yield databases

@@ -1,9 +1,10 @@
 package com.github.fsanaulla.chronicler.example.ahc.management
 
-import com.github.fsanaulla.chronicler.ahc.management.InfluxMng
+import com.github.fsanaulla.chronicler.async.management.InfluxMng
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
+import scala.util.Failure
+import scala.util.Success
 
 object Main {
 
