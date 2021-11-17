@@ -18,16 +18,30 @@ package com.github.fsanaulla.chronicler.akka.io
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.HttpsConnectionContext
-import akka.http.scaladsl.model.{HttpResponse, RequestEntity, Uri}
-import akka.stream.ActorMaterializer
-import com.github.fsanaulla.chronicler.akka.shared.InfluxAkkaClient
-import com.github.fsanaulla.chronicler.akka.shared.handlers._
-import com.github.fsanaulla.chronicler.akka.shared.implicits._
+import com.github.fsanaulla.chronicler.akka.shared.{
+  AkkaJsonHandler,
+  AkkaQueryBuilder,
+  AkkaRequestBuilder,
+  AkkaRequestExecutor,
+  RequestE,
+  ResponseE,
+  futureApply,
+  futureFunctor,
+  futureMonadError
+}
 import com.github.fsanaulla.chronicler.core.IOClient
-import com.github.fsanaulla.chronicler.core.alias.ErrorOr
-import com.github.fsanaulla.chronicler.core.model.{InfluxCredentials, InfluxDBInfo}
+import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
+import com.github.fsanaulla.chronicler.core.api.MeasurementApi
+import com.github.fsanaulla.chronicler.core.auth.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.model.InfluxDBInfo
+import sttp.capabilities
+import sttp.capabilities.akka.AkkaStreams
+import sttp.client3.akkahttp.AkkaHttpBackend
+import sttp.client3.{Identity, SttpBackend}
+import sttp.model.Uri
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.reflect.ClassTag
 
 final class AkkaIOClient(
@@ -35,31 +49,38 @@ final class AkkaIOClient(
     port: Int,
     credentials: Option[InfluxCredentials],
     compress: Boolean,
-    httpsContext: Option[HttpsConnectionContext],
-    terminateActorSystem: Boolean
-  )(implicit ex: ExecutionContext,
-    system: ActorSystem)
-  extends InfluxAkkaClient(terminateActorSystem, httpsContext)
-  with IOClient[Future, Future, HttpResponse, Uri, RequestEntity] {
+    httpsContext: Option[HttpsConnectionContext]
+)(implicit ec: ExecutionContext, system: ActorSystem)
+    extends IOClient[Future, Id, RequestE[Identity], Uri, String, ResponseE] {
 
-  implicit val mat: ActorMaterializer  = ActorMaterializer()
-  implicit val bb: AkkaBodyBuilder     = new AkkaBodyBuilder()
-  implicit val qb: AkkaQueryBuilder    = new AkkaQueryBuilder(schema, host, port, credentials)
-  implicit val jh: AkkaJsonHandler     = new AkkaJsonHandler(new AkkaBodyUnmarshaller(compress))
-  implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor(ctx)
-  implicit val rh: AkkaResponseHandler = new AkkaResponseHandler(jh)
+  private val backend: SttpBackend[Future, AkkaStreams with capabilities.WebSockets] =
+    AkkaHttpBackend.usingActorSystem(system, customHttpsContext = httpsContext)
 
-  override def database(dbName: String): AkkaDatabaseApi =
+  implicit val rb: AkkaRequestBuilder  = new AkkaRequestBuilder(credentials)
+  implicit val qb: AkkaQueryBuilder    = new AkkaQueryBuilder(host, port)
+  implicit val re: AkkaRequestExecutor = new AkkaRequestExecutor(backend)
+  implicit val rh: AkkaResponseHandler = new AkkaResponseHandler(new AkkaJsonHandler)
+
+  override def database(dbName: String) =
     new AkkaDatabaseApi(dbName, compress)
 
   override def measurement[A: ClassTag](
       dbName: String,
       measurementName: String
-    ): AkkaMeasurementApi[A] =
+  ) =
     new AkkaMeasurementApi[A](dbName, measurementName, compress)
 
   override def ping: Future[ErrorOr[InfluxDBInfo]] = {
-    re.get(qb.buildQuery("/ping", Nil), compressed = false)
-      .flatMap(rh.pingResult)
+    val uri  = qb.buildQuery("/ping")
+    val req  = rb.get(uri, compress = false)
+    val resp = re.execute(req)
+
+    resp.map(rh.pingResult)
   }
+
+  override def close(): Unit =
+    Await.ready(closeAsync(), Duration.Inf)
+
+  def closeAsync(): Future[Unit] =
+    backend.close()
 }

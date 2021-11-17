@@ -16,87 +16,89 @@
 
 package com.github.fsanaulla.chronicler.akka.query
 
-import akka.http.scaladsl.model.Uri
-import com.github.fsanaulla.chronicler.akka.shared.handlers.AkkaQueryBuilder
+import com.github.fsanaulla.chronicler.akka.shared.AkkaQueryBuilder
 import com.github.fsanaulla.chronicler.core.duration._
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
-import com.github.fsanaulla.chronicler.core.query.RetentionPolicyManagementQuery
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.language.postfixOps
+import com.github.fsanaulla.chronicler.core.management.rp.RetentionPolicyManagementQuery
+import sttp.model.Uri
 
-/**
-  * Created by
-  * Author: fayaz.sanaulla@gmail.com
-  * Date: 27.07.17
+/** Created by Author: fayaz.sanaulla@gmail.com Date: 27.07.17
   */
 class RetentionPolicyManagementQuerySpec
     extends AnyFlatSpec
     with Matchers
     with RetentionPolicyManagementQuery[Uri] {
 
-  trait AuthEnv {
-    val credentials: Option[InfluxCredentials] = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AkkaQueryBuilder          = new AkkaQueryBuilder("http", "localhost", 8086, credentials)
-  }
+  val testRPName  = "testRP"
+  val testDBName  = "testDB"
+  implicit val qb = new AkkaQueryBuilder("localhost", 8086)
 
-  trait NonAuthEnv {
-    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("http", "localhost", 8086, None)
-  }
-
-  val testRPName = "testRP"
-  val testDBName = "testDB"
-
-  "RetentionPolicyManagement" should "create retention policy" in new AuthEnv {
-    createRPQuery(testRPName, testDBName, 4 hours, 3, Some(4 hours), default = true) shouldEqual
-      queryTesterAuth(
+  "RetentionPolicyManagement" should "create retention policy" in {
+    createRPQuery(
+      testRPName,
+      testDBName,
+      4 hours,
+      3,
+      Some(4 hours),
+      default = true
+    ).toString shouldEqual
+      queryTester(
         s"CREATE RETENTION POLICY $testRPName ON $testDBName DURATION 4h REPLICATION 3 SHARD DURATION 4h DEFAULT"
-      )(credentials.get)
+      )
 
-    createRPQuery(testRPName, testDBName, 4 hours, 3, None, default = true) shouldEqual
-      queryTesterAuth(
+    createRPQuery(testRPName, testDBName, 4 hours, 3, None, default = true).toString shouldEqual
+      queryTester(
         s"CREATE RETENTION POLICY $testRPName ON $testDBName DURATION 4h REPLICATION 3 DEFAULT"
-      )(credentials.get)
+      )
 
-    createRPQuery(testRPName, testDBName, 4 hours, 3, Some(4 hours)) shouldEqual
-      queryTesterAuth(
+    createRPQuery(testRPName, testDBName, 4 hours, 3, Some(4 hours)).toString shouldEqual
+      queryTester(
         s"CREATE RETENTION POLICY $testRPName ON $testDBName DURATION 4h REPLICATION 3 SHARD DURATION 4h"
-      )(credentials.get)
+      )
   }
 
-  it should "create retention policy without auth" in new NonAuthEnv {
-    createRPQuery(testRPName, testDBName, 4 hours, 3, None) shouldEqual
+  it should "create retention policy without auth" in {
+    createRPQuery(testRPName, testDBName, 4 hours, 3, None).toString shouldEqual
       queryTester(s"CREATE RETENTION POLICY $testRPName ON $testDBName DURATION 4h REPLICATION 3")
   }
 
-  it should "drop retention policy" in new AuthEnv {
-    dropRPQuery(testRPName, testDBName) shouldEqual
-      queryTesterAuth(s"DROP RETENTION POLICY $testRPName ON $testDBName")(credentials.get)
-  }
-
-  it should "drop retention policy without auth" in new NonAuthEnv {
-    dropRPQuery(testRPName, testDBName) shouldEqual
+  it should "drop retention policy" in {
+    dropRPQuery(testRPName, testDBName).toString shouldEqual
       queryTester(s"DROP RETENTION POLICY $testRPName ON $testDBName")
   }
 
-  it should "update retention policy" in new AuthEnv {
-    updateRPQuery(testRPName, testDBName, Some(4 hours), Some(3), Some(4 hours), default = true) shouldEqual
-      queryTesterAuth(
-        s"ALTER RETENTION POLICY $testRPName ON $testDBName DURATION 4h REPLICATION 3 SHARD DURATION 4h DEFAULT"
-      )(credentials.get)
+  it should "drop retention policy without auth" in {
+    dropRPQuery(testRPName, testDBName).toString shouldEqual
+      queryTester(s"DROP RETENTION POLICY $testRPName ON $testDBName")
+  }
 
-    updateRPQuery(testRPName, testDBName, Some(4 hours), Some(3), None) shouldEqual
-      queryTesterAuth(
+  it should "update retention policy" in {
+    updateRPQuery(
+      testRPName,
+      testDBName,
+      Some(4 hours),
+      Some(3),
+      Some(4 hours),
+      default = true
+    ).toString shouldEqual
+      queryTester(
+        s"ALTER RETENTION POLICY $testRPName ON $testDBName DURATION 4h REPLICATION 3 SHARD DURATION 4h DEFAULT"
+      )
+
+    updateRPQuery(testRPName, testDBName, Some(4 hours), Some(3), None).toString shouldEqual
+      queryTester(
         s"ALTER RETENTION POLICY $testRPName ON $testDBName DURATION 4h REPLICATION 3"
-      )(credentials.get)
+      )
 
   }
 
-  it should "update retention policy without auth" in new NonAuthEnv {
-    updateRPQuery(testRPName, testDBName, Some(4 hours), None, None) shouldEqual
+  it should "update retention policy without auth" in {
+    updateRPQuery(testRPName, testDBName, Some(4 hours), None, None).toString shouldEqual
       queryTester(s"ALTER RETENTION POLICY $testRPName ON $testDBName DURATION 4h")
-    updateRPQuery(testRPName, testDBName, None, Some(3), Some(4 hours)) shouldEqual
+    updateRPQuery(testRPName, testDBName, None, Some(3), Some(4 hours)).toString shouldEqual
       queryTester(
         s"ALTER RETENTION POLICY $testRPName ON $testDBName REPLICATION 3 SHARD DURATION 4h"
       )
