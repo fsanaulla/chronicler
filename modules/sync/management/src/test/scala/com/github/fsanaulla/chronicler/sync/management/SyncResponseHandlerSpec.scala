@@ -44,7 +44,7 @@ class UrlResponseHandlerSpec extends BaseSpec with TryValues with EitherValues w
     "should extract from response" - {
 
       "single query result" in {
-        val singleResponse = mkResponse(getJsonStringFromFile("/response/single-response.json"))
+        val singleResponse = mkResponse(getJsonStringFromFile("/single-response.json"))
 
         val result = Array(
           JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
@@ -56,7 +56,7 @@ class UrlResponseHandlerSpec extends BaseSpec with TryValues with EitherValues w
       }
 
       "bulk query results" in {
-        val bulkResponse = mkResponse(getJsonStringFromFile("/response/bulk-response.json"))
+        val bulkResponse = mkResponse(getJsonStringFromFile("/bulk-response.json"))
 
         respHandler.bulkQueryResultJson(bulkResponse).success.value.value shouldEqual Array(
           Array(
@@ -72,7 +72,7 @@ class UrlResponseHandlerSpec extends BaseSpec with TryValues with EitherValues w
 
       "continues query result" in {
 
-        val cqStrJson = mkResponse(getJsonStringFromFile("/response/cq.json"))
+        val cqStrJson = mkResponse(getJsonStringFromFile("/cq.json"))
 
         val cqi =
           respHandler
@@ -91,7 +91,7 @@ class UrlResponseHandlerSpec extends BaseSpec with TryValues with EitherValues w
       }
 
       "optional error message" in {
-        val errorResponse = mkResponse(getJsonStringFromFile("/response/error.json"))
+        val errorResponse = mkResponse(getJsonStringFromFile("/error.json"))
 
         jsonHandler
           .responseErrorMsgOpt(errorResponse)
@@ -102,7 +102,7 @@ class UrlResponseHandlerSpec extends BaseSpec with TryValues with EitherValues w
       }
 
       "error message" in {
-        val errorResponse = mkResponse(getJsonStringFromFile("/response/err-msg.json"))
+        val errorResponse = mkResponse(getJsonStringFromFile("/err-msg.json"))
 
         jsonHandler
           .responseErrorMsg(errorResponse)
