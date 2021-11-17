@@ -25,12 +25,6 @@ package object query {
     def encode: String = URLEncoder.encode(str, "UTF-8")
   }
 
-  def queryTesterAuth(query: String)(credentials: InfluxCredentials.Basic): String =
-    s"http://localhost:8086/query?q=${query.encode}&p=${credentials.password.encode}&u=${credentials.username.encode}"
-
-  def queryTesterAuth(db: String, query: String)(credentials: InfluxCredentials.Basic): String =
-    s"http://localhost:8086/query?q=${query.encode}&p=${credentials.password.encode}&db=${db.encode}&u=${credentials.username.encode}"
-
   def queryTester(query: String): String =
     s"http://localhost:8086/query?q=${query.encode}"
 

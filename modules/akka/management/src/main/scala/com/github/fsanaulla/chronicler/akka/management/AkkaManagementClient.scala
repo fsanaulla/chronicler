@@ -31,7 +31,6 @@ import com.github.fsanaulla.chronicler.core.auth.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
 import com.github.fsanaulla.chronicler.core.model._
 import com.github.fsanaulla.chronicler.core.typeclasses.{Apply, FunctionK, MonadError}
-import com.github.fsanaulla.chronicler.urlhttp.management.ManagementClient
 import sttp.capabilities
 import sttp.capabilities.akka.AkkaStreams
 import sttp.client3.{Identity, SttpBackend}
@@ -40,6 +39,7 @@ import sttp.model.Uri
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
+import com.github.fsanaulla.chronicler.core.management.ManagementClient
 
 final class AkkaManagementClient(
     host: String,
@@ -75,6 +75,5 @@ final class AkkaManagementClient(
   override def close(): Unit =
     Await.ready(closeAsync(), Duration.Inf)
 
-  def closeAsync(): Future[Unit] =
-    backend.close()
+  def closeAsync(): Future[Unit] = backend.close()
 }

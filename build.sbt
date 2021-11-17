@@ -158,6 +158,7 @@ lazy val akkaShared = projectMatrix
       Library.akkaDep ++ Library.scalaTest.map(_ % Test)
   )
   .dependsOn(coreShared)
+  .dependsOn(testing % "test")
   .jvmPlatform(scalaVersions = Seq(scala213, scala212))
 
 //////////////////////////////////////////////////////

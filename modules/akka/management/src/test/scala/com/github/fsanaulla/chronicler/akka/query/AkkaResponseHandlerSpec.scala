@@ -21,9 +21,11 @@ import akka.http.scaladsl.model.HttpResponse
 import akka.stream.ActorMaterializer
 import akka.testkit.TestKit
 import com.github.fsanaulla.chronicler.akka.shared.AkkaJsonHandler
+import com.github.fsanaulla.chronicler.akka.shared.ResponseE
 import com.github.fsanaulla.chronicler.core.components.ResponseHandlerBase
 import com.github.fsanaulla.chronicler.core.management.ManagementResponseHandler
 import com.github.fsanaulla.chronicler.core.management.cq.ContinuousQuery
+import com.github.fsanaulla.chronicler.testing.getJsonStringFromFile
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
@@ -52,6 +54,8 @@ class AkkaResponseHandlerSpec
     TestKit.shutdownActorSystem(system)
   }
 
+  def mkResponse(str: String): ResponseE = Response.ok(Right(str))
+
   implicit val ec: ExecutionContextExecutor = system.dispatcher
   implicit val mat: ActorMaterializer       = ActorMaterializer()
   val jsonHandler                           = new AkkaJsonHandler()
@@ -60,7 +64,7 @@ class AkkaResponseHandlerSpec
   it should "extract single query queryResult from response" in {
 
     val singleHttpResponse =
-      Response.ok(Source.fromResource(getClass.getResource("single.json").getPath))
+      mkResponse(getJsonStringFromFile("/single-response.json"))
 
     val result = Array(
       JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
@@ -68,64 +72,14 @@ class AkkaResponseHandlerSpec
       JArray(Array(JString("2015-06-11T20:46:02Z"), JNum(0.64)))
     )
 
-    rh.queryResultJson(singleHttpResponse).futureValue.value shouldEqual result
+    rh.queryResultJson(singleHttpResponse).value shouldEqual result
   }
 
   it should "extract bulk query results from response" in {
 
-    val bulkHttpResponse =
-      HttpResponse(entity = """
-                              |{
-                              |    "results": [
-                              |        {
-                              |            "statement_id": 0,
-                              |            "series": [
-                              |                {
-                              |                    "name": "cpu_load_short",
-                              |                    "columns": [
-                              |                        "time",
-                              |                        "value"
-                              |                    ],
-                              |                    "values": [
-                              |                        [
-                              |                            "2015-01-29T21:55:43.702900257Z",
-                              |                            2
-                              |                        ],
-                              |                        [
-                              |                            "2015-01-29T21:55:43.702900257Z",
-                              |                            0.55
-                              |                        ],
-                              |                        [
-                              |                            "2015-06-11T20:46:02Z",
-                              |                            0.64
-                              |                        ]
-                              |                    ]
-                              |                }
-                              |            ]
-                              |        },
-                              |        {
-                              |            "statement_id": 1,
-                              |            "series": [
-                              |                {
-                              |                    "name": "cpu_load_short",
-                              |                    "columns": [
-                              |                        "time",
-                              |                        "count"
-                              |                    ],
-                              |                    "values": [
-                              |                        [
-                              |                            "1970-01-01T00:00:00Z",
-                              |                            3
-                              |                        ]
-                              |                    ]
-                              |                }
-                              |            ]
-                              |        }
-                              |    ]
-                              |}
-      """.stripMargin)
+    val bulkHttpResponse = mkResponse(getJsonStringFromFile("/bulk-response.json"))
 
-    rh.bulkQueryResultJson(bulkHttpResponse).futureValue.value shouldEqual Array(
+    rh.bulkQueryResultJson(bulkHttpResponse).value shouldEqual Array(
       Array(
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(2))),
         JArray(Array(JString("2015-01-29T21:55:43.702900257Z"), JNum(0.55))),
@@ -139,62 +93,9 @@ class AkkaResponseHandlerSpec
 
   it should "cq unpacking" in {
 
-    val cqResponse = HttpResponse(
-      entity =
-        """{
-      "results": [
-        {
-          "statement_id": 0,
-          "series": [
-            {
-              "name": "_internal",
-              "columns": [
-                "name",
-                "query"
-              ]
-            },
-            {
-              "name": "my_test_db",
-              "columns": [
-                "name",
-                "query"
-              ]
-            },
-            {
-              "name": "mydb",
-              "columns": [
-                "name",
-                "query"
-              ],
-              "values": [
-                [
-                  "cq",
-                  "CREATE CONTINUOUS QUERY cq ON mydb BEGIN SELECT mean(value) AS mean_value INTO mydb.autogen.aggregate FROM mydb.autogen.cpu_load_short GROUP BY time(30m) END"
-                ]
-              ]
-            },
-            {
-              "name": "db",
-              "columns": [
-                "name",
-                "query"
-              ]
-            },
-            {
-              "name": "fz_db",
-              "columns": [
-                "name",
-                "query"
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  """.stripMargin
-    )
+    val cqResponse = mkResponse(getJsonStringFromFile("/cq.json"))
 
-    val cqi = rh.toCqQueryResult(cqResponse).futureValue.value.filter(_.queries.nonEmpty).head
+    val cqi = rh.toCqQueryResult(cqResponse).value.filter(_.queries.nonEmpty).head
     cqi.dbName shouldEqual "mydb"
     cqi.queries.head shouldEqual ContinuousQuery(
       "cq",
@@ -204,29 +105,17 @@ class AkkaResponseHandlerSpec
 
   it should "extract optional error message" in {
 
-    val errorHttpResponse = HttpResponse(entity = """
-                                                    |{
-                                                    |        "results": [
-                                                    |          {
-                                                    |            "statement_id": 0,
-                                                    |            "error": "user not found"
-                                                    |          }
-                                                    |        ]
-                                                    |}
-      """.stripMargin)
+    val errorHttpResponse = mkResponse(getJsonStringFromFile("/error.json"))
 
-    jsonHandler.responseErrorMsgOpt(errorHttpResponse).futureValue.value shouldEqual Some(
+    jsonHandler.responseErrorMsgOpt(errorHttpResponse).value shouldEqual Some(
       "user not found"
     )
   }
 
   it should "extract error message" in {
 
-    val errorHttpResponse =
-      HttpResponse(entity = """{ "error": "user not found" }""")
+    val errorHttpResponse = mkResponse(getJsonStringFromFile("/err-msg.json"))
 
-    jsonHandler
-      .responseErrorMsg(errorHttpResponse)
-      .futureValue shouldEqual Right("user not found")
+    jsonHandler.responseErrorMsg(errorHttpResponse) shouldEqual Right("user not found")
   }
 }

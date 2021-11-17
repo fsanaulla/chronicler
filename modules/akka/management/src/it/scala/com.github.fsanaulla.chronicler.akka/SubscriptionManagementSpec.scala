@@ -58,7 +58,7 @@ class SubscriptionManagementSpec
       .futureValue
       .value shouldEqual 200
 
-    influx.showDatabases().futureValue.value.contains(dbName) shouldEqual true
+    influx.showDatabases.futureValue.value.contains(dbName) shouldEqual true
 
     influx
       .createSubscription(subName, dbName, rpName, destType, hosts)

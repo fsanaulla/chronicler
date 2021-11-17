@@ -19,60 +19,30 @@ package com.github.fsanaulla.chronicler.akka.shared.handlers
 import com.github.fsanaulla.chronicler.akka.shared.AkkaQueryBuilder
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import com.github.fsanaulla.chronicler.core.auth.InfluxCredentials
+import com.github.fsanaulla.chronicler.testing.BaseSpec
 
-class AkkaQueryBuilderSpec extends AnyWordSpec with Matchers {
+class AkkaQueryBuilderSpec extends BaseSpec {
 
-  implicit val credentials: Option[InfluxCredentials] = None
-  implicit val nonEmptyCredentials: Some[InfluxCredentials] =
-    Some(InfluxCredentials("admin", "admin"))
+  "Query handler" - {
 
-  val queryMap: List[(String, String)] = List(
-    "q" -> "FirstQuery;SecondQuery"
-  )
+    val qb: AkkaQueryBuilder = new AkkaQueryBuilder("localhost", 8086)
 
-  "Query handler" should {
-    "build http connection url" should {
-      "without credentials " in {
-        val qb: AkkaQueryBuilder = new AkkaQueryBuilder("http", "localhost", 8086, credentials)
-        val res                  = s"http://localhost:8086/query?q=FirstQuery%3BSecondQuery"
-        qb.buildQuery("/query", M.endCredentials(queryMap)).toString() shouldEqual res
+    "build uri" - {
+
+      "without query params " in {
+        val res = s"http://localhost:8086/query"
+        qb.buildQuery("/query").toString() shouldEqual res
       }
 
-      "with credentials" in {
-        val qb: AkkaQueryBuilder =
-          new AkkaQueryBuilder("http", "localhost", 8086, nonEmptyCredentials)
+      "with query params" in {
+        val queryMap: List[(String, String)] = List(
+          "u" -> "admin",
+          "p" -> "admin",
+          "q" -> "FirstQuery;SecondQuery"
+        )
         val res = s"http://localhost:8086/query?u=admin&p=admin&q=FirstQuery%3BSecondQuery"
-        qb.buildQuery("/query", qb.query(queryMap)).toString() shouldEqual res
-      }
-
-      "without query params" in {
-        val qb: AkkaQueryBuilder =
-          new AkkaQueryBuilder("http", "localhost", 8086, nonEmptyCredentials)
-        val res = s"http://localhost:8086/write?u=admin&p=admin"
-        qb.buildQuery("/write", qb.query(Nil)).toString() shouldEqual res
-      }
-    }
-
-    "build https connection url" should {
-      "without credentials" in {
-        val qb: AkkaQueryBuilder =
-          new AkkaQueryBuilder("https", "localhost", 8086, credentials)
-        val res = s"https://localhost:8086/query?q=FirstQuery%3BSecondQuery"
-        qb.buildQuery("/query", qb.query(queryMap)).toString() shouldEqual res
-      }
-
-      "with credentials" in {
-        val qb: AkkaQueryBuilder =
-          new AkkaQueryBuilder("https", "localhost", 8086, nonEmptyCredentials)
-        val res = s"https://localhost:8086/query?u=admin&p=admin&q=FirstQuery%3BSecondQuery"
-        qb.buildQuery("/query", qb.query(queryMap)).toString() shouldEqual res
-      }
-
-      "without query params" in {
-        val qb: AkkaQueryBuilder =
-          new AkkaQueryBuilder("https", "localhost", 8086, nonEmptyCredentials)
-        val res = s"https://localhost:8086/write?u=admin&p=admin"
-        qb.buildQuery("/write", qb.query(Nil)).toString() shouldEqual res
+        qb.buildQuery("/query", queryMap).toString() shouldEqual res
       }
     }
   }

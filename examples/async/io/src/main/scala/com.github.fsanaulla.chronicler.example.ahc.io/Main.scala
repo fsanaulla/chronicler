@@ -1,6 +1,6 @@
 package com.github.fsanaulla.chronicler.example.ahc.io
 
-import com.github.fsanaulla.chronicler.ahc.io.InfluxIO
+import com.github.fsanaulla.chronicler.async.io.InfluxIO
 import com.github.fsanaulla.chronicler.macros.annotations.{field, tag}
 import com.github.fsanaulla.chronicler.macros.auto._
 

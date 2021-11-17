@@ -16,12 +16,12 @@
 
 package com.github.fsanaulla.chronicler.akka.query
 
-import akka.http.scaladsl.model.Uri
 import com.github.fsanaulla.chronicler.akka.shared.AkkaQueryBuilder
 import com.github.fsanaulla.chronicler.core.enums.{Consistencies, Epochs, Precisions}
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import sttp.model.Uri
 
 /**
   * Created by
@@ -33,29 +33,19 @@ class DatabaseOperationQuerySpec
     with Matchers
     with DatabaseOperationQuery[Uri] {
 
-  trait AuthEnv {
-    val credentials: Option[InfluxCredentials] = Some(InfluxCredentials("admin", "admin"))
-    implicit val qb: AkkaQueryBuilder          = new AkkaQueryBuilder("http", "localhost", 8086, credentials)
-  }
+  val testDB      = "db"
+  val testQuery   = "SELECT * FROM test"
+  implicit val qb = new AkkaQueryBuilder("localhost", 8086)
 
-  trait NonAuthEnv {
-    implicit val qb: AkkaQueryBuilder = new AkkaQueryBuilder("http", "localhost", 8086, None)
-  }
-
-  val testDB    = "db"
-  val testQuery = "SELECT * FROM test"
-
-  "DatabaseOperationQuery" should "return correct write query" in new AuthEnv {
+  "DatabaseOperationQuery" should "return correct write query" in {
 
     write(testDB, Consistencies.One, Precisions.Nanoseconds, None)
       .toString() shouldEqual queryTester(
       "/write",
       List(
-        "db"          -> testDB,
-        "u"           -> credentials.get.username,
-        "p"           -> credentials.get.password,
         "consistency" -> "one",
-        "precision"   -> "ns"
+        "precision"   -> "ns",
+        "db"          -> testDB
       )
     )
 
@@ -63,50 +53,30 @@ class DatabaseOperationQuerySpec
       .toString() shouldEqual queryTester(
       "/write",
       List(
-        "db"          -> testDB,
-        "u"           -> credentials.get.username,
-        "p"           -> credentials.get.password,
         "consistency" -> "all",
-        "precision"   -> "ns"
+        "precision"   -> "ns",
+        "db"          -> testDB
       )
     )
   }
 
-  it should "return correct write query without auth " in new NonAuthEnv {
-    write(testDB, Consistencies.One, Precisions.Nanoseconds, None).toString() shouldEqual
-      queryTester(
-        "/write",
-        List("db" -> testDB, "consistency" -> "one", "precision" -> "ns")
-      )
-
-    write(testDB, Consistencies.One, Precisions.Microseconds, None).toString() shouldEqual
-      queryTester(
-        "/write",
-        List("db" -> testDB, "consistency" -> "one", "precision" -> "u")
-      )
-  }
-
-  it should "return correct single read query" in new AuthEnv {
+  it should "return correct single read query" in {
 
     val queryPrms: List[(String, String)] = List(
-      "db"    -> testDB,
-      "u"     -> credentials.get.username,
-      "p"     -> credentials.get.password,
       "epoch" -> "ns",
-      "q"     -> "SELECT * FROM test"
+      "q"     -> "SELECT * FROM test",
+      "db"    -> testDB
     )
     singleQuery(testDB, testQuery, Epochs.Nanoseconds, pretty = false).toString() shouldEqual
       queryTester("/query", queryPrms)
   }
 
-  it should "return correct bulk read query" in new AuthEnv {
+  it should "return correct bulk read query" in {
 
     val queryPrms: List[(String, String)] = List(
-      "db"    -> testDB,
-      "u"     -> credentials.get.username,
-      "p"     -> credentials.get.password,
       "epoch" -> "ns",
-      "q"     -> "SELECT * FROM test;SELECT * FROM test1"
+      "q"     -> "SELECT * FROM test;SELECT * FROM test1",
+      "db"    -> testDB
     )
     bulkQuery(
       testDB,
@@ -116,12 +86,10 @@ class DatabaseOperationQuerySpec
     ).toString() shouldEqual queryTester("/query", queryPrms)
 
     val queryPrms1: List[(String, String)] = List(
-      "db"     -> testDB,
-      "u"      -> credentials.get.username,
-      "p"      -> credentials.get.password,
       "pretty" -> "true",
       "epoch"  -> "ns",
-      "q"      -> "SELECT * FROM test;SELECT * FROM test1"
+      "q"      -> "SELECT * FROM test;SELECT * FROM test1",
+      "db"     -> testDB
     )
     bulkQuery(
       testDB,
