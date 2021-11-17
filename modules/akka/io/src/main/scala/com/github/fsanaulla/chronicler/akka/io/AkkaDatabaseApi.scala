@@ -17,7 +17,13 @@
 package com.github.fsanaulla.chronicler.akka.io
 
 import akka.stream.scaladsl.Source
-import com.github.fsanaulla.chronicler.akka.shared.{AkkaQueryBuilder, AkkaRequestBuilder, AkkaRequestExecutor, RequestE, ResponseE}
+import com.github.fsanaulla.chronicler.akka.shared.{
+  AkkaQueryBuilder,
+  AkkaRequestBuilder,
+  AkkaRequestExecutor,
+  RequestE,
+  ResponseE
+}
 import com.github.fsanaulla.chronicler.core.alias.{ErrorOr, Id}
 import com.github.fsanaulla.chronicler.core.api.DatabaseApi
 import com.github.fsanaulla.chronicler.core.enums.{Epoch, Epochs}

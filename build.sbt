@@ -56,7 +56,7 @@ lazy val chronicler = project
       macros,
       udp
     ).flatMap(_.projectRefs): _*
-  )
+  ).enablePlugins(ScalafmtPlugin)
 
 //////////////////////////////////////////////////////
 //////////////////// CORE MODULES ////////////////////

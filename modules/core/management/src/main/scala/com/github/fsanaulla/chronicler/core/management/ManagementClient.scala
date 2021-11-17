@@ -34,12 +34,12 @@ import com.github.fsanaulla.chronicler.core.management.subscription.Subscription
   * @tparam E - Request entity type
   */
 trait ManagementClient[F[_], G[_], Req, U, E, Resp]
-  extends SystemManagement[F]
-  with DatabaseManagement[F, G, Req, Resp, U, E]
-  with UserManagement[F, G, Req, Resp, U, E]
-  with QueriesManagement[F, G, Req, Resp, U, E]
-  with RetentionPolicyManagement[F, G, Req, Resp, U, E]
-  with ContinuousQueryManagement[F, G, Req, Resp, U, E]
-  with ShardManagement[F, G, Req, Resp, U, E]
-  with SubscriptionManagement[F, G, Req, Resp, U, E]
-  with AutoCloseable
+    extends SystemManagement[F]
+    with DatabaseManagement[F, G, Req, Resp, U, E]
+    with UserManagement[F, G, Req, Resp, U, E]
+    with QueriesManagement[F, G, Req, Resp, U, E]
+    with RetentionPolicyManagement[F, G, Req, Resp, U, E]
+    with ContinuousQueryManagement[F, G, Req, Resp, U, E]
+    with ShardManagement[F, G, Req, Resp, U, E]
+    with SubscriptionManagement[F, G, Req, Resp, U, E]
+    with AutoCloseable

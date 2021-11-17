@@ -36,7 +36,7 @@ class TimestampSpec extends AnyWordSpec with Matchers with EitherValues {
           @field age: Int,
           @timestamp time: Long
       )
-      
+
       val epochRd = InfluxReader[GeneralEpochTimestamp]
 
       "epoch time" in {

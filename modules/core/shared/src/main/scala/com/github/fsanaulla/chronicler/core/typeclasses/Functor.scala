@@ -24,6 +24,6 @@ trait Functor[F[_]] {
 
 object Functor {
   implicit val functorId: Functor[Id] = new Functor[Id] {
-    override def map[A, B](fa: Id[A])(f: A => B): Id[B]         = f(fa)
+    override def map[A, B](fa: Id[A])(f: A => B): Id[B] = f(fa)
   }
 }

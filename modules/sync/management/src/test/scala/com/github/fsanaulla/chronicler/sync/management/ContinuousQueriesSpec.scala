@@ -39,7 +39,7 @@ class ContinuousQueriesSpec extends BaseSpec with ContinuousQueries[Uri] {
   "ContinuousQuerys operation" - {
 
     "should" - {
-      
+
       "generate correct show query" in {
         showCQQuery.toString() shouldEqual queryTester("SHOW CONTINUOUS QUERIES")
       }

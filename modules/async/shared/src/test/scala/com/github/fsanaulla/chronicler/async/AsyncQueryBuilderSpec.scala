@@ -29,7 +29,7 @@ class AsyncQueryBuilderSpec extends AnyFlatSpec with Matchers {
 
   it should "properly generate URI" in {
     val queryMap = List("q" -> "FirstQuery;SecondQuery")
-    val res = s"http://$host:$port/query?q=FirstQuery%3BSecondQuery"
+    val res      = s"http://$host:$port/query?q=FirstQuery%3BSecondQuery"
 
     qb.buildQuery("/query", queryMap).toString() shouldEqual res
   }

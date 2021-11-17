@@ -22,7 +22,18 @@ import com.github.fsanaulla.chronicler.core.api.{DatabaseApi, MeasurementApi}
 import com.github.fsanaulla.chronicler.core.auth.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.components.ResponseHandlerBase
 import com.github.fsanaulla.chronicler.core.model.InfluxDBInfo
-import com.github.fsanaulla.chronicler.sync.shared.{RequestE, ResponseE, SyncJsonHandler, SyncQueryBuilder, SyncRequestBuilder, SyncRequestExecutor, tryApply, tryFunctor, tryMonad, tryMonadError}
+import com.github.fsanaulla.chronicler.sync.shared.{
+  RequestE,
+  ResponseE,
+  SyncJsonHandler,
+  SyncQueryBuilder,
+  SyncRequestBuilder,
+  SyncRequestExecutor,
+  tryApply,
+  tryFunctor,
+  tryMonad,
+  tryMonadError
+}
 import sttp.client3.{Identity, SttpBackend, TryHttpURLConnectionBackend}
 import sttp.model.Uri
 

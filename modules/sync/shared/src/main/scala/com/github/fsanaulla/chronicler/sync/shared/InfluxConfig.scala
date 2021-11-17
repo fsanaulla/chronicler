@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
- package com.github.fsanaulla.chronicler.sync.shared
+package com.github.fsanaulla.chronicler.sync.shared
 
 import com.github.fsanaulla.chronicler.core.auth.InfluxCredentials
 

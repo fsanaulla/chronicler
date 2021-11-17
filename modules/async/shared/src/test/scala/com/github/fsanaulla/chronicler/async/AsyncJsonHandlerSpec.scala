@@ -34,7 +34,7 @@ import scala.io.Source
   */
 class AsyncJsonHandlerSpec extends BaseSpec with TryValues with EitherValues with OptionValues {
 
-  def mkResponse(body: String): ResponseE = 
+  def mkResponse(body: String): ResponseE =
     client3.Response.ok(Right(body))
 
   "Json handler" - {
@@ -44,9 +44,9 @@ class AsyncJsonHandlerSpec extends BaseSpec with TryValues with EitherValues wit
     "should extract from json" - {
 
       "body" in {
-        val singleStrJson                           = getJsonStringFromFile("/json/single.json")
+        val singleStrJson    = getJsonStringFromFile("/json/single.json")
         val input: ResponseE = mkResponse(singleStrJson)
-        val out: JValue                             = JParser.parseFromString(singleStrJson).get
+        val out: JValue      = JParser.parseFromString(singleStrJson).get
 
         jh.responseBody(input).value shouldEqual out
       }
