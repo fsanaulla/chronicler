@@ -83,7 +83,7 @@ lazy val coreShared = projectMatrix
     name := s"$projectName-core-shared",
     libraryDependencies ++= List(
       "com.beachape"                                     %% "enumeratum" % "1.6.1",
-      "org.typelevel"                                    %% "jawn-ast" % "0.14.3"
+      "org.typelevel"                                    %% "jawn-ast" % "1.3.0"
     ) ++ (Library.scalaCheck :: Library.scalaTest).map(_ % Test)
   )
   .settings(Settings.propertyTestSettings: _*)
