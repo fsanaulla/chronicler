@@ -16,34 +16,28 @@
 
 package com.github.fsanaulla.chronicler.akka
 
-import akka.http.scaladsl.model.Uri
-import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
+import com.github.fsanaulla.chronicler.core.auth.InfluxCredentials
+
+import java.net.URLEncoder
 
 package object query {
+  implicit class StringRich(val str: String) extends AnyVal {
+    def encode: String = URLEncoder.encode(str, "UTF-8")
+  }
 
-  def urlBase(url: String): Uri =
-    Uri.from(
-      "http",
-      host = "localhost",
-      port = 8086,
-      path = url
-    )
+  def queryTester(query: String): String =
+    s"http://localhost:8086/query?q=${query.encode}"
 
-  def queryTesterAuth(query: String)(credentials: InfluxCredentials): Uri =
-    urlBase("/query").withQuery(
-      Uri.Query("u" -> credentials.username, "p" -> credentials.username, "q" -> query)
-    )
+  def queryTester(db: String, query: String): String =
+    s"http://localhost:8086/query?q=${query.encode}&db=${db.encode}"
 
-  def queryTesterAuth(db: String, query: String)(credentials: InfluxCredentials): Uri =
-    urlBase("/query").withQuery(
-      Uri.Query("db" -> db, "u" -> credentials.username, "p" -> credentials.password, "q" -> query)
-    )
+  def queryTester(path: String, queryParams: List[(String, String)]): String = {
+    val s = queryParams
+      .map { case (k, v) =>
+        s"$k=${v.encode}"
+      }
+      .mkString("&")
 
-  def queryTester(query: String): Uri =
-    urlBase("/query").withQuery(Uri.Query("q" -> query))
-
-  def queryTester(db: String, query: String): Uri =
-    urlBase("/query").withQuery(Uri.Query("db" -> db, "q" -> query))
-
-  def writeTester(mp: Map[String, String]): Uri = urlBase("/write").withQuery(Uri.Query(mp))
+    s"http://localhost:8086$path?$s"
+  }
 }
