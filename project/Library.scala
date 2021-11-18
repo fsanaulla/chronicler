@@ -40,4 +40,13 @@ object Library {
   val asyncDeps: List[ModuleID] = List(
     "com.softwaremill.sttp.client3" %% "async-http-client-backend-future" % "3.3.14"
   )
+
+  def jawnAst(scalaVersion: String): ModuleID = {
+    val jawnVersion = scalaVersion match {
+      case v if v.startsWith("2.11") => "0.14.3"
+      case _                         => "1.3.0"
+    }
+
+    "org.typelevel" %% "jawn-ast" % jawnVersion
+  }
 }
