@@ -11,7 +11,7 @@ trait DockerizedInfluxDB extends ForAllTestContainer { self: Suite =>
   def adminName       = "admin"
   def adminPassword   = "password"
   def influxPort      = 8086
-  def version: String = sys.env.getOrElse("INFLUXDB_VERSION", "1.7.3")
+  def version: String = sys.env.getOrElse("INFLUXDB_VERSION", "1.8.10")
 
   override val container: GenericContainer =
     GenericContainer(
