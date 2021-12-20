@@ -8,7 +8,7 @@ object Library {
     val request = "0.2.0"
 
     object Akka {
-      val akka     = "2.6.17"
+      val akka     = "2.6.18"
       val akkaHttp = "10.1.14"
     }
 
