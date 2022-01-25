@@ -13,7 +13,7 @@ object Library {
     }
 
     object Testing {
-      val scalaTest            = "3.2.10"
+      val scalaTest            = "3.2.11"
       val scalaCheck           = "1.14.0"
       val scalaCheckGenerators = "0.2.0"
     }
@@ -31,14 +31,14 @@ object Library {
   // akka-http
   // format: off
   val akkaDep: List[ModuleID] = List(
-    "com.softwaremill.sttp.client3" %% "akka-http-backend" % "3.3.18",
+    "com.softwaremill.sttp.client3" %% "akka-http-backend" % "3.4.1",
     "com.typesafe.akka" %% "akka-stream" % Versions.Akka.akka exclude ("com.typesafe", "config"),
     akkaTestKit % Test
   )
 
   // async-http
   val asyncDeps: List[ModuleID] = List(
-    "com.softwaremill.sttp.client3" %% "async-http-client-backend-future" % "3.3.18"
+    "com.softwaremill.sttp.client3" %% "async-http-client-backend-future" % "3.4.1"
   )
 
   def jawnAst(scalaVersion: String): ModuleID = {
