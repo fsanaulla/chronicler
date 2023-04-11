@@ -31,14 +31,14 @@ object Library {
   // akka-http
   // format: off
   val akkaDep: List[ModuleID] = List(
-    "com.softwaremill.sttp.client3" %% "akka-http-backend" % "3.5.2",
+    "com.softwaremill.sttp.client3" %% "akka-http-backend" % "3.8.15",
     "com.typesafe.akka" %% "akka-stream" % Versions.Akka.akka exclude ("com.typesafe", "config"),
     akkaTestKit % Test
   )
 
   // async-http
   val asyncDeps: List[ModuleID] = List(
-    "com.softwaremill.sttp.client3" %% "async-http-client-backend-future" % "3.5.2"
+    "com.softwaremill.sttp.client3" %% "async-http-client-backend-future" % "3.8.15"
   )
 
   def jawnAst(scalaVersion: String): ModuleID = {
