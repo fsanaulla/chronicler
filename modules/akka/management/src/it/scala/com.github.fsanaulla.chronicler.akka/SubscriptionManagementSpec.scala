@@ -2,13 +2,17 @@ package com.github.fsanaulla.chronicler.akka
 
 import _root_.akka.actor.ActorSystem
 import _root_.akka.testkit.TestKit
-import com.github.fsanaulla.chronicler.akka.management.{AkkaManagementClient, InfluxMng}
+import com.github.fsanaulla.chronicler.akka.management.AkkaManagementClient
+import com.github.fsanaulla.chronicler.akka.management.InfluxMng
 import com.github.fsanaulla.chronicler.core.duration._
-import com.github.fsanaulla.chronicler.core.enums.{Destination, Destinations}
+import com.github.fsanaulla.chronicler.core.enums.Destination
+import com.github.fsanaulla.chronicler.core.enums.Destinations
 import com.github.fsanaulla.chronicler.core.model.Subscription
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import org.scalatest.{EitherValues, BeforeAndAfterAll}
-import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.EitherValues
+import org.scalatest.concurrent.IntegrationPatience
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
 
@@ -40,8 +44,8 @@ class SubscriptionManagementSpec
   val rpName                        = "subs_rp"
   val destType: Destination         = Destinations.ANY
   val newDestType: Destination      = Destinations.ALL
-  val hosts: Array[String]          = Array("udp://h1.example.com:9090", "udp://h2.example.com:9090")
-  val subscription: Subscription    = Subscription(rpName, subName, destType, hosts)
+  val hosts: Seq[String]            = Seq("udp://h1.example.com:9090", "udp://h2.example.com:9090")
+  val subscription: Subscription    = Subscription(rpName, subName, destType, hosts.toArray)
   val newSubscription: Subscription = subscription.copy(destType = newDestType)
 
   val duration: String = 1.hours + 30.minutes

@@ -16,8 +16,8 @@
 
 package com.github.fsanaulla.chronicler.macros
 
-import com.github.fsanaulla.chronicler.core.model.{InfluxReader, InfluxWriter}
-import scala.language.experimental.macros
+import com.github.fsanaulla.chronicler.core.model.InfluxReader
+import com.github.fsanaulla.chronicler.core.model.InfluxWriter
 
 object Influx {
   def writer[A]: InfluxWriter[A] = macro InfluxImpl.writer[A]

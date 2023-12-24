@@ -18,10 +18,11 @@ package com.github.fsanaulla.chronicler.urlhttp.shared
 
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
 import com.github.fsanaulla.chronicler.core.components.JsonHandler
-import org.typelevel.jawn.ast.{JParser, JValue}
-import com.github.fsanaulla.chronicler.core.model.InfluxException
+import org.typelevel.jawn.ast.JParser
+import org.typelevel.jawn.ast.JValue
 
-import scala.util.{Failure, Success, Try}
+import scala.util.Failure
+import scala.util.Try
 
 private[urlhttp] object UrlJsonHandler extends JsonHandler[Try, ResponseE] {
 

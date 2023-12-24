@@ -1,19 +1,27 @@
 package com.github.fsanaulla.chronicler.udp
 
-import java.io.File
-
 import com.github.fsanaulla.chronicler.core.alias.ErrorOr
-import com.github.fsanaulla.chronicler.core.model.{InfluxReader, InfluxWriter, Point}
-import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
-import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
-import org.scalatest.concurrent.{Eventually, IntegrationPatience}
+import com.github.fsanaulla.chronicler.core.model.InfluxReader
+import com.github.fsanaulla.chronicler.core.model.InfluxWriter
+import com.github.fsanaulla.chronicler.core.model.Point
+import com.github.fsanaulla.chronicler.urlhttp.io.InfluxIO
+import com.github.fsanaulla.chronicler.urlhttp.io.UrlIOClient
+import com.github.fsanaulla.chronicler.urlhttp.management.InfluxMng
+import com.github.fsanaulla.chronicler.urlhttp.management.UrlManagementClient
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.EitherValues
+import org.scalatest.Ignore
+import org.scalatest.TryValues
+import org.scalatest.concurrent.Eventually
+import org.scalatest.concurrent.IntegrationPatience
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.{BeforeAndAfterAll, EitherValues, TryValues}
 import org.testcontainers.containers.DockerComposeContainer
-import org.testcontainers.containers.wait.strategy.Wait
-import org.typelevel.jawn.ast.{JArray, JNum, JString}
-import org.scalatest.Ignore
+import org.typelevel.jawn.ast.JArray
+import org.typelevel.jawn.ast.JNum
+import org.typelevel.jawn.ast.JString
+
+import java.io.File
 
 /**
   * Created by
@@ -35,16 +43,9 @@ class UdpClientSpec
   val service     = "influxdb"
   val servicePort = 8086
 
-  val container: DockerComposeContainer[Nothing] = {
-    val cont = new DockerComposeContainer(
-      new File(getClass.getResource("/docker-compose.yml").getPath)
-    )
-
-    cont.withLocalCompose(true)
-    cont.withExposedService(service, 8086, Wait.forHttp("/ping").forStatusCode(204))
-
-    cont
-  }
+  val container: DockerComposeContainer[Nothing] = new DockerComposeContainer(
+    new File(getClass.getResource("/docker-compose.yml").getPath)
+  )
 
   override def beforeAll(): Unit = {
     super.beforeAll()
@@ -181,7 +182,10 @@ object UdpClientSpec {
       case Array(age: JNum, name: JString) => Right(Test(name, age))
       case _                               => Left(new Error(""))
     }
-    override def readUnsafe(js: JArray): Test = read(js).right.get
+    override def readUnsafe(js: JArray): Test = read(js) match {
+      case Right(value) => value
+      case Left(value)  => throw value
+    }
   }
 
   implicit val wr: InfluxWriter[Test] = new InfluxWriter[Test] {

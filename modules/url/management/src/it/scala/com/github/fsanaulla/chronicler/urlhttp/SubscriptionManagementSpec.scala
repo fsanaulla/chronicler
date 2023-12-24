@@ -1,15 +1,16 @@
 package com.github.fsanaulla.chronicler.urlhttp
 
 import com.github.fsanaulla.chronicler.core.duration._
-import com.github.fsanaulla.chronicler.core.enums.{Destination, Destinations}
+import com.github.fsanaulla.chronicler.core.enums.Destination
+import com.github.fsanaulla.chronicler.core.enums.Destinations
 import com.github.fsanaulla.chronicler.core.model.Subscription
-import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
-import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.{EitherValues, TryValues, BeforeAndAfterAll}
 import com.github.fsanaulla.chronicler.testing.BaseSpec
+import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
+import com.github.fsanaulla.chronicler.urlhttp.management.InfluxMng
+import com.github.fsanaulla.chronicler.urlhttp.management.UrlManagementClient
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.EitherValues
+import org.scalatest.TryValues
 
 /**
   * Created by
@@ -43,7 +44,7 @@ class SubscriptionManagementSpec
     InfluxMng(host, port, Some(credentials))
 
   "Subscription API" - {
-    
+
     "should" - {
 
       "create subscription" in {
@@ -59,7 +60,7 @@ class SubscriptionManagementSpec
         influx.showDatabases().success.value.value.contains(dbName) shouldEqual true
 
         influx
-          .createSubscription(subName, dbName, rpName, destType, hosts)
+          .createSubscription(subName, dbName, rpName, destType, hosts.toSeq)
           .success
           .value
           .value shouldEqual 200

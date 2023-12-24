@@ -18,7 +18,7 @@ package com.github.fsanaulla.chronicler.urlhttp.management
 
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
-import com.github.fsanaulla.chronicler.urlhttp.shared.{tryFunctor, urlFk}
+import com.github.fsanaulla.chronicler.urlhttp.shared.tryFunctor
 
 object InfluxMng {
 

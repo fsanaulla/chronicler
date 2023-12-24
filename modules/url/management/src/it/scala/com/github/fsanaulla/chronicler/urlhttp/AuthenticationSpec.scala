@@ -5,7 +5,6 @@ import com.github.fsanaulla.chronicler.core.model.{InfluxException, UserPrivileg
 import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import org.scalatest.{EitherValues, BeforeAndAfterAll, TryValues}
-import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 
 import com.github.fsanaulla.chronicler.testing.BaseSpec
 

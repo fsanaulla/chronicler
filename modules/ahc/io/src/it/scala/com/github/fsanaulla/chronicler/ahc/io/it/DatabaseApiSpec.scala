@@ -84,7 +84,7 @@ class DatabaseApiSpec
       JArray(Array(JNum(54), JString("Martin"), JString("Odersky"), JString("Male")))
     )
 
-    db.bulkWritePoints(Array(point1, point2)).futureValue.value shouldEqual 204
+    db.bulkWritePoints(Seq(point1, point2)).futureValue.value shouldEqual 204
 
     db.readJson("SELECT * FROM test2", epoch = Epochs.Nanoseconds)
       .futureValue

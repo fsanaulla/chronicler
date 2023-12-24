@@ -60,7 +60,7 @@ private[urlhttp] final class UrlRequestExecutor(backend: SttpBackend[Try, Any])
       // gzip body
       val (length, entity) = gzip.compress(bts)
 
-      requestBase.headers(contentEncoding).contentLength(length).body(entity)
+      requestBase.headers(contentEncoding).contentLength(length.toLong).body(entity)
     } else requestBase.body(bts)
 
     backend.send(maybeGzipped)

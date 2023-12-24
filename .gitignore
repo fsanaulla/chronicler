@@ -9,3 +9,4 @@ target
 .bloop
 /project/metals
 .sbt
+/**metals.sbt

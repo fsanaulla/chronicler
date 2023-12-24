@@ -14,11 +14,13 @@ object Main {
     val host   = args.headOption.getOrElse("localhost")
     val influx = InfluxUdp(host)
 
-    for {
+    val action = for {
       // write record to Influx
       _ <- influx.write("cpu", t)
       // close client
       _ <- Try(influx.close())
     } yield println("Stored!")
+
+    action.get
   }
 }

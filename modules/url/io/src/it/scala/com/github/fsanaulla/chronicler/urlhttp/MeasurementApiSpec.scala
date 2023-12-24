@@ -7,8 +7,7 @@ import com.github.fsanaulla.chronicler.urlhttp.io.{InfluxIO, UrlIOClient}
 import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
 import com.github.fsanaulla.chronicler.urlhttp.shared.InfluxConfig
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers
+
 import org.scalatest.{EitherValues, TryValues}
 import org.scalatest.BeforeAndAfterAll
 
@@ -56,7 +55,7 @@ class MeasurementApiSpec
       }
 
       "bulk write" in {
-        meas.bulkWrite(multiEntitys).success.value.value shouldEqual 204
+        meas.bulkWrite(multiEntitys.toSeq).success.value.value shouldEqual 204
         meas.read(s"SELECT * FROM $measName").success.value.value.length shouldEqual 3
       }
     }

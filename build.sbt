@@ -2,6 +2,7 @@ import Owner._
 import de.heikoseeberger.sbtheader.License
 import sbt.Keys.{libraryDependencies, name}
 import xerial.sbt.Sonatype._
+import org.typelevel.scalacoptions.ScalacOptions
 
 ThisBuild / scalaVersion := "2.13.4"
 ThisBuild / organization := "com.github.fsanaulla"
@@ -214,7 +215,8 @@ lazy val macros = projectMatrix
     name := s"$projectName-macros",
     libraryDependencies ++= Seq(
       "org.scala-lang"                                   % "scala-reflect" % scalaVersion.value
-    ) ++ (Library.scalaCheck :: Library.scalaTest).map(_ % Test)
+    ) ++ (Library.scalaCheck :: Library.scalaTest).map(_ % Test),
+    Test / tpolecatExcludeOptions ++= ScalacOptions.fatalWarningOptions
   )
   .settings(Settings.propertyTestSettings: _*)
   .configs(Settings.PropertyTest)
@@ -270,7 +272,8 @@ lazy val benchmark = project
     // rewire tasks, so that 'jmh:run' automatically invokes 'jmh:compile' (otherwise a clean 'jmh:run' would fail)
     Jmh / compile := (Jmh / compile).dependsOn(Test / compile).value,
     Jmh / run := (Jmh / run).dependsOn(Jmh / compile).evaluated,
-    libraryDependencies += "org.openjdk.jmh" % "jmh-generator-annprocess" % "1.21" % Test
+    libraryDependencies += "org.openjdk.jmh" % "jmh-generator-annprocess" % "1.21" % Test,
+    tpolecatExcludeOptions ++= ScalacOptions.fatalWarningOptions
   )
   .dependsOn(macros.jvm(scala213) % "test->test")
   .dependsOn(coreShared.jvm(scala213))

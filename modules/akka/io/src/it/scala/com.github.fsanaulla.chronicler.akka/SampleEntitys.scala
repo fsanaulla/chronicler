@@ -13,8 +13,8 @@ object SampleEntitys {
   val singleJsonEntity: JArray =
     JArray(Array(JNum(currentNanoTime), JNum(58), JString("Martin"), JString("Odersky")))
 
-  val multiEntitys: Array[FakeEntity] =
-    Array(FakeEntity("Male", "Harold", "Lois", 44), FakeEntity("Male", "Harry", "Potter", 21))
+  val multiEntitys: Seq[FakeEntity] =
+    Seq(FakeEntity("Male", "Harold", "Lois", 44), FakeEntity("Male", "Harry", "Potter", 21))
 
   val multiJsonEntity: Array[JArray] = Array(
     JArray(Array(JNum(currentNanoTime), JNum(58), JString("Martin"), JString("Odersky"))),

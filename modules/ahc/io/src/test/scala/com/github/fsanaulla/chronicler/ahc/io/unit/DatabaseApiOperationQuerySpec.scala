@@ -18,13 +18,13 @@ package com.github.fsanaulla.chronicler.ahc.io.unit
 
 import com.github.fsanaulla.chronicler.ahc.shared.Uri
 import com.github.fsanaulla.chronicler.ahc.shared.handlers.AhcQueryBuilder
-import com.github.fsanaulla.chronicler.core.enums.{Consistencies, Epochs, Precisions}
+import com.github.fsanaulla.chronicler.core.enums.Consistencies
+import com.github.fsanaulla.chronicler.core.enums.Epochs
+import com.github.fsanaulla.chronicler.core.enums.Precisions
 import com.github.fsanaulla.chronicler.core.model.InfluxCredentials
 import com.github.fsanaulla.chronicler.core.query.DatabaseOperationQuery
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-
-import scala.language.implicitConversions
 
 /**
   * Created by

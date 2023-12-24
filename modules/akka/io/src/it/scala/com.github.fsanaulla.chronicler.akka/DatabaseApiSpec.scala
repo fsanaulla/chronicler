@@ -88,7 +88,7 @@ class DatabaseApiSpec
       )
     )
 
-    db.bulkWritePoints(Array(point1, point2)).futureValue shouldEqual Right(204)
+    db.bulkWritePoints(Seq(point1, point2)).futureValue shouldEqual Right(204)
 
     db.readJson("SELECT * FROM test2", epoch = Epochs.Nanoseconds)
       .futureValue
@@ -104,7 +104,7 @@ class DatabaseApiSpec
   it should "retrieve multiple request" in {
     val Right(multiQuery) = db
       .bulkReadJson(
-        Array(
+        Seq(
           "SELECT * FROM test2",
           "SELECT * FROM test2 WHERE age < 40"
         )

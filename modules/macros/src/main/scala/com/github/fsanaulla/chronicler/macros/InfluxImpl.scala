@@ -49,7 +49,14 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
   private[this] val tagsTypes =
     Seq(getType[Option[String]], getType[String])
   private[this] val fieldTypes =
-    Seq(getType[Boolean], getType[Int], getType[Double], getType[String], getType[Float], getType[Long])
+    Seq(
+      getType[Boolean],
+      getType[Int],
+      getType[Double],
+      getType[String],
+      getType[Float],
+      getType[Long]
+    )
 
   private[this] def illegalArgExc(name: String): c.universe.Tree = {
     val msg = s"Tag value can 't be empty string for tag: $name"
@@ -107,7 +114,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
         tp: c.universe.Type,
         constructors: List[Tree],
         unsafe: Boolean
-      ): c.universe.Tree = {
+    ): c.universe.Tree = {
       if (!unsafe)
         q"""scala.util.Try(new $tp(..$constructors)) match {
               case scala.util.Success(v) => scala.util.Right(v)
@@ -128,7 +135,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
         timestampCtor: Tree,
         constructors: List[Tree],
         unsafe: Boolean
-      ): c.universe.Tree = {
+    ): c.universe.Tree = {
       val sCase              = buildResult(tpe, timestampCtor :: constructors, unsafe)
       val (name, returnType) = safeOrUnsafeRead(unsafe)
 
@@ -171,13 +178,13 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
         timeField: Option[MethodSymbol],
         ctors: List[Tree],
         unsafe: Boolean
-      ): c.universe.Tree = {
+    ): c.universe.Tree = {
 
       def buildTimestamp(
           nm: MethodSymbol,
           isLong: Boolean,
           isGeneric: Boolean
-        ): c.universe.Tree = {
+      ): c.universe.Tree = {
         val tnm = TermName(nm.name.decodedName.toString)
 
         if (!isGeneric) {
@@ -263,12 +270,8 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     }
     sealed trait Field extends Unquotable
 
-    final class Tag(
-        val key: Name,
-        val value: Tree,
-        optional: Boolean,
-        escapable: Boolean)
-      extends Unquotable {
+    final class Tag(val key: Name, val value: Tree, optional: Boolean, escapable: Boolean)
+        extends Unquotable {
       def escaped(value: Tree): c.universe.Tree =
         q"com.github.fsanaulla.chronicler.core.regex.tagPattern.matcher($value).replaceAll(com.github.fsanaulla.chronicler.core.regex.replace)"
 
@@ -340,7 +343,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
 
     def isOption(tpe: c.universe.Type): Boolean =
       tpe.typeConstructor =:= typeOf[Option[_]].typeConstructor
-    def isString(tpe: c.universe.Type): Boolean = tpe =:= string
+    def isString(tpe: c.universe.Type): Boolean    = tpe =:= string
     def isIntOrLong(tpe: c.universe.Type): Boolean = tpe =:= int || tpe =:= long
 
     /** Is it valid tag type */
@@ -417,7 +420,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
     val tags: List[Tag] = tagMethods map {
       case m: MethodSymbol if !isOption(m.returnType) =>
         new Tag(m.name.decodedName, q"obj.${m.name}", optional = false, isEscaped(m))
-      case m: MethodSymbol =>
+      case m =>
         new Tag(m.name.decodedName, q"obj.${m.name}", optional = true, isEscaped(m))
     }
 
@@ -426,7 +429,7 @@ private[macros] final class InfluxImpl(val c: blackbox.Context) {
         new StringField(m.name, q"obj.${m.name}")
       case m: MethodSymbol if isIntOrLong(m.returnType) =>
         new IntOrLongField(m.name, q"obj.${m.name}")
-      case m: MethodSymbol =>
+      case m =>
         new OtherField(m.name, q"obj.${m.name}")
     }
 

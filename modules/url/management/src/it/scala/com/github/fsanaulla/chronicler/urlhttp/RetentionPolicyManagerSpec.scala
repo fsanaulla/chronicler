@@ -2,11 +2,13 @@ package com.github.fsanaulla.chronicler.urlhttp
 
 import com.github.fsanaulla.chronicler.core.duration._
 import com.github.fsanaulla.chronicler.core.model.RetentionPolicyInfo
-import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
-import com.github.fsanaulla.chronicler.urlhttp.management.{InfluxMng, UrlManagementClient}
-import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import com.github.fsanaulla.chronicler.testing.BaseSpec
-import org.scalatest.{EitherValues, TryValues, BeforeAndAfterAll}
+import com.github.fsanaulla.chronicler.testing.it.DockerizedInfluxDB
+import com.github.fsanaulla.chronicler.urlhttp.management.InfluxMng
+import com.github.fsanaulla.chronicler.urlhttp.management.UrlManagementClient
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.EitherValues
+import org.scalatest.TryValues
 
 /**
   * Created by

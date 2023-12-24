@@ -19,26 +19,20 @@ package com.github.fsanaulla.chronicler.urlhttp.shared.handlers
 import com.github.fsanaulla.chronicler.core.components.ResponseHandler
 import com.github.fsanaulla.chronicler.core.implicits._
 import com.github.fsanaulla.chronicler.core.model.ContinuousQuery
+import com.github.fsanaulla.chronicler.testing.BaseSpec
 import com.github.fsanaulla.chronicler.urlhttp.shared.UrlJsonHandler
 import com.github.fsanaulla.chronicler.urlhttp.shared._
-import org.scalatest.freespec.AnyFreeSpec
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.{EitherValues, OptionValues, TryValues}
+import org.scalatest.EitherValues
+import org.scalatest.OptionValues
+import org.scalatest.TryValues
 import org.typelevel.jawn.ast._
-import com.github.fsanaulla.chronicler.testing.BaseSpec
-
-import scala.language.implicitConversions
 
 /**
   * Created by
   * Author: fayaz.sanaulla@gmail.com
   * Date: 10.08.17
   */
-class UrlResponseHandlerSpec
-    extends BaseSpec
-    with TryValues
-    with EitherValues
-    with OptionValues {
+class UrlResponseHandlerSpec extends BaseSpec with TryValues with EitherValues with OptionValues {
 
   "Response handler" - {
     val respHandler = new ResponseHandler(UrlJsonHandler)

@@ -86,7 +86,7 @@ class DatabaseApiSpec
       JArray(Array(JNum(54), JString("Martin"), JString("Odersky"), JString("Male")))
     )
 
-    db.bulkWritePoints(Array(point1, point2)).success.value.value shouldEqual 204
+    db.bulkWritePoints(Seq(point1, point2)).success.value.value shouldEqual 204
 
     db.readJson("SELECT * FROM test2", epoch = Epochs.Nanoseconds)
       .success
@@ -103,7 +103,7 @@ class DatabaseApiSpec
   it should "retrieve multiple request" in {
     val multiQuery = db
       .bulkReadJson(
-        Array(
+        Seq(
           "SELECT * FROM test2",
           "SELECT * FROM test2 WHERE age < 40"
         )

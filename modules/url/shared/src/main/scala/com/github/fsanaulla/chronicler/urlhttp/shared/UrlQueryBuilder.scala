@@ -40,10 +40,10 @@ private[urlhttp] class UrlQueryBuilder(
     }
 
     @tailrec
-    def addQueryParam(u: Uri, lst: Seq[QuerySegment]): Uri = {
+    def addQueryParam(u: Uri, lst: List[QuerySegment]): Uri = {
       lst match {
-        case Nil       => u
         case h :: tail => addQueryParam(u.addQuerySegment(h), tail)
+        case Nil       => u
       }
     }
 
