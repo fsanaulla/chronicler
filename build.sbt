@@ -32,7 +32,7 @@ ThisBuild / publishMavenStyle := true
 ThisBuild / headerLicense     := Some(License.ALv2("2017-2021", Owner.name))
 
 val scala213 = "2.13.8"
-val scala212 = "2.12.15"
+val scala212 = "2.12.19"
 val scala211 = "2.11.12"
 
 lazy val chronicler = project
